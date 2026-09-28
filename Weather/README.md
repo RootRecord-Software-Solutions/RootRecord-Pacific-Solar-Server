@@ -8,20 +8,31 @@ Weather subsystem ownership: collection, ensure scripts, and related desk weathe
 
 | Item | State |
 | --- | --- |
-| Domain folder in this repo | **Partial** — `scripts/ensure-weather-poller.sh` (+ sync helpers if present) |
-| Full weather daemon | May still live under legacy skills / Weather tree outside this partial copy |
-| Published data | `rootrecordsoftwaresolutions/RootRecord-Weather-Database` |
-| Local data | Database weather staging (not in this git tree) |
+| Domain folder in this repo | **Partial** — ensure scripts |
+| Full daemon | G2 / residual skills path |
+| G1 Old packets | `weather/live-wx`, `nws-hawaii`, `rr-noaa`, `hurricane-*`, `radar-archive`, … |
+| Published data | `RootRecord-Weather-Database` |
+| Local data | Database weather staging (not this git tree) |
+
+**Import order:** G2 weather daemon/ensure alignment first; then selective G1 packets (skip bulk media archives into git).
 
 ---
 
-## jobs.py references
+## jobs.py
 
 | Job id | Path note |
 | --- | --- |
-| `weather_poller` | Command points at `…/skills/Weather/scripts/ensure-weather-poller.sh` (skills-prefixed absolute); ensure script also exists under this domain in-repo |
+| `weather_poller` | skills-prefixed absolute; ensure also in-repo under `Weather/scripts/` |
 
-After full daemon import, align absolute job strings to Ecosystem Servers path.
+---
+
+## G1 packets (after G2)
+
+| Packet | Note |
+| --- | --- |
+| live-wx, nws-hawaii, rr-noaa | Core collectors |
+| hurricane-desk, -fetch, -obs, -radio, -tracker | Storm tooling |
+| radar-archive, official-weather-media | Prefer Database / Weather-Database, not G3 bloat |
 
 ---
 
@@ -32,9 +43,9 @@ Weather/
   README.md
   scripts/
     ensure-weather-poller.sh
-    # future: daemon, collectors
+    # daemon, collectors after import
 ```
 
 ---
 
-*Docs-only update 2026-09-28 HST.*
+*Docs-only 2026-09-28 HST.*
