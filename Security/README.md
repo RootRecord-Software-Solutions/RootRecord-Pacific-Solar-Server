@@ -9,13 +9,16 @@ Security subsystem ownership: cameras (A-EYES), access surfaces, and related des
 | Item | State |
 | --- | --- |
 | Domain folder in this repo | **Shell only** |
-| A-EYES runtime today | Legacy `~/.ollama/skills/a-eyes/` |
+| A-EYES runtime today (**G2**) | `~/.ollama/skills/a-eyes/` |
+| A-EYES in G1 Old | **Not present** as top-level — evolved later |
 | Frame / video data | `/home/rootrecord/Database/A-EYES/` (never commit) |
 | Live UI | `127.0.0.1:8791` → `https://rootserver.rootrecord.cloud/aeyes` |
 
+**Import order:** G2 `a-eyes/` first. Optional G1 recovery: `panels-cam/`, `kilauea/kilauea-cams` (diff only).
+
 ---
 
-## jobs.py references (residual)
+## jobs.py references (residual G2)
 
 | Job id | Legacy path |
 | --- | --- |
@@ -25,23 +28,22 @@ Security subsystem ownership: cameras (A-EYES), access surfaces, and related des
 | `a_eyes_timelapse_hourly_compile` | `…/skills/a-eyes/scripts/timelapse_hourly.sh` |
 | `a_eyes_timelapse_daily_render` | `…/skills/a-eyes/scripts/timelapse_daily.sh` |
 
-Full inventory: Library `Documentation/00-architecture/Pacific-Jobs-Path-Inventory-2026-09-28.md`.  
-Optimization work order: Library WO-AEYES.
+Library: path inventory, WO-AEYES, Old inventory map.
 
 ---
 
-## Expected layout after import (docs only)
+## Expected layout after G2 import
 
 ```text
 Security/
   README.md
-  a-eyes/          # or Security/scripts/ — operator choice at import
+  a-eyes/
     scripts/
-    store/         # CONNECTION.json stays local / gitignored
+    store/         # CONNECTION.json local / gitignored
 ```
 
 Never commit RTSP passwords or public UI passwords.
 
 ---
 
-*Docs-only update 2026-09-28 HST.*
+*Docs-only 2026-09-28 HST.*
