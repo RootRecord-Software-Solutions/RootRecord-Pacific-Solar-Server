@@ -11,8 +11,11 @@ set -euo pipefail
 # ====================================================
 # SECTION: PATHS
 # ====================================================
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-WATCH="$ROOT/scripts/poller-watch.py"
+# This file lives at Automations/scripts/poller/
+HERE="$(cd "$(dirname "$0")" && pwd)"
+SCRIPTS="$(cd "$HERE/.." && pwd)"
+REPO="$(cd "$SCRIPTS/../.." && pwd)"
+WATCH="$HERE/poller-watch.py"
 UNIT="rr-rootserver-poller.service"
 TITLE="RootRecord poller — rootserver"
 export POLLER_LOG="${POLLER_LOG:-$HOME/.ollama/skills/logs/store/rootserver-poller.log}"
