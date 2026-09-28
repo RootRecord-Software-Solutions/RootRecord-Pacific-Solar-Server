@@ -10,10 +10,17 @@ Energy monitoring, EcoFlow device reads, and power subsystem ownership for the P
 | --- | --- |
 | Domain folder in this repo | **Shell only** (README + `.gitkeep`) |
 | Live EcoFlow / ENERGY data | **Active** via poller jobs |
-| Script location today | Legacy `~/.ollama/skills/energy/` (not yet imported here) |
+| Script location today (**G2**) | `~/.ollama/skills/energy/` |
+| Historical packets (**G1**) | `Solar-Pacific-RootRecord-Server-Old` → `energy/ecoflow-*` |
 | Data writes | `/home/rootrecord/Database/ENERGY/` (never commit) |
 
-Until the Energy skill tree is imported into this folder, job catalog commands continue to call the legacy skills path. That is intentional and keeps the desk live.
+**Import order:** bring **G2** skills energy tree here first (matches `jobs.py`). Only then selectively diff G1 packets for missing features.
+
+See Library:
+
+- `Documentation/00-architecture/Migration-Lineage-Three-Generations-2026-09-28.md`
+- `Documentation/00-architecture/Solar-Pacific-Old-Inventory-Map-2026-09-28.md`
+- `Documentation/00-architecture/Pacific-Domain-Import-Playbook-2026-09-28.md`
 
 ---
 
@@ -32,9 +39,7 @@ Until the Energy skill tree is imported into this folder, job catalog commands c
 
 ---
 
-## jobs.py references (residual)
-
-See Library: `Documentation/00-architecture/Pacific-Jobs-Path-Inventory-2026-09-28.md`.
+## jobs.py references (residual G2)
 
 | Job id | Role |
 | --- | --- |
@@ -43,13 +48,25 @@ See Library: `Documentation/00-architecture/Pacific-Jobs-Path-Inventory-2026-09-
 | `heartbeat` | Builtin ENERGY snapshot (engine) |
 | READS / `ecoflow_command()` | Manual/API action helpers |
 
-**Historical path prefix:** `/home/rootrecord/.ollama/skills/energy/`
+**G2 path prefix:** `/home/rootrecord/.ollama/skills/energy/`
 
-**Target after import:** `Energy/scripts/…` under this repo root on the Ecosystem Servers path.
+**Target after G2 import:** `Energy/scripts/…` under this repo on the Ecosystem Servers path.
 
 ---
 
-## Expected layout after import (documentation only)
+## G1 Old packets (recover only after G2)
+
+| Old path | Role |
+| --- | --- |
+| `energy/ecoflow-ble-poller` | BLE poller ancestry |
+| `energy/ecoflow-automations` | Automation helpers |
+| `energy/ecoflow-ac-solar-gate` | AC/solar gate |
+| `energy/ecoflow-quota` | Quota |
+| `energy/ecoflow-river-car` | Device-specific |
+
+---
+
+## Expected layout after G2 import
 
 ```text
 Energy/
@@ -60,7 +77,6 @@ Energy/
       river2pro-read.sh
       leapfrog-read.sh
     actions/
-  # local secrets / device config stay off-git
 ```
 
 Do not commit BLE keys, cloud API tokens, or device credentials.
@@ -69,12 +85,13 @@ Do not commit BLE keys, cloud API tokens, or device credentials.
 
 ## Import checklist (operator)
 
-1. Provide source tree from live `~/.ollama/skills/energy/` (or equivalent).
-2. Copy into `Energy/` preserving scripts layout; strip secrets.
-3. Rewire `Automations/scripts/jobs.py` paths (single commit or tightly coupled).
+1. Provide G2 source from live `~/.ollama/skills/energy/`.
+2. Copy into `Energy/`; strip secrets.
+3. Rewire `Automations/scripts/jobs.py`.
 4. `schedule-stack-reload` after sync.
-5. Confirm SUMMARY / ENERGY lines in poller window.
+5. Confirm SUMMARY / ENERGY lines.
+6. Optional later: diff G1 `ecoflow-*` packets for unique scripts only.
 
 ---
 
-*Docs-only update 2026-09-28 HST. No script import in this commit.*
+*Docs-only update 2026-09-28 HST.*
