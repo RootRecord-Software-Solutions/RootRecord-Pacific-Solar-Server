@@ -8,32 +8,36 @@ Host operating-system integration, system sampling, and desk host services.
 
 | Item | State |
 | --- | --- |
-| Domain folder in this repo | **Shell only** |
-| sys-sample runtime today | Legacy `~/.ollama/skills/system-stats/` |
-| Sample writes | `/home/rootrecord/Database/SYSTEM/` (never commit bulk samples) |
+| Domain folder | **Shell only** |
+| G2 residual | `~/.ollama/skills/system-stats/` → `sys_stats_cycle` |
+| G1 cousins | `host-metrics`, `system-perf`, `uptime-log`, `log-cleanup` |
+| Sample writes | `/home/rootrecord/Database/SYSTEM/` |
+
+**Import order:** G2 system-stats first; then diff G1 host-metrics / system-perf.
+
+**Plumbing decision:** G2 `plumbing/` (ollama/flm) and G1 `ollama-*` may land under `System/scripts/plumbing/` or a future `Plumbing/` domain — operator chooses at import.
 
 ---
 
-## jobs.py references (residual)
+## jobs.py (residual G2)
 
-| Job id | Legacy path |
+| Job id | Path |
 | --- | --- |
-| `sys_stats_cycle` | `…/skills/system-stats/scripts/sys-sample.sh` (every 5s) |
-
-Observed healthy in poller window 2026-09-28 (SYSTEM lines + JSON under Database/SYSTEM).
+| `sys_stats_cycle` | `…/skills/system-stats/scripts/sys-sample.sh` |
+| `ollama_warmup` / `flm_npu_warmup` | `…/skills/plumbing/scripts/*` (no System folder yet) |
 
 ---
 
-## Expected layout after import (docs only)
+## Expected layout after import
 
 ```text
 System/
   README.md
   scripts/
     sys-sample.sh
-  # optional: other host helpers
+    # optional: plumbing/
 ```
 
 ---
 
-*Docs-only update 2026-09-28 HST.*
+*Docs-only 2026-09-28 HST.*
