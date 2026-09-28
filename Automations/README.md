@@ -22,8 +22,8 @@ RootRecord automation orchestration: poller engine, job catalog, stack lifecycle
 Automations/
   README.md
   scripts/
-    rootserver_poller.py    # engine
-    jobs.py                 # catalog
+    rootserver_poller.py
+    jobs.py
     poller/
       internet_gate.py
       run-poller.sh
@@ -49,10 +49,23 @@ Ctrl-C in the poller window / stack stop kills **entire** stack (poller + cloudf
 
 ## Residual note
 
-Some `jobs.py` entries still use absolute `~/.ollama/skills/…` strings for **other** domains (Energy, A-EYES, Github, …). Automations core itself is domain-wired with relative discovery in shell helpers. See Library path inventory.
+Some `jobs.py` entries still use absolute `~/.ollama/skills/…` strings for **other** domains. Automations core uses relative discovery in shell helpers.
 
-Boot `self_terminal` still lists skills-prefixed absolute paths for process/watch — operational until those strings are rewritten to the Ecosystem Servers path in a dedicated jobs edit.
+Boot `self_terminal` still lists skills-prefixed absolute paths for process/watch until a dedicated jobs rewrite to Ecosystem paths.
 
 ---
 
-*Docs-only update 2026-09-28 HST.*
+## G1 (Old) — do not replace this engine blindly
+
+| G1 packet | Guidance |
+| --- | --- |
+| `scheduler-clock` | Likely **retired** by G3 poller |
+| `hybrid-night-poller` | Likely **retired** — design review before any merge |
+| `heartbeat` | G3 has builtin heartbeat |
+| `net-gate` | Compare to `internet_gate.py` only |
+
+G3 Automations is the modern scheduler. G1 schedulers are forensic unless a unique feature is proven missing.
+
+---
+
+*Docs-only 2026-09-28 HST.*
