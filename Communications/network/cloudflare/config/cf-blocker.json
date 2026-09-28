@@ -1,0 +1,24 @@
+{
+  "at": "2026-09-22T13:14:00-10:00",
+  "master_env": "/home/rootrecord/master/master-key.env",
+  "imported_from_old": [
+    "CLOUDFLARE_ACCOUNT_ID",
+    "CLOUDFLARE_API_KEY",
+    "CLOUDFLARE_API_TOKEN",
+    "CLOUDFLARE_EMAIL",
+    "CLOUDFLARE_GLOBAL_API_KEY"
+  ],
+  "findings": {
+    "CLOUDFLARE_API_TOKEN": "invalid (401)",
+    "global_key_account": "2b317e91da019f4fdb854e3b8e26fa94 (rootrecord@outlook.com)",
+    "zones_in_that_account": 0,
+    "rootrecord.cloud": "on Cloudflare NS but NOT in API-accessible account",
+    "origin_tunnel_account": "d2daf26398a805b29e12ddba2b2228cf (from token; API 403)",
+    "poller": "active locally on :8799; tunnel client connects; public hostname Waiting"
+  },
+  "need": [
+    "API token or login for the Cloudflare account that owns zone rootrecord.cloud",
+    "OR move/add rootrecord.cloud into the outlook.com CF account and update registrar NS",
+    "Public hostname rootserver.rootrecord.cloud -> http://127.0.0.1:8799 on a tunnel this host can run"
+  ]
+}

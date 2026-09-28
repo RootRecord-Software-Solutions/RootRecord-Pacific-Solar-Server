@@ -1,0 +1,10 @@
+{
+  "auth_source": "master-key.env API_TOKEN only",
+  "account": "Alexanderstorey94@gmail.com's Account",
+  "account_id": "d2daf26398a805b29e12ddba2b2228cf",
+  "zone": "rootrecord.cloud",
+  "dns": "rootserver CNAME created -> origin tunnel cfargotunnel.com (proxied)",
+  "public_https": "reaches Cloudflare (404) \u2014 tunnel ingress rule missing",
+  "blocked": "API_TOKEN can edit DNS but cannot edit Cloudflare Tunnel config (401/403). Add Account.Cloudflare Tunnel Edit on the token, or add Public Hostname in Zero Trust UI: rootserver.rootrecord.cloud -> http://127.0.0.1:8799",
+  "local_poller": "up on :8799"
+}

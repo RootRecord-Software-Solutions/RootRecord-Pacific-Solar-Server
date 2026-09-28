@@ -1,0 +1,30 @@
+# Runtime
+*.log
+*.pid
+*.sock
+
+# Secrets
+.env
+*.token
+*.secret
+credentials/
+secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Databases / runtime state
+*.sqlite
+*.db
+
+# Media captures
+*.mp4
+*.jpg
+*.png
+*.gif
+
+# Temporary files
+tmp/
+temp/
+*.tmp

@@ -1,0 +1,3 @@
+Working global-key account id: 2b317e91da019f4fdb854e3b8e26fa94
+Imported CLOUDFLARE_ACCOUNT_ID may differ; tunnel token account also differs.
+Do not invent; wait for operator to unify accounts or provide correct token.
