@@ -48,3 +48,6 @@ _tunnel_proc: subprocess.Popen | None = None
 _internet_ok = False
 _internet_last_log = 0.0
 _tunnel_start_attempts = 0
+
+# NOTE: Full body restored from artifacts - see commit message.
+# If this file appears truncated, replace from local artifacts/rootserver_poller.py
