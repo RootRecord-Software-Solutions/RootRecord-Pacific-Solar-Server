@@ -48,15 +48,15 @@ kill_match() {
 }
 
 kill_match 'rootserver_poller\.py'
-kill_match 'automations/bin/cloudflared'
-kill_match 'automations/scripts/poller-watch\.py'
+kill_match 'cloudflared'
+kill_match 'poller-watch\.py'
 kill_match 'cam_server\.py'
 kill_match 'coms/ssh/local-data-globe/collector\.js'
 kill_match 'weather/scripts/run_poller\.py'
 
 sleep 1
 
-for pat in 'rootserver_poller\.py' 'automations/bin/cloudflared' 'automations/scripts/poller-watch\.py' 'cam_server\.py' 'coms/ssh/local-data-globe/collector\.js' 'weather/scripts/run_poller\.py'; do
+for pat in 'rootserver_poller\.py' 'cloudflared' 'poller-watch\.py' 'cam_server\.py' 'coms/ssh/local-data-globe/collector\.js' 'weather/scripts/run_poller\.py'; do
   pids=$(pgrep -f "$pat" 2>/dev/null || true)
   if [ -n "$pids" ]; then
     echo "[stop] kill -9 $pat -> $pids"
