@@ -11,12 +11,20 @@ set -u
 # ====================================================
 # SECTION: PATHS
 # ====================================================
+# This file lives at Automations/scripts/stack/
+STACK="$(cd "$(dirname "$0")" && pwd)"
+SCRIPTS="$(cd "$STACK/.." && pwd)"
+REPO="$(cd "$SCRIPTS/../.." && pwd)"
+
+# ====================================================
+# SECTION: PATHS (runtime)
+# ====================================================
 BAK_ROOT="${BAK_ROOT:-/home/rootrecord/Database/GITHUB}"
 FLAG="$BAK_ROOT/flags/reload-poller-stack"
 LOCK="/tmp/rootrecord-stack-reload.lock"
 STAMP="$BAK_ROOT/flags/last-stack-reload"
 LOG="/home/rootrecord/.ollama/skills/logs/store/stack-reload.log"
-DO_RELOAD="/home/rootrecord/.ollama/skills/automations/scripts/do-stack-reload.sh"
+DO_RELOAD="$STACK/do-stack-reload.sh"
 
 mkdir -p "$(dirname "$LOG")" "$BAK_ROOT/flags"
 
