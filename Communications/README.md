@@ -8,22 +8,33 @@ Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messagin
 
 | Area | State |
 | --- | --- |
-| `network/cloudflare/` | **Live** — `bin/cloudflared` + config store |
-| `network/scripts/ensure-network-globe-hawaii.sh` | Present; job cwd may still point at legacy `coms/ssh/local-data-globe` |
-| `telegram/` | Shell only — relay still legacy `…/skills/coms/telegram/` |
-| discord / email / slack / github/{api,messaging,…} | Shells / placeholders |
+| `network/cloudflare/` | **Live** |
+| `network/scripts/ensure-network-globe-hawaii.sh` | Present; job cwd may be legacy |
+| telegram / discord / slack | Shells; relay still G2 `coms/telegram` |
+| G1 | `communications/*`, `network-globe`, `local-data-globe`, `council/council-telegram` |
 
 ---
 
-## jobs.py references
+## jobs.py
 
 | Job id | Notes |
 | --- | --- |
-| `cloudflare_tunnel` | `cloudflared_bin` skills-prefixed absolute → file lives under this domain in-repo |
-| `network_globe_hawaii` | ensure script under this domain; **cwd** still legacy coms/ssh |
-| `council_relay` | `…/skills/coms/telegram/scripts/ensure-relay.sh` — **unimported** |
+| `cloudflare_tunnel` | Binary under this domain; abs string may still be skills-prefixed |
+| `network_globe_hawaii` | ensure in-repo; cwd may be legacy coms/ssh |
+| `council_relay` | G2 `…/skills/coms/telegram/scripts/ensure-relay.sh` |
 
 Token: `/home/rootrecord/.cloudflared/rootserver.token` (local only).
+
+---
+
+## G1 recovery (after G2 telegram / globe)
+
+| Packet | Target |
+| --- | --- |
+| communications/telegram, discord, slack | Matching shells under this domain |
+| network-globe, local-data-globe | `network/` |
+| council-telegram | Policy + relay — one getUpdates only |
+| cloudflare-workers | Edge workers — separate from poller `cloudflared` binary |
 
 ---
 
@@ -31,13 +42,12 @@ Token: `/home/rootrecord/.cloudflared/rootserver.token` (local only).
 
 ```text
 Communications/
-  network/
-    cloudflare/{bin,config}/
-    scripts/
+  network/cloudflare/{bin,config}/
+  network/scripts/
   telegram/ discord/ email/ slack/
   github/{api,messaging,notifications,webhooks}/
 ```
 
 ---
 
-*Docs-only update 2026-09-28 HST.*
+*Docs-only 2026-09-28 HST.*
