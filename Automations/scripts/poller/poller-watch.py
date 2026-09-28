@@ -82,8 +82,9 @@ def aeyes_solar_state():
 
 
 
-SCRIPTS = Path(__file__).resolve().parent
-STOP = SCRIPTS / "stop-poller-stack.sh"
+POLLER_DIR = Path(__file__).resolve().parent
+SCRIPTS = POLLER_DIR.parent  # Automations/scripts
+STOP = SCRIPTS / "stack" / "stop-poller-stack.sh"
 LOG = Path(
     os.environ.get(
         "POLLER_LOG",

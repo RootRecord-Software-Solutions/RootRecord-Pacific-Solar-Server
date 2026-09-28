@@ -20,9 +20,10 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parent
-SKILLS_ROOT = SCRIPTS.parent.parent
+REPO_ROOT = SCRIPTS.parent.parent  # repo root (Automations/../)
+SKILLS_ROOT = REPO_ROOT  # alias: domain folders live at repo root
 sys.path.insert(0, str(SCRIPTS))
-sys.path.insert(0, str(SKILLS_ROOT))
+sys.path.insert(0, str(REPO_ROOT))
 import jobs as jobmod  # noqa: E402
 
 INTERVAL_FALLBACK = float(os.environ.get("POLLER_INTERVAL_SEC", "5"))
@@ -32,7 +33,10 @@ SYSTEM_STATUS_JSON = Path("/home/rootrecord/Database/SYSTEM/status/system-status
 ENERGY_ROOT = Path(os.environ.get("ENERGY_ROOT", "/home/rootrecord/Database/ENERGY"))
 HOSTNAME = os.environ.get("POLLER_PUBLIC_HOST", "rootserver.rootrecord.cloud")
 TOKEN_FILE = Path(os.environ.get("CLOUDFLARED_TOKEN_FILE", str(Path.home() / ".cloudflared" / "rootserver.token")))
-CLOUDFLARED_BIN = os.environ.get("CLOUDFLARED_BIN", str(SCRIPTS.parent / "bin" / "cloudflared"))
+CLOUDFLARED_BIN = os.environ.get(
+    "CLOUDFLARED_BIN",
+    str(REPO_ROOT / "Communications" / "network" / "cloudflare" / "bin" / "cloudflared"),
+)
 ENABLE_TUNNEL = os.environ.get("POLLER_ENABLE_TUNNEL", "1") != "0"
 TUNNEL_READY_TIMEOUT_SEC = float(os.environ.get("POLLER_TUNNEL_READY_TIMEOUT_SEC", "45"))
 
