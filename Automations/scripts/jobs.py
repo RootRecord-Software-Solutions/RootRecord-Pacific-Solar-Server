@@ -18,8 +18,10 @@
 #   needs_internet=True jobs skip while offline; tunnel deferred; ensure_tunnel_online each minute.
 #   Local jobs (BLE, Ollama, FLM, heartbeat, worklog) always run.
 #
-# File layout (standing): keep SECTION banners + TEMPLATE blocks. See
-#   0-master-prompt/prompts/09-file-layout-style.md — restore layout if stripped.
+# File layout (standing): keep SECTION banners + TEMPLATE blocks.
+# Repo domains: Automations/, Communications/, Weather/, Energy/, … at skills root.
+# External domain jobs (energy, a-eyes, github, plumbing, telegram) still point at
+# legacy lowercase skill paths until those domains are imported into this repo.
 # ==============================================================================
 #
 # HOW TO ADD A JOB (no AI required)
@@ -63,9 +65,9 @@ ON_BOOT = [
         "description": "This desk process + status terminal (self registry).",
         "builtin": "self_process",
         "command": "",
-        "process": "/home/rootrecord/.ollama/skills/automations/scripts/rootserver_poller.py",
+        "process": "/home/rootrecord/.ollama/skills/Automations/scripts/rootserver_poller.py",
         "terminal": "RootRecord poller — rootserver",
-        "watch": "/home/rootrecord/.ollama/skills/automations/scripts/poller-watch.py",
+        "watch": "/home/rootrecord/.ollama/skills/Automations/scripts/poller/poller-watch.py",
         "timeout_sec": 5,
         "cwd": "",
         "env": {},
@@ -79,7 +81,7 @@ ON_BOOT = [
         "command": "",
         "public_host": "rootserver.rootrecord.cloud",
         "token_file": "/home/rootrecord/.cloudflared/rootserver.token",
-        "cloudflared_bin": "/home/rootrecord/.ollama/skills/automations/bin/cloudflared",
+        "cloudflared_bin": "/home/rootrecord/.ollama/skills/Communications/network/cloudflare/bin/cloudflared",
         "local_service": "http://127.0.0.1:8799",
         "timeout_sec": 45,
         "needs_internet": True,
@@ -160,10 +162,10 @@ ON_BOOT = [
         "priority": 8,
         "description": "Ensure the weather/ scheduler daemon is running.",
         "builtin": "",
-        "command": "bash /home/rootrecord/.ollama/skills/automations/scripts/ensure-weather-poller.sh",
+        "command": "bash /home/rootrecord/.ollama/skills/Weather/scripts/ensure-weather-poller.sh",
         "timeout_sec": 30,
         "needs_internet": False,
-        "cwd": "/home/rootrecord/.ollama/skills/weather",
+        "cwd": "/home/rootrecord/.ollama/skills/Weather",
         "env": {},
     },
     {
@@ -172,7 +174,7 @@ ON_BOOT = [
         "priority": 9,
         "description": "Ensure the live Hawaii Network Globe SSH collector is running.",
         "builtin": "",
-        "command": "bash /home/rootrecord/.ollama/skills/automations/scripts/ensure-network-globe-hawaii.sh",
+        "command": "bash /home/rootrecord/.ollama/skills/Communications/network/scripts/ensure-network-globe-hawaii.sh",
         "timeout_sec": 30,
         "needs_internet": False,
         "cwd": "/home/rootrecord/.ollama/skills/coms/ssh/local-data-globe",
