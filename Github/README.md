@@ -8,27 +8,28 @@ GitHub repository catalog, sync automation, mirrors, and metadata for the Pacifi
 
 | Item | State |
 | --- | --- |
-| Domain folder in this repo | **Shell only** (+ automation-records placeholders) |
-| Catalog / sync scripts today | Legacy `~/.ollama/skills/github/` |
-| Canonical Library remote | `RootRecord-Software-Solutions/RootRecord-Library` |
-| Canonical Pacific remote | `RootRecord-Software-Solutions/RootRecord-Pacific-Solar-Server` |
+| Domain folder | **Shell only** (+ automation-records placeholders) |
+| G2 residual | `~/.ollama/skills/github/` |
+| G1 cousin | `git-auto-push/` (diff after G2) |
+| Canonical Library | `RootRecord-Software-Solutions/RootRecord-Library` |
+| Canonical Pacific | `RootRecord-Software-Solutions/RootRecord-Pacific-Solar-Server` |
 
-Related work order: Library WO-GH (catalog hygiene).
+Related: Library WO-GH, WO-OLD.
 
 ---
 
-## jobs.py references (residual)
+## jobs.py (residual G2)
 
-| Job id | Legacy path |
+| Job id | Path |
 | --- | --- |
 | `github_setup_remotes` | `…/skills/github/scripts/setup-all-remotes.sh` |
-| `github_sync_all` | `…/skills/github/scripts/sync-all.sh` (every 300s) |
+| `github_sync_all` | `…/skills/github/scripts/sync-all.sh` |
 
-**Note:** Catalog `repos.conf` local_path for Pacific/skills should eventually point at Ecosystem `1 - Servers/…` (WO-GH / WO-SRV).
+Align `repos.conf` local_path to Ecosystem `1 - Servers/…` when catalog is imported.
 
 ---
 
-## Expected layout after import (docs only)
+## Expected layout after G2 import
 
 ```text
 Github/
@@ -42,8 +43,8 @@ Github/
   automation-records/
 ```
 
-Tokens stay in local env / master-key — never commit.
+Tokens stay local — never commit.
 
 ---
 
-*Docs-only update 2026-09-28 HST.*
+*Docs-only 2026-09-28 HST.*
