@@ -6,13 +6,18 @@
 # ==============================================================================
 set +e
 
+# This file lives at Automations/scripts/stack/
+STACK="$(cd "$(dirname "$0")" && pwd)"
+SCRIPTS="$(cd "$STACK/.." && pwd)"
+REPO="$(cd "$SCRIPTS/../.." && pwd)"
+
 LOG="${STACK_RELOAD_LOG:-/home/rootrecord/.ollama/skills/logs/store/stack-reload.log}"
 BAK_ROOT="${BAK_ROOT:-/home/rootrecord/Database/GITHUB}"
 FLAG="$BAK_ROOT/flags/reload-poller-stack"
 LOCK="/tmp/rootrecord-stack-reload.lock"
 STAMP="$BAK_ROOT/flags/last-stack-reload"
-STOP="/home/rootrecord/.ollama/skills/automations/scripts/stop-poller-stack.sh"
-OPEN_WIN="/home/rootrecord/.ollama/skills/automations/scripts/open-poller-window.sh"
+STOP="$STACK/stop-poller-stack.sh"
+OPEN_WIN="$SCRIPTS/poller/open-poller-window.sh"
 CLI="/home/rootrecord/rootserver-poller"
 UNIT="rr-rootserver-poller.service"
 
@@ -47,7 +52,7 @@ else
   echo "stop script missing — fallback kills"
   systemctl --user stop "$UNIT" 2>/dev/null || true
   pkill -f 'rootserver_poller\.py' 2>/dev/null || true
-  pkill -f 'automations/bin/cloudflared' 2>/dev/null || true
+  pkill -f 'cloudflared' 2>/dev/null || true
   pkill -f 'poller-watch\.py' 2>/dev/null || true
 fi
 
