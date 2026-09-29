@@ -16,11 +16,10 @@
 #
 # Internet gate:
 #   needs_internet=True jobs skip while offline; tunnel deferred; ensure_tunnel_online each minute.
-#   Local jobs (BLE, Ollama, FLM, heartbeat, worklog) always run.
+#   Local jobs (BLE, Ollama, FLM, heartbeat, worklog, reports roll-up/archive) always run.
 #
 # File layout (standing): keep SECTION banners + TEMPLATE blocks.
-# Energy + System LIVE. Reports Phase B (WO-RPT-001): worklog on Pacific Reports/.
-# Residual skill paths: a-eyes, plumbing, telegram, energy actions.
+# Energy + System + Reports LIVE (WO-RPT-001). Residual: a-eyes, plumbing, telegram, energy actions.
 # Live runtime: /home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server
 # Paths with spaces MUST be double-quoted in every bash command string.
 # ==============================================================================
@@ -307,6 +306,28 @@ ON_AT = [
         "command": "bash /home/rootrecord/.ollama/skills/a-eyes/scripts/timelapse_daily.sh",
         "timeout_sec": 900,
         "cwd": "/home/rootrecord/.ollama/skills/a-eyes",
+        "env": {},
+    },
+    {
+        "id": "reports_daily_roll_up",
+        "enabled": True,
+        "description": "WO-RPT-001 Phase C: WORKLOG counts → Library Session auto.md (measured only).",
+        "at_times": ["18:30"],
+        "builtin": "",
+        "command": f'bash "{PACIFIC}/Reports/scripts/daily_roll_up.sh"',
+        "timeout_sec": 120,
+        "cwd": f"{PACIFIC}/Reports/scripts",
+        "env": {},
+    },
+    {
+        "id": "reports_weekly_archive",
+        "enabled": True,
+        "description": "WO-RPT-001 Phase D / WO-ARCH: move old human ops logs to archive/YYYY-Www (Sun 19:00).",
+        "at_times": ["19:00"],
+        "builtin": "",
+        "command": f'bash "{PACIFIC}/Reports/scripts/weekly_archive_logs.sh"',
+        "timeout_sec": 180,
+        "cwd": f"{PACIFIC}/Reports/scripts",
         "env": {},
     },
 ]
