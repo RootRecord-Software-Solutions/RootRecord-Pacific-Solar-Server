@@ -4,19 +4,15 @@ Energy monitoring, EcoFlow device reads, and power subsystem ownership for the P
 
 ---
 
-## Status (2026-09-28 ~16:40 HST) — Phase 1 LIVE + soak
+## Status (2026-09-28) — Phase 1 LIVE
 
 | Item | State |
 | --- | --- |
-| Domain | **Live** on Pacific |
-| Scripts | `Energy/scripts/read/` |
+| Domain folder | **`Energy/` only** (no lowercase `energy` sibling) |
+| Python package | **`Energy`** — matches folder; rewrite G2 `import energy` → `import Energy` |
+| Launcher | `Energy/lib/py` — PYTHONPATH = vendor + Pacific root |
 | jobs.py | Pacific paths (quoted) |
-| Package | `Pacific/energy` → `Energy/` symlink; `lib/py` PYTHONPATH = vendor + Pacific root |
-| Live reads | **OK** — alternating SUMMARY delta2 / river2pro (~15s) |
-| Evidence | 16:39–16:40 HST poller window: SUMMARY + ENERGY status=live |
 | Data | `/home/rootrecord/Database/ENERGY/` |
-| Logs / state | `/home/rootrecord/Database/Logs/Energy/`, `/home/rootrecord/Database/Energy/state/` |
-| Actions / hybrid | Phase 2+ |
 
 ### Ecosystem path
 
@@ -24,25 +20,22 @@ Energy monitoring, EcoFlow device reads, and power subsystem ownership for the P
 /home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/
 ```
 
-### Package name (required)
+### Package rule (standing)
+
+Do **not** create `energy` → `Energy` symlinks. Folder name is the package name.
+
+After any G2 copy that still says `import energy`:
 
 ```bash
-cd /home/rootrecord/RootRecord-Ecosystem/1\ -\ Servers/1\ -\ RootRecord-Pacific-Solar-Server
-ln -sfn Energy energy
-```
-
-### Sample live lines
-
-```text
-SUMMARY=delta2 soc=39% solar=35W ac_out=72W usbc=55W src=api db=ok
-SUMMARY=river2pro soc=100% solar=0W ac_out=46W usbc=0W src=api charge=battery_transfer db=ok
-ENERGY  status=live  B2=41.1%  B1=98.9%  solar=15 W  ac=58 W  src=sqlite
+find Energy -name '*.py' -print0 | xargs -0 sed -i \
+  's/\bfrom energy\./from Energy./g; s/\bimport energy\./import Energy./g; s/\bimport energy\b/import Energy/g'
+rm -f ../energy   # if a leftover symlink exists at Pacific root
 ```
 
 ### Policy
 
-No old desk for Energy reads. G2 `~/.ollama/skills/energy` is archive candidate after Phase 2 (actions) if desired.
+No old desk for Energy reads. See Library: `Pacific-Domain-Import-Playbook` standing rules.
 
 ---
 
-*Phase 1 LIVE + soak confirmed 2026-09-28 HST.*
+*Naming SOP 2026-09-28 HST.*
