@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T09:02:30-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T09:10:30-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -1759,141 +1759,113 @@ FZLVL...153 PHLI SLOPING TO 169 PHTO.
 |---|---|
 | **Resource ID** | afd_area_forecast_discussion |
 | **Official source** | https://api.weather.gov/products/types/AFD/locations/HFO |
-| **Collected** | 2026-09-29T03:52:32.214050-10:00 HST |
+| **Collected** | 2026-09-29T09:05:32.357654-10:00 HST |
 
 ```text
 000
-FXHW60 PHFO 291341
+FXHW60 PHFO 291859
 AFDHFO
 
 Area Forecast Discussion
 National Weather Service Honolulu HI
-341 AM HST Tue Sep 29 2026
+859 AM HST Tue Sep 29 2026
 
 .SYNOPSIS...
-Moderate to locally breezy trade winds will veer from the
-southeasterly direction today with a gradual weakening trend for 
-most islands except for Kauai and Niihau, where some increasing 
-winds are expected to develop from this afternoon into the 
-Wednesday as Nolo reaches the closest point of approach to both 
-islands. Clouds and showers will increase into Thursday as Nolo 
-passes to the west pulling up deep tropical moisture along the 
-east side of the storm increasing showers over Niihau, Kauai and 
-Oahu. Nolo moves away to the northwest by this weekend with drier 
-easterly trade winds building back in across the Hawaii Region.
+Hurricane Nolo will pass to the west of the state over the next
+couple of days bringing increasing showers across Kauai and Oahu.
+Breezy southeast winds will continue through Wednesday, then
+gradually weaken and become trade winds by this weekend.
 
 .DISCUSSION...
-Comparing this mornings satellite imagery to the latest 11 PM HST
-forecast from the National Hurricane Center, Hurricane Nolo 
-remains on a northerly track, forecast to pass roughly 300 miles 
-west of Kauai. Strong vertical wind shear continues to weaken 
-Nolo, which is forecast to weaken down to tropical storm strength
-over the next 36 to 48 hours. The main threats with Hurricane Nolo
-over the next few days will remain the potential for locally heavy
-rain bands that may develop, and high surf along south facing 
-shores of Kauai County. 
+Hurricane Nolo (cat. 2) is around 320 miles west southwest of 
+Lihue this morning tracking north at 9 mph. Nolo is expected to
+briefly stall west of the state tonight, then begin to move away
+to the west northwest. Breezy southeast winds will continue 
+across the state into Wednesday as Nolo remains close to the area.
 
-Deep tropical moisture riding up the eastern flank of Nolo will
-increase shower trends later today for Niihau and Kauai, even 
-reaching Oahu by tonight. These showers may become heavy at times
-and produce higher amounts of rainfall along south and southeast 
-mountain slopes. At this time we are only expecting up to advisory
-level flooding potential for Kauai County as Nolo passes west of 
-the islands. However, we will continue to closely monitor any 
-developing rain bands for local scale training or terrain 
-anchoring features that could create localized flood warning 
-concerns. Please continue to monitor weather conditions closely 
-through Wednesday as local scale rainfall impacts may rapidly 
-change over time.
+While Nolo will not make direct impacts to the state, rain bands
+along the eastern periphery will move in the southeast flow and
+bring showers across Kauai and Oahu through Thursday. Expecting 
+to see 3 to 6 inches of additional rain on Kauai and Niihau, and 
+up to 4 inches on Oahu. Not considering a Flood Watch at this time
+with the anticipation these rainfall amounts will be spread out 
+over several days and showers should be moving along quickly. 
+However, southeast flow will direct showers across the populated 
+areas of both islands.
 
-Drier and more stable air returns to the western islands by Friday
-as the upper level ridge builds back in and light to moderate easterly
-trades return improving weather conditions statewide through 
-Sunday. Brief passing showers are possibly, mainly during the 
-overnight to early morning hours during this time period. 
+East southeasterly winds will continue, but gradually weaken, 
+through the second half of the week as Nolo tracks away. By this 
+weekend, trade winds are forecast to build in bringing drier and 
+more stable conditions again.
 
 By Monday a weak low pressure system drops into the region and deepens
-several hundred miles northeast of the Big Island. Northeasterly 
-winds along the western flank of the surface low will drive a 
-convergence cloud band into the Hawaiian Islands from the north 
-early next week. This cloud band will likely bring a several day
-period of enhanced shower trends to all islands from Monday into 
-Wednesday. These clouds and showers may linger near the Big
-Island through the end of next week. Higher rainfall amounts will  
-mainly impact the northeastern slopes of Mauna Kea, and include
-the communities surrounding Hilo.
+several hundred miles to the northeast. Northeasterly winds along
+the western flank of the surface low will drive a convergence 
+cloud band into the Hawaiian Islands from the north early next 
+week. This cloud band will likely bring a several day period of 
+enhanced shower trends to all islands from Monday into Wednesday. 
+These clouds and showers may linger near the Big Island through 
+the end of next week.
 
 .AVIATION...
-Moderate to locally breezy trade winds will continue to veer to 
-the southeasterly direction today and continue gradual weakening.
-Isolated showers are possible across windward and mountain areas 
-tonight into the morning with brief MVFR conditions. Moisture 
-will increase across Kauai and Oahu this afternoon into Wednesday
-bringing an increased likelihood of showers. Showers are most 
-likely across Kauai starting late morning today with shower 
-chances gradually increasing for Oahu later today into Wednesday.
+Moderate trade winds with locally gusty winds in the 
+afternoon/evening continue today with gradual weakening expected. 
+Winds are generally out of the east to southeast with winds 
+shifting more northeasterly overnight. Moisture from Hurricane 
+Nolo is expected to move into Kauai by late this morning with 
+showers becoming more widespread across the county. Showers 
+gradually spread eastward towards Oahu late Tuesday and continue 
+into Wednesday. Periods of MVFR conditions are likely as showers 
+move across the islands. A few showers may reach Molokai and Maui 
+but confidence is lower. 
 
 AIRMET Tango remains in effect for moderate turbulence below 
 9,000 feet over and immediately downwind of island terrain. This 
-AIRMET will likely be needed at least through Wednesday.
+AIRMET will be needed through at least Wednesday and potentially
+into Thursday.
 
 .MARINE...
-Under the influence of Hurricane Nolo, now located several 
-hundred nautical miles west of the Hawaiian Islands, winds have
-shifted out of the southeast at moderate to fresh levels for much
-of the marine area. Winds will be strong and possibly near gale in
-the coastal zones closer to Nolo, especially as it tracks north
-tonight and Wednesday. As a result, the Small Craft Advisory
-remains in effect for the waters around Kauai through Wednesday. 
-Winds remain southeasterly through Friday as Nolo creeps slowly 
-westward away from the islands. Once it begins to accelerate away 
-over the weekend, east to northeasterly trade winds return.
+Moderate to fresh SE winds have established over area waters. 
+Strong to near-gale SE flow will develop tonight into Wednesday 
+around Kauai due to Hurricane Nolo's close proximity. The Small 
+Craft Advisory remains in effect for these waters. Moderate trades
+return early next week.
 
-A moderate, medium-period southwest swell originating from Hurricane
-Nolo will produce elevated surf for south and west facing shores
-today. For Kauai and Niihau, best positioned to receive swell from 
-the hurricane, some advisory level surf is still possible today along 
-south-facing shores, for which a High Surf Advisory remains in
-effect. There is considerable uncertainty with how long advisory
-level surf will linger as Hurricane Nolo lifts north and becomes 
-centered some 250 to 300 nautical miles west of Kauai by 
-Wednesday. On this track, west shore surf will remain elevated, 
-but likely remain below advisory criteria as south-facing shores 
-see a gradual decline in surf through mid-week. For the latter 
-half of the week, south shore surf will be primarily driven by a 
-series of small, long to medium period south swells originating 
-from near New Zealand. 
+A moderate, medium period SW swell originating from Nolo is
+producing surf to the High Surf Advisory threshold for S shores of
+Kauai County today. Confidence that surf will hover at low end HSA
+thresholds is reasonably high for about 12 hours at a time, but
+the complex swell situation limits confidence thereafter. As such,
+the HSA remains in effect through today and will be evaluated
+again this afternoon with heavy emphasis placed on observational
+trends.
 
-Surf along east shores slowly declines as trades veer southeast 
-and diminish, then return as light to moderate easterlies this 
-weekend. For north-facing shores, the existing small, medium-period 
-swell fades through Wednesday. Multiple rounds of tiny swell 
-originating out of the northwest quadrant will reach north and select 
-west facing exposures next week as the storm track in the vicinity of 
-the Aleutian Islands becomes increasingly active.
+Surf along E shores declines in response to developing SE flow. A
+slight bump can then be expected early next week as moderate
+trades return. Multiple rounds of tiny swell originating out of 
+the northwest quadrant will reach north and select west facing 
+exposures next week as the storm track in the vicinity of the 
+Aleutian Islands becomes increasingly active.
 
 .FIRE WEATHER...
-Wind speeds for most areas will decrease over the next 24 hours.
-However, wind speeds for Kauai County will increase into the
-breezy range with higher gusts through Wednesday as Hurricane Nolo
-passes roughly 300 miles to the west of the islands. Nolo's
-passage will boost humidity levels, decreasing critical fire
-concerns. Subsidence inversion heights near Maui and the Big
-Island today will remain between the 5,500 and 6,500 feet 
-elevation level.
+A gradual increase in humidity expected through midweek. Moisture
+drawn northward along the eastern sides of Nolo will increase 
+rain chances across the western part of the state. Fire conditions
+will improve statewide over the next couple days as winds weaken 
+and humidity levels rise.
 
 .HFO WATCHES/WARNINGS/ADVISORIES...
-High Surf Advisory until 6 PM HST this evening for Kauai South-
-Kauai Southwest-Niihau.
+High Surf Advisory until 6 PM HST this evening for Niihau-Kauai 
+Leeward-Kauai South.
 
-Small Craft Advisory until 6 PM HST Wednesday for Kauai Channel-
-Kauai Leeward Waters-Kauai Northwest Waters-Kauai Windward 
-Waters.
+Small Craft Advisory until 6 PM HST Wednesday for Kauai 
+Northwest Waters-Kauai Windward Waters-Kauai Leeward Waters-
+Kauai Channel.
 
-DISCUSSION...Bohlin
-AVIATION...Pechacek 
-MARINE...Quesada
-FIRE WEATHER...Bohlin
+DISCUSSION...Foster
+AVIATION...Kennedy
+MARINE...JVC
+FIRE WEATHER...Foster
 ```
 
 ---
@@ -2839,19 +2811,19 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-29T08:55:47.348013-10:00 HST |
+| **Collected** | 2026-09-29T09:03:46.683867-10:00 HST |
 
 ```text
-807
-SRHW80 PHFO 291746
+285
+SRHW80 PHFO 291846
 RRAHFO
 
 Hawaii Rainfall Summary
 National Weather Service Honolulu HI
-745 AM HST Tue Sep 29 2026
+845 AM HST Tue Sep 29 2026
 
 :
-.B HFO  0929 H  DH07 /DRH-03/PPT/DRH-06/PPQ/DRH-12/PPK/DRH-24/PPD
+.B HFO  0929 H  DH08 /DRH-03/PPT/DRH-06/PPQ/DRH-12/PPK/DRH-24/PPD
 :
 :Automated rain gage reports from around the State of Hawaii.
 :These are provisional reports that have not been quality
@@ -2859,7 +2831,7 @@ National Weather Service Honolulu HI
 :
 :T=Trace Rainfall, M=Missing Data
 :
-:Precipitation totals ending  7 AM HST
+:Precipitation totals ending  8 AM HST
 :
 :Island of Kauai                                   Inches
 :ID     Location                         3-Hr    6-Hr   12-Hr   24-Hr
@@ -2868,29 +2840,29 @@ MKAH1 : Makaha Ridge (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
 PLRH1 : Puu Lua (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
 WKRH1 : Waiakoali (USGS)            :    0.00  /  0.00  /  0.00  /  0.00
 KLOH1 : Kilohana (USGS)             :    0.00  /  0.00  /  0.00  /  0.01
-MCRH1 : Mohihi Crossing (USGS)      :    0.00  /  0.00  /  0.00  /  0.01
+MCRH1 : Mohihi Crossing (USGS)      :    0.00  /  0.00  /  0.00  /  0.00
 WLGH1 : Waialae (USGS)              :    0.00  /  0.00  /  0.00  /  0.02
 LLMH1 : Lower Limahuli (UHM)        :    0.00  /  0.00  /  0.00  /  0.04
 WNHH1 : Wainiha (12010)             :    0.00  /  0.00  /  0.00  /  0.01
 WIPH1 : Waipa (UHM)                 :    0.00  /  0.00  /  0.00  /  0.12
-HNIH1 : Hanalei (12009)             :    0.00  /  0.00  /  0.00  /  0.13
+HNIH1 : Hanalei (12009)             :    0.00  /  0.00  /  0.00  /  0.11
 WLLH1 : Mount Waialeale (USGS)      :      M   /    M   /    M   /    M
-PRIH1 : Princeville Airport (12011) :    0.00  /  0.00  /  0.01  /  0.10
+PRIH1 : Princeville Airport (12011) :    0.00  /  0.00  /  0.01  /  0.09
 CMGH1 : Common Ground (UHM)         :    0.00  /  0.00  /  0.00  /  0.34
-HLIH1 : Hanalei (RAWS)              :    0.00  /  0.00  /  0.00  /  0.23
+HLIH1 : Hanalei (RAWS)              :    0.00  /  0.00  /  0.00  /  0.20
 MLDH1 : Moloaa Dairy (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
-ANHH1 : Anahola (12001)             :    0.00  /  0.00  /  0.00  /  0.18
-KPIH1 : Kapahi (12003)              :      M   /    M   /  0.00  /  0.04
-WLDH1 : N Wailua Ditch (USGS)       :    0.00  /  0.04  /  0.05  /  0.51
+ANHH1 : Anahola (12001)             :    0.00  /  0.00  /  0.00  /  0.15
+KPIH1 : Kapahi (12003)              :      M   /    M   /  0.00  /  0.03
+WLDH1 : N Wailua Ditch (USGS)       :    0.00  /  0.01  /  0.05  /  0.48
 WUHH1 : Wailua (12005)              :    0.00  /  0.00  /  0.00  /  0.07
-WIRH1 : Waiahi Rain Gage (USGS)     :    0.00  /  0.00  /  0.00  /  0.18
-LIHH1 : Lihue Var. Stn. (12006)     :    0.00  /  0.00  /  0.00  /  0.09
+WIRH1 : Waiahi Rain Gage (USGS)     :    0.00  /  0.00  /  0.00  /  0.12
+LIHH1 : Lihue Var. Stn. (12006)     :    0.00  /  0.00  /  0.00  /  0.01
 HNMH1 : Hanamaulu (UHM)             :    0.00  /  0.00  /  0.00  /  0.16
 HLI   : Lihue Airport (ASOS)        :    0.00  /  0.00  /  0.00  /  0.00
 :       Leeward Sites
-OMAH1 : Omao (12004)                :    0.00  /  0.00  /  0.00  /  0.01
+OMAH1 : Omao (12004)                :    0.00  /  0.00  /  0.00  /  0.00
 LNTH1 : Lawai NTBG (UHM)            :    0.00  /  0.00  /  0.00  /  0.00
-KHEH1 : Kalaheo (12008)             :    0.00  /  0.00  /  0.00  /  0.02
+KHEH1 : Kalaheo (12008)             :    0.00  /  0.00  /  0.00  /  0.00
 PAKH1 : Port Allen (HSOIS)          :    0.00  /  0.00  /  0.00  /  0.00
 HNPH1 : Hanapepe (12002)            :    0.00  /  0.00  /  0.00  /  0.00
 POPH1 : Puu Opae (RAWS)             :    0.00  /  0.00  /  0.00  /  0.00
@@ -2905,13 +2877,13 @@ KAHH1 : Kahuku (13027)              :    0.00  /  0.00  /  0.00  /  0.00
 KTAH1 : Kahuku Training Area (RAWS) :    0.00  /  0.00  /  0.00  /  0.00
 KFWH1 : Kii (RAWS)                  :    0.00  /  0.00  /  0.00  /  0.00
 PUNH1 : Punaluu Pump (13013)        :    0.00  /  0.00  /  0.00  /  0.00
-PNSH1 : Punaluu Stream (USGS)       :    0.00  /  0.00  /  0.00  /  0.01
-KNRH1 : Kahana (USGS)               :    0.00  /  0.00  /  0.00  /  0.05
+PNSH1 : Punaluu Stream (USGS)       :    0.00  /  0.00  /  0.00  /  0.00
+KNRH1 : Kahana (USGS)               :    0.00  /  0.00  /  0.00  /  0.01
 HAKH1 : Hakipuu Mauka (13004)       :    0.00  /  0.00  /  0.00  /  0.01
 WPPH1 : Waihee Pump (13002)         :    0.00  /  0.00  /  0.00  /  0.00
 WHSH1 : Waiahole (USGS)             :    0.00  /  0.00  /  0.00  /  0.00
 OFRH1 : Oahu Forest NWR (USFWS)     :    0.00  /  0.00  /  0.00  /  0.00
-AHUH1 : Ahuimanu Loop (13005)       :    0.00  /  0.00  /  0.00  /  0.02
+AHUH1 : Ahuimanu Loop (13005)       :    0.00  /  0.00  /  0.00  /  0.00
 HRRH1 : Heeia NERR (NOAA/NOS)       :    0.00  /  0.00  /  0.00  /  0.00
 LULH1 : Luluku (13016)              :    0.00  /  0.00  /  0.00  /  0.00
 NRSH1 : Nuuanu Res No. 1 (UHM)      :    0.00  /  0.00  /  0.00  /  0.00
@@ -2931,8 +2903,8 @@ NIUH1 : Niu Valley (13001)          :    0.00  /  0.00  /  0.00  /  0.00
 PFSH1 : Palolo Fire Station (13010) :    0.00  /  0.00  /  0.00  /  0.00
 HNL   : Honolulu Airport (ASOS)             See note at bottom  :
 MOAH1 : Moanalua (13003)            :    0.00  /  0.00  /  0.00  /  0.01
-MOGH1 : Moanalua RG (USGS)          :    0.00  /  0.00  /  0.00  /  0.04
-TNLH1 : Tunnel RG (USGS)            :    0.00  /  0.00  /  0.00  /  0.08
+MOGH1 : Moanalua RG (USGS)          :    0.00  /  0.00  /  0.00  /  0.00
+TNLH1 : Tunnel RG (USGS)            :    0.00  /  0.00  /  0.00  /  0.00
 PACH1 : Palisades (13020)           :    0.00  /  0.00  /  0.00  /  0.00
 WAWH1 : Waiawa C.F. (13025)         :    0.00  /  0.00  /  0.00  /  0.00
 MITH1 : Mililani (13022)            :    0.00  /  0.00  /  0.00  /  0.00
@@ -2943,7 +2915,7 @@ POAH1 : Poamoho (13018)             :    0.00  /  0.00  /  0.00  /  0.00
 KRGH1 : Kalahee Ridge (UHM)         :    0.00  /  0.00  /  0.00  /  0.00
 KMRH1 : Kamananui Stream (USGS)     :    0.00  /  0.00  /  0.00  /  0.00
 PPRH1 : Pupukea Road (USGS)         :    0.00  /  0.00  /  0.00  /  0.00
-PMHH1 : Poamoho RG 1 (USGS)         :    0.00  /  0.00  /  0.00  /  0.01
+PMHH1 : Poamoho RG 1 (USGS)         :    0.00  /  0.00  /  0.00  /  0.00
 DLGH1 : Dillingham (RAWS)           :    0.00  /  0.00  /  0.00  /  0.00
 AALH1 : Kaala (UHM)                 :    0.00  /  0.01  /  0.01  /  0.02
 PECH1 : Waipio (13019)              :    0.00  /  0.00  /  0.00  /  0.00
@@ -3023,7 +2995,7 @@ HOOH1 : Honolua (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
 :       Windward Sites
 UPLH1 : Upolu Airport (HSOIS)       :    0.00  /  0.00  /  0.00  /  0.00
 KMMH1 : Kaluamakani (UHM)           :    0.00  /  0.00  /  0.00  /  0.00
-KWSH1 : Kawainui Stream (USGS)      :    0.00  /  0.00  /  0.00  /  0.00
+KWSH1 : Kawainui Stream (USGS)      :    0.01  /  0.01  /  0.01  /  0.01
 KUUH1 : Kamuela Upper (15002)       :    0.00  /  0.00  /  0.00  /  0.00
 KMUH1 : Kamuela (15005)             :    0.00  /  0.00  /  0.00  /  0.00
 HNKH1 : Honokaa (15010)             :    0.00  /  0.00  /  0.00  /  0.00
@@ -3112,7 +3084,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T08:55:50.182454-10:00 HST |
+| **Collected** | 2026-09-29T09:03:50.367797-10:00 HST |
 
 ```text
                         
@@ -7894,7 +7866,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-29T08:46:32.340695-10:00 HST |
+| **Collected** | 2026-09-29T09:03:31.633179-10:00 HST |
 
 ```text
 National Weather Service
@@ -7943,9 +7915,9 @@ INFORMATION
 
 Wireless Emergency Alerts
 
-Brochures
-
 Weather-Ready Nation
+
+Brochures
 
 Cooperative Observers
 
