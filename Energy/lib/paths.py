@@ -2,40 +2,31 @@
 # ==============================================================================
 # paths.py — shared filesystem paths for the Energy domain
 # ------------------------------------------------------------------------------
-# Measured data → Database/ENERGY only (not Network, not GitHub telemetry).
-# Layout style (standing): keep SECTION banners if this file grows catalogs.
+# Measured data → RootRecord Database authority (not Network, not GitHub telemetry).
 # ==============================================================================
-"""Shared paths for Energy domain. Measured data → Database/ENERGY only."""
+"""Shared paths for Energy domain. Measured data → canonical RootRecord Database."""
 from __future__ import annotations
 
 from pathlib import Path
 
-# ====================================================
-# SECTION: DOMAIN + CONFIG
-# ====================================================
-# Phase 1: Energy domain root = parent of lib/
 SKILL_ROOT = Path(__file__).resolve().parent.parent
 CONFIG = SKILL_ROOT / "config" / "devices.conf"
 VENDOR = SKILL_ROOT / "lib" / "vendor"
 
-# ====================================================
-# SECTION: MEASURED DATA (Database/ENERGY)
-# ====================================================
-ENERGY_DATA = Path("/home/rootrecord/Database/ENERGY")
+# Canonical Database root.
+DATABASE_ROOT = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database")
+
+ENERGY_DATA = DATABASE_ROOT / "ENERGY"
 SAMPLES = ENERGY_DATA / "samples"
 PORTS = ENERGY_DATA / "ports"
 SOC = ENERGY_DATA / "soc"
 WATTS = ENERGY_DATA / "watts"
 
-# ====================================================
-# SECTION: LOGS + STATE (Database authority)
-# ====================================================
-LOG_DIR = Path("/home/rootrecord/Database/Logs/Energy")
+LOG_DIR = DATABASE_ROOT / "Logs" / "Energy"
 BLE_LOG = LOG_DIR / "ecoflow-ble.log"
-STATE_DIR = Path("/home/rootrecord/Database/Energy/state")
+STATE_DIR = DATABASE_ROOT / "Energy" / "state"
 
 
 def ensure_dirs() -> None:
-    """Create measured-data and log directories if missing."""
     for p in (SAMPLES, PORTS, SOC, WATTS, LOG_DIR, STATE_DIR, ENERGY_DATA / "buckets"):
         p.mkdir(parents=True, exist_ok=True)
