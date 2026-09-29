@@ -4,15 +4,19 @@ RootRecord automation orchestration: poller engine, job catalog, stack lifecycle
 
 ---
 
-## Status (2026-09-28)
+## Status (2026-09-28 ~16:25 HST)
 
 | Item | State |
 | --- | --- |
 | Domain in this repo | **Live / authoritative** for poller core |
-| Desk path | `…/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Automations/` |
-| systemd | `rr-rootserver-poller.service` |
+| Desk path | `/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Automations/` |
+| systemd unit | `rr-rootserver-poller.service` — **ExecStart on Pacific** (not G2 skills) |
+| ExecStart | `/bin/bash "…/Automations/scripts/poller/run-poller.sh"` (quoted — path has spaces) |
 | Public | `https://rootserver.rootrecord.cloud/` |
 | Local HTTP | `http://127.0.0.1:8799/` |
+| Log | `/home/rootrecord/Database/Logs/Automations/automations_current.log` |
+
+**Policy:** Do not run the old desk (`~/.ollama/skills`) as the poller host. Migrate residual job commands domain-by-domain into this tree until the job catalog has zero skills paths.
 
 ---
 
@@ -37,6 +41,17 @@ Automations/
 
 ---
 
+## systemd (standing)
+
+Unit file: `~/.config/systemd/user/rr-rootserver-poller.service`
+
+- `WorkingDirectory` = Pacific repo root (path with spaces OK as a single value)
+- `ExecStart=/bin/bash "/…/Automations/scripts/poller/run-poller.sh"` — **required** quoting
+- Drop-in `logging.conf` → append to Database Automations log (same path as `POLLER_LOG`)
+- Never point `ExecStart` at `~/.ollama/skills/…`
+
+---
+
 ## Deploy standing rule
 
 ```text
@@ -45,13 +60,24 @@ push → github_sync_all merge → schedule-stack-reload
 
 Ctrl-C in the poller window / stack stop kills **entire** stack (poller + cloudflared + unit).
 
+Paths under Pacific that contain spaces must be **double-quoted** in every `jobs.py` command string.
+
 ---
 
-## Residual note
+## Residual G2 job map (clear these next)
 
-Some `jobs.py` entries still use absolute `~/.ollama/skills/…` strings for **other** domains. Automations core uses relative discovery in shell helpers.
+| Job id | Still on `~/.ollama/skills` | Target domain |
+| --- | --- | --- |
+| github_setup_remotes / github_sync_all | `github/` | Communications/github or Github/ |
+| ollama_warmup / flm_npu_warmup | `plumbing/` | System/ or Plumbing/ |
+| council_relay | `coms/telegram/` | Communications/telegram |
+| a_eyes_* | `a-eyes/` | A-Eyes/ (or cameras domain) |
+| sys_stats_cycle | `system-stats/` | System/ |
+| worklog_scan | `reports/` | System/ or Reports/ |
+| weather_poller | `Weather/` (missing; **disabled**) | Weather/ |
+| energy actions | `energy/scripts/actions` | Energy/scripts/actions (Phase 2) |
 
-Boot `self_terminal` still lists skills-prefixed absolute paths for process/watch until a dedicated jobs rewrite to Ecosystem paths.
+Already on Pacific: self_terminal, cloudflare_tunnel, network_globe_hawaii, ecoflow_read_* commands (scripts path). EcoFlow **runtime modules** (`read_runner.py` etc.) still being filled from G2 energy lib.
 
 ---
 
@@ -59,13 +85,11 @@ Boot `self_terminal` still lists skills-prefixed absolute paths for process/watc
 
 | G1 packet | Guidance |
 | --- | --- |
-| `scheduler-clock` | Likely **retired** by G3 poller |
-| `hybrid-night-poller` | Likely **retired** — design review before any merge |
-| `heartbeat` | G3 has builtin heartbeat |
+| `scheduler-clock` | **Retired** by G3 poller |
+| `hybrid-night-poller` | **Retired** unless unique feature proven |
+| `heartbeat` | G3 builtin |
 | `net-gate` | Compare to `internet_gate.py` only |
-
-G3 Automations is the modern scheduler. G1 schedulers are forensic unless a unique feature is proven missing.
 
 ---
 
-*Docs-only 2026-09-28 HST.*
+*Updated 2026-09-28 HST after systemd cutover to Pacific.*
