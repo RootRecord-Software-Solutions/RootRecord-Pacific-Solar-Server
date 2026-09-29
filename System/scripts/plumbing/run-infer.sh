@@ -24,6 +24,33 @@ esac
 JOB="infer:$TARGET:$(date +%Y%m%d-%H%M%S)"
 SF="$HERE/single-flight.sh"
 
+# AI processing log (g3-voice-ailog 2026-09-29): ONE JSON line per request -> Database Logs/AI/Inference/inference_current.jsonl.
+# Lengths/timings only — never prompt or reply text. Fail-safe: logging errors are swallowed. RR_INFER_LOG=0 disables.
+# RR_CALLER names the caller (default: parent process name). Daily rotation: ai-log-rotate.sh (gated report job).
+T0_MS=$(date +%s%3N)
+mem_avail_mb() { awk '/^MemAvailable:/{printf "%d", $2/1024}' /proc/meminfo 2>/dev/null; }
+MEM0=$(mem_avail_mb)
+INFER_LOG="${RR_INFER_LOG_FILE:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/AI/Inference/inference_current.jsonl}"
+CALLER="${RR_CALLER:-$(cat "/proc/$PPID/comm" 2>/dev/null)}"
+FLM_PEAK_MB=null
+flm_peak() { local v=""; [[ -n "${FLM_STARTED:-}" ]] && v=$(awk '/^VmHWM:/{printf "%d", $2/1024}' "/proc/$FLM_STARTED/status" 2>/dev/null); echo "${v:-null}"; return 0; }
+ailog() { # <route> <model> <exit_code> <fallback> <reply_chars>
+  [[ "${RR_INFER_LOG:-1}" == "1" ]] || return 0
+  {
+    local lat cold=false c t m
+    lat=$(( $(date +%s%3N) - T0_MS ))
+    [[ -n "${FLM_COLD:-}" ]] && cold=true
+    c=$(printf '%s' "${CALLER:-unknown}" | tr -cd 'A-Za-z0-9._:@/+-' | cut -c1-64)
+    t=$(printf '%s' "$TARGET" | tr -cd 'A-Za-z0-9._:@/+-' | cut -c1-64)
+    m=$(printf '%s' "$2" | tr -cd 'A-Za-z0-9._:@/+-' | cut -c1-64)
+    mkdir -p "$(dirname "$INFER_LOG")"
+    ( flock -w 2 9
+      printf '{"ts":"%s","caller":"%s","target":"%s","route":"%s","model":"%s","prompt_chars":%d,"reply_chars":%d,"latency_ms":%d,"exit_code":%d,"fallback":%s,"flm_cold_start":%s,"flm_peak_rss_mb":%s,"mem_avail_mb_before":%d,"mem_avail_mb_after":%d}\n' \
+        "$(date +%Y-%m-%dT%H:%M:%S%:z)" "$c" "$t" "$1" "$m" "${#PROMPT}" "${5:-0}" "$lat" "$3" "$4" "$cold" "${FLM_PEAK_MB:-null}" "${MEM0:-0}" "$(mem_avail_mb)" >>"$INFER_LOG"
+    ) 9>>"${INFER_LOG%.jsonl}.lock"
+  } 2>/dev/null || true
+}
+
 sanitize() {
   python3 -c 'import sys,re
 t=sys.stdin.read().strip()
@@ -110,9 +137,17 @@ if ! flm_up && [[ "${FLM_ON_DEMAND:-1}" == "1" ]] && command -v flm >/dev/null 2
    && [[ "$("$SF" status 2>/dev/null | head -1)" == IDLE ]]; then
   FLM_LOG="${FLM_LOG:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/AI/FLM/flm.log}"
   # setsid: own session, so flm's shutdown cannot signal this script (test 03:29: script died mid-trap, rc=1).
-  setsid nice -n 10 flm serve "$FLM_MODEL" --pmode "${FLM_PMODE:-balanced}" --ctx-len "${FLM_CTX_LEN:-4096}" \
-    --host 127.0.0.1 --port "${FLM_URL##*:}" >>"$FLM_LOG" 2>&1 </dev/null &
+  # Privacy (2026-09-29): flm prints full request bodies + model output; flm-log-redact.awk drops them. FLM_LOG_REDACT=0 = raw.
+  FLM_REDACT="$HERE/flm-log-redact.awk"
+  if [[ "${FLM_LOG_REDACT:-1}" == "1" && -r "$FLM_REDACT" ]]; then
+    setsid nice -n 10 flm serve "$FLM_MODEL" --pmode "${FLM_PMODE:-balanced}" --ctx-len "${FLM_CTX_LEN:-4096}" \
+      --host 127.0.0.1 --port "${FLM_URL##*:}" > >(awk -f "$FLM_REDACT" >>"$FLM_LOG" 2>/dev/null) 2>&1 </dev/null &
+  else
+    setsid nice -n 10 flm serve "$FLM_MODEL" --pmode "${FLM_PMODE:-balanced}" --ctx-len "${FLM_CTX_LEN:-4096}" \
+      --host 127.0.0.1 --port "${FLM_URL##*:}" >>"$FLM_LOG" 2>&1 </dev/null &
+  fi
   FLM_STARTED=$!
+  FLM_COLD=1
   echo "[ok] FLM on-demand start $FLM_MODEL pid=$FLM_STARTED" >&2
   for _ in $(seq 1 45); do flm_up && break; kill -0 "$FLM_STARTED" 2>/dev/null || break; sleep 1; done
 fi
@@ -125,11 +160,18 @@ if flm_up; then
   set -e
   if [[ $rc -eq 0 && -n "${out:-}" ]]; then
     echo "[ok] FLM/NPU $FLM_MODEL" >&2
-    printf '%s\n' "$out" | sanitize
+    rep=$(printf '%s\n' "$out" | sanitize)
+    printf '%s\n' "$rep"
+    FLM_PEAK_MB=$(flm_peak); flm_stop
+    ailog npu-flm "$FLM_MODEL" 0 false "$(printf '%s\n' "$rep" | grep -v '^\[ok\] single-flight RUN ' | tr -d '\n' | wc -m)"
     exit 0
   fi
   echo "[warn] FLM chat failed — Ollama fallback" >&2
 fi
-flm_stop
-do_ollama
+FLM_PEAK_MB=$(flm_peak); flm_stop
+set +e
+oout=$(do_ollama)
+set -e
+printf '%s\n' "$oout"
+ailog ollama "$OM" 0 true "$(printf '%s' "$oout" | tr -d '\n' | wc -m)"
 exit 0
