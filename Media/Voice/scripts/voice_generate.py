@@ -310,7 +310,7 @@ def mode_stitch(a) -> dict:
     persona = PERSONA_DIR[agent]
     index = {}
     for key, c in load_manifest().get("clips", {}).items():
-        if c.get("persona") == persona and c.get("qc") == "PASS" and c.get("voice") == voice:
+        if c.get("persona") == persona and c.get("qc") == "PASS" and c.get("voice") == voice and not c.get("proposed"):
             index[norm_key(c["text"])] = CLIPS_DIR / persona / f"{c['slug']}.wav"
     gap = np.zeros(int(SAMPLE_RATE * GAP_MS / 1000), dtype=np.float32)
     parts, plan, spoken_all = [], [], []
@@ -357,7 +357,7 @@ def mode_clips(a) -> dict:
         if a.only_missing and old and old.get("text") == c["text"] and old.get("qc") == "PASS" and path.is_file():
             skipped += 1
             continue
-        spoken = speakable(c["text"])
+        spoken = c.get("spoken") or speakable(c["text"])  # catalog "spoken" = explicit respelling (PROPOSED names)
         t0 = time.monotonic()
         w = synth(spoken, voice, rate)
         if w is None:
@@ -371,7 +371,7 @@ def mode_clips(a) -> dict:
             "spoken": spoken, "voice": voice, "speed": rate, "sha256": sha256(path), **q,
             "trimmed_ms": {"lead": round(lead * 1000 / SAMPLE_RATE), "tail": round(tail * 1000 / SAMPLE_RATE)},
             "render_s": round(time.monotonic() - t0, 2), "rendered": now_iso(), "engine": ver,
-            "source": c.get("source", ""),
+            "source": c.get("source", ""), "proposed": bool(c.get("proposed")),
         }
         (done if q["qc"] == "PASS" else failed).append(key)
         save_manifest(man)  # after each clip: an interrupted batch keeps its progress
