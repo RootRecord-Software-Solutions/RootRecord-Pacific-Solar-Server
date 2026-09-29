@@ -37,7 +37,7 @@ from grab_frame import DB_FRAMES, frames_lock, FramesBusy  # noqa: E402
 # ---------------------------------------------------------------------------
 # Derived directories — all hang off DB_FRAMES, never re-typed by hand.
 # ---------------------------------------------------------------------------
-BASE = DB_FRAMES.parent                       # /home/rootrecord/Database/A-EYES
+BASE = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Media/Timelapses")
 FRAMES = DB_FRAMES                             # .../frames
 VIDEO_CHUNKS = BASE / "video_chunks"
 FINAL_OUTPUT = BASE / "final_output"
