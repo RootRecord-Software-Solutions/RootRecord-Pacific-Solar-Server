@@ -364,14 +364,16 @@ def draft(keys: dict[str, str], facts_lines: list[str], mode: str, f: Facts, log
     for k in keys:
         m = re.search(rf"^[\s>*#\-\d.)]*\**{k}\**\s*\**\s*[:\-—]\s*\**\s*(.*?)\s*$(?:\n\s*([^\n:]+?)\s*$)?", reply, re.M | re.I)
         v = ((m.group(1) or (m.group(2) or "")) if m else "").strip().strip("<>*\"").strip()
+        failed_check = False
         if v and checks and k in checks:
-            v = checks[k](v) or ""
+            v2 = checks[k](v) or ""
+            failed_check, v = (not v2), v2
         bad = [t for t in tv.number_tokens(v) if not tv.number_ok(t, allowed)]
         if v and len(v) <= 300 and "{{" not in v and not bad and not re.fullmatch(r"(?i)no data\.?", v):
             out[k] = v.rstrip()
             accepted[k] = "model"
         else:
-            accepted[k] = "fallback" + (f" (unsupported numbers {bad})" if bad else (" (missing)" if not v else " (rejected)"))
+            accepted[k] = "fallback" + (f" (unsupported numbers {bad})" if bad else (" (failed field check)" if failed_check else (" (missing)" if not v else " (rejected)")))
     log["fields"] = accepted
     log["reply_preview"] = cell(reply, 300)
     return out
