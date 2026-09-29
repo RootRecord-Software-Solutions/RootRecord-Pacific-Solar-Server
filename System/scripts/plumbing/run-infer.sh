@@ -14,7 +14,7 @@ TARGET="${1:?voice|model}"; shift || true
 PROMPT="${*:-}"
 [[ -n "$PROMPT" ]] || PROMPT=$(cat 2>/dev/null || true)
 FLM_URL="${FLM_URL:-http://127.0.0.1:52625}"
-FLM_MODEL="${FLM_MODEL:-llama3.2:3b}"
+FLM_MODEL="${FLM_MODEL:-llama3.2:1b}"
 case "$TARGET" in
   ava) OM=ava-telegram ;;
   bruce) OM=bruce-telegram ;;
@@ -91,8 +91,33 @@ print(text)
 '
 }
 
+# On demand (Alexander 03:27 HST 2026-09-29): if FLM is not already serving and the inference lock is idle,
+# start $FLM_MODEL for THIS request and stop it after the reply (EXIT trap), so no model stays resident.
+# FLM_ON_DEMAND=0 disables; an FLM that was already running (opt-in warmup) is used and left alone.
+FLM_STARTED=""
+flm_up() { curl -sf -m 2 "$FLM_URL/v1/models" >/dev/null 2>&1; }
+flm_stop() {
+  [[ -n "$FLM_STARTED" ]] || return 0
+  kill -TERM "$FLM_STARTED" 2>/dev/null
+  for _ in 1 2 3 4 5 6 7 8 9 10; do kill -0 "$FLM_STARTED" 2>/dev/null || break; sleep 1; done
+  kill -KILL "$FLM_STARTED" 2>/dev/null
+  echo "[ok] FLM on-demand server stopped (pid $FLM_STARTED)" >&2
+  FLM_STARTED=""
+}
+trap flm_stop EXIT
+trap 'flm_stop; exit 143' INT TERM
+if ! flm_up && [[ "${FLM_ON_DEMAND:-1}" == "1" ]] && command -v flm >/dev/null 2>&1 \
+   && [[ "$("$SF" status 2>/dev/null | head -1)" == IDLE ]]; then
+  FLM_LOG="${FLM_LOG:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/AI/FLM/flm.log}"
+  nice -n 10 flm serve "$FLM_MODEL" --pmode "${FLM_PMODE:-balanced}" --ctx-len "${FLM_CTX_LEN:-4096}" \
+    --host 127.0.0.1 --port "${FLM_URL##*:}" >>"$FLM_LOG" 2>&1 </dev/null &
+  FLM_STARTED=$!
+  echo "[ok] FLM on-demand start $FLM_MODEL pid=$FLM_STARTED" >&2
+  for _ in $(seq 1 45); do flm_up && break; kill -0 "$FLM_STARTED" 2>/dev/null || break; sleep 1; done
+fi
+
 # models up?
-if curl -sf -m 2 "$FLM_URL/v1/models" >/dev/null 2>&1; then
+if flm_up; then
   set +e
   out=$(do_flm 2>/tmp/rr-infer-flm.err)
   rc=$?
@@ -104,5 +129,6 @@ if curl -sf -m 2 "$FLM_URL/v1/models" >/dev/null 2>&1; then
   fi
   echo "[warn] FLM chat failed — Ollama fallback" >&2
 fi
+flm_stop
 do_ollama
 exit 0

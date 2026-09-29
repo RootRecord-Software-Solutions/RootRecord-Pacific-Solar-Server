@@ -9,7 +9,7 @@ if [[ "${FLM_WARMUP_RESIDENT:-0}" != "1" ]]; then
   exit 0
 fi
 PORT=52625
-FLM_MODEL="${FLM_MODEL:-llama3.2:3b}"
+FLM_MODEL="${FLM_MODEL:-llama3.2:1b}"  # 1b chosen by Alexander 03:27 HST 2026-09-29 (3b stays installed, unused)
 # Log holds full request bodies (prompts): git-ignored Logs/AI/FLM/ (2026-09-29; was tracked GITHUB/logs/flm.log).
 LOG="${FLM_LOG:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/AI/FLM/flm.log}"
 mkdir -p "$(dirname "$LOG")"
@@ -30,7 +30,7 @@ if curl -sf -m 1 "http://127.0.0.1:$PORT/v1/models" >/dev/null 2>&1; then
 fi
 pkill -f "flm serve" 2>/dev/null || true
 sleep 1
-nohup "$FLM_BIN" serve "$FLM_MODEL" --pmode "${FLM_PMODE:-balanced}" --host 127.0.0.1 --port "$PORT" >>"$LOG" 2>&1 &
+nohup "$FLM_BIN" serve "$FLM_MODEL" --pmode "${FLM_PMODE:-balanced}" --ctx-len "${FLM_CTX_LEN:-4096}" --host 127.0.0.1 --port "$PORT" >>"$LOG" 2>&1 &
 echo "[ok] FLM starting pid=$! → $LOG"
 for i in 1 2 3 4 5 6 7 8 9 10; do
   sleep 2
