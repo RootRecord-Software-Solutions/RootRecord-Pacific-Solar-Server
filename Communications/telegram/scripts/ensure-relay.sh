@@ -28,7 +28,8 @@ if legacy_up; then
   echo "[warn] legacy apps.council running — not starting relay (409 risk)"
   exit 0
 fi
-nohup python3 "$HERE/council-relay.py" >>"$LOG" 2>&1 &
+# PYTHONUNBUFFERED: log lines appear immediately (2026-09-29; argv unchanged so the pgrep matches still work).
+PYTHONUNBUFFERED=1 nohup python3 "$HERE/council-relay.py" >>"$LOG" 2>&1 &
 pid=$!
 sleep 3
 if ! kill -0 "$pid" 2>/dev/null; then

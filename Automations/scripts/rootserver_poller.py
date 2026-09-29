@@ -514,6 +514,10 @@ def run_builtin(job: dict) -> None:
 def run_job(job: dict) -> None:
     if not job.get("enabled"):
         return
+    # After SIGTERM, start no new jobs (the rest of the scheduler pass used to re-launch the tunnel and
+    # wait 45 s for it, so every stop hit TimeoutStopSec=30 + SIGKILL). 2026-09-29.
+    if _stop.is_set():
+        return
     if job.get("needs_internet") and not internet_ok(force=True):
         log(f"{full_timestamp()}job:{job.get('id', '?')} SKIP — offline (will retry when internet is up)")
         return
