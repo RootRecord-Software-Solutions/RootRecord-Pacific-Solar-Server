@@ -391,6 +391,20 @@ ON_AT = [
         "cwd": f"{PACIFIC}/Weather",
         "env": {},
     },
+    {
+        # Template reports (2026-09-29, g3-template-reports). OFF unless RR_TEMPLATE_REPORTS=1 in the poller's environment
+        # at poller start. Fills the 4 Library ops templates from measured data -> Database Reports/Generated/*_current.md
+        # (Archive rotation, structure validator; never writes the Library). Free text via rr-exec, skipped if RAM < 3 GB / lock busy.
+        "id": "template_reports_daily",
+        "enabled": os.environ.get("RR_TEMPLATE_REPORTS", "0") == "1",
+        "description": "Library templates (worklog, checkpoint, event log, work order) filled from measured data -> Database Reports/Generated/.",
+        "at_times": ["18:40"],
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Reports/template_fill.py" --all --draft auto',
+        "timeout_sec": 900,
+        "cwd": f"{PACIFIC}/Reports",
+        "env": {},
+    },
 ]
 
 ECOFLOW_ACTIONS = f"{PACIFIC}/Energy/scripts/actions"
