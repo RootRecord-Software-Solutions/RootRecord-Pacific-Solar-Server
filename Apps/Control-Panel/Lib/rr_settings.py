@@ -22,6 +22,7 @@ SETTINGS_FILE = Path(os.environ.get("RR_CONTROL_PANEL_SETTINGS", str(APP_DIR / "
 DEFAULTS: dict = {
     "schema": 1,
     "refresh_sec": 5,
+    "gsk_renderer": "cairo",
     "database_root": "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database",
     "pacific_root": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server",
     "stale_after_sec": 900,

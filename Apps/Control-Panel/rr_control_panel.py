@@ -24,7 +24,6 @@ import resource
 import sys
 import threading
 import time
-import traceback
 import warnings
 from datetime import datetime
 from pathlib import Path
@@ -35,6 +34,9 @@ import rr_settings  # noqa: E402
 import rr_sources as src  # noqa: E402
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+# Lightweight default: the cairo renderer measured ~110 MB peak vs ~180 MB (default) / ~275 MB (gl) on this desk
+# (2026-09-29). Override with GSK_RENDERER=... or settings.json "gsk_renderer".
+os.environ.setdefault("GSK_RENDERER", str(rr_settings.load().get("gsk_renderer") or "cairo"))
 
 import gi  # noqa: E402
 
@@ -60,6 +62,9 @@ CSS = b"""
 .rr-fail { color: #dc322f; font-weight: bold; }
 .rr-header { padding: 6px 12px; }
 .rr-card { padding: 10px 14px; border-radius: 10px; }
+levelbar block.low { background-color: #dc322f; }
+levelbar block.high { background-color: #b58900; }
+levelbar block.full { background-color: #859900; }
 """
 
 
@@ -198,10 +203,14 @@ class Panel:
         self.refreshers = {"energy": self.r_energy, "weather": self.r_weather, "system": self.r_system,
                            "npu": self.r_npu, "ai": self.r_ai, "poller": self.r_poller, "cameras": self.r_cameras,
                            "controls": self.r_controls, "settings": lambda: None}
+        self.page_boxes, self.built = {}, set()
+        self.cam_tiles = {}
         for name, title in PAGES:
             box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12, margin_top=14, margin_bottom=14,
                           margin_start=16, margin_end=16)
-            self.builders[name](box)
+            self.page_boxes[name] = box
+            if self.check:
+                self.ensure_built(name)  # --check builds every widget up front
             sc = Gtk.ScrolledWindow(hscrollbar_policy=Gtk.PolicyType.NEVER, vexpand=True)
             sc.set_child(box)
             self.stack.add_titled(sc, name, title)
@@ -209,7 +218,14 @@ class Panel:
         if start == "cameras" or start not in dict(PAGES):
             start = "energy"
         self.stack.set_visible_child_name(start)
+        self.ensure_built(start)
         self.stack.connect("notify::visible-child-name", self.on_page)
+
+    def ensure_built(self, name):
+        """Pages are built on first visit in the window (keeps RSS down); --check builds all of them."""
+        if name not in self.built:
+            self.built.add(name)
+            self.builders[name](self.page_boxes[name])
 
     # ----------------------------------------------------------- energy
     def b_energy(self, box):
@@ -451,13 +467,13 @@ class Panel:
                            "While off the panel does no camera work: no timer, no image loading, no streams.",
                            "dim-label", wrap=True)
         box.append(self.cam_off)
-        self.cam_flow = Gtk.FlowBox(selection_mode=Gtk.SelectionMode.NONE, max_children_per_line=2,
+        self.cam_flow = Gtk.FlowBox(selection_mode=Gtk.SelectionMode.NONE, min_children_per_line=2, max_children_per_line=2,
                                     column_spacing=10, row_spacing=10, homogeneous=True)
         self.cam_tiles = {}
         for c in self.cams:
             v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
             pic = Gtk.Picture(content_fit=Gtk.ContentFit.CONTAIN, can_shrink=True)
-            pic.set_size_request(400, 225)
+            pic.set_size_request(360, 203)
             cap = lbl(c, "dim-label")
             v.append(pic)
             v.append(cap)
@@ -542,6 +558,10 @@ class Panel:
         return False
 
     def cam_timer_update(self):
+        if "cameras" not in self.built:
+            if self.stack.get_visible_child_name() != "cameras":
+                return
+            self.ensure_built("cameras")
         want = (self.win is not None and self.camera_viewer_on and self.stack.get_visible_child_name() == "cameras")
         if want and not self.cam_timer_id:
             self.r_cameras()
@@ -590,6 +610,8 @@ class Panel:
         box.append(o)
 
     def r_controls(self):
+        if "controls" not in self.built:
+            return
         allow = bool(self.s.get("risky_actions_enabled"))
         for b, a in self.risky_btns:
             b.set_sensitive(allow and bool(a.get("signed_off")) and bool(a.get("argv")))
@@ -621,6 +643,7 @@ class Panel:
         self._spin(g, "log_lines", "Poller log lines shown", 10, 200)
         self._entry(g, "weather_zone", "Weather zone (ZFP name)")
         self._entry(g, "start_page", "Start page (energy, weather, system, npu, ai, poller, controls, settings)")
+        self._entry(g, "gsk_renderer", "GTK renderer (cairo = lightest; applies on next start)")
         page.add(g)
         g = Adw.PreferencesGroup(title="Paths (read-only sources)")
         self._entry(g, "database_root", "Database root")
@@ -809,6 +832,7 @@ class Panel:
 
     def refresh_visible(self):
         name = self.stack.get_visible_child_name()
+        self.ensure_built(name)
         if name == "cameras":
             return  # camera page has its own timer (only while visible + on)
         self.refreshers[name]()
@@ -821,6 +845,7 @@ class Panel:
             self.errors.append(msg)
             print("panel error:", msg, file=sys.stderr)
             if os.environ.get("RR_PANEL_DEBUG"):
+                import traceback
                 traceback.print_exc()
 
     def tick(self):
@@ -924,7 +949,7 @@ def capture(win, path: Path) -> bool:
 
 def run_gui(args, settings) -> int:
     AppCls = Adw.Application if Adw else Gtk.Application
-    flags = Gio.ApplicationFlags.NON_UNIQUE if args.screenshot else Gio.ApplicationFlags.DEFAULT_FLAGS
+    flags = Gio.ApplicationFlags.NON_UNIQUE if (args.screenshot or args.run_for) else Gio.ApplicationFlags.DEFAULT_FLAGS
     app = AppCls(application_id=APP_ID, flags=flags)
     state = {}
 
@@ -942,6 +967,16 @@ def run_gui(args, settings) -> int:
         win.present()
         if args.screenshot:
             shoot(a, win, panel, Path(args.screenshot))
+        elif args.run_for:
+            def done():
+                ru = resource.getrusage(resource.RUSAGE_SELF)
+                print(f"window run {args.run_for}s · peak RSS {ru.ru_maxrss / 1024:.1f} MB · CPU user {ru.ru_utime:.2f}s "
+                      f"sys {ru.ru_stime:.2f}s · camera stats {src.STATS} · errors {len(panel.errors)}")
+                panel.stop()
+                win.close()
+                a.quit()
+                return False
+            GLib.timeout_add_seconds(int(args.run_for), done)
 
     app.connect("activate", activate)
     return app.run([sys.argv[0]])
@@ -985,6 +1020,7 @@ def main() -> int:
     ap.add_argument("--check", action="store_true", help="build widgets + load data once, print report, exit (no window)")
     ap.add_argument("--camera-viewer", choices=("on", "off"), help="override camera_viewer_enabled for this run (not saved)")
     ap.add_argument("--screenshot", metavar="DIR", help="open the window, save a PNG of every page into DIR, quit")
+    ap.add_argument("--run-for", type=int, metavar="SEC", help="open the window, quit after SEC seconds, print peak RSS (testing)")
     args = ap.parse_args()
     settings = rr_settings.load()
     if args.check:
