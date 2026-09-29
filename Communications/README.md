@@ -11,6 +11,7 @@ Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messagin
 | `network/cloudflare/` | **Live** |
 | `network/scripts/ensure-network-globe-hawaii.sh` | Present; job cwd may be legacy |
 | telegram / discord / slack | Shells; relay still G2 `coms/telegram` |
+| discord | Shell only — **WO-COM-002** token rotation required before LIVE |
 | G1 | `communications/*`, `network-globe`, `local-data-globe`, `council/council-telegram` |
 
 ---
@@ -24,6 +25,8 @@ Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messagin
 | `council_relay` | G2 `…/skills/coms/telegram/scripts/ensure-relay.sh` |
 
 Token: `/home/rootrecord/.cloudflared/rootserver.token` (local only).
+
+Messaging bot tokens (Discord, Telegram, etc.): **local secrets only** — never from git history or inventory mirrors. Discord enablement: see `discord/README.md` and Library **WO-COM-002**.
 
 ---
 
