@@ -1,0 +1,37 @@
+{
+  "_info": [
+    "Fresh held-out routing set (g3-router-v2, 2026-09-29 HST). Written BEFORE any keyword tuning; never tune on these rows.",
+    "Rows: [prompt, expected specialist, voice]. 'generic' = no specialist (caller's persona model).",
+    "Scored by System/scripts/plumbing/test-route-specialist.py --heldout <this file>. Metadata only; no model is run."
+  ],
+  "written_at": "2026-09-29T04:56-10:00",
+  "cases": [
+    ["How much juice is left in the big EcoFlow right now?", "rr-energy", "bruce"],
+    ["Are the panels producing anything this morning or is it too cloudy?", "rr-energy", "ava"],
+    ["Will the power bank last through the night if the fridge stays plugged in?", "rr-energy", "bruce"],
+    ["Is it going to pour in Hilo this afternoon?", "rr-weather", "ava"],
+    ["Any news from HVO about the summit today?", "rr-weather", "ava"],
+    ["How big were the swells on the north shore yesterday?", "rr-weather", "carly"],
+    ["The desk feels sluggish, what's eating the CPU?", "rr-system", "bruce"],
+    ["Did the nightly GitHub sync push everything?", "rr-system", "bruce"],
+    ["Is the NPU model still loaded or did it get unloaded?", "rr-system", "bruce"],
+    ["Why does the relay keep dropping messages?", "rr-system", "carly"],
+    ["Check if the Starlink is online.", "rr-system", "bruce"],
+    ["Grab me a still from the driveway cam.", "rr-cameras", "ava"],
+    ["Did anything move in the yard overnight on the security feed?", "rr-cameras", "carly"],
+    ["Someone keeps trying to log in over SSH from an unknown IP, should I worry?", "rr-security", "carly"],
+    ["Did I accidentally commit the Discord bot key to the repo?", "rr-security", "carly"],
+    ["Is it safe to expose the dashboard to the internet?", "rr-security", "bruce"],
+    ["Give me a one-line command to list the ten biggest files under Database.", "rr-exec", "bruce"],
+    ["Turn this list of paths into a markdown table.", "rr-exec", "ava"],
+    ["What's the exact command to tail the poller log?", "rr-exec", "bruce"],
+    ["Should I move the weather data into its own repo or keep it in Database? Walk me through it.", "rr-reason", "ava"],
+    ["What are the downsides of running everything on one small PC?", "rr-reason", "bruce"],
+    ["Draft a short announcement for the website about the new solar desk.", "rr-council-ava", "ava"],
+    ["Write me a runbook for when the tunnel drops at night.", "rr-council-bruce", "bruce"],
+    ["Seal this work order before it goes out.", "rr-council-carly", "carly"],
+    ["Good morning, how are you today?", "generic", "ava"],
+    ["Tell me a joke about coconuts.", "generic", "bruce"],
+    ["Thanks, that's all for now.", "generic", "carly"]
+  ]
+}

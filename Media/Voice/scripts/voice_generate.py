@@ -44,6 +44,7 @@ import speakers  # noqa: E402
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))
 STORE = Path(os.environ.get("RR_KOKORO_MODEL_DIR", str(DB / "AI" / "Kokoro" / "Kokoro-82M")))
 OUT_DIR = Path(os.environ.get("RR_VOICE_OUT_DIR", str(DB / "Media" / "Audio" / "Voice")))
+REPORT_OUT_DIR = Path(os.environ.get("RR_VOICE_REPORT_OUT", str(DB.parent / "test-reports" / "Voice")))
 CLIPS_DIR = OUT_DIR / "Clips"
 MANIFEST = CLIPS_DIR / "clips_manifest.json"
 SAMPLE_RATE = 24000
@@ -270,15 +271,33 @@ def save_manifest(m: dict) -> None:
 
 
 # ---------------------------------------------------------------- modes
+def retire_report_sidecars(report: str) -> None:
+    for suffix in (".read.txt", ".speak.txt"):
+        side = REPORT_OUT_DIR / f"{report}_current{suffix}"
+        if not side.is_file():
+            continue
+        stamp = datetime.fromtimestamp(side.stat().st_mtime).astimezone().strftime("%Y%m%dT%H%M")
+        arch = REPORT_OUT_DIR / "Archive"
+        arch.mkdir(parents=True, exist_ok=True)
+        dest = arch / f"{report}_{stamp}{suffix}"
+        n = 0
+        while dest.exists():
+            n += 1
+            dest = arch / f"{report}_{stamp}-{n}{suffix}"
+        side.replace(dest)
+
+
 def publish(report: str, w, read: str, speak: str, out: Path | None) -> Path:
     dest = out or (OUT_DIR / f"{report}_current.wav")
     tmp = dest.with_name("." + dest.stem + ".new.wav")
     write_wav(tmp, w)                          # render fully first ...
     if speakers.is_current_audio(dest):
         speakers.retire_current(dest)          # ... then retire the old _current (G1 pattern) ...
+    retire_report_sidecars(report)
     os.replace(tmp, dest)                      # ... and move the new one into place
-    dest.with_suffix(".read.txt").write_text(read.strip() + "\n", encoding="utf-8")
-    dest.with_suffix(".speak.txt").write_text(speak.strip() + "\n", encoding="utf-8")
+    REPORT_OUT_DIR.mkdir(parents=True, exist_ok=True)
+    (REPORT_OUT_DIR / f"{report}_current.read.txt").write_text(read.strip() + "\n", encoding="utf-8")
+    (REPORT_OUT_DIR / f"{report}_current.speak.txt").write_text(speak.strip() + "\n", encoding="utf-8")
     return dest
 
 
