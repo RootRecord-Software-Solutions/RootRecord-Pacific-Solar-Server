@@ -28,3 +28,6 @@ __pycache__/
 tmp/
 temp/
 *.tmp
+
+# Runtime camera/security credentials
+**/store/CONNECTION.json
