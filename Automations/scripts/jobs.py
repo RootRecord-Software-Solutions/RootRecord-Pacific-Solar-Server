@@ -289,7 +289,7 @@ EVERY_HOUR = [
         "description": "Compile previous hour ch1 frames into hour_HH.mp4. Window 05:00-19:00 HST (hours 05-18).",
         "only_at_hours": [],
         "builtin": "",
-        "command": f'bash "/home/rootrecord/.ollama/skills/coms/a-eyes/scripts/timelapse_hourly.sh"',
+        "command": f'bash "{PACIFIC}/A-Eyes/scripts/timelapse_hourly.sh"',
         "timeout_sec": 600,
         "cwd": f"{PACIFIC}/A-Eyes",
         "env": {},
