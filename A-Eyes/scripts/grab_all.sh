@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-cd ~/.ollama/skills/a-eyes/scripts
+cd "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/A-Eyes/scripts"
 for ch in 1 2 3 4; do
   python3 grab_frame.py "$ch" || echo "a-eyes: ch${ch} grab failed"
 done
