@@ -4,15 +4,16 @@ Energy monitoring, EcoFlow device reads, and power subsystem ownership for the P
 
 ---
 
-## Status (2026-09-28 ~16:38 HST) — Phase 1 LIVE
+## Status (2026-09-28 ~16:40 HST) — Phase 1 LIVE + soak
 
 | Item | State |
 | --- | --- |
 | Domain | **Live** on Pacific |
 | Scripts | `Energy/scripts/read/` |
 | jobs.py | Pacific paths (quoted) |
-| Package import | `Pacific/energy` → symlink to `Energy/` + `lib/py` puts Pacific root on PYTHONPATH |
-| Live reads | **OK** — SUMMARY delta2 + river2pro (api/db) observed |
+| Package | `Pacific/energy` → `Energy/` symlink; `lib/py` PYTHONPATH = vendor + Pacific root |
+| Live reads | **OK** — alternating SUMMARY delta2 / river2pro (~15s) |
+| Evidence | 16:39–16:40 HST poller window: SUMMARY + ENERGY status=live |
 | Data | `/home/rootrecord/Database/ENERGY/` |
 | Logs / state | `/home/rootrecord/Database/Logs/Energy/`, `/home/rootrecord/Database/Energy/state/` |
 | Actions / hybrid | Phase 2+ |
@@ -23,35 +24,25 @@ Energy monitoring, EcoFlow device reads, and power subsystem ownership for the P
 /home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/
 ```
 
-### Package name (required on Linux)
-
-Python imports use lowercase `energy` (`import energy.db.ingest`). Folder on disk is `Energy/`.
-
-On every desk checkout:
+### Package name (required)
 
 ```bash
 cd /home/rootrecord/RootRecord-Ecosystem/1\ -\ Servers/1\ -\ RootRecord-Pacific-Solar-Server
 ln -sfn Energy energy
 ```
 
-`Energy/lib/py` sets:
+### Sample live lines
 
 ```text
-PYTHONPATH = ENERGY_EFLIB_PATH|vendor : Pacific_root : …
-```
-
-### Verify
-
-```bash
-export ENERGY_EFLIB_PATH="$PWD/lib/vendor"   # from Energy/
-bash scripts/read/delta2-read.sh
-# expect: SUMMARY=delta2 soc=… src=api db=ok
+SUMMARY=delta2 soc=39% solar=35W ac_out=72W usbc=55W src=api db=ok
+SUMMARY=river2pro soc=100% solar=0W ac_out=46W usbc=0W src=api charge=battery_transfer db=ok
+ENERGY  status=live  B2=41.1%  B1=98.9%  solar=15 W  ac=58 W  src=sqlite
 ```
 
 ### Policy
 
-No old desk for Energy reads. G2 `~/.ollama/skills/energy` is source-of-copy only until archived after soak.
+No old desk for Energy reads. G2 `~/.ollama/skills/energy` is archive candidate after Phase 2 (actions) if desired.
 
 ---
 
-*Phase 1 live 2026-09-28 HST.*
+*Phase 1 LIVE + soak confirmed 2026-09-28 HST.*
