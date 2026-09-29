@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T05:46:31-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T05:55:30-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -1723,32 +1723,32 @@ decreasing to up to 15 mph after midnight.
 |---|---|
 | **Resource ID** | wa0_airmets |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=WA0&issuedby=HI |
-| **Collected** | 2026-09-29T01:51:42.803956-10:00 HST |
+| **Collected** | 2026-09-29T05:48:03.861168-10:00 HST |
 
 ```text
-170
-WAHW31 PHFO 290945
+837
+WAHW31 PHFO 291532
 WA0HI
 
-HNLS WA 291000
-AIRMET SIERRA UPDATE 1 FOR IFR VALID UNTIL 291600
+HNLS WA 291600
+AIRMET SIERRA UPDATE 2 FOR IFR VALID UNTIL 292200
 .
 NO SIGNIFICANT IFR EXP.
 
-=HNLT WA 291000
-AIRMET TANGO UPDATE 1 FOR TURB VALID UNTIL 291600
+=HNLT WA 291600
+AIRMET TANGO UPDATE 2 FOR TURB VALID UNTIL 292200
 .
 AIRMET TURB...HI
 OVER AND IMT S THRU W OF MTN.
 TEMPO MOD TURB BLW 090.
-COND CONT BEYOND 1600Z.
+COND CONT BEYOND 2200Z.
 
-=HNLZ WA 291000
-AIRMET ZULU UPDATE 1 FOR ICE AND FZLVL VALID UNTIL 291600
+=HNLZ WA 291600
+AIRMET ZULU UPDATE 2 FOR ICE AND FZLVL VALID UNTIL 292200
 .
 NO SIGNIFICANT ICE EXP.
 .
-FZLVL...165-167.
+FZLVL...153 PHLI SLOPING TO 169 PHTO.
 ```
 
 ---
@@ -3112,7 +3112,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T05:39:48.149007-10:00 HST |
+| **Collected** | 2026-09-29T05:48:50.926398-10:00 HST |
 
 ```text
                         
@@ -3985,7 +3985,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-29T05:46:30.950487-10:00 HST |
+| **Collected** | 2026-09-29T05:55:30.098669-10:00 HST |
 
 ```text
 Home
@@ -4109,7 +4109,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Tue, 29 Sep 2026 15:41:47 UTC
+Last update Tue, 29 Sep 2026 15:53:34 UTC
 
 NHC issuing advisories for the Atlantic on
 
