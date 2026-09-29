@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T07:45:30-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T07:54:30-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -3112,7 +3112,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T07:38:48.909451-10:00 HST |
+| **Collected** | 2026-09-29T07:47:50.324120-10:00 HST |
 
 ```text
                         
@@ -3901,7 +3901,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_atlc_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=2 |
-| **Collected** | 2026-09-29T07:43:30.280047-10:00 HST |
+| **Collected** | 2026-09-29T07:52:29.960144-10:00 HST |
 
 ```text
 218 ACCA62 KNHC 291711TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Depresión Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3915,7 +3915,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_atlc_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=7 |
-| **Collected** | 2026-09-29T07:44:29.690659-10:00 HST |
+| **Collected** | 2026-09-29T07:53:30.157578-10:00 HST |
 
 ```text
 218 ACCA62 KNHC 291711TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Depresión Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3929,7 +3929,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_cpac_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=2 |
-| **Collected** | 2026-09-29T07:14:29.931450-10:00 HST |
+| **Collected** | 2026-09-29T07:48:30.247869-10:00 HST |
 
 ```text
 218 ACCA62 KNHC 291711TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Depresión Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3943,7 +3943,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_cpac_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=7 |
-| **Collected** | 2026-09-29T07:15:30.929619-10:00 HST |
+| **Collected** | 2026-09-29T07:49:30.034032-10:00 HST |
 
 ```text
 218 ACCA62 KNHC 291711TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Depresión Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3957,7 +3957,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_epac_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=epac&fdays=2 |
-| **Collected** | 2026-09-29T07:16:29.926285-10:00 HST |
+| **Collected** | 2026-09-29T07:50:29.847568-10:00 HST |
 
 ```text
 218 ACCA62 KNHC 291711TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Depresión Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3971,7 +3971,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_epac_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=epac&fdays=7 |
-| **Collected** | 2026-09-29T07:17:30.054843-10:00 HST |
+| **Collected** | 2026-09-29T07:51:30.145572-10:00 HST |
 
 ```text
 218 ACCA62 KNHC 291711TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Depresión Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3985,7 +3985,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-29T07:45:30.045632-10:00 HST |
+| **Collected** | 2026-09-29T07:54:29.900580-10:00 HST |
 
 ```text
 Home
@@ -4109,7 +4109,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Tue, 29 Sep 2026 17:44:00 UTC
+Last update Tue, 29 Sep 2026 17:51:43 UTC
 
 NHC issuing advisories for the Atlantic on
 
@@ -4185,7 +4185,15 @@ None
 
 Disturbances:
 
-None
+ALL
+
+1
+
+Disturbances:
+
+ALL
+
+1
 
 Disturbances:
 
@@ -4207,9 +4215,7 @@ Eastern North Pacific
 
 Tropical Weather Outlook
 
-(en Español*)
-
-500 AM PDT Tue Sep 29 2026
+1100 AM PDT Tue Sep 29 2026
 
 Tropical Weather Discussion
 
@@ -4325,13 +4331,13 @@ Buoys |
 Grids |
 Storm Archive
 
-...RACHEL SLIGHTLY STRONGER...
+...RACHEL HOLDING STEADY SOUTH OF SOUTHWESTERN MEXICO...
 
-9:00 AM CST Tue Sep 29
+12:00 PM CST Tue Sep 29
 
-Location: 15.3°N 105.0°W
+Location: 15.7°N 105.1°W
 
-Moving: WNW at 13 mph
+Moving: NW at 12 mph
 
 Min pressure: 987 mb
 
@@ -4341,9 +4347,9 @@ Public
 
 Advisory
 
-#10
+#10A
 
-900 AM CST
+1200 PM CST
 
 Forecast
 
@@ -4520,7 +4526,7 @@ Tropical Weather Outlook
 
 (en Español*)
 
-200 AM HST Tue Sep 29 2026
+800 AM HST Tue Sep 29 2026
 
 Hurricane Nolo
 
@@ -4529,25 +4535,25 @@ Buoys |
 Grids |
 Storm Archive
 
-...NOLO IMPACTING THE PAPAHANAUMOKUAKEA MARINE NATIONAL MONUMENT...
+...NOLO BRINGING DANGEROUS CONDITIONS TO THE PAPAHANAUMOKUAKEA MARINE NATIONAL MONUMENT...
 
-5:00 AM HST Tue Sep 29
+8:00 AM HST Tue Sep 29
 
-Location: 20.5°N 164.2°W
+Location: 20.9°N 164.2°W
 
 Moving: N at 9 mph
 
-Min pressure: 964 mb
+Min pressure: 968 mb
 
-Max sustained: 110 mph
+Max sustained: 105 mph
 
 Public
 
 Advisory
 
-#36
+#36A
 
-500 AM HST
+800 AM HST
 
 Forecast
 
