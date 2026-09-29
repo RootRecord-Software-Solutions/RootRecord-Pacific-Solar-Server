@@ -214,7 +214,8 @@ def _rollup(t: datetime, slot: str):
     if ok:
         s = "Batteries: " + ", ".join(f"{f['name']} {f['soc']}%" for f in ok)
         solar = sum(f["solar_w"] or 0 for f in ok)
-        sp.append(s + f". Solar input {solar} watts.")
+        # spoken form says "at": "Delta 2 36%" would hit the G1 clock rule ("two thirty six a.m.")
+        sp.append("Battery levels: " + ", ".join(f"{f['name']} at {f['soc']}%" for f in ok) + f". Solar input {solar} watts.")
         lines.append(s + f"; solar input {solar} W")
     else:
         sp.append("EcoFlow is offline.")

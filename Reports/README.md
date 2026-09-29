@@ -61,6 +61,20 @@ bash "…/Reports/scripts/daily_roll_up.sh"
 DRY_RUN=1 bash "…/Reports/scripts/weekly_archive_logs.sh"
 ```
 
+### Template reports (2026-09-29, gated)
+
+`template_fill.py` fills the four Library ops templates (`Documentation/01-operations/templates/`) from measured data,
+in the templates' exact structure; `template_validate.py` rejects any heading / table-column / vocabulary mismatch and
+flags numbers not found in the sources. Output: Database `Reports/Generated/<Template-Name>_current.md` (+ `Archive/`),
+never the Library. Free text only: `rr-exec` via `run-infer.sh` (facts-only prompt; unsupported drafts fall back to fixed text).
+Job `template_reports_daily` 18:40, **OFF** unless `RR_TEMPLATE_REPORTS=1`. Doc: Library `00-architecture/Template-Report-Generation.md`.
+
+```bash
+python3 "…/Reports/template_fill.py" --all --draft none --dry-run     # validate only, no writes, no model
+python3 "…/Reports/template_fill.py" --template checkpoint --draft none
+python3 "…/Reports/template_validate.py" --help
+```
+
 ### Policy
 
 - Path/size/mtime only — no keystrokes, clipboard, or file contents

@@ -104,6 +104,17 @@ def procs_matching(pred) -> int:
     return n
 
 
+def procs_by_comm(name: str) -> int:
+    n = 0
+    for d in Path("/proc").iterdir():
+        if d.name.isdigit():
+            try:
+                n += (d / "comm").read_text().strip() == name
+            except OSError:
+                pass
+    return n
+
+
 def port_open(port: int) -> bool:
     try:
         with socket.create_connection(("127.0.0.1", port), timeout=1):
@@ -175,8 +186,11 @@ def signoff_items(f: Facts) -> list[str]:
             mm = re.match(r"^- \[ \] (.+)$", ln.strip())
             if mm:
                 t = mm.group(1)
-                b = re.match(r"^\*\*(.+?)\*\*", t)
-                items.append(cell(b.group(1).rstrip(".") if b else t, 100))
+                b = re.match(r"^\*\*(.+?)\*\*\s*(.*)$", t)
+                if b and b.group(1).endswith(":"):  # "**Hardware tests:** Energy arm/disarm ..." -> keep the first clause
+                    items.append(cell(b.group(1) + " " + re.split(r"(?<=[.;(])\s", b.group(2))[0].rstrip(".;("), 100))
+                else:
+                    items.append(cell(b.group(1).rstrip(".") if b else t, 100))
                 f.add(ln)
     seen, out = set(), []
     for i in items:
@@ -235,11 +249,12 @@ def poller(f: Facts) -> dict:
             fails.append({"time": m.group(1)[11:16], "job": m.group(2), "detail": m.group(3).strip()})
             f.add(ln)
     runs = sum(1 for ln in lines if re.search(r"job:\S+ RUN ", ln))
+    tunnel = [ln for ln in lines if ln[25:].startswith("tunnel ")]
     gh = [ln for ln in lines if "job:github_sync_all" in ln]
     gh_last = gh[-1] if gh else ""
     gh_bad = any(re.search(r"FAIL|error|fatal|rejected", ln, re.I) for ln in gh[-12:])
     s = {"lines": len(lines), "runs": runs, "fails": fails, "gh_last_time": gh_last[11:16] if gh_last else None, "gh_bad": gh_bad,
-         "last_time": lines[-1][11:16] if lines else None}
+         "last_time": lines[-1][11:16] if lines else None, "tunnel": tunnel}
     f.add(s["lines"], s["runs"], s["gh_last_time"], s["last_time"])
     return s
 
@@ -301,15 +316,18 @@ def subsystems(f: Facts, h: dict, en: list, pl: dict) -> list[tuple[str, str, st
     rows.append(("Weather", state_by_age(age_min(wr, t), 180, 720), f"county reports updated {hm(wr)} HST" if wr else "no county report found"))
     gh = "degraded" if pl["gh_bad"] else ("ok" if pl["gh_last_time"] else "down")
     rows.append(("GitHub sync", gh, f"last `github_sync_all` line {pl['gh_last_time']} HST" if pl["gh_last_time"] else "no github_sync_all line today"))
-    cf = procs_matching(lambda c: c.split(" ")[0].endswith("cloudflared"))
-    rows.append(("Cloudflare tunnel", "ok" if cf else "down", f"{cf} cloudflared process(es)"))
+    cf = procs_by_comm("cloudflared")
+    tun = [ln for ln in pl.get("tunnel", []) if "connected" in ln or "timeout" in ln]
+    last = tun[-1] if tun else ""
+    cf_state = "down" if not cf else ("degraded" if "timeout" in last else "ok")
+    rows.append(("Cloudflare tunnel", cf_state, f"{cf} cloudflared process(es)" + (f"; last tunnel line {last[11:16]} HST: {last[25:].strip()}" if last else "")))
     for r in rows:
         f.add(r[2])
     return rows
 
 
 # ------------------------------------------------------------------ free text (specialist)
-def draft(keys: dict[str, str], facts_lines: list[str], mode: str, f: Facts, log: dict) -> dict[str, str]:
+def draft(keys: dict[str, str], facts_lines: list[str], mode: str, f: Facts, log: dict, checks: dict | None = None) -> dict[str, str]:
     """keys: {KEY: instruction}. Returns {KEY: text}; falls back to '' (caller substitutes deterministic text)."""
     out = {k: "" for k in keys}
     log.update({"draft_mode": mode, "model_called": False})
@@ -344,8 +362,10 @@ def draft(keys: dict[str, str], facts_lines: list[str], mode: str, f: Facts, log
     allowed = tv.corpus_numbers("\n".join(facts_lines) + "\n" + f.day)
     accepted = {}
     for k in keys:
-        m = re.search(rf"^\s*\**{k}\**\s*:\s*(.+?)\s*$", reply, re.M | re.I)
-        v = (m.group(1).strip().strip("<>").strip() if m else "")
+        m = re.search(rf"^[\s>*#\-\d.)]*\**{k}\**\s*\**\s*[:\-—]\s*\**\s*(.*?)\s*$(?:\n\s*([^\n:]+?)\s*$)?", reply, re.M | re.I)
+        v = ((m.group(1) or (m.group(2) or "")) if m else "").strip().strip("<>*\"").strip()
+        if v and checks and k in checks:
+            v = checks[k](v) or ""
         bad = [t for t in tv.number_tokens(v) if not tv.number_ok(t, allowed)]
         if v and len(v) <= 300 and "{{" not in v and not bad and not re.fullmatch(r"(?i)no data\.?", v):
             out[k] = v.rstrip()
@@ -353,6 +373,7 @@ def draft(keys: dict[str, str], facts_lines: list[str], mode: str, f: Facts, log
         else:
             accepted[k] = "fallback" + (f" (unsupported numbers {bad})" if bad else (" (missing)" if not v else " (rejected)"))
     log["fields"] = accepted
+    log["reply_preview"] = cell(reply, 300)
     return out
 
 
@@ -388,8 +409,14 @@ def render_worklog(f: Facts, mode: str, log: dict) -> str:
              f"{inf['n']} inference requests, {inf['fallbacks']} fallbacks, {inf['nonzero']} non-zero exit codes",
              f"{len(pl['fails'])} poller job FAIL lines today", f"poller unit {is_active('rr-rootserver-poller.service')}"]
     facts += [f"sign-off needed: {s}" for s in so[:6]]
-    d = draft({"PURPOSE": "one or two sentences: what this digest covers", "NEXT": "one concrete next action taken from the sign-off list",
-               "STATUS": "one short line summarising the day"}, facts, mode, f, log)
+    def pick_signoff(v: str) -> str:  # NEXT must name a real sign-off item; never an unqualified instruction
+        for s_ in so:
+            core = re.sub(r"[`*:]", "", s_).lower().split(" — ")[0][:24]
+            if core and core in re.sub(r"[`*:]", "", v).lower():
+                return f"Alexander sign-off: {s_}"
+        return ""
+    d = draft({"PURPOSE": "one or two sentences: what this digest covers", "NEXT": "copy one item from the sign-off list",
+               "STATUS": "one short line summarising the day"}, facts, mode, f, log, {"NEXT": pick_signoff})
     purpose = d["PURPOSE"] or f"Automated digest of desk activity on {f.day}, built from testing records, the AI inference log, poller logs and the operator worklog."
     nxt = d["NEXT"] or (f"Alexander sign-off: {so[0]}" if so else "Review this digest.")
     status = d["STATUS"] or f"{'ACTIVE' if live else 'CLOSED'} — {len(tr)} testing records, {inf['n']} inference requests, {len(pl['fails'])} poller FAIL lines."
@@ -628,6 +655,12 @@ def main(argv: list[str]) -> int:
     if not a.dry_run:
         vp = OUT_DIR / "template-fill-validation_current.json"
         guard_out(vp)
+        if vp.is_file() and len(keys) < len(TEMPLATES):  # single-template run: keep the other templates' last results
+            try:
+                old = json.loads(read(vp)).get("results", {})
+                report["results"] = {**old, **report["results"]}
+            except ValueError:
+                pass
         vp.write_text(json.dumps(report, indent=2, ensure_ascii=False, default=str) + "\n", encoding="utf-8")
     return rc
 
