@@ -8,6 +8,7 @@
 # ==============================================================================
 # FLM NPU (/v1/chat/completions) first; Ollama fallback. Never abort the host.
 set -u
+# No resident models (Alexander 03:12 HST 2026-09-29): ollama run unloads right after reply (keepalive 0).
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TARGET="${1:?voice|model}"; shift || true
 PROMPT="${*:-}"
@@ -36,7 +37,7 @@ do_ollama() {
   if [[ -x "$HERE/run-ollama.sh" ]]; then
     "$HERE/run-ollama.sh" "$OM" "$PROMPT" | sanitize
   else
-    ollama run "$OM" "$PROMPT" | sanitize
+    ollama run --keepalive "${OLLAMA_KEEP_ALIVE:-0}" "$OM" "$PROMPT" | sanitize
   fi
 }
 
