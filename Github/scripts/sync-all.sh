@@ -2,26 +2,19 @@
 # ==============================================================================
 # sync-all.sh — iterate enabled repos.conf → push-repo-once.sh
 # ------------------------------------------------------------------------------
-# Called by automations jobs.py  github_sync_all  (every ~300s).
-# After skills code is pulled, schedules full poller stack reload.
-# Layout style (standing): keep SECTION banners.
+# Called by jobs.py github_sync_all (~300s).
+# After Pacific (or legacy skills) code is pulled, schedules full poller stack reload.
 # ==============================================================================
 set -euo pipefail
 
-# ====================================================
-# SECTION: SETUP
-# ====================================================
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
 source "$HERE/common.sh"
 ensure_bak_root
 mkdir -p "$BAK_ROOT/flags"
 
-RELOAD_SCRIPT="/home/rootrecord/.ollama/skills/automations/scripts/schedule-stack-reload.sh"
+RELOAD_SCRIPT="/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Automations/scripts/stack/schedule-stack-reload.sh"
 
-# ====================================================
-# SECTION: SYNC EACH ENABLED REPO
-# ====================================================
 while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do
   [[ "$id" =~ ^#.*$ || -z "${id:-}" ]] && continue
   [[ "$enabled" == "1" ]] || continue
@@ -37,10 +30,6 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do
   (( success )) || echo "✗ [$id] sync failed after 3 attempts (continuing)"
 done < <(grep -v '^#' "$REPOS_CONF" | grep -v '^[[:space:]]*$')
 
-# ====================================================
-# SECTION: STACK RELOAD (if skills code was pulled)
-# Always invoke via bash (file may not be +x after git pull).
-# ====================================================
 if [[ -f "$BAK_ROOT/flags/reload-poller-stack" ]]; then
   if [[ -f "$RELOAD_SCRIPT" ]]; then
     echo "↻ reload flag present — scheduling full poller stack reload"
