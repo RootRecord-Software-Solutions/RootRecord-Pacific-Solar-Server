@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T13:25:30-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T13:34:30-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -2811,7 +2811,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-29T13:10:49.285552-10:00 HST |
+| **Collected** | 2026-09-29T13:27:48.368390-10:00 HST |
 
 ```text
 157
@@ -3084,7 +3084,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T13:18:48.828368-10:00 HST |
+| **Collected** | 2026-09-29T13:27:51.134359-10:00 HST |
 
 ```text
                         
@@ -3883,7 +3883,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_atlc_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=7 |
-| **Collected** | 2026-09-29T13:16:30.195764-10:00 HST |
+| **Collected** | 2026-09-29T13:33:30.006924-10:00 HST |
 
 ```text
 223 ACCA62 KNHC 292307TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada al este delas Bermudas, y ha emitido la advertencia final sobre el CiclónPos-Tropical Fay, ubicado sobre el Atlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Reinhart*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3953,7 +3953,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-29T13:17:30.040428-10:00 HST |
+| **Collected** | 2026-09-29T13:34:30.157300-10:00 HST |
 
 ```text
 Home
@@ -4077,7 +4077,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Tue, 29 Sep 2026 23:08:46 UTC
+Last update Tue, 29 Sep 2026 23:33:53 UTC
 
 NHC issuing advisories for the Atlantic on
 
@@ -4197,26 +4197,26 @@ Buoys |
 Grids |
 Storm Archive
 
-...POLO WEAKENS TO A TROPICAL STORM AS IT MOVES FARTHER INLAND...
-...STRONG WINDS AND HEAVY RAINS SPREADING ACROSS NORTHWESTERN MEXICO TOWARD SOUTHERN NEW MEXICO AND FAR WESTERN TEXAS...
+...POLO RAPIDLY WEAKENING OVER NORTHWESTERN MEXICO...
+...HEAVY RAINS CONTINUE...
 
-2:00 PM MST Tue Sep 29
+5:00 PM MST Tue Sep 29
 
-Location: 29.0°N 109.7°W
+Location: 30.0°N 108.5°W
 
 Moving: NE at 21 mph
 
-Min pressure: 992 mb
+Min pressure: 996 mb
 
-Max sustained: 65 mph
+Max sustained: 45 mph
 
 Public
 
 Advisory
 
-#37
+#37A
 
-200 PM MST
+500 PM MST
 
 Forecast
 
@@ -7861,7 +7861,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-29T13:10:34.214885-10:00 HST |
+| **Collected** | 2026-09-29T13:27:33.117824-10:00 HST |
 
 ```text
 National Weather Service
@@ -7910,9 +7910,9 @@ INFORMATION
 
 Wireless Emergency Alerts
 
-Brochures
-
 Weather-Ready Nation
+
+Brochures
 
 Cooperative Observers
 
