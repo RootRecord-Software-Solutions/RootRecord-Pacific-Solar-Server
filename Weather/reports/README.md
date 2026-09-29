@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T04:55:30-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T05:04:30-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -3112,7 +3112,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T04:48:49.563465-10:00 HST |
+| **Collected** | 2026-09-29T04:57:50.338152-10:00 HST |
 
 ```text
                         
@@ -3927,7 +3927,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_cpac_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=2 |
-| **Collected** | 2026-09-29T04:49:30.113407-10:00 HST |
+| **Collected** | 2026-09-29T04:58:30.267593-10:00 HST |
 
 ```text
 750 ACCA62 KNHC 291124TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3941,7 +3941,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_cpac_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=7 |
-| **Collected** | 2026-09-29T04:50:29.971626-10:00 HST |
+| **Collected** | 2026-09-29T04:59:29.972482-10:00 HST |
 
 ```text
 750 ACCA62 KNHC 291124TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3955,7 +3955,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_epac_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=epac&fdays=2 |
-| **Collected** | 2026-09-29T04:51:29.921259-10:00 HST |
+| **Collected** | 2026-09-29T05:00:29.876710-10:00 HST |
 
 ```text
 750 ACCA62 KNHC 291124TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3969,7 +3969,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_epac_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=epac&fdays=7 |
-| **Collected** | 2026-09-29T04:52:30.128948-10:00 HST |
+| **Collected** | 2026-09-29T05:01:29.888230-10:00 HST |
 
 ```text
 750 ACCA62 KNHC 291124TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3983,7 +3983,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-29T04:55:29.947494-10:00 HST |
+| **Collected** | 2026-09-29T05:04:29.903680-10:00 HST |
 
 ```text
 Home
@@ -4107,7 +4107,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Tue, 29 Sep 2026 14:54:58 UTC
+Last update Tue, 29 Sep 2026 15:02:05 UTC
 
 NHC issuing advisories for the Atlantic on
 
