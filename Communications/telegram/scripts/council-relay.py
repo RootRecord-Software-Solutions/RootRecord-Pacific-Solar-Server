@@ -154,7 +154,7 @@ def main():
     triggers = [x.strip().lower() for x in cfg.get("PIPELINE_TRIGGERS", "").split(",") if x.strip()]
     default_voice = cfg.get("DEFAULT_SINGLE_VOICE", "ava")
     max_text = int(cfg.get("MAX_TEXT", "3900") or 3900)
-    state_dir = Path(cfg.get("STATE_DIR", "/home/rootrecord/Database/intake/council-relay"))
+    state_dir = Path(cfg.get("STATE_DIR", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/intake/council-relay"))
     state_dir.mkdir(parents=True, exist_ok=True)
     offset_file = state_dir / "offset.txt"
     offset = int(offset_file.read_text().strip() or "0") if offset_file.is_file() else 0
