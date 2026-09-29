@@ -88,7 +88,7 @@ STOP = SCRIPTS / "stack" / "stop-poller-stack.sh"
 LOG = Path(
     os.environ.get(
         "POLLER_LOG",
-        "/home/rootrecord/Database/LOGS/Automations/rootserver-poller.log",
+        "/home/rootrecord/Database/Logs/Automations/automations_current.log",
     )
 )
 HOST = os.environ.get("POLLER_PUBLIC_HOST", "rootserver.rootrecord.cloud")
