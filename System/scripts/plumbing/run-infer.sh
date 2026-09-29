@@ -70,7 +70,7 @@ do_ollama() {
 }
 
 do_flm() {
-  "$SF" run "$JOB" -- env FLM_URL="$FLM_URL" FLM_MODEL="$FLM_MODEL" RR_VOICE="$TARGET" RR_PROMPT="$PROMPT" \
+  RR_PROMPT_CHARS="${#PROMPT}" "$SF" run "$JOB" -- env FLM_URL="$FLM_URL" FLM_MODEL="$FLM_MODEL" RR_VOICE="$TARGET" RR_PROMPT="$PROMPT" \
     python3 -c '
 import json, os, urllib.request
 base = os.environ["FLM_URL"].rstrip("/")

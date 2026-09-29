@@ -36,4 +36,4 @@ Reply in character only. If metrics are needed: say you cannot see the desk. Nev
 User: ${USER_PROMPT}"
 fi
 
-exec "$HERE/single-flight.sh" run "$JOB" -- ollama run --keepalive "${OLLAMA_KEEP_ALIVE:-0}" "$MODEL" "$FULL"
+RR_PROMPT_CHARS="${#FULL}" exec "$HERE/single-flight.sh" run "$JOB" -- ollama run --keepalive "${OLLAMA_KEEP_ALIVE:-0}" "$MODEL" "$FULL"

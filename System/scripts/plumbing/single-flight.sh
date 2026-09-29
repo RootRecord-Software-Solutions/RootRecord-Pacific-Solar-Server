@@ -53,8 +53,12 @@ run() {
     echo "[busy] refuse parallel run. holder: $(cat "$HOLDER" 2>/dev/null || echo unknown)" >&2
     exit 75
   fi
-  echo "job=$jid pid=$$ ts=$(date -Iseconds) cmd=$*" > "$HOLDER"
-  echo "[ok] single-flight RUN $jid"
+  # Privacy (2026-09-29 g3-voice-reports2): holder.txt = metadata only, never argv (argv carried prompt text).
+  # prompt_chars comes from RR_PROMPT_CHARS (callers set it; -1 = unknown). Banner -> stderr, never into replies.
+  local c="" a
+  for a in "$@"; do case "$a" in env|nice|-n|[0-9]*|*=*) ;; *) c="${a##*/}"; break ;; esac; done
+  echo "job=$jid caller=${RR_CALLER:-$(cat "/proc/$PPID/comm" 2>/dev/null || echo unknown)} pid=$$ ts=$(date -Iseconds) cmd=${c:-?} prompt_chars=${RR_PROMPT_CHARS:--1}" > "$HOLDER"
+  echo "[ok] single-flight RUN $jid" >&2
   set +e
   "$@"
   rc=$?
