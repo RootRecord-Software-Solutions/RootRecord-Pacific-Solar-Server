@@ -1,23 +1,18 @@
 #!/usr/bin/env bash
-# ============================================================================
-# energy/lib/py — energy skill Python launcher
-# ----------------------------------------------------------------------------
-# WHAT: Run a script with the energy venv + eflib PYTHONPATH.
-# HOW:  Prefer ENERGY_PYTHON, else skill .venv, else system python3.
-# Layout style (standing): keep this header.
-# ============================================================================
+# ==============================================================================
+# Energy/lib/py — Energy domain Python launcher (Pacific)
+# ------------------------------------------------------------------------------
+# Prefer ENERGY_PYTHON, else domain .venv, else system python3.
+# PYTHONPATH: eflib vendor + Pacific root (package name "energy" via symlink
+#   Pacific/energy -> Energy/ so "import energy.db.ingest" resolves).
+# ==============================================================================
 set -euo pipefail
 
-# ====================================================
-# SECTION: PATHS
-# ====================================================
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+PARENT="$(cd "$ROOT/.." && pwd)"
 VENV_PY="$ROOT/.venv/bin/python"
 VENDOR="$ROOT/lib/vendor"
 
-# ====================================================
-# SECTION: RESOLVE INTERPRETER
-# ====================================================
 if [[ -n "${ENERGY_PYTHON:-}" ]]; then
   PY="$ENERGY_PYTHON"
 elif [[ -x "$VENV_PY" ]]; then
@@ -26,8 +21,5 @@ else
   PY="python3"
 fi
 
-# ====================================================
-# SECTION: ENV + EXEC
-# ====================================================
-export PYTHONPATH="${ENERGY_EFLIB_PATH:-$VENDOR}:${PYTHONPATH:-}"
+export PYTHONPATH="${ENERGY_EFLIB_PATH:-$VENDOR}:${PARENT}:${PYTHONPATH:-}"
 exec "$PY" "$@"
