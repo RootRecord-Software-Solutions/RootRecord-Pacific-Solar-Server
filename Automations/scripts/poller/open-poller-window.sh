@@ -33,11 +33,6 @@ echo "[open] starting ${UNIT}…"
 systemctl --user start "${UNIT}"
 
 # Avoid stacking duplicate viewers
-if pgrep -f 'poller-watch\.py' >/dev/null 2>&1; then
-  echo "[open] poller-watch already running — not opening a second window"
-  exit 0
-fi
-
 # ====================================================
 # SECTION: OPEN TERMINAL (detached; do not exec)
 # ====================================================
@@ -45,8 +40,8 @@ fi
 # Launch detached so reload scripts are not tied to that client lifetime.
 if command -v gnome-terminal >/dev/null 2>&1; then
   echo "[open] gnome-terminal geometry=${GEOMETRY}"
-  nohup setsid gnome-terminal --title="$TITLE" --geometry="$GEOMETRY" -- \
-    bash -lc "/usr/bin/python3 '$WATCH'; rc=\$?; echo; echo \"poller-watch exited (code=\$rc) — terminal left open for inspection.\"; read -r" >/dev/null 2>&1 &
+  nohup gnome-terminal --disable-factory --title="$TITLE" --geometry="$GEOMETRY" -- \
+    bash -lc "/usr/bin/python3 '$WATCH'; rc=\$?; echo; echo \"poller-watch exited (code=\$rc) — terminal left open for inspection.\"; exec bash -i" >/dev/null 2>&1 &
   sleep 0.5
   exit 0
 fi
