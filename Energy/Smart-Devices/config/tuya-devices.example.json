@@ -1,0 +1,14 @@
+{
+  "_comment": "Copy to tuya-devices.local.json (gitignored) and fill from the Tuya IoT cloud (tinytuya wizard). NEVER commit local_key.",
+  "plugs": {
+    "bsd01-1": {
+      "id": "REPLACE_device_id",
+      "ip": "REPLACE_192.168.1.x",
+      "local_key": "REPLACE_local_key",
+      "version": "3.3",
+      "switch_dp": 1,
+      "label": "Unbranded Smart Plug BSD01 #1",
+      "load": "REPLACE_what_is_plugged_in"
+    }
+  }
+}

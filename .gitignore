@@ -32,3 +32,13 @@ temp/
 
 # Runtime camera/security credentials
 **/store/CONNECTION.json
+
+# Energy/Smart-Devices (2026-09-29): Tuya local_keys, Tuya IoT cloud creds, tinytuya wizard output, venv
+Energy/Smart-Devices/config/*.local.json
+Energy/Smart-Devices/config/*.secret.json
+Energy/Smart-Devices/config/tuya-cloud.env
+Energy/Smart-Devices/**/tinytuya.json
+Energy/Smart-Devices/**/devices.json
+Energy/Smart-Devices/**/tuya-raw.json
+Energy/Smart-Devices/**/snapshot.json
+Energy/Smart-Devices/.venv/

@@ -307,6 +307,18 @@ EVERY_SECONDS = [
         "cwd": f"{PACIFIC}/Geology",
         "env": {},
     },
+    {
+        # Uptime log (2026-09-29, migration-geology pass): G1 uptime-log port. OFF unless RR_UPTIME_LOG=1 at poller start.
+        "id": "system_uptime_log",
+        "enabled": os.environ.get("RR_UPTIME_LOG", "0") == "1",
+        "description": "Desk-up/down events (origin_start, heartbeat_gap, desk_up, boot) -> Database System/uptime/ (KEEP 400).",
+        "interval_sec": 60,
+        "builtin": "",
+        "command": f'python3 "{PACIFIC}/System/scripts/uptime_log.py" tick',
+        "timeout_sec": 15,
+        "cwd": f"{PACIFIC}/System",
+        "env": {},
+    },
 ]
 
 EVERY_MINUTE = [
@@ -397,6 +409,20 @@ EVERY_MINUTE = [
 ]
 
 EVERY_HOUR = [
+    {
+        # Sun times (2026-09-29, migration-geology pass): G1 hourly-solar-weather sun_times.py port. OFF unless
+        # RR_SUN_TIMES=1 at poller start. Fetches Open-Meteo once per HST day (refresh-if-stale), else no network.
+        "id": "energy_sun_times",
+        "enabled": os.environ.get("RR_SUN_TIMES", "0") == "1",
+        "description": "Sunrise/sunset HST (Volcano/Puna) -> Database Energy/sun/sun-times-last.json.",
+        "only_at_hours": [],
+        "builtin": "",
+        "command": f'python3 "{PACIFIC}/Energy/scripts/sun_times.py"',
+        "timeout_sec": 30,
+        "needs_internet": True,
+        "cwd": f"{PACIFIC}/Energy",
+        "env": {},
+    },
     {
         # AI processing report (2026-09-29, g3-voice-ailog). OFF unless RR_AI_REPORT=1 in the poller's environment
         # at poller start. Rotates Logs/AI/Inference/inference_current.jsonl daily, then rewrites the _current report.
