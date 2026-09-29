@@ -1,53 +1,107 @@
-# RootRecord-Pacific-Solar-Server
+# ☀️ RootRecord Pacific Solar Server
 
-**Primary autonomous solar / Pacific node infrastructure** for the RootRecord ecosystem under the org [RootRecord-Software-Solutions](https://github.com/RootRecord-Software-Solutions).
+> **Primary Pacific runtime for the RootRecord ecosystem.**
+>
+> Energy • automation • system monitoring • security • communications • resilient services
 
-Provides energy telemetry, system monitoring, automation orchestration, operational worklog, environmental data collection, camera services, secure communications, and resilient cloud-connected services for the Pacific RootRecord node.
-
-> **Canonical runtime home.** Legacy personal-account trees (`Solar-Pacific-RootRecord-Server`, `Solar-Pacific-RootRecord-Server-Old`, old `~/.ollama/skills` desk) are historical. New domain work lands here.
+<p align="center">
+  <a href="https://github.com/RootRecord-Software-Solutions"><strong>RootRecord Software Solutions</strong></a>
+  ·
+  <a href="https://github.com/RootRecord-Software-Solutions/RootRecord-Library"><strong>Library</strong></a>
+  ·
+  <a href="https://github.com/RootRecord-Software-Solutions/RootRecord-Database"><strong>Database</strong></a>
+  ·
+  <a href="https://rootrecord.cloud"><strong>rootrecord.cloud</strong></a>
+</p>
 
 ---
 
-## Domain layout
+## 🌴 What this is
+
+**RootRecord-Pacific-Solar-Server** is the canonical Pacific runtime repository for the RootRecord ecosystem.
+
+It contains the executable domains and orchestration that operate the Pacific node. Durable architecture, agent context, and work orders live in **RootRecord-Library**; data, media, and log placement is defined by **RootRecord-Database**.
+
+> **Canonical runtime home.** Legacy personal-account trees are historical and are not the target for new domain work.
+
+---
+
+## 🧩 Runtime domains
 
 | Directory | Role |
 | --- | --- |
-| `Automations/` | Poller, jobs, stack orchestration |
-| `Energy/` | EcoFlow / hybrid energy telemetry & reports |
-| `System/` | Host stats, observability samples |
-| `Reports/` | Offline work auto-doc (worklog) — WO-RPT-001 |
-| `Weather/` | Weather domain (import in progress per Library WOs) |
-| `Geology/` | Geology / hazard domain |
-| `Communications/` | Tunnel, messaging, network surface |
-| `Github/` | Git sync / catalog helpers |
-| `Security/` | Security posture scripts & notes |
+| ⚙️ `Automations/` | Poller, jobs, stack orchestration |
+| ⚡ `Energy/` | Energy telemetry, reports & actions |
+| 🖥️ `System/` | Host statistics & system services |
+| 📝 `Reports/` | Runtime worklog / reporting |
+| 🌦️ `Weather/` | Weather domain |
+| 🌋 `Geology/` | Geology / hazard domain |
+| 💬 `Communications/` | Messaging, tunnel & network communications |
+| 🐙 `Github/` | Git catalog & synchronization helpers |
+| 🔐 `Security/` | Security posture & camera runtime |
 
-Desk path (live):
+---
+
+## 📐 Canonical boundaries
+
+```text
+RootRecord-Library
+    │
+    │  architecture / context / work orders
+    ▼
+RootRecord-Pacific-Solar-Server
+    │
+    │  executable runtime
+    ▼
+RootRecord-Database
+    │
+    │  data / media / logs
+    ▼
+Pacific node
+```
+
+The repositories are intentionally separated so that **code, durable context, and persistent data layout have clear homes**.
+
+---
+
+## 📍 Live desk path
 
 ```text
 /home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server
 ```
 
+The corresponding database tree is:
+
+```text
+/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database
+```
+
 ---
 
-## Related canonical repos
+## 🛡️ Runtime discipline
 
-| Repo | Role |
+- Domain imports follow Library work orders.
+- Prefer canonical Pacific paths over legacy skill-desk paths.
+- Credentials and other secrets stay outside Git.
+- Runtime verification is evidence-based.
+- A GitHub commit proves a repository change; it does **not** by itself prove runtime activation.
+- Physical actuation remains explicitly authorized work.
+
+---
+
+## 🔗 Related repositories
+
+| Repository | Role |
 | --- | --- |
-| [RootRecord-Library](https://github.com/RootRecord-Software-Solutions/RootRecord-Library) | Durable docs, agent context, work orders |
-| [RootRecord-Database](https://github.com/RootRecord-Software-Solutions/RootRecord-Database) | Data & log layout (source of truth for where bytes go) |
-| [US-Mainland-Server](https://github.com/rootrecordsoftwaresolutions/US-Mainland-Server) | Continuity node |
+| **[RootRecord-Library](https://github.com/RootRecord-Software-Solutions/RootRecord-Library)** | Durable docs, agent context & work orders |
+| **[RootRecord-Database](https://github.com/RootRecord-Software-Solutions/RootRecord-Database)** | Data, media & log layout |
+| **[US-Mainland-Server](https://github.com/rootrecordsoftwaresolutions/US-Mainland-Server)** | Continuity node |
 
-Work orders and migration status: Library → `Documentation/06-development/Work-Orders/`.
-
----
-
-## Policy (docs)
-
-- Domain imports follow Library work orders (one domain at a time; no bulk merge from G1 Old).
-- Prefer Pacific poller over legacy skills-desk paths.
-- Worklog machine data stays under `Database/WORKLOG/`; human sessions under Library ops.
+Work orders and migration status live in the Library under `Documentation/06-development/Work-Orders/`.
 
 ---
 
-**Root Record Software Solutions** · Oriented from Hawaiʻi Island · [rootrecord.cloud](https://rootrecord.cloud)
+<p align="center">
+  <strong>Root Record Software Solutions</strong><br/>
+  <em>Oriented from Hawaiʻi Island · building resilient software, infrastructure, automation & AI systems</em>
+</p>
