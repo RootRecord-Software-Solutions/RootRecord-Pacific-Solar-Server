@@ -131,10 +131,10 @@ ON_BOOT = [
         "priority": 5,
         "description": "Start council-relay.py if not already running (single getUpdates).",
         "builtin": "",
-        "command": f'bash "/home/rootrecord/.ollama/skills/coms/telegram/scripts/ensure-relay.sh"',
+        "command": f'bash "{PACIFIC}/Communications/telegram/scripts/ensure-relay.sh"',
         "timeout_sec": 30,
         "needs_internet": True,
-        "cwd": "/home/rootrecord/.ollama/skills/coms/telegram",
+        "cwd": f"{PACIFIC}/Communications/telegram",
         "env": {},
     },
     {
