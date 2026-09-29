@@ -13,7 +13,7 @@ Weather subsystem ownership: collection, ensure scripts, and related desk weathe
 | Latest verification | **PASS** — statewide and county reports generated at ~01:59 HST; solar calculation table present for viewer sunrise/sunset consumption |
 | Runtime | One Weather process observed running; no errors reported in the verification pass |
 | Published data | `RootRecord-Weather-Database` |
-| Local data | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/WEATHER/Hawai'i/` (git-ignored in Database; old dataset archived under `Archive/Previous-Datasets/G2-old-root-20260929/WEATHER/`) |
+| Local data | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Weather/Hawai'i/` (git-ignored in Database; old dataset archived under `Archive/Previous-Datasets/G2-old-root-20260929/WEATHER/`) |
 | Growth watch | 320 MB at 02:44 HST (207 MB 01:54, 227 MB 02:07). The early ~2.5 MB/min was mostly first fetches of overwrite-in-place `_current` imagery (GOES19 EEP ~13–15 MB each); steady growth is the dated `archive/` copies ≈ 0.16 MB/min (≈ 0.23 GB/day). Retention: PROPOSED below |
 
 **Import order:** G2 weather daemon/ensure alignment first; then selective G1 packets (skip bulk media archives into git).
@@ -56,7 +56,7 @@ Weather data is intentionally retained in the Database tree rather than Git. The
 
 ### PROPOSED retention policy (2026-09-29 02:50 HST — not applied; needs Alexander sign-off)
 
-Measured at 02:44 HST: `WEATHER/Hawai'i` = 320 MB. `hfo/cdn.star.nesdis.noaa.gov` (GOES imagery) is 198 MB, `hfo/weather.gov` 104 MB, `reports` 12 MB. There are 282 `*_current*` files (220 MB, overwritten in place) and 550 dated `archive/` files (95 MB, growing ≈ 0.16 MB/min).
+Measured at 02:44 HST: `Weather/Hawai'i` = 320 MB. `hfo/cdn.star.nesdis.noaa.gov` (GOES imagery) is 198 MB, `hfo/weather.gov` 104 MB, `reports` 12 MB. There are 282 `*_current*` files (220 MB, overwritten in place) and 550 dated `archive/` files (95 MB, growing ≈ 0.16 MB/min).
 
 | Class | Where | Proposed rule |
 | --- | --- | --- |
@@ -67,7 +67,7 @@ Measured at 02:44 HST: `WEATHER/Hawai'i` = 320 MB. `hfo/cdn.star.nesdis.noaa.gov
 | Hurricanes | `hurricanes/` | keep all (small, high value) |
 | Daemon log | `logs/weather-poller.log` | rotate at 10 MB × 5 |
 | Older than the windows | — | **move** (never delete) to `2 - RootRecord-Database/Archive/Previous-Datasets/Weather-<YYYYMM>/` or the RootRecord-Weather-Database repo; deletion only with Alexander sign-off |
-| Budget alarm | — | WARN when `WEATHER/` > 20 GB or disk free < 50 GB |
+| Budget alarm | — | WARN when `Weather/` > 20 GB or disk free < 50 GB |
 
 ---
 

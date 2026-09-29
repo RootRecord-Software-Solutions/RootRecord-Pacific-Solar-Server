@@ -2,7 +2,7 @@
 
 Worklog and operational reporting for the Pacific desk — **and the structured intake spine for future radio / live-stream automation**.
 
-**Machine SOT:** `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/WORKLOG/`  
+**Machine SOT:** `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Worklog/`  
 **Human narrative:** Library `Documentation/01-operations/` (templates + session logs)  
 **Work order:** [WO-RPT-001](https://github.com/RootRecord-Software-Solutions/RootRecord-Library/blob/main/Documentation/06-development/Work-Orders/WO-RPT-001-Reports-Worklog-Domain-Import.md)
 
@@ -44,7 +44,7 @@ When AI processing is redesigned, prefer:
 | Domain folder | **`Reports/` only** |
 | worklog | `worklog_lib.sh`, `worklog_once.sh`, `worklog_poller.sh` |
 | jobs.py | `worklog_scan` 90s; `reports_daily_roll_up` 18:30; `reports_weekly_archive` 19:00 |
-| Data | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/WORKLOG/` |
+| Data | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Worklog/` |
 | Radio / stream pipeline | **Deferred** — spine ready; no on-air automation in this phase |
 
 ### Ecosystem path

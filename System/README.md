@@ -10,7 +10,7 @@ Host operating-system integration, system sampling, and desk host services.
 | --- | --- |
 | Domain folder | **`System/` only** |
 | jobs.py | `sys_stats_cycle` → `System/scripts/sys-sample.sh` |
-| Sample writes | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/SYSTEM/` |
+| Sample writes | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/System/` |
 | Worklog | **Reports/** (WO-RPT-001) — no longer System residual |
 | Ollama | **Active system service** — `ollama.service`, running as the `ollama` user |
 | Ollama model store | **Service-owned**; not `/home/rootrecord/.ollama/models` |
