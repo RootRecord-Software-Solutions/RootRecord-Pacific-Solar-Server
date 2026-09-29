@@ -4,6 +4,7 @@ Posts only clean replies (never DESK_LIVE / instruction leaks). Prefer FLM/NPU v
 from __future__ import annotations
 import json, os, re, subprocess, sys, time, urllib.error, urllib.request
 from pathlib import Path
+from datetime import datetime
 
 ROOT = Path(__file__).resolve().parents[1]
 CONF = ROOT / "config" / "relay.conf"
@@ -139,6 +140,68 @@ def post_as(voice_id, voices, chat_id, text, max_text):
     print(f"[ok] posted as {voice_id}")
     return True
 
+# Quiet-mode inbox (Alexander 2026-09-29, Library 08-ideas relay-quiet-mode-message-hold): while replies are
+# OFF, each consumed message (metadata + text) is appended to a git-ignored JSONL so it can be answered later
+# with relay-inbox-replay.py. Cut hourly into Archive/YYYY-MM-DD/. Local file only; never sends anything.
+INBOX_DIR = Path(os.environ.get("RR_RELAY_INBOX_DIR", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Communications/Relay-Inbox"))
+INBOX_CURRENT = "relay-inbox_current.jsonl"
+
+def persona_target(text, is_private, poll_voice, voices, triggers, default_voice):
+    if is_private:
+        return poll_voice
+    if wants_pipeline(text, triggers):
+        return "pipeline:" + ">".join(PIPELINE_ORDER)
+    return mentioned_voice(text, voices) or default_voice
+
+def inbox_rotate(inbox_dir=None, now=None):
+    """Move relay-inbox_current.jsonl to Archive/YYYY-MM-DD/relay-inbox_YYYY-MM-DD_HH00.jsonl once its first
+    record is from an earlier hour than now."""
+    inbox_dir = Path(inbox_dir or INBOX_DIR)
+    cur = inbox_dir / INBOX_CURRENT
+    if not cur.is_file() or cur.stat().st_size == 0:
+        return None
+    now = now or datetime.now().astimezone()
+    with cur.open(encoding="utf-8") as fh:
+        first = json.loads(fh.readline() or "{}")
+    t0 = datetime.fromisoformat(first.get("received_ts") or now.isoformat())
+    if t0.strftime("%Y-%m-%d_%H") == now.strftime("%Y-%m-%d_%H"):
+        return None
+    day = inbox_dir / "Archive" / t0.strftime("%Y-%m-%d")
+    day.mkdir(parents=True, exist_ok=True, mode=0o700)
+    dest = day / f"relay-inbox_{t0.strftime('%Y-%m-%d_%H')}00.jsonl"
+    if dest.exists():
+        with dest.open("a", encoding="utf-8") as out:
+            out.write(cur.read_text(encoding="utf-8"))
+        cur.write_text("", encoding="utf-8")
+    else:
+        os.replace(cur, dest)
+    os.chmod(dest, 0o600)
+    return dest
+
+def inbox_hold(upd, msg, text, target, inbox_dir=None):
+    """Append one consumed quiet-mode message to relay-inbox_current.jsonl (0600). Returns the path."""
+    inbox_dir = Path(inbox_dir or INBOX_DIR)
+    inbox_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+    inbox_rotate(inbox_dir)
+    chat, frm = msg.get("chat") or {}, msg.get("from") or {}
+    rec = {
+        "ts": datetime.fromtimestamp(int(msg.get("date") or time.time())).astimezone().isoformat(timespec="seconds"),
+        "received_ts": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "update_id": upd.get("update_id"),
+        "chat_id": chat.get("id"),
+        "chat_type": chat.get("type"),
+        "from": {"id": frm.get("id"), "username": frm.get("username"), "name": " ".join(x for x in (frm.get("first_name"), frm.get("last_name")) if x)},
+        "persona_target": target,
+        "message_id": msg.get("message_id"),
+        "text": text,
+        "status": "held",
+    }
+    cur = inbox_dir / INBOX_CURRENT
+    with cur.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    os.chmod(cur, 0o600)
+    return cur
+
 def main():
     cfg = load_kv(CONF)
     if cfg.get("ENABLED", "1") != "1":
@@ -169,7 +232,14 @@ def main():
     timeout = int(cfg.get("POLL_TIMEOUT", "20") or "20")
     print(f"[ok] relay chat={chat_id} poll={poll_voice} infer=FLM-prefer replies={'ON' if replies_enabled() else 'OFF (quiet; set RR_RELAY_REPLIES=1 to opt in)'}")
 
+    last_rotate = 0.0
     while True:
+        if not replies_enabled() and time.time() - last_rotate >= 60:
+            last_rotate = time.time()
+            try:
+                inbox_rotate()
+            except Exception as e:
+                print(f"[warn] relay inbox rotate failed: {type(e).__name__}", file=sys.stderr)
         try:
             body = api(token, "getUpdates", {"timeout": timeout, "offset": offset, "allowed_updates": ["message"]})
         except urllib.error.HTTPError as e:
@@ -198,7 +268,12 @@ def main():
                 print("[ok] silence cue — no post")
                 continue
             if not replies_enabled():
-                print(f"[quiet] update {offset - 1} consumed — replies OFF (RR_RELAY_REPLIES=0): no infer, no post")
+                try:
+                    inbox_hold(upd, msg, text, persona_target(text, is_private, poll_voice, voices, triggers, default_voice))
+                    held = "held in Relay-Inbox"
+                except Exception as e:
+                    held = f"inbox write FAILED ({type(e).__name__})"
+                print(f"[quiet] update {offset - 1} consumed — replies OFF (RR_RELAY_REPLIES=0): no infer, no post; {held}")
                 continue
 
             if is_private:

@@ -27,7 +27,8 @@ SF="$HERE/single-flight.sh"
 # AI processing log (g3-voice-ailog 2026-09-29): ONE JSON line per request -> Database Logs/AI/Inference/inference_current.jsonl.
 # Lengths/timings only — never prompt or reply text. Fail-safe: logging errors are swallowed. RR_INFER_LOG=0 disables.
 # RR_CALLER names the caller (default: parent process name). Daily rotation: ai-log-rotate.sh (gated report job).
-T0_MS=$(date +%s%3N)
+now_ms() { local t="${EPOCHREALTIME//[.,]/}"; echo $(( t / 1000 )); }  # bash clock: this desk's date ignores %3N
+T0_MS=$(now_ms)
 mem_avail_mb() { awk '/^MemAvailable:/{printf "%d", $2/1024}' /proc/meminfo 2>/dev/null; }
 MEM0=$(mem_avail_mb)
 INFER_LOG="${RR_INFER_LOG_FILE:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/AI/Inference/inference_current.jsonl}"
@@ -38,7 +39,7 @@ ailog() { # <route> <model> <exit_code> <fallback> <reply_chars>
   [[ "${RR_INFER_LOG:-1}" == "1" ]] || return 0
   {
     local lat cold=false c t m
-    lat=$(( $(date +%s%3N) - T0_MS ))
+    lat=$(( $(now_ms) - T0_MS ))
     [[ -n "${FLM_COLD:-}" ]] && cold=true
     c=$(printf '%s' "${CALLER:-unknown}" | tr -cd 'A-Za-z0-9._:@/+-' | cut -c1-64)
     t=$(printf '%s' "$TARGET" | tr -cd 'A-Za-z0-9._:@/+-' | cut -c1-64)
@@ -125,9 +126,9 @@ FLM_STARTED=""
 flm_up() { curl -sf -m 2 "$FLM_URL/v1/models" >/dev/null 2>&1; }
 flm_stop() {
   [[ -n "$FLM_STARTED" ]] || return 0
-  kill -TERM "$FLM_STARTED" 2>/dev/null
+  kill -TERM "$FLM_STARTED" 2>/dev/null || true  # || true: set -e is on here; a dead pid made kill rc=1 abort the script (rc=1 root cause, 2026-09-29 03:58)
   for _ in 1 2 3 4 5 6 7 8 9 10; do kill -0 "$FLM_STARTED" 2>/dev/null || break; sleep 1; done
-  kill -KILL "$FLM_STARTED" 2>/dev/null
+  kill -KILL "$FLM_STARTED" 2>/dev/null || true
   echo "[ok] FLM on-demand server stopped (pid $FLM_STARTED)" >&2
   FLM_STARTED=""
 }
