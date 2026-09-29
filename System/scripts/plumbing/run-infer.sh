@@ -109,7 +109,8 @@ trap 'flm_stop; exit 143' INT TERM
 if ! flm_up && [[ "${FLM_ON_DEMAND:-1}" == "1" ]] && command -v flm >/dev/null 2>&1 \
    && [[ "$("$SF" status 2>/dev/null | head -1)" == IDLE ]]; then
   FLM_LOG="${FLM_LOG:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/AI/FLM/flm.log}"
-  nice -n 10 flm serve "$FLM_MODEL" --pmode "${FLM_PMODE:-balanced}" --ctx-len "${FLM_CTX_LEN:-4096}" \
+  # setsid: own session, so flm's shutdown cannot signal this script (test 03:29: script died mid-trap, rc=1).
+  setsid nice -n 10 flm serve "$FLM_MODEL" --pmode "${FLM_PMODE:-balanced}" --ctx-len "${FLM_CTX_LEN:-4096}" \
     --host 127.0.0.1 --port "${FLM_URL##*:}" >>"$FLM_LOG" 2>&1 </dev/null &
   FLM_STARTED=$!
   echo "[ok] FLM on-demand start $FLM_MODEL pid=$FLM_STARTED" >&2
