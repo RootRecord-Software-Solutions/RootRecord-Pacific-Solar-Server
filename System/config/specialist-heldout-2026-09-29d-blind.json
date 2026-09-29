@@ -1,0 +1,30 @@
+{
+  "_info": [
+    "Blind routing set D (g3-router-v3, 2026-09-29 HST). Written BEFORE any router v3 change and before looking at any v3 result.",
+    "Scored exactly once after the v3 change (a v2 baseline is scored in the same run). No config change follows. Rows: [prompt, expected specialist, voice]."
+  ],
+  "written_at": "2026-09-29T05:08-10:00",
+  "cases": [
+    ["How many amps is the inverter pulling right now?", "rr-energy", "bruce"],
+    ["What's the pack voltage on the Delta?", "rr-energy", "bruce"],
+    ["Roughly how many watts does the NUC draw at idle?", "rr-energy", "ava"],
+    ["Would it be better to charge from the wall or wait for sun?", "rr-reason", "ava"],
+    ["Is it better to keep one big model or three small ones?", "rr-reason", "bruce"],
+    ["Which is better for the site, a hosted page or GitHub Pages?", "rr-reason", "ava"],
+    ["Where is the api-key for the weather feed stored?", "rr-security", "carly"],
+    ["Did someone change the ssh key on the box?", "rr-security", "carly"],
+    ["Is the single flight lock stuck?", "rr-system", "bruce"],
+    ["Restart the network globe service for me.", "rr-system", "bruce"],
+    ["Any trade winds forecast for Kona this weekend?", "rr-weather", "ava"],
+    ["Was there an earthquake near Pahala last night?", "rr-weather", "carly"],
+    ["Make a time lapse of this morning from channel 1.", "rr-cameras", "ava"],
+    ["Why is the a eyes grabber skipping frames?", "rr-cameras", "bruce"],
+    ["Give me a sed command to swap tabs for commas in a csv.", "rr-exec", "bruce"],
+    ["Carly, review this billing page before it goes live.", "rr-council-carly", "carly"],
+    ["Ava, write a two-line tagline for RootRecord.", "rr-council-ava", "ava"],
+    ["What's the rollback if the new poller build breaks?", "rr-council-bruce", "bruce"],
+    ["Good evening!", "generic", "ava"],
+    ["Who are you?", "generic", "carly"],
+    ["Can you sing me a song?", "generic", "bruce"]
+  ]
+}

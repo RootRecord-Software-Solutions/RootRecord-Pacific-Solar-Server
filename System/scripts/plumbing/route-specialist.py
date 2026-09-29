@@ -37,7 +37,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 PACIFIC = HERE.parent.parent.parent
 DEFAULT_CONFIG = PACIFIC / "System" / "config" / "specialist-routes.json"
-ROUTER_VERSION = "1.0"
+ROUTER_VERSION = "3.0"  # v3 (2026-09-29): keyword matching treats space / hyphen / underscore alike
 
 _OKINA = dict.fromkeys(map(ord, "\u02bb\u2018\u2019\u02bc'`\u00b4"), None)
 
@@ -49,6 +49,15 @@ def normalize(text: str) -> str:
     return t.translate(_OKINA).lower()
 
 
+_SEP = re.compile(r"[\s\-_]+")
+
+
+def kw_normalize(text: str) -> str:
+    """Keyword view: normalize() + space/hyphen/underscore runs -> one space ("master_key" = "master-key" = "master key").
+    Regex rules still see _norm_keep_backticks() text, so patterns such as wo-[a-z]+ or token shapes keep their separators."""
+    return _SEP.sub(" ", normalize(text)).strip()
+
+
 def _norm_keep_backticks(text: str) -> str:
     t = unicodedata.normalize("NFKD", text or "")
     t = "".join(ch for ch in t if not unicodedata.combining(ch))
@@ -56,7 +65,7 @@ def _norm_keep_backticks(text: str) -> str:
 
 
 def term_pattern(term: str) -> re.Pattern:
-    t = normalize(term).strip()
+    t = kw_normalize(term)
     prefix = t.endswith("*")
     if prefix:
         t = t[:-1]
@@ -68,13 +77,18 @@ def term_pattern(term: str) -> re.Pattern:
 def load_config(path: Path) -> dict:
     cfg = json.loads(path.read_text(encoding="utf-8"))
     for name, spec in cfg["specialists"].items():
-        spec["_kw"] = [(k, int(w), term_pattern(k)) for k, w in spec.get("keywords", {}).items()]
+        uniq: dict[str, tuple[str, int]] = {}  # v3: "time-lapse" and "time lapse" now collide -> keep one, max weight
+        for k, w in spec.get("keywords", {}).items():
+            nk = kw_normalize(k)
+            if nk not in uniq or int(w) > uniq[nk][1]:
+                uniq[nk] = (uniq.get(nk, (k, 0))[0], int(w))
+        spec["_kw"] = [(k, w, term_pattern(k)) for k, w in uniq.values()]
         spec["_rx"] = [(r["name"], int(r["weight"]), re.compile(r["pattern"], re.M)) for r in spec.get("regex", [])]
     return cfg
 
 
 def score(cfg: dict, prompt: str) -> list[dict]:
-    text = normalize(prompt)
+    text = kw_normalize(prompt)
     text_bt = _norm_keep_backticks(prompt)  # regexes like inline_code need backticks
     rows = []
     prio = {n: i for i, n in enumerate(cfg.get("priority", []))}
