@@ -14,7 +14,7 @@ RootRecord automation orchestration: poller engine, job catalog, stack lifecycle
 | **Log authority** | **`/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/` only** — not a Pacific domain folder |
 | Canonical poller log | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Automations/automations_current.log` (git-ignored; hourly `Archive/` is synced) |
 | Energy / System | LIVE on Pacific |
-| Weather | **LIVE** — `weather_poller` enabled and current reports passing |
+| Weather | **PASS** — `weather_poller` enabled; run + reports verified 2026-09-29 01:50/01:59 HST |
 | Ollama | **System service** — separate service-owned model store; operational logs are in journald |
 
 **Policy:** No old desk as poller host. Domain folders use existing capitalized names only. **Do not recreate `Logs/` under Pacific** — persistent logs belong to the Database tree (RootRecord-Database / desk `/home/rootrecord/Database`).
@@ -78,4 +78,4 @@ worklog · github_* · plumbing · telegram · a_eyes_* · energy actions
 
 ---
 
-*Updated 2026-09-29 HST — Weather live; Database log authority preserved.*
+*Updated 2026-09-29 HST — Weather PASS; Database log authority preserved.*
