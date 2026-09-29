@@ -5,11 +5,11 @@
 # HOW TO ADD: do not add a second poller.
 # Match MUST be ^python3 …council-relay.py — plain -f 'council-relay.py' false-positives
 # on pgrep/bash that merely mention the name.
-# Bak: /home/rootrecord/Database/GITHUB/
+# Runtime log: /home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Communications/
 # ==============================================================================
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOG=/home/rootrecord/Database/GITHUB/logs/council-relay.log
+LOG=/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Communications/council-relay.log
 mkdir -p "$(dirname "$LOG")"
 
 relay_up() {
