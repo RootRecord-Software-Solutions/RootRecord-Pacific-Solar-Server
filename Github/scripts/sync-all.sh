@@ -30,11 +30,3 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do
   (( success )) || echo "✗ [$id] sync failed after 3 attempts (continuing)"
 done < <(grep -v '^#' "$REPOS_CONF" | grep -v '^[[:space:]]*$')
 
-if [[ -f "$BAK_ROOT/flags/reload-poller-stack" ]]; then
-  if [[ -f "$RELOAD_SCRIPT" ]]; then
-    echo "↻ reload flag present — scheduling full poller stack reload"
-    bash "$RELOAD_SCRIPT" || echo "⚠ schedule-stack-reload failed (flag left for next cycle)"
-  else
-    echo "⚠ reload flag set but missing file: $RELOAD_SCRIPT"
-  fi
-fi
