@@ -39,7 +39,7 @@ _FIXED = [
 
 def chime_text(hour: int, minute: int) -> str:
     """Exact G1 chime sentence (media/voice/local_tts.build_time_announcement)."""
-    return f"It's {spoken_clock(hour, minute)}."
+    return f"It's {spoken_clock(hour, minute)}.".replace("..", ".")  # G1 gave "p.m.." — same speech, cleaner text
 
 
 def catalog() -> list[dict]:

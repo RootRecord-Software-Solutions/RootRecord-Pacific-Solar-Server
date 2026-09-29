@@ -11,6 +11,7 @@ Run through voice-render.sh (single-flight inference lock + nice 10), with Media
           persona in clips_manifest.json is reused; every other sentence (numbers, names, values) is
           rendered live. Missing clip -> the whole sentence is rendered live. The model is only
           loaded if at least one sentence is live.
+  asr     [--limit N]   whisper-tiny round trip of the clips (QC; results stored in the manifest)
   clips   --catalog [--persona Ava|Bruce|Carly] [--only-missing]
           Pre-render the phrase catalog (clip_catalog.py) into Clips/<Persona>/<slug>.wav with QC and
           update Clips/clips_manifest.json.
@@ -378,10 +379,18 @@ def mode_clips(a) -> dict:
             "total_s": round(time.monotonic() - t_all, 2), "manifest": str(MANIFEST)}
 
 
+def mode_asr(a) -> dict:
+    import voice_asr_check
+    man = load_manifest()
+    res = voice_asr_check.run(man, CLIPS_DIR, DB, limit=a.limit)
+    save_manifest(man)
+    return {"ok": True, "mode": "asr", **res}
+
+
 def main() -> int:
     be_polite()
     p = argparse.ArgumentParser(description="G3 Kokoro-82M voice renderer (non-resident)")
-    p.add_argument("mode", choices=["render", "stitch", "clips"])
+    p.add_argument("mode", choices=["render", "stitch", "clips", "asr"])
     p.add_argument("--report", default="voice_test")
     p.add_argument("--kind", default="ava")
     p.add_argument("--text", default="")
@@ -393,17 +402,18 @@ def main() -> int:
     p.add_argument("--catalog", action="store_true")
     p.add_argument("--persona")
     p.add_argument("--only-missing", action="store_true")
+    p.add_argument("--limit", type=int, default=0, help="asr: max clips to transcribe (0 = all)")
     a = p.parse_args()
     if a.text_file:
         a.text = Path(a.text_file).read_text(encoding="utf-8")
-    if a.mode != "clips" and not a.text.strip():
+    if a.mode not in ("clips", "asr") and not a.text.strip():
         print(json.dumps({"ok": False, "detail": "empty_text"}))
         return 1
-    if a.mode != "clips" and not re.fullmatch(r"[a-z0-9]+(?:_[a-z0-9]+)*", a.report):
+    if a.mode not in ("clips", "asr") and not re.fullmatch(r"[a-z0-9]+(?:_[a-z0-9]+)*", a.report):
         print(json.dumps({"ok": False, "detail": "report name must be lower_snake_case"}))
         return 2
     t0 = time.monotonic()
-    res = {"render": mode_render, "stitch": mode_stitch, "clips": mode_clips}[a.mode](a)
+    res = {"render": mode_render, "stitch": mode_stitch, "clips": mode_clips, "asr": mode_asr}[a.mode](a)
     res["wall_s"] = round(time.monotonic() - t0, 2)
     res["peak_rss_mb"] = peak_rss_mb()
     print(json.dumps(res, ensure_ascii=False))
