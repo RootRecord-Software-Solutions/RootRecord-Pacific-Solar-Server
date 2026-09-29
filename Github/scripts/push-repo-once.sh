@@ -33,14 +33,34 @@ is_runtime_code_tree() {
   return 1
 }
 
+# True when every file changed old..new is documentation (*.md, *.markdown, README*).
+# Docs-only pulls must not restart the poller stack (Alexander 2026-09-29). Unknown/empty diff -> false (reload as before).
+pull_is_docs_only() {
+  local old="$1" new="$2" f files any=0
+  [[ -n "$old" && -n "$new" ]] || return 1
+  files="$(git -c core.quotePath=false diff --name-only "$old" "$new" 2>/dev/null)" || return 1
+  while IFS= read -r f; do
+    [[ -n "$f" ]] || continue
+    any=1
+    case "${f##*/}" in
+      *.md|*.MD|*.markdown|README|README.*) ;;
+      *) return 1 ;;
+    esac
+  done <<< "$files"
+  (( any ))
+}
+
 mark_code_pulled() {
   local id="$1"
   local local_path="$2"
   local remote_head="$3"
+  local old_head="${4:-}"
   echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) id=$id head=$remote_head path=$local_path" \
     >> "$BAK_ROOT/flags/code-pulled.log"
   echo "$remote_head" > "$BAK_ROOT/flags/code-pulled.$id"
-  if is_runtime_code_tree "$id" "$local_path"; then
+  if is_runtime_code_tree "$id" "$local_path" && pull_is_docs_only "$old_head" "$remote_head"; then
+    echo "— [$id] docs-only pull (*.md/README) — no poller stack reload"
+  elif is_runtime_code_tree "$id" "$local_path"; then
     echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) runtime-code-pulled id=$id head=$remote_head" \
       > "$BAK_ROOT/flags/reload-poller-stack"
     echo "↻ [$id] CODE_PULLED — poller stack reload armed"
@@ -137,7 +157,7 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do
       exit 1
     fi
     echo "✓ [$id] GitHub changes merged into local $branch"
-    mark_code_pulled "$id" "$local_path" "$(git rev-parse HEAD)"
+    mark_code_pulled "$id" "$local_path" "$(git rev-parse HEAD)" "$local_head"
   fi
 
   for attempt in 1 2; do
@@ -161,7 +181,7 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do
         echo "✗ [$id] final merge conflict; local history preserved" >&2
         exit 1
       fi
-      mark_code_pulled "$id" "$local_path" "$(git rev-parse HEAD)"
+      mark_code_pulled "$id" "$local_path" "$(git rev-parse HEAD)" "$local_head"
     fi
 
     if git push -u "$remote_name" "HEAD:refs/heads/$branch" 2>&1 | redact; then
