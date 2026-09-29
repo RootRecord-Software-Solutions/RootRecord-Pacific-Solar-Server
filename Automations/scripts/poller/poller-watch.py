@@ -2,12 +2,13 @@
 """Pretty live view of the rootserver poller log (colors + filter).
 
 # INFO — MUST HAVE (future agents):
-# Ctrl-C OR closing this window MUST stop the entire stack (poller, cloudflared,
-# systemd unit). Never exit the window while leaving those processes up.
+# Ctrl-C stops the entire stack (poller, cloudflared, systemd unit).
+# Closing the window only exits the viewer — poller keeps running.
+# (Window-close used to stop the stack; deferred reload terminals were
+#  flashing closed and taking production down after every code pull.)
 """
 from __future__ import annotations
 
-import atexit
 import os
 import signal
 import subprocess
@@ -81,7 +82,6 @@ def aeyes_solar_state():
     return f"daylight active — sunset {sunset} HST"
 
 
-
 POLLER_DIR = Path(__file__).resolve().parent
 SCRIPTS = POLLER_DIR.parent  # Automations/scripts
 STOP = SCRIPTS / "stack" / "stop-poller-stack.sh"
@@ -98,16 +98,16 @@ LOCAL = os.environ.get("POLLER_LOCAL", "http://127.0.0.1:8799/")
 RST = "\033[0m"
 BOLD = "\033[1m"
 DIM = "\033[2m"
-GREEN = "\033[38;2;133;153;0m"       # solarized green
+GREEN = "\033[38;2;133;153;0m"
 BRIGHT_GREEN = "\033[38;2;133;153;0m"
-CYAN = "\033[38;2;42;161;152m"      # solarized cyan
-YELLOW = "\033[38;2;181;137;0m"      # solarized yellow
-RED = "\033[38;2;220;50;47m"         # solarized red
-MAGENTA = "\033[38;2;211;54;130m"    # solarized magenta
-WHITE = "\033[38;2;238;232;213m"     # solarized base2
-BLUE = "\033[38;2;38;139;210m"       # solarized blue
-ORANGE = "\033[38;2;203;75;22m"      # solarized orange
-BASE0 = "\033[38;2;131;148;150m"     # solarized base0
+CYAN = "\033[38;2;42;161;152m"
+YELLOW = "\033[38;2;181;137;0m"
+RED = "\033[38;2;220;50;47m"
+MAGENTA = "\033[38;2;211;54;130m"
+WHITE = "\033[38;2;238;232;213m"
+BLUE = "\033[38;2;38;139;210m"
+ORANGE = "\033[38;2;203;75;22m"
+BASE0 = "\033[38;2;131;148;150m"
 
 _stop_done = False
 
@@ -126,7 +126,7 @@ def unit_state() -> str:
 
 
 def stop_everything(reason: str = "exit") -> None:
-    """Idempotent full stack stop. Called on Ctrl-C, window close, or signals."""
+    """Idempotent full stack stop. Only for explicit Ctrl-C / SIGTERM."""
     global _stop_done
     if _stop_done:
         return
@@ -152,24 +152,44 @@ def stop_everything(reason: str = "exit") -> None:
         pass
 
 
-def _on_signal(signum: int, _frame) -> None:
+def _on_stop_signal(signum: int, _frame) -> None:
     names = {
         signal.SIGINT: "Ctrl-C",
         signal.SIGTERM: "SIGTERM",
-        signal.SIGHUP: "window close (SIGHUP)",
     }
     reason = names.get(signum, f"signal {signum}")
     stop_everything(reason)
     sys.exit(0)
 
 
+def _on_window_close(signum: int, _frame) -> None:
+    """SIGHUP / window close — exit viewer only; leave poller running."""
+    try:
+        print(
+            f"\n{DIM}window close — viewer exit only (poller keeps running; "
+            f"Ctrl-C to stop stack){RST}",
+            flush=True,
+        )
+    except Exception:
+        pass
+    sys.exit(0)
+
+
 def _install_handlers() -> None:
-    for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
-        try:
-            signal.signal(sig, _on_signal)
-        except Exception:
-            pass
-    atexit.register(lambda: stop_everything("window exit"))
+    try:
+        signal.signal(signal.SIGINT, _on_stop_signal)
+    except Exception:
+        pass
+    try:
+        signal.signal(signal.SIGTERM, _on_stop_signal)
+    except Exception:
+        pass
+    try:
+        signal.signal(signal.SIGHUP, _on_window_close)
+    except Exception:
+        pass
+    # Do NOT register atexit(stop_everything) — normal window close must not
+    # tear down production after automated reload terminal hand-offs.
 
 
 def banner() -> None:
@@ -189,8 +209,8 @@ def banner() -> None:
     print(f"{CYAN}│{RST}  jobs     {DIM}{SCRIPTS / 'jobs.py'}{RST}", flush=True)
     print(f"{CYAN}│{RST}  log      {DIM}{LOG}{RST}", flush=True)
     print(
-        f"{CYAN}│{RST}  {YELLOW}Ctrl-C or close window stops EVERY process"
-        f" (poller + cloudflared + unit){RST}",
+        f"{CYAN}│{RST}  {YELLOW}Ctrl-C stops stack"
+        f" · close window = viewer only{RST}",
         flush=True,
     )
     print(f"{CYAN}{BOLD}╰{bar}──{RST}", flush=True)
