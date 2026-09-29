@@ -8,14 +8,15 @@ Worklog and operational reporting for the Pacific desk.
 
 ---
 
-## Status (2026-09-28 ~19:00 HST) — Phase B in git (desk soak)
+## Status (2026-09-28 ~19:04 HST) — Phase B LIVE
 
 | Item | State |
 | --- | --- |
 | Domain folder | **`Reports/` only** |
-| scripts | `worklog_lib.sh`, `worklog_once.sh`, `worklog_poller.sh` (from G2 + hygiene) |
+| scripts | `worklog_lib.sh`, `worklog_once.sh`, `worklog_poller.sh` |
 | jobs.py | `worklog_scan` → Pacific `Reports/scripts/worklog_once.sh` |
 | Data | `/home/rootrecord/Database/WORKLOG/` |
+| Desk soak | **Confirmed** — domain tags + `source_job=worklog_scan` |
 | Daily Library roll-up | Phase C — not yet |
 | Weekly archive | Phase D / WO-ARCH — not yet |
 
@@ -37,6 +38,7 @@ bash "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-S
 - Never log secrets; scrub against `master-key.env` delete/key patterns
 - Do not bulk-import G1 `reports.py` public draft queue in this phase
 - A-Eyes / clips are not owned here
+- Prefer `jobs.py` `worklog_scan` over a second long-lived `worklog_poller.sh`
 
 ### Naming
 
@@ -44,4 +46,4 @@ Use **`Reports/`** only. Do not create a parallel lowercase `reports` package pa
 
 ---
 
-*WO-RPT-001 Phase A+B 2026-09-28 HST.*
+*WO-RPT-001 Phase B LIVE 2026-09-28 ~19:04 HST.*
