@@ -4,15 +4,15 @@ Weather subsystem ownership: collection, ensure scripts, and related desk weathe
 
 ---
 
-## Status (2026-09-28)
+## Status (2026-09-29)
 
 | Item | State |
 | --- | --- |
-| Domain folder in this repo | **Partial** — ensure scripts |
-| Full daemon | G2 / residual skills path |
+| Domain folder in this repo | **Imported** — G2 weather daemon copied here 2026-09-29 (G2 copy kept) |
+| Full daemon | Pacific `Weather/scripts/run_poller.py`, venv `Weather/.venv` (git-ignored, `requirements.txt`), job `weather_poller` enabled |
 | G1 Old packets | `weather/live-wx`, `nws-hawaii`, `rr-noaa`, `hurricane-*`, `radar-archive`, … |
 | Published data | `RootRecord-Weather-Database` |
-| Local data | Database weather staging (not this git tree) |
+| Local data | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/WEATHER/Hawai'i/` (git-ignored in Database; old dataset archived under `Archive/Previous-Datasets/G2-old-root-20260929/WEATHER/`) |
 
 **Import order:** G2 weather daemon/ensure alignment first; then selective G1 packets (skip bulk media archives into git).
 

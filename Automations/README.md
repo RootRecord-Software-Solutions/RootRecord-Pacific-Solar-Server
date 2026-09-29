@@ -11,8 +11,8 @@ RootRecord automation orchestration: poller engine, job catalog, stack lifecycle
 | Domain | **Live / authoritative** for poller core |
 | Desk path | `…/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Automations/` |
 | systemd | `rr-rootserver-poller.service` — ExecStart on Pacific (quoted) |
-| **Log authority** | **`/home/rootrecord/Database/Logs/` only** — not a Pacific domain folder |
-| Canonical poller log | `/home/rootrecord/Database/Logs/Automations/automations_current.log` |
+| **Log authority** | **`/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/` only** — not a Pacific domain folder |
+| Canonical poller log | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Automations/automations_current.log` (git-ignored; hourly `Archive/` is synced) |
 | Energy / System | LIVE on Pacific |
 
 **Policy:** No old desk as poller host. Domain folders use existing capitalized names only. **Do not recreate `Logs/` under Pacific** — persistent logs belong to the Database tree (RootRecord-Database / desk `/home/rootrecord/Database`).
@@ -39,7 +39,7 @@ Pacific domain shells (code): Automations, Communications, Energy, System, Weath
 
 ```text
 ExecStart=/bin/bash "…/Automations/scripts/poller/run-poller.sh"
-POLLER_LOG=/home/rootrecord/Database/Logs/Automations/automations_current.log
+POLLER_LOG="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Automations/automations_current.log"
 push → pull → schedule-stack-reload / systemctl --user restart rr-rootserver-poller
 ```
 

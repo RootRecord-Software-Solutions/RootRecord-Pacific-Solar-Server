@@ -9,7 +9,7 @@ Telegram communication integration, alerts, and council-relay services.
 | Item | State |
 | --- | --- |
 | Folder in this repo | **Shell only** |
-| Live relay today | Legacy `~/.ollama/skills/coms/telegram/` |
+| Live relay today | Pacific `Communications/telegram/` (poller boot job `council_relay`); G2 copy kept dormant |
 | Standing rule | **One** getUpdates owner (council-relay) |
 
 ---

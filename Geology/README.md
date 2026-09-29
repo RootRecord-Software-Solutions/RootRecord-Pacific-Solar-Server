@@ -11,7 +11,7 @@
 | Domain folder | **`Geology/` only** (no parallel `geology` / `kilauea` / `earthquakes` runtime folders on Pacific) |
 | Ownership | Desk-side observation, polling, ingest, and operator tooling |
 | `jobs.py` | None yet — wire jobs here when scripts are imported |
-| Data (off-git) | Prefer `/home/rootrecord/Database/` under a Geology-aligned tree (e.g. `GEOLOGY/`, `KILAUEA/`, `EARTHQUAKES/`) when introduced |
+| Data (off-git) | Prefer `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/` under a Geology-aligned tree (e.g. `GEOLOGY/`, `KILAUEA/`, `EARTHQUAKES/`) when introduced |
 | Public products | Alert apps / websites may live in product repos; **this domain owns desk runtime** for the same capability |
 
 ### Ecosystem path

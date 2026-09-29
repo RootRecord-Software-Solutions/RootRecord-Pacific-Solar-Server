@@ -12,7 +12,7 @@ Energy monitoring, EcoFlow device reads, and power subsystem ownership for the P
 | Python package | **`Energy`** — matches folder; rewrite G2 `import energy` → `import Energy` |
 | Launcher | `Energy/lib/py` — PYTHONPATH = vendor + Pacific root |
 | jobs.py | Pacific paths (quoted) |
-| Data | `/home/rootrecord/Database/ENERGY/` |
+| Data | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/ENERGY/` (sqlite store: `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/ROOTRECORD/`) |
 
 ### Ecosystem path
 

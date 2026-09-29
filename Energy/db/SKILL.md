@@ -27,7 +27,7 @@ Legacy JSON remains a compatibility/output layer during migration.
 
 Target production path:
 
-`/home/rootrecord/Database/ROOTRECORD/rootrecord.db`
+`/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/ROOTRECORD/rootrecord.db` (env `ROOTRECORD_DB`; layers `ROOTRECORD_LAYERS_DIR`; git-ignored)
 
 Importing modules does not create telemetry. Live ingestion explicitly initializes the schema on first persistence.
 

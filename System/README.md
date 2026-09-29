@@ -10,7 +10,7 @@ Host operating-system integration, system sampling, and desk host services.
 | --- | --- |
 | Domain folder | **`System/` only** |
 | jobs.py | `sys_stats_cycle` → `System/scripts/sys-sample.sh` |
-| Sample writes | `/home/rootrecord/Database/SYSTEM/` |
+| Sample writes | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/SYSTEM/` |
 | Worklog | **Reports/** (WO-RPT-001) — no longer System residual |
 | Plumbing / telegram / a-eyes | Still G2 until imported |
 
