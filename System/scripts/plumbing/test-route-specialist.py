@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # ==============================================================================
 # # INFO — unit-style test for route-specialist.py (no models are run)
-# Usage: test-route-specialist.py [--out <markdown table path>]
+# Usage: test-route-specialist.py [--out <markdown table path>] [--heldout <file.json> ...]
 # Routes labelled sample prompts, prints an accuracy table, and checks the JSONL log is
 # metadata-only (no prompt text) using a throwaway log file. Exit 0 = accuracy >= 90% and privacy OK.
 # HOW TO ADD: append (prompt, expected, voice) rows to CASES when a specialist or keyword changes.
@@ -60,6 +60,26 @@ CASES = [
     ("good night everyone", "generic", "bruce"),
     ("thanks, that helped a lot", "generic", "carly"),
     ("lol", "generic", "ava"),
+    # v2 tuning rows (g3-router-v2, 2026-09-29): phrasing taken from Library domain docs (energy/weather/system/A-EYES/
+    # security/public-surface WOs). Tuned against; the fresh held-out file below is NOT.
+    ("What's the PV output on the panels today?", "rr-energy", "bruce"),
+    ("Is the power bank charged enough for tonight?", "rr-energy", "ava"),
+    ("Heavy showers expected on Maui?", "rr-weather", "ava"),
+    ("What's the surf and swell looking like?", "rr-weather", "carly"),
+    ("Did the auto-sync push to GitHub?", "rr-system", "bruce"),
+    ("Is the internet down again?", "rr-system", "bruce"),
+    ("Why does the tunnel keep disconnecting?", "rr-system", "bruce"),
+    ("Show me the latest stills from A-EYES.", "rr-cameras", "ava"),
+    ("Is the camera feed still recording?", "rr-cameras", "carly"),
+    ("Was a bot token pushed to the public repo?", "rr-security", "carly"),
+    ("Is it safe to expose port 8799?", "rr-security", "bruce"),
+    ("Somebody tried to log in as root, is that an attack?", "rr-security", "carly"),
+    ("Convert these timestamps into a markdown table.", "rr-exec", "ava"),
+    ("Exact command to tail the automations log?", "rr-exec", "bruce"),
+    ("What are the downsides of one NPU for everything?", "rr-reason", "bruce"),
+    ("Walk me through whether to split the repos.", "rr-reason", "ava"),
+    ("Write website copy for the solar board launch.", "rr-council-ava", "ava"),
+    ("Hello there!", "generic", "bruce"),
 ]
 
 # Held-out prompts written AFTER the keyword table, never tuned against. Reported separately; not part of the gate.
@@ -78,7 +98,10 @@ HELDOUT = [
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="")
+    ap.add_argument("--heldout", action="append", default=[],
+                    help="extra held-out JSON file(s) ({cases: [[prompt, expected, voice], ...]}); default: System/config/specialist-heldout-*.json")
     a = ap.parse_args()
+    extra = [Path(x) for x in a.heldout] or sorted((HERE.parent.parent / "config").glob("specialist-heldout-*.json"))
     cfg = rs.load_config(rs.DEFAULT_CONFIG)
     rows, ok = [], 0
     for prompt, want, voice in CASES:
@@ -119,6 +142,14 @@ def main() -> int:
             "| # | Prompt | Voice | Expected | Routed | Confidence | Matched | OK |", "| --- | --- | --- | --- | --- | --- | --- | --- |"]
     for i, r in enumerate(hrows, 1):
         out.append(f"| H{i} | {r[0]} | {r[1]} | {r[2]} | {r[3]} | {r[4]} | {r[5]} | {'✅' if r[6] else '❌'} |")
+    for hf in extra:
+        cases = json.loads(hf.read_text(encoding="utf-8"))["cases"]
+        xr = [(p_, v_, w_, rs.decide(cfg, p_, v_)) for p_, w_, v_ in cases]
+        xok = sum(d_["specialist"] == w_ for _, _, w_, d_ in xr)
+        out += ["", f"## Held-out file `{hf.name}` (never tuned against; provenance in the file's _info): {xok}/{len(xr)} = {xok/len(xr):.1%}", "",
+                "| # | Prompt | Voice | Expected | Routed | Confidence | Matched | OK |", "| --- | --- | --- | --- | --- | --- | --- | --- |"]
+        for i, (p_, v_, w_, d_) in enumerate(xr, 1):
+            out.append(f"| X{i} | {p_} | {v_} | {w_} | {d_['specialist']} | {d_['confidence']} | {', '.join(d_['matched']) or '-'} | {'✅' if d_['specialist'] == w_ else '❌'} |")
     out += ["", "| Expected route | Correct |", "| --- | --- |"] + [f"| {k} | {v[0]}/{v[1]} |" for k, v in by.items()]
     text = "\n".join(out) + "\n"
     print(text)

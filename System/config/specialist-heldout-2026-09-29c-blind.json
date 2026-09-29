@@ -1,0 +1,31 @@
+{
+  "_info": [
+    "Blind routing set (g3-router-v2, 2026-09-29 HST). Written AFTER router v2 tuning finished and scored exactly once; no config change followed.",
+    "Purpose: an unbiased check, because set 29b's failures were visible while v2 was tuned. Rows: [prompt, expected specialist, voice]."
+  ],
+  "written_at": "2026-09-29T04:55-10:00",
+  "cases": [
+    ["What percent is the River pack at?", "rr-energy", "bruce"],
+    ["Can we run the space heater off the batteries tonight?", "rr-energy", "carly"],
+    ["How many kilowatt hours did we make yesterday?", "rr-energy", "ava"],
+    ["Is there a flash flood watch for the Hamakua coast?", "rr-weather", "ava"],
+    ["Did Kilauea do anything overnight?", "rr-weather", "bruce"],
+    ["What's the high temperature going to be tomorrow?", "rr-weather", "carly"],
+    ["How much free disk is left on the desk?", "rr-system", "bruce"],
+    ["Is the poller dashboard responding?", "rr-system", "bruce"],
+    ["Why did the ollama service restart at 3am?", "rr-system", "bruce"],
+    ["Pull up the timelapse from yesterday afternoon.", "rr-cameras", "ava"],
+    ["Is channel 2 showing anything or is it black?", "rr-cameras", "carly"],
+    ["Should I rotate the Telegram bot token?", "rr-security", "carly"],
+    ["Who has access to the master key file?", "rr-security", "carly"],
+    ["Write a bash loop that renames every jpg to include the date.", "rr-exec", "bruce"],
+    ["Print the JSON keys in host-last.json.", "rr-exec", "bruce"],
+    ["Is it better to buy a second battery or more panels?", "rr-reason", "ava"],
+    ["Explain why single-flight matters on a box this small.", "rr-reason", "bruce"],
+    ["Give me a catchy tagline for the public status page.", "rr-council-ava", "ava"],
+    ["Bruce, what's the rollback plan if the cutover fails?", "rr-council-bruce", "bruce"],
+    ["Carly, can you audit this before we publish?", "rr-council-carly", "carly"],
+    ["What's your favorite color?", "generic", "ava"],
+    ["Aloha!", "generic", "carly"]
+  ]
+}

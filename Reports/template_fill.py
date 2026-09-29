@@ -349,6 +349,8 @@ def draft(keys: dict[str, str], facts_lines: list[str], mode: str, f: Facts, log
               + "\n".join(f"{k}: <{v}>" for k, v in keys.items()) + "\n\nFACTS:\n" + facts)
     env = {k: v for k, v in os.environ.items() if k != "DESK_LIVE_FILE"}
     env["RR_CALLER"] = "template_fill"
+    if os.environ.get("RR_TEMPLATE_SPECIALIST_HOOK", "1") == "1":  # explicit specialist via the run-infer.sh hook (FLM gets its SYSTEM)
+        env.update({"RR_SPECIALIST_ROUTING": "1", "RR_SPECIALIST": SPECIALIST})
     t0 = now()
     try:
         r = subprocess.run(["nice", "-n", "10", str(RUN_INFER), SPECIALIST, prompt], capture_output=True, text=True, timeout=180, env=env)

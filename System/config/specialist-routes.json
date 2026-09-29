@@ -6,9 +6,10 @@
     "prefer: flm = NPU llama3.2:1b with this specialist's SYSTEM block as the system message (FLM cannot load Modelfiles); ollama = the built specialist model on CPU, keep_alive 0.",
     "fallback: Ollama model used when the specialist model is not installed (checked only with --verify-model).",
     "confidence = min(1, top/saturation) * (0.6 + 0.4 * (top - second) / top). Below threshold -> default (the caller voice's persona model).",
+    "v2 (2026-09-29, g3-router-v2): synonyms from Library domain docs (Energy/Weather/System/A-EYES/Security/public-surface WOs) + tightened liveness regex; see Library AI-Specialist-Models-and-Routing.md §3.1.",
     "HOW TO ADD: copy a specialists entry, write Modelfiles/Specialists/<name>.Modelfile, ollama create <name> -f it, add labelled prompts to test-route-specialist.py, re-run the test."
   ],
-  "version": 1,
+  "version": 2,
   "threshold": 0.30,
   "saturation": 6.0,
   "modelfile_root": "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/AI/Ollama/Modelfiles",
@@ -27,24 +28,25 @@
       "function": "execution",
       "description": "Exact commands, edits, checklists, formatting. Lowest temperature.",
       "ollama_model": "rr-exec", "modelfile": "Specialists/rr-exec.Modelfile", "prefer": "flm", "fallback": "qwen2.5:1.5b-instruct-q8_0",
-      "keywords": {"command": 2, "commands": 2, "one-liner": 3, "oneliner": 3, "bash": 3, "shell": 2, "script": 2, "grep": 2, "sed": 2, "awk": 2, "execute": 3, "snippet": 2, "cli": 2, "exact steps": 3, "checklist": 2, "step list": 2, "json": 2, "yaml": 2, "format as": 3, "convert": 2, "rename": 2, "backup": 2, "back up": 2, "find files": 2, "chmod": 3, "mkdir": 3, "curl": 2, "regex": 2, "how do i": 1, "how to": 1, "give me the": 1, "write a": 1, "run": 1},
+      "keywords": {"command": 2, "commands": 2, "one-liner": 3, "oneliner": 3, "bash": 3, "shell": 2, "script": 2, "grep": 2, "sed": 2, "awk": 2, "execute": 3, "snippet": 2, "cli": 2, "exact steps": 3, "checklist": 2, "step list": 2, "json": 2, "yaml": 2, "format as": 3, "convert": 2, "rename": 2, "backup": 2, "back up": 2, "find files": 2, "chmod": 3, "mkdir": 3, "curl": 2, "regex": 2, "how do i": 1, "how to": 1, "give me the": 1, "write a": 1, "run": 1, "exact command": 3, "tail": 2, "markdown": 2, "table": 1, "one-line": 3},
       "regex": [
         {"name": "imperative_opener", "pattern": "^\\s*(run|execute|list|show|create|make|write|give|print|convert|rename|copy|move|find)\\b", "weight": 1},
-        {"name": "inline_code", "pattern": "`[^`]+`", "weight": 1}
+        {"name": "inline_code", "pattern": "`[^`]+`", "weight": 1},
+        {"name": "transform_into", "pattern": "\\b(turn|convert|reformat|format|change)\\b.{0,60}\\binto\\b", "weight": 3}
       ]
     },
     "rr-reason": {
       "function": "reasoning",
       "description": "Why / compare / trade-off / plan / root-cause analysis.",
       "ollama_model": "rr-reason", "modelfile": "Specialists/rr-reason.Modelfile", "prefer": "ollama", "fallback": "llama3.2:3b-instruct-q4_K_M",
-      "keywords": {"why": 2, "explain": 2, "compare": 3, "comparison": 3, "trade-off*": 3, "tradeoff*": 3, "pros and cons": 3, "should we": 2, "should i": 2, "analy*": 2, "reasoning": 2, "root cause": 3, "think through": 3, "step by step": 2, "plan": 1, "strategy": 2, "what if": 2, "versus": 2, "vs": 2, "evaluate": 2, "decide": 2, "decision": 2, "best approach": 3, "better": 1, "risk*": 1, "implication*": 2},
+      "keywords": {"why": 2, "explain": 2, "compare": 3, "comparison": 3, "trade-off*": 4, "tradeoff*": 4, "pros and cons": 4, "should we": 2, "should i": 2, "analy*": 2, "reasoning": 2, "root cause": 3, "think through": 3, "step by step": 2, "plan": 1, "strategy": 2, "what if": 2, "versus": 2, "vs": 2, "evaluate": 2, "decide": 2, "decision": 2, "best approach": 3, "better": 1, "risk*": 1, "implication*": 2, "downside*": 4, "upside*": 3, "walk me through": 4, "worth it": 2},
       "regex": []
     },
     "rr-energy": {
       "function": "topic",
       "description": "Solar, EcoFlow packs, SOC, watts, power budget.",
       "ollama_model": "rr-energy", "modelfile": "Specialists/rr-energy.Modelfile", "prefer": "flm", "fallback": "qwen2.5:1.5b-instruct-q8_0",
-      "keywords": {"solar": 3, "battery": 3, "batteries": 3, "soc": 3, "state of charge": 3, "ecoflow": 3, "delta 2": 3, "river 2": 3, "watt*": 2, "kwh": 3, "wh": 2, "inverter": 3, "power budget": 3, "power draw": 3, "power station": 3, "charging": 2, "charge": 1, "pack": 1, "packs": 1, "b1": 1, "b2": 1, "b3": 1, "generator": 2, "ac output": 2, "off-grid": 2, "offgrid": 2, "energy": 2, "power": 1, "starlink": 1},
+      "keywords": {"solar": 3, "battery": 3, "batteries": 3, "soc": 3, "state of charge": 3, "ecoflow": 3, "delta 2": 3, "river 2": 3, "watt*": 2, "kwh": 3, "wh": 2, "inverter": 3, "power budget": 3, "power draw": 3, "power station": 3, "charging": 2, "charge": 1, "pack": 1, "packs": 1, "b1": 1, "b2": 1, "b3": 1, "generator": 2, "ac output": 2, "off-grid": 2, "offgrid": 2, "energy": 2, "power": 1, "starlink": 1, "panel*": 3, "pv": 3, "power bank": 3, "charge level": 3, "charged": 2, "producing": 1, "delta2": 3, "river2pro": 3, "energy-status": 2, "plugged in": 1},
       "regex": [
         {"name": "power_unit", "pattern": "\\b\\d+(\\.\\d+)?\\s?(w|kw|kwh|wh)\\b", "weight": 2},
         {"name": "percent_charge", "pattern": "\\b\\d{1,3}\\s?%\\s*(battery|soc|charge)", "weight": 2}
@@ -54,41 +56,45 @@
       "function": "topic",
       "description": "Hawaiʻi weather, storms, Kīlauea, earthquakes, hazards.",
       "ollama_model": "rr-weather", "modelfile": "Specialists/rr-weather.Modelfile", "prefer": "flm", "fallback": "qwen2.5:1.5b-instruct-q8_0",
-      "keywords": {"weather": 3, "forecast*": 3, "rain*": 2, "wind*": 2, "storm*": 2, "hurricane*": 3, "tropical storm": 3, "tsunami": 3, "temperature": 1, "humidity": 2, "nws": 3, "noaa": 3, "goes": 1, "satellite": 1, "radar": 2, "kilauea": 3, "volcano*": 3, "eruption": 3, "erupting": 3, "lava": 3, "vog": 3, "earthquake*": 3, "quake*": 3, "magnitude": 2, "usgs": 2, "hvo": 3, "flood*": 2, "surf": 2, "advisory": 2, "warning": 1, "alert": 1, "alerts": 1, "sunrise": 2, "sunset": 2, "weather manager": 2},
+      "keywords": {"weather": 3, "forecast*": 3, "rain*": 2, "wind*": 2, "storm*": 2, "hurricane*": 3, "tropical storm": 3, "tsunami": 3, "temperature": 1, "humidity": 2, "nws": 3, "noaa": 3, "goes": 1, "satellite": 1, "radar": 2, "kilauea": 3, "volcano*": 3, "eruption": 3, "erupting": 3, "lava": 3, "vog": 3, "earthquake*": 3, "quake*": 3, "magnitude": 2, "usgs": 2, "hvo": 3, "flood*": 2, "surf": 2, "advisory": 2, "warning": 1, "alert": 1, "alerts": 1, "sunrise": 2, "sunset": 2, "weather manager": 2, "shower*": 2, "downpour*": 2, "pour*": 2, "swell*": 3, "waves": 2, "cloudy": 2, "overcast": 2, "lightning": 2, "thunder*": 2, "summit": 1, "hilo": 1, "kona": 1, "maui": 1, "kauai": 1, "oahu": 1, "molokai": 1, "lanai": 1, "big island": 1, "north shore": 1},
       "regex": []
     },
     "rr-system": {
       "function": "topic",
       "description": "Poller, jobs, services, host resources, plumbing, NPU/Ollama, logs.",
       "ollama_model": "rr-system", "modelfile": "Specialists/rr-system.Modelfile", "prefer": "flm", "fallback": "qwen2.5:1.5b-instruct-q8_0",
-      "keywords": {"poller": 3, "jobs.py": 3, "jobs catalog": 2, "systemd": 3, "systemctl": 3, "service": 1, "services": 1, "rr-rootserver-poller": 3, "restart*": 2, "reboot*": 2, "cpu": 2, "ram": 2, "memory": 2, "disk space": 3, "disk": 2, "swap": 2, "uptime": 2, "load average": 3, "load": 1, "process*": 1, "pid": 2, "crash*": 2, "log": 1, "logs": 1, "journal": 2, "journalctl": 3, "cloudflared": 3, "tunnel": 2, "ollama": 2, "flm": 2, "npu": 3, "single-flight": 3, "single flight": 3, "run-infer": 3, "lock": 1, "dashboard": 2, "poller-watch": 3, "cron": 1, "auto-sync": 2, "host": 1, "server": 1, "health check": 2, "8799": 2, "relay": 1},
+      "keywords": {"poller": 3, "jobs.py": 3, "jobs catalog": 2, "systemd": 3, "systemctl": 3, "service": 1, "services": 1, "rr-rootserver-poller": 3, "restart*": 2, "reboot*": 2, "cpu": 2, "ram": 2, "memory": 2, "disk space": 3, "disk": 2, "swap": 2, "uptime": 2, "load average": 3, "load": 1, "process*": 1, "pid": 2, "crash*": 2, "log": 1, "logs": 1, "journal": 2, "journalctl": 3, "cloudflared": 3, "tunnel": 2, "ollama": 2, "flm": 2, "npu": 3, "single-flight": 3, "single flight": 3, "run-infer": 3, "lock": 1, "dashboard": 2, "poller-watch": 3, "cron": 1, "auto-sync": 2, "host": 1, "server": 1, "health check": 2, "8799": 2, "relay": 2, "github": 2, "sync": 2, "push*": 1, "internet": 2, "network": 2, "wifi": 2, "starlink": 2, "online": 1, "offline": 1, "disconnect*": 2, "sluggish": 2, "loaded": 1},
       "regex": [
-        {"name": "liveness_question", "pattern": "\\b(is|are|why is|why are)\\b.*\\b(running|down|stuck|hung|crashing|dead)\\b", "weight": 2}
+        {"name": "liveness_question", "pattern": "\\b(is|are|why is|why are)\\s+(\\S+\\s+){0,2}((running|down|stuck|hung|crashing|dead|online|offline|working)\\b|up\\s*[?.!]*\\s*$)", "weight": 2},
+        {"name": "keeps_failing", "pattern": "\\b(keeps?|kept)\\s+(dropping|failing|crashing|restarting|timing out|disconnecting|going down)\\b", "weight": 2}
       ]
     },
     "rr-security": {
       "function": "specialty",
       "description": "Defensive AppSec: secrets, tokens, threats, hardening, leaks.",
       "ollama_model": "rr-security", "modelfile": "Specialists/rr-security.Modelfile", "prefer": "ollama", "fallback": "carly-telegram",
-      "keywords": {"security": 3, "appsec": 3, "secret*": 3, "token*": 3, "credential*": 3, "password*": 3, "leak*": 3, "api key": 3, "vulnerab*": 3, "cve": 3, "exploit*": 3, "phishing": 3, "scam*": 3, "spam*": 2, "malware": 3, "attack*": 2, "threat*": 3, "firewall": 3, "ssh": 2, "2fa": 3, "mfa": 3, "encrypt*": 2, "authentication": 2, "permission*": 2, "least privilege": 3, "zero trust": 3, "intrusion": 3, "breach*": 3, "hack*": 3, "brute force": 3, "failed login*": 3, "master-key": 3, ".env": 3, "connection.json": 3, "fail2ban": 3, "ufw": 3, "harden*": 3},
+      "keywords": {"security": 3, "appsec": 3, "secret*": 3, "token*": 3, "credential*": 3, "password*": 3, "leak*": 3, "api key": 3, "vulnerab*": 3, "cve": 3, "exploit*": 3, "phishing": 3, "scam*": 3, "spam*": 2, "malware": 3, "attack*": 2, "threat*": 3, "firewall": 3, "ssh": 2, "2fa": 3, "mfa": 3, "encrypt*": 2, "authentication": 2, "permission*": 2, "least privilege": 3, "zero trust": 3, "intrusion": 3, "breach*": 3, "hack*": 3, "brute force": 3, "failed login*": 3, "master-key": 3, ".env": 3, "connection.json": 3, "fail2ban": 3, "ufw": 3, "harden*": 3, "expose*": 3, "is it safe": 2, "log in": 2, "login*": 2, "bot key": 3, "discord bot": 2, "unknown ip": 3, "ip address*": 1},
       "regex": [
-        {"name": "token_shape", "pattern": "\\b(ghp|gho|sk|xox[bp])[-_][a-z0-9]{6,}", "weight": 4}
+        {"name": "token_shape", "pattern": "\\b(ghp|gho|sk|xox[bp])[-_][a-z0-9]{6,}", "weight": 4},
+        {"name": "secret_in_git", "pattern": "\\b(commit|push|leak|post|upload|paste)\\w*\\b.{0,40}\\b(keys?|tokens?|passwords?|secrets?|credentials?)\\b|\\b(keys?|tokens?|passwords?|secrets?|credentials?)\\b.{0,30}\\b(committed|pushed|leaked|posted|uploaded|pasted)\\b", "weight": 3},
+        {"name": "login_attempts", "pattern": "\\b(try|trying|tried|attempts?|attempted)\\s+to\\s+(log|sign)\\s*(in|on)\\b", "weight": 3}
       ]
     },
     "rr-cameras": {
       "function": "topic",
       "description": "Night Owl DVR, frame grabs, cam server, timelapses.",
       "ollama_model": "rr-cameras", "modelfile": "Specialists/rr-cameras.Modelfile", "prefer": "flm", "fallback": "qwen2.5:1.5b-instruct-q8_0",
-      "keywords": {"camera*": 3, "cam": 2, "cams": 2, "cctv": 3, "dvr": 3, "night owl": 3, "nvr": 2, "rtsp": 3, "frame": 1, "frames": 1, "snapshot*": 2, "timelapse*": 3, "time-lapse": 3, "time lapse": 3, "ffmpeg": 2, "footage": 3, "motion": 2, "8791": 2, "grab_frame": 3, "cam_server": 3, "a-eyes": 3, "watermark": 2, "image": 1, "images": 1, "video": 1},
+      "keywords": {"camera*": 3, "cam": 2, "cams": 2, "cctv": 3, "dvr": 3, "night owl": 3, "nvr": 2, "rtsp": 3, "frame": 1, "frames": 1, "snapshot*": 2, "timelapse*": 3, "time-lapse": 3, "time lapse": 3, "ffmpeg": 2, "footage": 3, "motion": 2, "8791": 2, "grab_frame": 3, "cam_server": 3, "a-eyes": 3, "watermark": 2, "image": 1, "images": 1, "video": 1, "stills": 2, "feed": 2, "security feed": 3, "camera feed": 3, "recording": 2, "grab": 1},
       "regex": [
-        {"name": "cam_channel", "pattern": "\\bch(annel)?\\s?[1-4]\\b", "weight": 3}
+        {"name": "cam_channel", "pattern": "\\bch(annel)?\\s?[1-4]\\b", "weight": 3},
+        {"name": "a_still", "pattern": "\\b(a|the|latest|last|new)\\s+stills?\\b", "weight": 2}
       ]
     },
     "rr-council-ava": {
       "function": "specialty",
       "description": "Ava Ivy council voice: architecture, design, brand, public wording.",
       "ollama_model": "rr-council-ava", "modelfile": "Specialists/rr-council-ava.Modelfile", "prefer": "ollama", "fallback": "ava-telegram",
-      "keywords": {"ava": 1, "ava ivy": 2, "@avaivy_bot": 2, "architecture": 3, "architect": 2, "design": 2, "brand*": 3, "public copy": 3, "messaging": 2, "press release": 3, "announcement": 2, "announce": 2, "website copy": 3, "positioning": 3, "product vision": 3, "roadmap": 2, "vision": 2, "public voice": 3, "rootmc": 2, "tagline": 3, "slogan": 3, "blog post": 2, "marketing": 3, "what do you think": 2, "weigh in": 2, "council": 1},
+      "keywords": {"ava": 1, "ava ivy": 2, "@avaivy_bot": 2, "architecture": 3, "architect": 2, "design": 2, "brand*": 3, "public copy": 3, "messaging": 2, "press release": 3, "announcement": 3, "announce": 2, "website copy": 3, "positioning": 3, "product vision": 3, "roadmap": 2, "vision": 2, "public voice": 3, "rootmc": 2, "tagline": 3, "slogan": 3, "blog post": 2, "marketing": 3, "what do you think": 2, "weigh in": 2, "council": 1, "website": 2, "public site": 3, "launch": 1},
       "regex": []
     },
     "rr-council-bruce": {

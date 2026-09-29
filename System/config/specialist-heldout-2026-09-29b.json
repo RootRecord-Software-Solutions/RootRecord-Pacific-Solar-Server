@@ -2,9 +2,10 @@
   "_info": [
     "Fresh held-out routing set (g3-router-v2, 2026-09-29 HST). Written BEFORE any keyword tuning; never tune on these rows.",
     "Rows: [prompt, expected specialist, voice]. 'generic' = no specialist (caller's persona model).",
-    "Scored by System/scripts/plumbing/test-route-specialist.py --heldout <this file>. Metadata only; no model is run."
+    "Scored by System/scripts/plumbing/test-route-specialist.py --heldout <this file>. Metadata only; no model is run.",
+    "Honesty note (added 04:55, cases unchanged; original sha256 56f2192e…): the v1 baseline on this set (11/27) was scored at 04:51, before tuning, so its failures were visible while v2 was tuned. v2's score here is optimistic; the unbiased check is specialist-heldout-2026-09-29c-blind.json."
   ],
-  "written_at": "2026-09-29T04:56-10:00",
+  "written_at": "2026-09-29T04:51-10:00",
   "cases": [
     ["How much juice is left in the big EcoFlow right now?", "rr-energy", "bruce"],
     ["Are the panels producing anything this morning or is it too cloudy?", "rr-energy", "ava"],

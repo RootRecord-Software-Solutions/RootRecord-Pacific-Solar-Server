@@ -7,13 +7,14 @@
 #   echo "prompt" | route-specialist.py --shell --voice ava
 #   route-specialist.py --list                 # specialist table
 #   route-specialist.py --system rr-energy     # print a specialist's SYSTEM block (FLM route)
+#   route-specialist.py --force rr-exec --shell --with-system   # explicit specialist (run-infer.sh RR_SPECIALIST)
 # Config: System/config/specialist-routes.json (tracked). Stdlib only. Never runs a model.
 # Output: chosen specialist + confidence; below the threshold -> "generic" (caller voice model).
 # Log: one metadata-only JSON line per decision -> Database Logs/AI/Routing/routing_current.jsonl
 #      (prompt length + matched keyword/rule NAMES; never prompt text). RR_ROUTE_LOG=0 or --no-log disables.
 # FLM/NPU: flm cannot load Ollama Modelfiles, so for prefer=flm the SYSTEM block is sent as the system
 #      message to the FLM base model (llama3.2:1b). --with-system adds RR_SPEC_SYSTEM to --shell output.
-# Gate: run-infer.sh hook is PROPOSED only (RR_SPECIALIST_ROUTING=1, default off) — see Library
+# Gate: run-infer.sh hook LANDED 2026-09-29 ~04:56, OFF unless RR_SPECIALIST_ROUTING=1 — see Library
 #      Documentation/00-architecture/AI-Specialist-Models-and-Routing.md. Fail-safe: errors -> generic, exit 0.
 # HOW TO ADD a specialist: see the "_info" block in the config and the Library doc.
 # Created 2026-09-29 HST (g3-specialists). Bak: /home/rootrecord/Database/GITHUB/
@@ -175,6 +176,30 @@ def decide(cfg: dict, prompt: str, voice: str | None, verify: bool = False) -> d
     return d
 
 
+def forced(cfg: dict, name: str, voice: str | None, verify: bool = False) -> dict:
+    """Explicit specialist request (run-infer.sh RR_SPECIALIST=<name>, or TARGET=rr-*): no scoring, confidence 1.0.
+    Unknown name -> generic (fail-safe)."""
+    if name not in cfg["specialists"]:
+        d = decide(cfg, "", voice, verify)
+        d["matched"] = ["forced-unknown"]
+        return d
+    spec = cfg["specialists"][name]
+    dflt = cfg["default"]
+    voice_model = dflt.get("voice_models", {}).get((voice or "").lower())
+    d = {"specialist": name, "function": spec.get("function"), "default_used": False, "ollama_model": spec["ollama_model"],
+         "prefer": spec.get("prefer", "flm"), "fallback": spec.get("fallback") or voice_model or dflt.get("fallback"),
+         "modelfile": str(Path(cfg["modelfile_root"]) / spec["modelfile"]), "matched": ["forced"],
+         "confidence": 1.0, "threshold": float(cfg.get("threshold", 0.3)), "score": 0, "runner_up": None, "runner_up_score": 0,
+         "flm_model": cfg.get("flm", {}).get("base_model", "llama3.2:1b"), "voice": voice or None, "model_verified": None, "_rows": []}
+    if verify:
+        have = installed_models()
+        if have is not None:
+            d["model_verified"] = d["ollama_model"] in have
+            if not d["model_verified"] and d.get("fallback"):
+                d["ollama_model"] = d["fallback"]
+    return d
+
+
 def log_decision(cfg: dict, d: dict, prompt: str, caller: str, elapsed_us: int, error: str | None = None) -> None:
     if os.environ.get("RR_ROUTE_LOG", "1") != "1":
         return
@@ -233,6 +258,7 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--with-system", action="store_true", help="--shell: also emit RR_SPEC_SYSTEM (+ temperature/max tokens)")
     ap.add_argument("--verify-model", action="store_true", help="check ollama /api/tags; use fallback if model missing")
     ap.add_argument("--no-log", action="store_true")
+    ap.add_argument("--force", metavar="SPECIALIST", default="", help="explicit specialist (no scoring, confidence 1.0); unknown -> generic")
     a = ap.parse_args(argv)
 
     t0 = time.perf_counter_ns()
@@ -263,7 +289,8 @@ def main(argv: list[str]) -> int:
     caller = a.caller or (Path(f"/proc/{os.getppid()}/comm").read_text().strip() if Path(f"/proc/{os.getppid()}/comm").exists() else "")
     err = None
     try:
-        d = decide(cfg, prompt, a.voice or None, verify=a.verify_model)
+        d = (forced(cfg, a.force, a.voice or None, verify=a.verify_model) if a.force
+             else decide(cfg, prompt, a.voice or None, verify=a.verify_model))
     except Exception as e:
         err = type(e).__name__
         d = {"specialist": "generic", "default_used": True, "confidence": 0.0, "score": 0, "threshold": cfg.get("threshold"),

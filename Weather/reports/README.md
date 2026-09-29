@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T04:47:30-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T04:55:30-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -2839,19 +2839,19 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-29T04:31:45.709636-10:00 HST |
+| **Collected** | 2026-09-29T04:48:45.667386-10:00 HST |
 
 ```text
-484
-SRHW80 PHFO 291346
+923
+SRHW80 PHFO 291446
 RRAHFO
 
 Hawaii Rainfall Summary
 National Weather Service Honolulu HI
-345 AM HST Tue Sep 29 2026
+445 AM HST Tue Sep 29 2026
 
 :
-.B HFO  0929 H  DH03 /DRH-03/PPT/DRH-06/PPQ/DRH-12/PPK/DRH-24/PPD
+.B HFO  0929 H  DH04 /DRH-03/PPT/DRH-06/PPQ/DRH-12/PPK/DRH-24/PPD
 :
 :Automated rain gage reports from around the State of Hawaii.
 :These are provisional reports that have not been quality
@@ -2859,7 +2859,7 @@ National Weather Service Honolulu HI
 :
 :T=Trace Rainfall, M=Missing Data
 :
-:Precipitation totals ending  3 AM HST
+:Precipitation totals ending  4 AM HST
 :
 :Island of Kauai                                   Inches
 :ID     Location                         3-Hr    6-Hr   12-Hr   24-Hr
@@ -2873,24 +2873,24 @@ WLGH1 : Waialae (USGS)              :    0.00  /  0.00  /  0.01  /  0.03
 LLMH1 : Lower Limahuli (UHM)        :    0.00  /  0.00  /  0.00  /  0.04
 WNHH1 : Wainiha (12010)             :    0.00  /  0.00  /  0.00  /  0.01
 WIPH1 : Waipa (UHM)                 :    0.00  /  0.00  /  0.00  /  0.16
-HNIH1 : Hanalei (12009)             :    0.00  /  0.00  /  0.00  /  0.18
+HNIH1 : Hanalei (12009)             :    0.00  /  0.00  /  0.00  /  0.17
 WLLH1 : Mount Waialeale (USGS)      :      M   /    M   /    M   /    M
 PRIH1 : Princeville Airport (12011) :    0.00  /  0.00  /  0.01  /  0.15
 CMGH1 : Common Ground (UHM)         :    0.00  /  0.00  /  0.00  /  0.37
-HLIH1 : Hanalei (RAWS)              :    0.00  /  0.00  /  0.00  /  0.41
+HLIH1 : Hanalei (RAWS)              :    0.00  /  0.00  /  0.00  /  0.40
 MLDH1 : Moloaa Dairy (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
 ANHH1 : Anahola (12001)             :    0.00  /  0.00  /  0.00  /  0.18
 KPIH1 : Kapahi (12003)              :    0.00  /  0.00  /  0.00  /  0.09
-WLDH1 : N Wailua Ditch (USGS)       :    0.04  /  0.05  /  0.09  /  0.63
+WLDH1 : N Wailua Ditch (USGS)       :    0.04  /  0.05  /  0.08  /  0.62
 WUHH1 : Wailua (12005)              :    0.00  /  0.00  /  0.00  /  0.09
-WIRH1 : Waiahi Rain Gage (USGS)     :    0.00  /  0.00  /  0.00  /  0.25
+WIRH1 : Waiahi Rain Gage (USGS)     :    0.00  /  0.00  /  0.00  /  0.24
 LIHH1 : Lihue Var. Stn. (12006)     :    0.00  /  0.00  /  0.00  /  0.09
-HNMH1 : Hanamaulu (UHM)             :    0.00  /  0.00  /  0.00  /  0.20
+HNMH1 : Hanamaulu (UHM)             :    0.00  /  0.00  /  0.00  /  0.19
 HLI   : Lihue Airport (ASOS)        :    0.00  /  0.00  /  0.00  /  0.00
 :       Leeward Sites
 OMAH1 : Omao (12004)                :    0.00  /  0.00  /  0.00  /  0.02
 LNTH1 : Lawai NTBG (UHM)            :    0.00  /  0.00  /  0.00  /  0.01
-KHEH1 : Kalaheo (12008)             :    0.00  /  0.00  /  0.00  /  0.05
+KHEH1 : Kalaheo (12008)             :    0.00  /  0.00  /  0.00  /  0.04
 PAKH1 : Port Allen (HSOIS)          :    0.00  /  0.00  /  0.00  /  0.00
 HNPH1 : Hanapepe (12002)            :    0.00  /  0.00  /  0.00  /  0.00
 POPH1 : Puu Opae (RAWS)             :    0.00  /  0.00  /  0.00  /  0.00
@@ -2945,7 +2945,7 @@ KMRH1 : Kamananui Stream (USGS)     :    0.00  /  0.00  /  0.00  /  0.01
 PPRH1 : Pupukea Road (USGS)         :    0.00  /  0.00  /  0.00  /  0.01
 PMHH1 : Poamoho RG 1 (USGS)         :    0.00  /  0.00  /  0.00  /  0.04
 DLGH1 : Dillingham (RAWS)           :    0.00  /  0.00  /  0.00  /  0.00
-AALH1 : Kaala (UHM)                 :    0.01  /  0.01  /  0.01  /  0.03
+AALH1 : Kaala (UHM)                 :    0.00  /  0.01  /  0.01  /  0.03
 PECH1 : Waipio (13019)              :    0.00  /  0.00  /  0.00  /  0.00
 KUNH1 : Kunia Substation (13021)    :    0.00  /  0.00  /  0.00  /  0.00
 HOFH1 : Honouliuli (RAWS)           :    0.00  /  0.00  /  0.00  /  0.00
@@ -3054,7 +3054,7 @@ KKUH1 : Keaumo (RAWS)               :    0.00  /  0.00  /  0.00  /  0.00
 KMOH1 : Kealakomo (RAWS)            :    0.00  /  0.00  /  0.00  /  0.00
 PLIH1 : Pali 2 (RAWS)               :    0.00  /  0.00  /  0.00  /  0.00
 KPRH1 : Kapapala (RAWS)             :    0.00  /  0.00  /  0.00  /  0.00
-KAYH1 : Kapapala Ranch (15003)      :    0.01  /  0.01  /  0.01  /  0.01
+KAYH1 : Kapapala Ranch (15003)      :    0.00  /  0.01  /  0.01  /  0.01
 PPLH1 : Pahala (15004)              :    0.00  /  0.00  /  0.00  /  0.00
 KIOH1 : Kaiholena (UHM)             :      M   /    M   /    M   /    M
 NENH1 : Nene Cabin (RAWS)           :    0.00  /  0.00  /  0.00  /  0.00
@@ -3062,7 +3062,7 @@ SOPH1 : South Point (HSOIS)         :    0.00  /  0.00  /  0.00  /  0.00
 LKHH1 : Lower Kahuku (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
 KRCH1 : Kahuku Ranch (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
 KOMH1 : Kona Hema (UHM)             :    0.00  /  0.00  /  0.00  /  0.00
-PHRH1 : Puho CS (RAWS)              :    0.00  /  0.00  /  0.00  /  0.13
+PHRH1 : Puho CS (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
 HAUH1 : Honaunau (15007)            :    0.00  /  0.00  /  0.00  /  0.00
 KLEH1 : Kealakekua (15008)          :    0.00  /  0.00  /  0.00  /  0.00
 WIHH1 : Waiaha Stream (15009)       :    0.00  /  0.00  /  0.00  /  0.00
@@ -3088,7 +3088,7 @@ WKVH1 : Waikoloa (RAWS)             :    0.00  /  0.00  /  0.00  /  0.00
 PERH1 : Puhe CS (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
 KHRH1 : Kohala Ranch (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
 KASH1 : Kahua Ranch (15006)         :    0.00  /  0.00  /  0.00  /  0.00
-KEHH1 : Kehena (UHM)                :    0.00  /  0.00  /  0.00  /  0.00
+KEHH1 : Kehena (UHM)                :    0.01  /  0.01  /  0.01  /  0.01
 PLAH1 : Puuloa (UHM)                :    0.00  /  0.00  /  0.00  /  0.00
 .END
 
@@ -3112,7 +3112,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T04:40:50.122609-10:00 HST |
+| **Collected** | 2026-09-29T04:48:49.563465-10:00 HST |
 
 ```text
                         
@@ -3899,7 +3899,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_atlc_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=2 |
-| **Collected** | 2026-09-29T04:45:30.172339-10:00 HST |
+| **Collected** | 2026-09-29T04:53:30.141159-10:00 HST |
 
 ```text
 750 ACCA62 KNHC 291124TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3913,7 +3913,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_atlc_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=7 |
-| **Collected** | 2026-09-29T04:46:30.293822-10:00 HST |
+| **Collected** | 2026-09-29T04:54:30.011241-10:00 HST |
 
 ```text
 750 ACCA62 KNHC 291124TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3927,7 +3927,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_cpac_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=2 |
-| **Collected** | 2026-09-29T01:52:46.795062-10:00 HST |
+| **Collected** | 2026-09-29T04:49:30.113407-10:00 HST |
 
 ```text
 750 ACCA62 KNHC 291124TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3941,7 +3941,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_cpac_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=7 |
-| **Collected** | 2026-09-29T01:53:46.936082-10:00 HST |
+| **Collected** | 2026-09-29T04:50:29.971626-10:00 HST |
 
 ```text
 750 ACCA62 KNHC 291124TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3955,7 +3955,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_epac_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=epac&fdays=2 |
-| **Collected** | 2026-09-29T01:54:46.709406-10:00 HST |
+| **Collected** | 2026-09-29T04:51:29.921259-10:00 HST |
 
 ```text
 750 ACCA62 KNHC 291124TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3969,7 +3969,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_epac_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=epac&fdays=7 |
-| **Collected** | 2026-09-29T04:44:30.021970-10:00 HST |
+| **Collected** | 2026-09-29T04:52:30.128948-10:00 HST |
 
 ```text
 750 ACCA62 KNHC 291124TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3983,7 +3983,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-29T04:47:29.980253-10:00 HST |
+| **Collected** | 2026-09-29T04:55:29.947494-10:00 HST |
 
 ```text
 Home
@@ -4107,11 +4107,11 @@ Search
 Top News of the Day...
 view past news
 
-Last update Tue, 29 Sep 2026 14:46:51 UTC
+Last update Tue, 29 Sep 2026 14:54:58 UTC
 
 NHC issuing advisories for the Atlantic on
 
-TS Fay
+TD Fay
 
 and
 
@@ -4125,11 +4125,15 @@ and
 
 TS Rachel
 
+and
+
+TD Nineteen-E
+
 NHC issuing advisories for the Central Pacific on
 
 Hurricane Nolo
 
-Marine warnings are in effect for the Atlantic and Eastern Pacific
+Marine warnings are in effect for the Eastern Pacific
 
 Key messages regarding Hurricane Polo
 
@@ -4175,51 +4179,19 @@ None
 
 Disturbances:
 
-ALL
-
-1
+None
 
 Disturbances:
 
-ALL
-
-1
+None
 
 Disturbances:
 
-ALL
-
-1
+None
 
 Disturbances:
 
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
+None
 
 View Full Graphical Tropical Weather Outlook
 | Marine Products
@@ -4351,49 +4323,49 @@ Buoys |
 Grids |
 Storm Archive
 
-...RACHEL BECOMING BETTER ORGANIZED OFFSHORE OF SOUTHWESTERN MEXICO...
+...RACHEL SLIGHTLY STRONGER...
 
-6:00 AM CST Tue Sep 29
+9:00 AM CST Tue Sep 29
 
-Location: 15.1°N 104.8°W
+Location: 15.3°N 105.0°W
 
 Moving: WNW at 13 mph
 
-Min pressure: 992 mb
+Min pressure: 987 mb
 
-Max sustained: 60 mph
+Max sustained: 65 mph
 
 Public
 
 Advisory
 
-#9A
+#10
 
-600 AM CST
+900 AM CST
 
 Forecast
 
 Advisory
 
-#9
+#10
 
-0900 UTC
+1500 UTC
 
 Forecast
 
 Discussion
 
-#9
+#10
 
-300 AM CST
+900 AM CST
 
 Wind Speed
 
 Probabilities
 
-#9
+#10
 
-0900 UTC
+1500 UTC
 
 Productos en español:
 
@@ -4445,6 +4417,99 @@ Currents
 
 Rainfall
 Potential
+
+Tropical Depression Nineteen-E
+
+Satellite |
+Buoys |
+Grids |
+Storm Archive
+
+...NEW TROPICAL DEPRESSION EXPECTED TO BE SHORT-LIVED WELL OFFSHORE OF MEXICO...
+
+8:00 AM PDT Tue Sep 29
+
+Location: 14.4°N 131.6°W
+
+Moving: E at 9 mph
+
+Min pressure: 1004 mb
+
+Max sustained: 35 mph
+
+Public
+
+Advisory
+
+#1
+
+800 AM PDT
+
+Forecast
+
+Advisory
+
+#1
+
+1500 UTC
+
+Forecast
+
+Discussion
+
+#1
+
+800 AM PDT
+
+Wind Speed
+
+Probabilities
+
+#1
+
+1500 UTC
+
+Productos en español:
+
+(más información)
+
+Aviso
+
+Publico
+
+Pronóstico
+
+Discusión
+
+Wind Speed
+Probabilities
+
+Arrival Time
+of Winds
+
+Wind
+History
+
+Interactive
+Cone
+
+Warnings/Cone
+Static Images
+
+Warnings/Cone
+Interactive Map
+
+Experimental Cone
+Static Images
+
+Experimental Cone
+Interactive Map
+
+Warnings and
+Surface Wind
+
+Rip
+Currents
 
 Central North Pacific
 (140°W to 180°)
@@ -4560,56 +4625,56 @@ Tropical Weather Discussion
 
 1215 UTC Tue Sep 29 2026
 
-Tropical Storm Fay
+Tropical Depression Fay
 
 Satellite |
 Buoys |
 Grids |
 Storm Archive
 
-...FAY CONTINUES TO MOVE SOUTHWESTWARD OVER THE ATLANTIC OCEAN...
+...FAY WEAKENS INTO A DEPRESSION...
 
-5:00 AM AST Tue Sep 29
+11:00 AM AST Tue Sep 29
 
-Location: 25.0°N 46.8°W
+Location: 24.2°N 47.3°W
 
-Moving: SW at 13 mph
+Moving: SW at 12 mph
 
-Min pressure: 1008 mb
+Min pressure: 1010 mb
 
-Max sustained: 40 mph
+Max sustained: 35 mph
 
 Public
 
 Advisory
 
-#37
+#38
 
-500 AM AST
+1100 AM AST
 
 Forecast
 
 Advisory
 
-#37
+#38
 
-0900 UTC
+1500 UTC
 
 Forecast
 
 Discussion
 
-#37
+#38
 
-500 AM AST
+1100 AM AST
 
 Wind Speed
 
 Probabilities
 
-#37
+#38
 
-0900 UTC
+1500 UTC
 
 Productos en español:
 
@@ -4660,49 +4725,49 @@ Buoys |
 Grids |
 Storm Archive
 
-...HANNA HOLDS STEADY WHILE MAINTAINING AN EAST-SOUTHEAST TRACK...
+...HANNA MOVING SOUTHEASTWARD AND SLIGHTLY WEAKER...
 
-5:00 AM AST Tue Sep 29
+11:00 AM AST Tue Sep 29
 
-Location: 35.2°N 46.2°W
+Location: 34.6°N 45.5°W
 
-Moving: ESE at 15 mph
+Moving: SE at 12 mph
 
-Min pressure: 1002 mb
+Min pressure: 1004 mb
 
-Max sustained: 45 mph
+Max sustained: 40 mph
 
 Public
 
 Advisory
 
-#4
+#5
 
-500 AM AST
+1100 AM AST
 
 Forecast
 
 Advisory
 
-#4
+#5
 
-0900 UTC
+1500 UTC
 
 Forecast
 
 Discussion
 
-#4
+#5
 
-500 AM AST
+1100 AM AST
 
 Wind Speed
 
 Probabilities
 
-#4
+#5
 
-0900 UTC
+1500 UTC
 
 Productos en español:
 
@@ -7826,7 +7891,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-29T04:31:31.145658-10:00 HST |
+| **Collected** | 2026-09-29T04:48:30.840966-10:00 HST |
 
 ```text
 National Weather Service
