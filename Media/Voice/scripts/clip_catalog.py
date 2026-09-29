@@ -55,6 +55,12 @@ PROPOSED_PRONUNCIATION = [
     ("Liliʻuokalani", "lee lee oo oh kah lah nee", "li-li-ʻu-o-ka-LA-ni; glottal stop before u"),
     ("Nuʻuanu", "noo oo ah noo", "nu-ʻu-A-nu; glottal stop between the two u"),
     ("Māhele", "mah heh leh", "MĀ-he-le; ā long"),
+    # B variant from an existing source: misaki us_gold.json (the Kokoro G2P's own lexicon, G1 venv) has
+    # Liliuokalani = lIlˌiəwˌɑkəlˈɑni (English-style). Rendered unrespelled so Alexander can compare A vs B.
+    ("Liliʻuokalani", "Liliuokalani", "B: misaki us_gold English IPA lIlˌiəwˌɑkəlˈɑni", "_b_misaki"),
+    # B for Māhele: the G2P reads A's final "leh" as "lay" (lˈA). Inline phonemes (misaki [word](/ipa/) syntax),
+    # from Wiktionary /maˈhe.le/ [məˈhɛ.lɛ] (G1 state/store/hawaiian-dictionary) with the kahakō long first vowel.
+    ("Māhele", "[Māhele](/mˌɑhˈɛlɛ/)", "B: inline IPA mˌɑhˈɛlɛ", "_b_ipa"),
 ]
 
 
@@ -69,8 +75,8 @@ def catalog() -> list[dict]:
         for m in (0, 30):
             out.append({"persona": "Ava", "slug": f"chime_{h:02d}{m:02d}", "text": chime_text(h, m),
                         "kinds": ["chime"], "source": "media/hourly-chime + local_tts.build_time_announcement (:00/:30)"})
-    for name, resp, _note in PROPOSED_PRONUNCIATION:
-        slug = "proposed_" + name.lower().replace("ʻ", "").translate(str.maketrans("āēīōū", "aeiou"))
+    for name, resp, _note, *suffix in PROPOSED_PRONUNCIATION:
+        slug = "proposed_" + name.lower().replace("ʻ", "").translate(str.maketrans("āēīōū", "aeiou")) + "".join(suffix)
         out.append({"persona": "Ava", "slug": slug, "text": f"{name}.", "spoken": f"{resp}.", "kinds": [],
                     "source": "PROPOSED respelling (Hawaiian phonology)", "proposed": True})
     return out

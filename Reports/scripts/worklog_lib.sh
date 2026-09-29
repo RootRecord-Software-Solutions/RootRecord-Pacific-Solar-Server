@@ -54,6 +54,9 @@ should_skip() {
   local p="$1"
   case "$p" in
     */RootRecord-Database/Worklog/*|*/RootRecord-Database/Worklog) return 0 ;;
+    # Private (Alexander 2026-09-29): never log these trees
+    */Desktop/"old txt"/*|*/Desktop/"old txt") return 0 ;;
+    */"I'll sort these models tomorrow"/*|*/"I'll sort these models tomorrow") return 0 ;;
     */RootRecord-Database/KEYLOGGER/*|*/RootRecord-Database/KEYLOGGER) return 0 ;;
     */RootRecord-Database/Github/*|*/RootRecord-Database/Github) return 0 ;;
     */.git/*|*/.git) return 0 ;;
@@ -81,6 +84,8 @@ find_changed() {
   find "$HOME_ROOT" -xdev \
     \( \
       -path "$HOME_ROOT/Database/WORKLOG" -o \
+      -path "$HOME_ROOT/Desktop/old txt" -o \
+      -path "$HOME_ROOT/RootRecord-Ecosystem/I'll sort these models tomorrow" -o \
       -path "$HOME_ROOT/Database/KEYLOGGER" -o \
       -path "$HOME_ROOT/Database/GITHUB" -o \
       -path "$HOME_ROOT/.ollama/models" -o \
