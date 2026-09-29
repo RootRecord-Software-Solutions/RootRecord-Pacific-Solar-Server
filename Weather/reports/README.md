@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T06:12:30-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T06:20:30-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -2839,7 +2839,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-29T05:56:46.106449-10:00 HST |
+| **Collected** | 2026-09-29T06:13:46.108621-10:00 HST |
 
 ```text
 490
@@ -3112,7 +3112,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T06:05:50.261616-10:00 HST |
+| **Collected** | 2026-09-29T06:13:48.668497-10:00 HST |
 
 ```text
                         
@@ -7888,7 +7888,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-29T05:56:31.049872-10:00 HST |
+| **Collected** | 2026-09-29T06:13:31.081445-10:00 HST |
 
 ```text
 National Weather Service
@@ -7937,9 +7937,9 @@ INFORMATION
 
 Wireless Emergency Alerts
 
-Weather-Ready Nation
-
 Brochures
+
+Weather-Ready Nation
 
 Cooperative Observers
 
