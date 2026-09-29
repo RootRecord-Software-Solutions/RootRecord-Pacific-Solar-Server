@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 # ==============================================================================
-# paths.py — shared filesystem paths for the energy skill
+# paths.py — shared filesystem paths for the Energy domain
 # ------------------------------------------------------------------------------
 # Measured data → Database/ENERGY only (not Network, not GitHub telemetry).
 # Layout style (standing): keep SECTION banners if this file grows catalogs.
 # ==============================================================================
-"""Shared paths for energy skill. Measured data → Database/ENERGY only."""
+"""Shared paths for Energy domain. Measured data → Database/ENERGY only."""
 from __future__ import annotations
 
 from pathlib import Path
 
 # ====================================================
-# SECTION: SKILL + CONFIG
+# SECTION: DOMAIN + CONFIG
 # ====================================================
 # Phase 1: Energy domain root = parent of lib/
 SKILL_ROOT = Path(__file__).resolve().parent.parent
@@ -28,11 +28,11 @@ SOC = ENERGY_DATA / "soc"
 WATTS = ENERGY_DATA / "watts"
 
 # ====================================================
-# SECTION: LOGS + STATE
+# SECTION: LOGS + STATE (Database authority)
 # ====================================================
-LOG_DIR = Path("/home/rootrecord/.ollama/skills/logs/store")
-BLE_LOG = LOG_DIR / "ava-ecoflow-ble.log"
-STATE_DIR = Path("/home/rootrecord/.ollama/skills/state/store")
+LOG_DIR = Path("/home/rootrecord/Database/Logs/Energy")
+BLE_LOG = LOG_DIR / "ecoflow-ble.log"
+STATE_DIR = Path("/home/rootrecord/Database/Energy/state")
 
 
 def ensure_dirs() -> None:
