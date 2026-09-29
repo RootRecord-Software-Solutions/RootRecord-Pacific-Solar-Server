@@ -30,6 +30,7 @@ import socket
 import statistics
 import subprocess
 import sys
+import tempfile
 import urllib.request
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -349,8 +350,18 @@ def draft(keys: dict[str, str], facts_lines: list[str], mode: str, f: Facts, log
               + "\n".join(f"{k}: <{v}>" for k, v in keys.items()) + "\n\nFACTS:\n" + facts)
     env = {k: v for k, v in os.environ.items() if k != "DESK_LIVE_FILE"}
     env["RR_CALLER"] = "template_fill"
+    desk = None
     if os.environ.get("RR_TEMPLATE_SPECIALIST_HOOK", "1") == "1":  # explicit specialist via the run-infer.sh hook (FLM gets its SYSTEM)
         env.update({"RR_SPECIALIST_ROUTING": "1", "RR_SPECIALIST": SPECIALIST})
+        # v3 (2026-09-29): the same facts as a temporary desk file, so the specialist's DATA GATE sees measured lines
+        # ("[desk: measured — cite only these lines]") instead of answering "No data". Deleted right after the call.
+        fd, desk = tempfile.mkstemp(prefix="rr-template-desk-", suffix=".txt", dir=os.environ.get("XDG_RUNTIME_DIR") or None)
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            fh.write("".join("- " + cell(x, 200) + "\n" for x in facts_lines[:30]))
+        env["DESK_LIVE_FILE"] = desk
+        prompt = (prompt.split("\n\nFACTS:\n")[0] + "\n\nFACTS: the measured desk lines above.\n"
+                  "Do not repeat any rules or headers. Answer now with only the " + " and ".join(f"{k}:" for k in keys) + " lines.")
+        log["desk_file_lines"] = min(len(facts_lines), 30)
     t0 = now()
     try:
         r = subprocess.run(["nice", "-n", "10", str(RUN_INFER), SPECIALIST, prompt], capture_output=True, text=True, timeout=180, env=env)
@@ -361,6 +372,12 @@ def draft(keys: dict[str, str], facts_lines: list[str], mode: str, f: Facts, log
     except Exception as e:
         log.update({"model_called": True, "error": type(e).__name__})
         return out
+    finally:
+        if desk:
+            try:
+                os.unlink(desk)
+            except OSError:
+                pass
     allowed = tv.corpus_numbers("\n".join(facts_lines) + "\n" + f.day)
     accepted = {}
     for k in keys:
@@ -378,6 +395,8 @@ def draft(keys: dict[str, str], facts_lines: list[str], mode: str, f: Facts, log
             accepted[k] = "fallback" + (f" (unsupported numbers {bad})" if bad else (" (failed field check)" if failed_check else (" (missing)" if not v else " (rejected)")))
     log["fields"] = accepted
     log["reply_preview"] = cell(reply, 300)
+    if reply.strip() == "No live desk data attached.":  # run-infer.sh sanitize() replaced a reply that echoed DESK_LIVE:/rules
+        log["sanitized_by_run_infer"] = True
     return out
 
 

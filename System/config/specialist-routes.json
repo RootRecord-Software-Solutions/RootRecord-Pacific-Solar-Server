@@ -7,9 +7,10 @@
     "fallback: Ollama model used when the specialist model is not installed (checked only with --verify-model).",
     "confidence = min(1, top/saturation) * (0.6 + 0.4 * (top - second) / top). Below threshold -> default (the caller voice's persona model).",
     "v2 (2026-09-29, g3-router-v2): synonyms from Library domain docs (Energy/Weather/System/A-EYES/Security/public-surface WOs) + tightened liveness regex; see Library AI-Specialist-Models-and-Routing.md §3.1.",
+    "v3 (2026-09-29 ~05:10, g3-router-v3): keyword matching ignores space/hyphen/underscore differences (router 3.0); energy unit words (kilowatt*, kwh, percent*, watts, amps, volt*); rr-reason comparison_frame regex (weight 6) so \"better to X or Y\" beats topic words.",
     "HOW TO ADD: copy a specialists entry, write Modelfiles/Specialists/<name>.Modelfile, ollama create <name> -f it, add labelled prompts to test-route-specialist.py, re-run the test."
   ],
-  "version": 2,
+  "version": 3,
   "threshold": 0.30,
   "saturation": 6.0,
   "modelfile_root": "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/AI/Ollama/Modelfiles",
@@ -40,13 +41,15 @@
       "description": "Why / compare / trade-off / plan / root-cause analysis.",
       "ollama_model": "rr-reason", "modelfile": "Specialists/rr-reason.Modelfile", "prefer": "ollama", "fallback": "llama3.2:3b-instruct-q4_K_M",
       "keywords": {"why": 2, "explain": 2, "compare": 3, "comparison": 3, "trade-off*": 4, "tradeoff*": 4, "pros and cons": 4, "should we": 2, "should i": 2, "analy*": 2, "reasoning": 2, "root cause": 3, "think through": 3, "step by step": 2, "plan": 1, "strategy": 2, "what if": 2, "versus": 2, "vs": 2, "evaluate": 2, "decide": 2, "decision": 2, "best approach": 3, "better": 1, "risk*": 1, "implication*": 2, "downside*": 4, "upside*": 3, "walk me through": 4, "worth it": 2},
-      "regex": []
+      "regex": [
+        {"name": "comparison_frame", "pattern": "\\b(is it|would it be|which is|whats|is|would|are)\\s+(\\S+\\s+){0,2}(better|best|smarter|cheaper|safer|wiser|worse)\\b.{0,80}\\bor\\b|\\b(better|worse)\\s+(to|than|for)\\b.{0,80}\\bor\\b", "weight": 6}
+      ]
     },
     "rr-energy": {
       "function": "topic",
       "description": "Solar, EcoFlow packs, SOC, watts, power budget.",
       "ollama_model": "rr-energy", "modelfile": "Specialists/rr-energy.Modelfile", "prefer": "flm", "fallback": "qwen2.5:1.5b-instruct-q8_0",
-      "keywords": {"solar": 3, "battery": 3, "batteries": 3, "soc": 3, "state of charge": 3, "ecoflow": 3, "delta 2": 3, "river 2": 3, "watt*": 2, "kwh": 3, "wh": 2, "inverter": 3, "power budget": 3, "power draw": 3, "power station": 3, "charging": 2, "charge": 1, "pack": 1, "packs": 1, "b1": 1, "b2": 1, "b3": 1, "generator": 2, "ac output": 2, "off-grid": 2, "offgrid": 2, "energy": 2, "power": 1, "starlink": 1, "panel*": 3, "pv": 3, "power bank": 3, "charge level": 3, "charged": 2, "producing": 1, "delta2": 3, "river2pro": 3, "energy-status": 2, "plugged in": 1},
+      "keywords": {"solar": 3, "battery": 3, "batteries": 3, "soc": 3, "state of charge": 3, "ecoflow": 3, "delta 2": 3, "river 2": 3, "watt*": 2, "kwh": 3, "wh": 2, "inverter": 3, "power budget": 3, "power draw": 3, "power station": 3, "charging": 2, "charge": 1, "pack": 1, "packs": 1, "b1": 1, "b2": 1, "b3": 1, "generator": 2, "ac output": 2, "off-grid": 2, "offgrid": 2, "energy": 2, "power": 1, "starlink": 1, "panel*": 3, "pv": 3, "power bank": 3, "charge level": 3, "charged": 2, "producing": 1, "delta2": 3, "river2pro": 3, "energy-status": 2, "plugged in": 1, "kilowatt*": 3, "percent*": 2, "watts": 3, "amps": 3, "amp": 2, "ampere*": 3, "amperage": 3, "volt*": 3},
       "regex": [
         {"name": "power_unit", "pattern": "\\b\\d+(\\.\\d+)?\\s?(w|kw|kwh|wh)\\b", "weight": 2},
         {"name": "percent_charge", "pattern": "\\b\\d{1,3}\\s?%\\s*(battery|soc|charge)", "weight": 2}
