@@ -42,6 +42,8 @@
 # ON_AT = exact local wall-clock HH:MM (desk TZ = HST). Example: at_times=["13:00"]
 # ====================================================
 
+import os  # env gates below are read once, at poller start (jobs.py is imported once)
+
 DEFAULTS = {
     "enabled": False,
     "timeout_sec": 120,
@@ -281,6 +283,19 @@ EVERY_SECONDS = [
 
 EVERY_MINUTE = [
     {
+        # G3 voice (2026-09-29, g3-voice-ailog): first ported G1 voice report. OFF unless RR_VOICE_SYSTEM_PERF=1
+        # is in the poller's environment at poller start. Text _current.md + stitched WAV; NO delivery.
+        "id": "voice_system_perf",
+        "enabled": os.environ.get("RR_VOICE_SYSTEM_PERF", "0") == "1",
+        "description": "Bruce system_perf voice report at :06 (CPU/RAM/disk/battery template) → Database System/Reports + Media/Audio/Voice. No delivery.",
+        "only_at_minutes": [6],
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/system_perf.py"',
+        "timeout_sec": 300,
+        "cwd": f"{PACIFIC}/Media/Voice/scripts",
+        "env": {},
+    },
+    {
         "id": "ensure_tunnel_online",
         "enabled": True,
         "description": "Start Cloudflare if internet is up and tunnel is down.",
@@ -294,6 +309,19 @@ EVERY_MINUTE = [
 ]
 
 EVERY_HOUR = [
+    {
+        # AI processing report (2026-09-29, g3-voice-ailog). OFF unless RR_AI_REPORT=1 in the poller's environment
+        # at poller start. Rotates Logs/AI/Inference/inference_current.jsonl daily, then rewrites the _current report.
+        "id": "ai_processing_report_hourly",
+        "enabled": os.environ.get("RR_AI_REPORT", "0") == "1",
+        "description": "Rotate inference JSONL (daily Archive/) + write Database Logs/AI/Reports/ai-processing-report_current.md.",
+        "only_at_hours": [],
+        "builtin": "",
+        "command": f'bash "{PACIFIC}/System/scripts/plumbing/ai-log-rotate.sh" && nice -n 10 python3 "{PACIFIC}/Reports/ai_processing_report.py"',
+        "timeout_sec": 120,
+        "cwd": f"{PACIFIC}/Reports",
+        "env": {},
+    },
     {
         "id": "automations_log_hourly_archive",
         "enabled": True,

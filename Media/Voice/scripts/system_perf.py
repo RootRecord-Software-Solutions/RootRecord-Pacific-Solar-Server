@@ -104,7 +104,7 @@ def texts(s: dict, now: datetime) -> tuple[str, str]:
     ]
     if s["battery_pct"] is not None:
         spoken.append(f"Host battery {s['battery_pct']}%, {'on AC' if s['on_ac'] else 'on battery'}.")
-    spoken.append(f"Uptime {up_h} hours {up_m} minutes.")
+    spoken.append(f"Uptime {up_h} hour{'s' if up_h != 1 else ''} {up_m} minute{'s' if up_m != 1 else ''}.")
     spoken.append("End of system report.")
     return md, " ".join(spoken)
 

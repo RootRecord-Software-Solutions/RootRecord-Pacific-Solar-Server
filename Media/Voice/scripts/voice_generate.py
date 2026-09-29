@@ -248,7 +248,7 @@ def norm_key(text: str) -> str:
 
 def split_sentences(text: str) -> list[str]:
     body = " ".join((text or "").split())
-    return [s for s in re.split(r"(?<=[.!?])\s+(?=[A-Z0-9\"'])", body) if s.strip()]
+    return [s for s in re.split(r"(?<=[.!?])(?<![ap]\.m\.)\s+(?=[A-Z0-9\"'])", body) if s.strip()]
 
 
 def load_manifest() -> dict:
