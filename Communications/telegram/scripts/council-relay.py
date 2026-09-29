@@ -15,6 +15,11 @@ SILENCE_RE = re.compile(
 )
 LEAK_RE = re.compile(r"DESK_LIVE:|HARD RULES FOR THIS TURN|Do NOT state watts|standing envelopes|\[desk:", re.I)
 
+# Replies are OPT-IN (Alexander 2026-09-29): RR_RELAY_REPLIES=1 enables infer+post.
+# Default 0 = quiet: login + getUpdates polling only, messages consumed, nothing posted.
+def replies_enabled() -> bool:
+    return os.environ.get("RR_RELAY_REPLIES", "0").strip() == "1"
+
 def load_kv(path: Path) -> dict:
     out = {}
     if not path.is_file():
@@ -119,6 +124,9 @@ def run_infer(cfg, voice, prompt, prior=""):
     return clean_reply(out)
 
 def post_as(voice_id, voices, chat_id, text, max_text):
+    if not replies_enabled():
+        print(f"[quiet] RR_RELAY_REPLIES=0 — not posting as {voice_id}")
+        return False
     text = clean_reply(text)
     if not text:
         print(f"[skip] empty/leaky reply for {voice_id}")
@@ -159,7 +167,7 @@ def main():
     offset_file = state_dir / "offset.txt"
     offset = int(offset_file.read_text().strip() or "0") if offset_file.is_file() else 0
     timeout = int(cfg.get("POLL_TIMEOUT", "20") or "20")
-    print(f"[ok] relay chat={chat_id} poll={poll_voice} infer=FLM-prefer")
+    print(f"[ok] relay chat={chat_id} poll={poll_voice} infer=FLM-prefer replies={'ON' if replies_enabled() else 'OFF (quiet; set RR_RELAY_REPLIES=1 to opt in)'}")
 
     while True:
         try:
@@ -188,6 +196,9 @@ def main():
             # Operator silence / not ready
             if SILENCE_RE.search(text):
                 print("[ok] silence cue — no post")
+                continue
+            if not replies_enabled():
+                print(f"[quiet] update {offset - 1} consumed — replies OFF (RR_RELAY_REPLIES=0): no infer, no post")
                 continue
 
             if is_private:

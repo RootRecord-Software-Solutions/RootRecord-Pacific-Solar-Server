@@ -23,7 +23,7 @@ if curl -sf -m 1 "http://127.0.0.1:$PORT/v1/models" >/dev/null 2>&1; then
 fi
 pkill -f "flm serve" 2>/dev/null || true
 sleep 1
-nohup "$FLM_BIN" serve "$FLM_MODEL" --pmode default --host 127.0.0.1 --port "$PORT" >>"$LOG" 2>&1 &
+nohup "$FLM_BIN" serve "$FLM_MODEL" --pmode "${FLM_PMODE:-balanced}" --host 127.0.0.1 --port "$PORT" >>"$LOG" 2>&1 &
 echo "[ok] FLM starting pid=$! → $LOG"
 for i in 1 2 3 4 5 6 7 8 9 10; do
   sleep 2

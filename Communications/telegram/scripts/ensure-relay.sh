@@ -28,6 +28,8 @@ if legacy_up; then
   echo "[warn] legacy apps.council running — not starting relay (409 risk)"
   exit 0
 fi
+# Replies are opt-in: RR_RELAY_REPLIES=1 lets the relay infer+post; default 0 = quiet (poll/login only). 2026-09-29.
+export RR_RELAY_REPLIES="${RR_RELAY_REPLIES:-0}"
 # PYTHONUNBUFFERED: log lines appear immediately (2026-09-29; argv unchanged so the pgrep matches still work).
 PYTHONUNBUFFERED=1 nohup python3 "$HERE/council-relay.py" >>"$LOG" 2>&1 &
 pid=$!
