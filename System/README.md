@@ -4,40 +4,60 @@ Host operating-system integration, system sampling, and desk host services.
 
 ---
 
-## Status (2026-09-28)
+## Status (2026-09-28 ~16:43 HST) — Phase 1 import
 
 | Item | State |
 | --- | --- |
-| Domain folder | **Shell only** |
-| G2 residual | `~/.ollama/skills/system-stats/` → `sys_stats_cycle` |
-| G1 cousins | `host-metrics`, `system-perf`, `uptime-log`, `log-cleanup` |
+| Domain | **Phase 1** — sys-sample on Pacific |
+| jobs.py | `sys_stats_cycle` → `System/scripts/sys-sample.sh` (quoted) |
 | Sample writes | `/home/rootrecord/Database/SYSTEM/` |
+| Plumbing (ollama/flm) | Still G2 — optional later under `System/scripts/plumbing/` |
+| worklog | Still G2 reports/ |
 
-**Import order:** G2 system-stats first; then diff G1 host-metrics / system-perf.
+### Ecosystem path
 
-**Plumbing decision:** G2 `plumbing/` (ollama/flm) and G1 `ollama-*` may land under `System/scripts/plumbing/` or a future `Plumbing/` domain — operator chooses at import.
+```text
+/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/System/
+```
 
----
+### Desk fill (from G2)
 
-## jobs.py (residual G2)
+```bash
+PACIFIC="/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server"
+G2="/home/rootrecord/.ollama/skills/system-stats"
 
-| Job id | Path |
-| --- | --- |
-| `sys_stats_cycle` | `…/skills/system-stats/scripts/sys-sample.sh` |
-| `ollama_warmup` / `flm_npu_warmup` | `…/skills/plumbing/scripts/*` (no System folder yet) |
+mkdir -p "$PACIFIC/System/scripts" "$PACIFIC/System/lib"
+# scripts
+cp -an "$G2/scripts/." "$PACIFIC/System/scripts/" 2>/dev/null || true
+# if sys-sample only at scripts root:
+cp -an "$G2/scripts/sys-sample.sh" "$PACIFIC/System/scripts/" 2>/dev/null || true
+# lib helpers (sample.py etc.)
+cp -an "$G2/lib/." "$PACIFIC/System/lib/" 2>/dev/null || true
+chmod +x "$PACIFIC/System/scripts/"*.sh 2>/dev/null || true
 
----
+# smoke
+bash "$PACIFIC/System/scripts/sys-sample.sh"
+ls -lt /home/rootrecord/Database/SYSTEM/samples/ | head -5
 
-## Expected layout after import
+# apply jobs rewire
+cd "$PACIFIC" && git pull --ff-only origin main
+systemctl --user restart rr-rootserver-poller.service
+```
+
+### Expected layout
 
 ```text
 System/
   README.md
   scripts/
     sys-sample.sh
-    # optional: plumbing/
+  lib/          # sample.py etc. if present on G2
 ```
+
+### Policy
+
+No old desk for sys-stats once fill + restart succeed. G2 system-stats becomes archive-only.
 
 ---
 
-*Docs-only 2026-09-28 HST.*
+*Phase 1 jobs rewire 2026-09-28 HST — desk fill required.*
