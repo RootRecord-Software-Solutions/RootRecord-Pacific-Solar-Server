@@ -9,7 +9,7 @@
 #   open-poller-window.sh uses fixed geometry (POLLER_WINDOW_GEOMETRY) and a
 #   detached gnome-terminal launch so the client hand-off does not race reload.
 #   Set OPEN_POLLER_WINDOW=0 to skip the viewer on automated reload.
-#   Closing the viewer still stops the whole stack (poller-watch design).
+#   Closing the viewer never stops the stack; poller-dashboard.py survives reloads (2026-09-29).
 # ==============================================================================
 set +e
 
@@ -107,8 +107,8 @@ if [[ "${OPEN_POLLER_WINDOW:-1}" == "1" ]]; then
       window_ok=1
     fi
     sleep 1
-    if pgrep -f 'poller-watch\.py' >/dev/null 2>&1; then
-      echo "verify: poller-watch.py window process running"
+    if pgrep -f 'poller-(watch|dashboard)\.py' >/dev/null 2>&1; then
+      echo "verify: poller viewer window process running"
     else
       echo "verify: WARNING poller-watch not seen (DISPLAY=$DISPLAY)"
     fi
