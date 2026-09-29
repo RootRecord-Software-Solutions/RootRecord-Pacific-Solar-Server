@@ -3,7 +3,8 @@
 set -euo pipefail
 PORT=52625
 FLM_MODEL="${FLM_MODEL:-llama3.2:3b}"
-LOG="${FLM_LOG:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/GITHUB/logs/flm.log}"
+# Log holds full request bodies (prompts): git-ignored Logs/AI/FLM/ (2026-09-29; was tracked GITHUB/logs/flm.log).
+LOG="${FLM_LOG:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/AI/FLM/flm.log}"
 mkdir -p "$(dirname "$LOG")"
 FLM_BIN=""
 for c in "$HOME/.local/bin/flm" /usr/local/bin/flm flm; do
