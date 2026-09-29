@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T05:29:30-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T05:38:31-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -3112,7 +3112,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T05:22:48.649150-10:00 HST |
+| **Collected** | 2026-09-29T05:31:49.939764-10:00 HST |
 
 ```text
                         
@@ -3985,7 +3985,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-29T05:29:29.907025-10:00 HST |
+| **Collected** | 2026-09-29T05:38:31.022809-10:00 HST |
 
 ```text
 Home
@@ -4109,7 +4109,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Tue, 29 Sep 2026 15:24:02 UTC
+Last update Tue, 29 Sep 2026 15:35:53 UTC
 
 NHC issuing advisories for the Atlantic on
 
@@ -7591,16 +7591,16 @@ Global Monitoring Laboratory
 |---|---|
 | **Resource ID** | off_offshore_forecast |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=OFF&issuedby=HFO |
-| **Collected** | 2026-09-29T01:50:12.996870-10:00 HST |
+| **Collected** | 2026-09-29T05:30:03.082714-10:00 HST |
 
 ```text
-639
-FZHW60 PHFO 290909
+895
+FZHW60 PHFO 291516
 OFFHFO
 
 Offshore Waters Forecast for Hawaii
 National Weather Service Honolulu HI
-1109 PM HST Mon Sep 28 2026
+516 AM HST Tue Sep 29 2026
 
 Hawaiian offshore waters beyond 40 nautical miles out to 240
 nautical miles including the portion of the Papahanaumokuakea
@@ -7610,51 +7610,46 @@ Seas given as significant wave height, which is the average height
 of the highest 1/3 of the waves. Individual waves may be more than
 twice the significant wave height.
 
-PHZ105-291715-
-1109 PM HST Mon Sep 28 2026
+PHZ105-292230-
+516 AM HST Tue Sep 29 2026
 
 .Synopsis for the Hawaiian offshore waters...
-The center of Hurricane Nolo remains just outside the far W
-offshore waters boundary tonight, but track N into the offshore
-waters on Tuesday. Strong high pressure N of the area will
-maintain fresh to strong trade winds outside of the Nolo wind
+The center of Hurricane Nolo will track N along the W edge of the
+offshore waters today. Strong high pressure N of the area will
+maintain moderate to fresh E to SE winds outside of the Nolo wind
 field during this time. Nolo will then turn W slowly on Wednesday
-and exit the offshore waters by Thursday. Trade winds decrease as
-high pressure weakens and Nolo moves west of the islands.
+and exit the offshore waters by Thursday. Easterly trade winds
+return by the end of the week.
 
-AT 1100 PM HST HURRICANE NOLO WAS CENTERED AT 20.0N 164.3W...MOVING
-NNW AT 13 KT
+AT 500 AM HST HURRICANE NOLO WAS CENTERED AT 20.5N 164.2W...MOVING N
+AT 8 KT
 
 NOLO FORECAST POSITIONS
-800 AM HST TUESDAY 21.3N 164.5W
-800 PM HST TUESDAY 22.5N 164.6W
-800 AM HST WEDNESDAY 22.7N 164.9W
-800 PM HST WEDNESDAY 22.6N 165.4W
-800 AM HST THURSDAY 22.7N 166.0W
-800 PM HST THURSDAY 23.1N 167.0W
-800 PM HST FRIDAY 23.4N 168.5W
-800 PM HST SATURDAY 24.1N 174.0W
-800 PM HST SUNDAY 26.0N 179.8E
-800 PM HST MONDAY 27.0N 174.7E
+200 PM HST TUESDAY 21.7N 164.3W
+200 AM HST WEDNESDAY 22.3N 164.5W
+200 PM HST WEDNESDAY 22.2N 165.0W
+200 AM HST THURSDAY 22.0N 165.7W
+200 PM HST THURSDAY 22.3N 166.5W
+200 AM HST FRIDAY 22.6N 167.3W
+200 AM HST SATURDAY 23.0N 169.4W
+200 AM HST SUNDAY 23.9N 175.8W
+200 AM HST MONDAY 25.8N 178.4E
+200 AM HST TUESDAY 26.3N 172.7E
 
-PHZ180-291715-
+PHZ180-292230-
 Hawaiian Offshore Waters-
-1109 PM HST Mon Sep 28 2026
+516 AM HST Tue Sep 29 2026
 
 ...HURRICANE WARNING IN EFFECT...
 
-.REST OF TONIGHT...Hurricane conditions expected S of 23N W of
-162W. Elsewhere NW half, E to SE winds 15 to 30 kt and seas 8 to
-14 ft. SE half, E to SE winds 10 to 20 kt and seas 7 to 8 ft.
-Isolated thunderstorms near Hurricane Nolo.
-.TUESDAY...Hurricane conditions expected S of 25N W of 162W.
+.TODAY...Hurricane conditions expected S of 25N W of 162W.
 Elsewhere NW half, E to SE winds 15 to 30 kt and seas 8 to 14 ft.
 SE half, E to SE winds 10 to 20 kt and seas 6 to 8 ft. Isolated
 thunderstorms near Hurricane Nolo.
-.TUESDAY NIGHT...Hurricane conditions expected N of 20N W of
-162W. Elsewhere NW half, SE to S winds 15 to 30 kt and seas 8 to
-14 ft. SE half, E to SE winds 10 to 20 kt and seas 6 to 8 ft.
-Isolated thunderstorms near Hurricane Nolo.
+.TONIGHT...Hurricane conditions expected N of 20N W of 162W.
+Elsewhere NW half, SE to S winds 15 to 30 kt and seas 8 to 14 ft.
+SE half, E to SE winds 10 to 20 kt and seas 6 to 8 ft. Isolated
+thunderstorms near Hurricane Nolo.
 .WEDNESDAY...Hurricane conditions expected W of 162W. Elsewhere
 NW half, SE to S winds 15 to 30 kt and seas 8 to 12 ft. SE half, E
 to SE winds 10 to 20 kt and seas 6 to 8 ft. Isolated
