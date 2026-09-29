@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T06:46:30-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T06:54:30-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -2839,19 +2839,19 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-29T06:30:46.833172-10:00 HST |
+| **Collected** | 2026-09-29T06:47:45.613938-10:00 HST |
 
 ```text
-490
-SRHW80 PHFO 291546
+269
+SRHW80 PHFO 291646
 RRAHFO
 
 Hawaii Rainfall Summary
 National Weather Service Honolulu HI
-545 AM HST Tue Sep 29 2026
+645 AM HST Tue Sep 29 2026
 
 :
-.B HFO  0929 H  DH05 /DRH-03/PPT/DRH-06/PPQ/DRH-12/PPK/DRH-24/PPD
+.B HFO  0929 H  DH06 /DRH-03/PPT/DRH-06/PPQ/DRH-12/PPK/DRH-24/PPD
 :
 :Automated rain gage reports from around the State of Hawaii.
 :These are provisional reports that have not been quality
@@ -2859,7 +2859,7 @@ National Weather Service Honolulu HI
 :
 :T=Trace Rainfall, M=Missing Data
 :
-:Precipitation totals ending  5 AM HST
+:Precipitation totals ending  6 AM HST
 :
 :Island of Kauai                                   Inches
 :ID     Location                         3-Hr    6-Hr   12-Hr   24-Hr
@@ -2867,21 +2867,21 @@ National Weather Service Honolulu HI
 MKAH1 : Makaha Ridge (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
 PLRH1 : Puu Lua (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
 WKRH1 : Waiakoali (USGS)            :    0.00  /  0.00  /  0.00  /  0.00
-KLOH1 : Kilohana (USGS)             :    0.00  /  0.00  /  0.00  /  0.02
+KLOH1 : Kilohana (USGS)             :    0.00  /  0.00  /  0.00  /  0.01
 MCRH1 : Mohihi Crossing (USGS)      :    0.00  /  0.00  /  0.00  /  0.01
-WLGH1 : Waialae (USGS)              :    0.00  /  0.00  /  0.01  /  0.03
+WLGH1 : Waialae (USGS)              :    0.00  /  0.00  /  0.00  /  0.02
 LLMH1 : Lower Limahuli (UHM)        :    0.00  /  0.00  /  0.00  /  0.04
 WNHH1 : Wainiha (12010)             :    0.00  /  0.00  /  0.00  /  0.01
-WIPH1 : Waipa (UHM)                 :    0.00  /  0.00  /  0.00  /  0.13
+WIPH1 : Waipa (UHM)                 :    0.00  /  0.00  /  0.00  /  0.12
 HNIH1 : Hanalei (12009)             :    0.00  /  0.00  /  0.00  /  0.15
 WLLH1 : Mount Waialeale (USGS)      :      M   /    M   /    M   /    M
-PRIH1 : Princeville Airport (12011) :    0.00  /  0.00  /  0.01  /  0.13
+PRIH1 : Princeville Airport (12011) :    0.00  /  0.00  /  0.01  /  0.12
 CMGH1 : Common Ground (UHM)         :    0.00  /  0.00  /  0.00  /  0.34
-HLIH1 : Hanalei (RAWS)              :    0.00  /  0.00  /  0.00  /  0.39
+HLIH1 : Hanalei (RAWS)              :    0.00  /  0.00  /  0.00  /  0.38
 MLDH1 : Moloaa Dairy (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
 ANHH1 : Anahola (12001)             :    0.00  /  0.00  /  0.00  /  0.18
-KPIH1 : Kapahi (12003)              :    0.00  /  0.00  /  0.00  /  0.09
-WLDH1 : N Wailua Ditch (USGS)       :    0.01  /  0.04  /  0.08  /  0.59
+KPIH1 : Kapahi (12003)              :      M   /    M   /  0.00  /  0.09
+WLDH1 : N Wailua Ditch (USGS)       :    0.00  /  0.04  /  0.08  /  0.54
 WUHH1 : Wailua (12005)              :    0.00  /  0.00  /  0.00  /  0.07
 WIRH1 : Waiahi Rain Gage (USGS)     :    0.00  /  0.00  /  0.00  /  0.19
 LIHH1 : Lihue Var. Stn. (12006)     :    0.00  /  0.00  /  0.00  /  0.09
@@ -2905,14 +2905,14 @@ KAHH1 : Kahuku (13027)              :    0.00  /  0.00  /  0.00  /  0.00
 KTAH1 : Kahuku Training Area (RAWS) :    0.00  /  0.00  /  0.00  /  0.00
 KFWH1 : Kii (RAWS)                  :    0.00  /  0.00  /  0.00  /  0.00
 PUNH1 : Punaluu Pump (13013)        :    0.00  /  0.00  /  0.00  /  0.01
-PNSH1 : Punaluu Stream (USGS)       :    0.00  /  0.00  /  0.00  /  0.13
+PNSH1 : Punaluu Stream (USGS)       :    0.00  /  0.00  /  0.00  /  0.12
 KNRH1 : Kahana (USGS)               :    0.00  /  0.00  /  0.00  /  0.05
 HAKH1 : Hakipuu Mauka (13004)       :    0.00  /  0.00  /  0.00  /  0.03
-WPPH1 : Waihee Pump (13002)         :    0.00  /  0.00  /  0.00  /  0.09
+WPPH1 : Waihee Pump (13002)         :    0.00  /  0.00  /  0.00  /  0.06
 WHSH1 : Waiahole (USGS)             :    0.00  /  0.00  /  0.00  /  0.00
 OFRH1 : Oahu Forest NWR (USFWS)     :    0.00  /  0.00  /  0.00  /  0.01
 AHUH1 : Ahuimanu Loop (13005)       :    0.00  /  0.00  /  0.00  /  0.02
-HRRH1 : Heeia NERR (NOAA/NOS)       :    0.00  /  0.00  /  0.00  /  0.01
+HRRH1 : Heeia NERR (NOAA/NOS)       :    0.00  /  0.00  /  0.00  /  0.00
 LULH1 : Luluku (13016)              :    0.00  /  0.00  /  0.00  /  0.00
 NRSH1 : Nuuanu Res No. 1 (UHM)      :    0.00  /  0.00  /  0.00  /  0.00
 KWIH1 : Kalawahine (UHM)            :    0.00  /  0.00  /  0.00  /  0.01
@@ -2985,7 +2985,7 @@ KAOH1 : Kaneloa (RAWS)              :      M   /    M   /    M   /    M
 :ID     Location                         3-Hr    6-Hr   12-Hr   24-Hr
 :       Windward Sites
 HNAH1 : Hana Airport (HSOIS)        :      M   /    M   /    M   /    M
-WWKH1 : West Wailuaiki (USGS)       :    0.00  /  0.00  /  0.00  /  0.01
+WWKH1 : West Wailuaiki (USGS)       :    0.00  /  0.00  /  0.00  /  0.00
 EBYH1 : EMI Baseyard (UHM)          :    0.00  /  0.00  /  0.00  /  0.00
 AIKH1 : Haiku (14001)               :    0.00  /  0.00  /  0.00  /  0.00
 HOG   : Kahului Airport (ASOS)      :    0.00  /  0.00  /  0.00  /  0.00
@@ -2997,7 +2997,7 @@ NKUH1 : Na Kula (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
 KPNH1 : Kepuni (USGS)               :    0.00  /  0.00  /  0.00  /  0.00
 PILH1 : Piiholo (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
 WKTH1 : Waikamoi Treeline (UHM)     :    0.00  /  0.00  /  0.00  /  0.00
-PUKH1 : Pukalani (14006)            :    0.00  /  0.00  /  0.00  /  0.00
+PUKH1 : Pukalani (14006)            :      M   /    M   /  0.00  /  0.00
 KBSH1 : Kula Branch Station (14008) :      M   /    M   /    M   /    M
 KLGH1 : Kula Ag (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
 PHQH1 : Park HQ (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
@@ -3112,7 +3112,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T06:22:49.857082-10:00 HST |
+| **Collected** | 2026-09-29T06:47:48.271260-10:00 HST |
 
 ```text
                         
@@ -3985,7 +3985,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-29T06:46:29.881480-10:00 HST |
+| **Collected** | 2026-09-29T06:54:29.965226-10:00 HST |
 
 ```text
 Home
@@ -4109,7 +4109,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Tue, 29 Sep 2026 16:40:39 UTC
+Last update Tue, 29 Sep 2026 16:51:59 UTC
 
 NHC issuing advisories for the Atlantic on
 
@@ -7888,7 +7888,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-29T06:30:31.471669-10:00 HST |
+| **Collected** | 2026-09-29T06:47:31.334650-10:00 HST |
 
 ```text
 National Weather Service
