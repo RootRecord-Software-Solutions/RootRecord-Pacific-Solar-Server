@@ -12,7 +12,7 @@ DO_RELOAD="$STACK/do-stack-reload.sh"
 BAK_ROOT="${BAK_ROOT:-/home/rootrecord/Database/GITHUB}"
 FLAG="$BAK_ROOT/flags/reload-poller-stack"
 LOCK="/tmp/rootrecord-stack-reload.lock"
-LOG="${STACK_RELOAD_LOG:-/home/rootrecord/Database/LOGS/Automations/stack-reload.log}"
+LOG="${STACK_RELOAD_LOG:-/home/rootrecord/Database/Logs/Automations/stack_reload_current.log}"
 
 mkdir -p "$(dirname "$LOG")" "$BAK_ROOT/flags"
 
@@ -45,7 +45,6 @@ if [[ -z "${XAUTHORITY:-}" && -f "/home/rootrecord/.Xauthority" ]]; then
   export XAUTHORITY="/home/rootrecord/.Xauthority"
 fi
 
-# Prefer systemd-run so the job survives the calling shell
 if command -v systemd-run >/dev/null 2>&1; then
   if systemd-run --user --on-active=8s --timer-property=AccuracySec=1s \
       /bin/bash "$DO_RELOAD" 2>>"$LOG"; then
@@ -55,7 +54,6 @@ if command -v systemd-run >/dev/null 2>&1; then
   fi
 fi
 
-# Fallback: detached sleep + reload
 nohup setsid /bin/bash -c "sleep 8; exec /bin/bash '$DO_RELOAD'" >>"$LOG" 2>&1 &
 echo "[reload] scheduled via nohup (8s)"
 echo "[reload] scheduled (log=$LOG)"
