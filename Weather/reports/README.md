@@ -39,11 +39,11 @@ Raw collected source data remains the authoritative record. Generated reports ar
 
 | Location | Conditions | Temp | Dew point | RH | Wind | Pressure |
 |---|---|---:|---:|---:|---|---:|
-| Honolulu | Partly cloudy | 78°F | 68°F | 71% | East 6 | 29.95S |
-| Lihue | Mostly cloudy | 79°F | 71°F | 76% | East 17 | 29.94F |
-| Kahului | Clear | 71°F | 65°F | 81% | Southeast 7 | 29.92F |
-| Hilo | Clear | 71°F | 63°F | 75% | Southwest 7 | 29.97F |
-| Kona | Clear | 80°F | 71°F | 74% | Southeast 3 | — |
+| Honolulu | Partly cloudy | 77°F | 68°F | 73% | Northeast 5 | 29.93F |
+| Lihue | Partly cloudy | 78°F | 71°F | 79% | East 15 | 29.92F |
+| Kahului | Clear | 69°F | 65°F | 86% | South 5 | 29.91F |
+| Hilo | Clear | 71°F | 63°F | 75% | Southwest 8 | 29.95F |
+| Kona | Partly cloudy | 79°F | 70°F | 74% | East 3 | — |
 
 _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °F._
 
@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T02:06:47-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T02:22:49-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -3051,7 +3051,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-29T01:52:43.188664-10:00 HST |
+| **Collected** | 2026-09-29T02:09:04.656413-10:00 HST |
 
 ```text
 982
@@ -3324,7 +3324,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T02:00:06.945808-10:00 HST |
+| **Collected** | 2026-09-29T02:16:21.479032-10:00 HST |
 
 ```text
                         
@@ -4195,7 +4195,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-29T02:06:46.773044-10:00 HST |
+| **Collected** | 2026-09-29T02:22:22.104628-10:00 HST |
 
 ```text
 Home
@@ -4319,7 +4319,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Tue, 29 Sep 2026 12:01:54 UTC
+Last update Tue, 29 Sep 2026 12:20:09 UTC
 
 NHC issuing advisories for the Atlantic on
 
@@ -8041,7 +8041,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-29T01:51:58.160206-10:00 HST |
+| **Collected** | 2026-09-29T02:08:49.860061-10:00 HST |
 
 ```text
 National Weather Service
@@ -8090,9 +8090,9 @@ INFORMATION
 
 Wireless Emergency Alerts
 
-Weather-Ready Nation
-
 Brochures
+
+Weather-Ready Nation
 
 Cooperative Observers
 
