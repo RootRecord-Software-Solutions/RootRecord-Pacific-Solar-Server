@@ -168,6 +168,11 @@ def main():
             if e.code == 409:
                 print("[fail] 409 dual poller", file=sys.stderr); return 409
             raise
+        except (urllib.error.URLError, TimeoutError, OSError) as e:
+            # Transient network error (e.g. read timeout 01:39 HST 2026-09-29): retry instead of exiting.
+            print(f"[warn] getUpdates transient error: {type(e).__name__}; retry in 10s", file=sys.stderr)
+            time.sleep(10)
+            continue
         for upd in body.get("result") or []:
             offset = int(upd["update_id"]) + 1
             offset_file.write_text(str(offset))
