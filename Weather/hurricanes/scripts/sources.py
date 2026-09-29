@@ -1,6 +1,6 @@
 """CurrentStorms.json (NHC) baseline poll + CPHC TCM/TCP/TCD/TCU pulls for
 whatever storm(s) pass the relevance filter. Writes into
-Database/WEATHER/Hawai'i/hurricanes/tracking/ -- same core/ mechanism
+Database/Weather/Hawai'i/hurricanes/tracking/ -- same core/ mechanism
 (http_client, hst_time) as every other part of weather/, no special-casing.
 
 RAMMB/JTWC are intentionally NOT called here yet -- see

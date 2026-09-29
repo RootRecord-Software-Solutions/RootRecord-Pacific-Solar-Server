@@ -25,7 +25,7 @@ SKILLS_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 WEATHER_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"  # Pacific Weather/ (imported from G2 2026-09-29)
 ENTRY="$WEATHER_ROOT/scripts/run_poller.py"
 
-DEFAULT_LOG_DIR="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/WEATHER/Hawai'i/logs"
+DEFAULT_LOG_DIR="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Weather/Hawai'i/logs"
 LOG_DIR="${WEATHER_LOG_DIR:-$DEFAULT_LOG_DIR}"
 LOG_FILE="$LOG_DIR/weather-poller.log"
 

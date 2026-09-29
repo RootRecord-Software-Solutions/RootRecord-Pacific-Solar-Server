@@ -29,8 +29,8 @@ import jobs as jobmod  # noqa: E402
 INTERVAL_FALLBACK = float(os.environ.get("POLLER_INTERVAL_SEC", "5"))
 HOST = os.environ.get("POLLER_BIND", "127.0.0.1")
 PORT = int(os.environ.get("POLLER_PORT", "8799"))
-SYSTEM_STATUS_JSON = Path(os.environ.get("SYSTEM_STATUS_JSON", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/SYSTEM/status/system-status.json"))
-ENERGY_ROOT = Path(os.environ.get("ENERGY_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/ENERGY"))
+SYSTEM_STATUS_JSON = Path(os.environ.get("SYSTEM_STATUS_JSON", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/System/status/system-status.json"))
+ENERGY_ROOT = Path(os.environ.get("ENERGY_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy"))
 HOSTNAME = os.environ.get("POLLER_PUBLIC_HOST", "rootserver.rootrecord.cloud")
 TOKEN_FILE = Path(os.environ.get("CLOUDFLARED_TOKEN_FILE", str(Path.home() / ".cloudflared" / "rootserver.token")))
 CLOUDFLARED_BIN = os.environ.get(

@@ -32,7 +32,7 @@ from zoneinfo import ZoneInfo
 HERE = Path(__file__).resolve().parent
 DB = Path(os.environ.get("DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))
 LOG = Path(os.environ.get("POLLER_LOG", str(DB / "Logs/Automations/automations_current.log")))
-ENERGY = Path(os.environ.get("ENERGY_ROOT", str(DB / "ENERGY")))
+ENERGY = Path(os.environ.get("ENERGY_ROOT", str(DB / "Energy")))
 TZ = ZoneInfo("Pacific/Honolulu")
 REFRESH = int(os.environ.get("POLLER_DASH_REFRESH", "5"))
 

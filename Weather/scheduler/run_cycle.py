@@ -65,7 +65,7 @@ from reports import official_generator as official_reports
 def _log(msg: str) -> None:
     """Plain stdout line, timestamped in HST -- picked up by whatever
     supervises this process (see scripts/ensure-weather-poller.sh, which
-    redirects stdout to a log file under Database/WEATHER/Hawai'i/logs/).
+    redirects stdout to a log file under Database/Weather/Hawai'i/logs/).
     Deliberately not a logging.Logger: nothing else in this tree uses one,
     and a single print-style line matches automations/'s own job-log
     convention (see rootserver_poller.py's `log()`).

@@ -29,7 +29,7 @@ def aeyes_solar_state():
     tz = ZoneInfo("Pacific/Honolulu")
 
     report = Path(
-        "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/WEATHER/Hawai'i/reports/"
+        "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Weather/Hawai'i/reports/"
         "0 Level Processing/solar_calculation_table_current.md"
     )
 

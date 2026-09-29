@@ -4,7 +4,7 @@
 # Pacific Reports/ (WO-RPT-001). Ported from G2 reports/scripts with hygiene enhancements.
 set -euo pipefail
 
-WORKLOG_DIR="${WORKLOG_DIR:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/WORKLOG}"
+WORKLOG_DIR="${WORKLOG_DIR:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Worklog}"
 CURRENT="${WORKLOG_DIR}/worklog_current.md"
 STATE="${WORKLOG_DIR}/.last_scan"
 HOUR_MARK="${WORKLOG_DIR}/.hour_start"
@@ -53,9 +53,9 @@ domain_tag() {
 should_skip() {
   local p="$1"
   case "$p" in
-    */RootRecord-Database/WORKLOG/*|*/RootRecord-Database/WORKLOG) return 0 ;;
+    */RootRecord-Database/Worklog/*|*/RootRecord-Database/Worklog) return 0 ;;
     */RootRecord-Database/KEYLOGGER/*|*/RootRecord-Database/KEYLOGGER) return 0 ;;
-    */RootRecord-Database/GITHUB/*|*/RootRecord-Database/GITHUB) return 0 ;;
+    */RootRecord-Database/Github/*|*/RootRecord-Database/Github) return 0 ;;
     */.git/*|*/.git) return 0 ;;
     */node_modules/*|*/__pycache__/*|*/.cache/*) return 0 ;;
     */.ollama/models/*|*/.ollama/models) return 0 ;;

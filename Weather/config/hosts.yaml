@@ -1,6 +1,6 @@
 # Per-host network defaults. This is the ONE place a User-Agent string or
 # (if ever needed) an API key lives — never in resources.yaml or anything
-# under Database/WEATHER/, since that tree is meant to eventually be public.
+# under Database/Weather/, since that tree is meant to eventually be public.
 #
 # NOTE: no API keys are currently required by anything on the resource map.
 # If one is ever added for a host below, put it here as `api_key_env: NAME`

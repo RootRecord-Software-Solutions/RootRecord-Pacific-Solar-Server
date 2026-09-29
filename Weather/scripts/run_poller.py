@@ -34,7 +34,7 @@ from scheduler import run_cycle  # noqa: E402
 # lives in a sibling "hurricanes/" folder next to "hfo/", both under the
 # same Hawai'i parent -- NOT nested inside hfo/).
 # Pacific import 2026-09-29: data under the canonical Database root (env override kept).
-_DATA = os.environ.get("WEATHER_DATA_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/WEATHER/Hawai'i")
+_DATA = os.environ.get("WEATHER_DATA_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Weather/Hawai'i")
 BASE_DIR = os.environ.get("WEATHER_BASE_DIR", _DATA + "/hfo")
 HURRICANES_BASE_DIR = os.environ.get("WEATHER_HURRICANES_DIR", _DATA + "/hurricanes")
 

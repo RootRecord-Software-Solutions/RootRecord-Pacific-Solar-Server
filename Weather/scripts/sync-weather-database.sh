@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/WEATHER"
+REPO="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Weather"
 REMOTE="origin"
 BRANCH="main"
 LOCK="/tmp/rootrecord-weather-db-sync.lock"

@@ -28,7 +28,7 @@ sys.path.insert(0, str(_WEATHER_ROOT))
 from core.manifest import Manifest  # noqa: E402
 from scheduler import run_cycle  # noqa: E402
 
-BASE_DIR = "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/WEATHER/Hawai'i/hfo"
+BASE_DIR = "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Weather/Hawai'i/hfo"
 
 if __name__ == "__main__":
     manifest = Manifest(BASE_DIR).load()

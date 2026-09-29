@@ -16,7 +16,7 @@ VENDOR = SKILL_ROOT / "lib" / "vendor"
 # Canonical Database root.
 DATABASE_ROOT = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database")
 
-ENERGY_DATA = DATABASE_ROOT / "ENERGY"
+ENERGY_DATA = DATABASE_ROOT / "Energy"
 SAMPLES = ENERGY_DATA / "samples"
 PORTS = ENERGY_DATA / "ports"
 SOC = ENERGY_DATA / "soc"

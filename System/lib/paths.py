@@ -5,7 +5,7 @@ SYSTEM_ROOT = Path(__file__).resolve().parents[1]
 
 # Canonical Database root.
 DATABASE_ROOT = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database")
-SYSTEM_DATA = DATABASE_ROOT / "SYSTEM"
+SYSTEM_DATA = DATABASE_ROOT / "System"
 SAMPLES = SYSTEM_DATA / "samples"
 CPU = SYSTEM_DATA / "cpu"
 MEM = SYSTEM_DATA / "mem"
