@@ -18,9 +18,9 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 HST = ZoneInfo("Pacific/Honolulu")
-# Pacific copy (staged 2026-09-29): log/pid moved off the G2 skills tree to the Database; override via env.
-LOG = Path(os.environ.get("ENERGY_BLE_LOG", "/home/rootrecord/Database/Logs/Energy/ava-ecoflow-ble.log"))
-PID = Path(os.environ.get("ENERGY_BLE_PID", "/home/rootrecord/Database/ENERGY/state/ava-ecoflow-ble.pid"))
+# Pacific copy: log/pid live under the canonical RootRecord Database (2026-09-29); override via env.
+LOG = Path(os.environ.get("ENERGY_BLE_LOG", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Energy/ava-ecoflow-ble.log"))
+PID = Path(os.environ.get("ENERGY_BLE_PID", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/ENERGY/state/ava-ecoflow-ble.pid"))
 INTERVAL = float(os.environ.get("ENERGY_BLE_OWNER_INTERVAL_S", "30"))
 _stop = False
 

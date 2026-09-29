@@ -3,7 +3,7 @@
 set -euo pipefail
 PORT=52625
 FLM_MODEL="${FLM_MODEL:-llama3.2:3b}"
-LOG="/home/rootrecord/Database/GITHUB/logs/flm.log"
+LOG="${FLM_LOG:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/GITHUB/logs/flm.log}"
 mkdir -p "$(dirname "$LOG")"
 FLM_BIN=""
 for c in "$HOME/.local/bin/flm" /usr/local/bin/flm flm; do

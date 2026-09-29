@@ -12,7 +12,7 @@ set -euo pipefail
 RUNTIME="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 mkdir -p "$RUNTIME" 2>/dev/null || RUNTIME="/tmp"
 LOCK="${RR_INFERENCE_LOCK:-$RUNTIME/rootrecord-inference.lock}"
-STATE_DIR="${RR_PLUMBING_STATE:-/home/rootrecord/Database/GITHUB/plumbing/state}"
+STATE_DIR="${RR_PLUMBING_STATE:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/GITHUB/plumbing/state}"
 mkdir -p "$STATE_DIR"
 HOLDER="$STATE_DIR/holder.txt"
 
