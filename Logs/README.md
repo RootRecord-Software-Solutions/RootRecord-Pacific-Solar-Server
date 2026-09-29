@@ -1,25 +1,28 @@
-# Logs
+# Logs (Pacific — ownership only)
 
-Central logging **ownership and path contracts** for Pacific server domains.
+**Authority for log bytes:** [`RootRecord-Database`](https://github.com/RootRecord-Software-Solutions/RootRecord-Database)  
+Desk root: `/home/rootrecord/Database/`
 
-This tree is **not** a dump of rotating log files. Large or sensitive logs stay off-git under **Database** (or env overrides).
+This Pacific `Logs/` tree is **path contracts + domain markers**, not the live log files.
 
 ---
 
-## Status (cutover complete 2026-09-28)
+## Canonical paths (aligned 2026-09-28)
 
-| Item | State |
+| Stream | Path (desk = Database repo) |
 | --- | --- |
-| Domain folders | Ownership + path contracts |
-| **Canonical poller log** | `/home/rootrecord/Database/LOGS/Automations/rootserver-poller.log` |
-| **Canonical stack-reload log** | `/home/rootrecord/Database/LOGS/Automations/stack-reload.log` |
-| Historical residual (G2) | `~/.ollama/skills/logs/store/*.log` — retired defaults; may still exist on disk |
+| Poller / automations | `/home/rootrecord/Database/Logs/Automations/automations_current.log` |
+| Stack reload | `/home/rootrecord/Database/Logs/Automations/stack_reload_current.log` |
 
 Env overrides: `POLLER_LOG`, `STACK_RELOAD_LOG`.
 
+Archive rotation policy lives in Database: `Logs/*/Archive/README.md`.
+
 ---
 
-## Code updated (org Pacific)
+## Code (this repo)
+
+Defaults updated in:
 
 - `Automations/scripts/poller/poller-watch.py`
 - `Automations/scripts/poller/open-poller-window.sh`
@@ -27,35 +30,16 @@ Env overrides: `POLLER_LOG`, `STACK_RELOAD_LOG`.
 - `Automations/scripts/stack/do-stack-reload.sh`
 - `Automations/scripts/stack/schedule-stack-reload.sh`
 
-Detail: [Logs/Automations/README.md](Automations/README.md)
+---
+
+## Operator
+
+1. Confirm desk tree matches Database repo (`Logs/Automations/automations_current.log` already holds live poller history).
+2. Align `rr-rootserver-poller.service` writer with the same path (or `Environment=POLLER_LOG=...`).
+3. `git pull` Pacific + stack reload; banner `log` line should show `…/automations_current.log`.
+
+Historical residual: `~/.ollama/skills/logs/store/` — do not use as default.
 
 ---
 
-## Desk steps (operator)
-
-```bash
-mkdir -p /home/rootrecord/Database/LOGS/Automations
-# optional migrate existing bytes
-cp -an "$HOME/.ollama/skills/logs/store/rootserver-poller.log" \
-  /home/rootrecord/Database/LOGS/Automations/ 2>/dev/null || true
-cp -an "$HOME/.ollama/skills/logs/store/stack-reload.log" \
-  /home/rootrecord/Database/LOGS/Automations/ 2>/dev/null || true
-# Align systemd unit StandardOutput/Error if it hardcodes the old skills path
-systemctl --user daemon-reload
-# pull Pacific + schedule-stack-reload
-```
-
-If the unit still appends to the G2 path, either update the unit or set `POLLER_LOG` in the unit `Environment=` to the Database path so poller-watch and the writer match.
-
----
-
-## Domain subfolders
-
-| Folder | Role |
-| --- | --- |
-| `Logs/Automations/` | Poller + stack-reload contract |
-| `Logs/Energy/` … | Ownership notes until writers assigned |
-
----
-
-*Cutover documented 2026-09-28 HST — WO-SYS-001 path slice.*
+*Aligned to RootRecord-Database 2026-09-28 HST.*
