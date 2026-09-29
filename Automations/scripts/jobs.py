@@ -19,9 +19,10 @@
 #   Local jobs (BLE, Ollama, FLM, heartbeat, worklog) always run.
 #
 # File layout (standing): keep SECTION banners + TEMPLATE blocks.
-# Repo domains: Automations/, Communications/, Weather/, Energy/, … at skills root.
+# Repo domains: Automations/, Communications/, Weather/, Energy/, … at Pacific root.
 # Energy Phase 1 read path imported under Energy/scripts/read (2026-09-28).
 # Residual skill paths remain for: a-eyes, github, plumbing, telegram, energy actions.
+# Live runtime: /home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server
 # ==============================================================================
 #
 # HOW TO ADD A JOB (no AI required)
@@ -49,11 +50,13 @@ DEFAULTS = {
     "env": {},
 }
 
+PACIFIC = "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server"
+
 ECOFLOW_DUAL_READ = (
     "flock -w 90 /tmp/ecoflow-ble.lock bash -c '"
-    "ok=0; "
-    "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/read/delta2-read.sh && ok=1 || true; "
-    "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/read/river2pro-read.sh && ok=1 || true; "
+    f"ok=0; "
+    f"{PACIFIC}/Energy/scripts/read/delta2-read.sh && ok=1 || true; "
+    f"{PACIFIC}/Energy/scripts/read/river2pro-read.sh && ok=1 || true; "
     "exit $((1-ok))'"
 )
 
@@ -65,9 +68,9 @@ ON_BOOT = [
         "description": "This desk process + status terminal (self registry).",
         "builtin": "self_process",
         "command": "",
-        "process": "/home/rootrecord/.ollama/skills/Automations/scripts/rootserver_poller.py",
+        "process": f"{PACIFIC}/Automations/scripts/rootserver_poller.py",
         "terminal": "RootRecord poller — rootserver",
-        "watch": "/home/rootrecord/.ollama/skills/Automations/scripts/poller/poller-watch.py",
+        "watch": f"{PACIFIC}/Automations/scripts/poller/poller-watch.py",
         "timeout_sec": 5,
         "cwd": "",
         "env": {},
@@ -81,7 +84,7 @@ ON_BOOT = [
         "command": "",
         "public_host": "rootserver.rootrecord.cloud",
         "token_file": "/home/rootrecord/.cloudflared/rootserver.token",
-        "cloudflared_bin": "/home/rootrecord/.ollama/skills/Communications/network/cloudflare/bin/cloudflared",
+        "cloudflared_bin": f"{PACIFIC}/Communications/network/cloudflare/bin/cloudflared",
         "local_service": "http://127.0.0.1:8799",
         "timeout_sec": 45,
         "needs_internet": True,
@@ -174,7 +177,7 @@ ON_BOOT = [
         "priority": 9,
         "description": "Ensure the live Hawaii Network Globe SSH collector is running.",
         "builtin": "",
-        "command": "bash /home/rootrecord/.ollama/skills/Communications/network/scripts/ensure-network-globe-hawaii.sh",
+        "command": f"bash {PACIFIC}/Communications/network/scripts/ensure-network-globe-hawaii.sh",
         "timeout_sec": 30,
         "needs_internet": False,
         "cwd": "/home/rootrecord/.ollama/skills/coms/ssh/local-data-globe",
@@ -190,8 +193,8 @@ ONCE_AT_START = [
         "builtin": "",
         "command": ECOFLOW_DUAL_READ,
         "timeout_sec": 180,
-        "cwd": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy",
-        "env": {"ENERGY_EFLIB_PATH": "/home/rootrecord/.ollama/skills/energy/lib/vendor"},
+        "cwd": f"{PACIFIC}/Energy",
+        "env": {"ENERGY_EFLIB_PATH": f"{PACIFIC}/Energy/lib/vendor"},
     },
 ]
 
@@ -213,10 +216,10 @@ EVERY_SECONDS = [
         "description": "Leap-frog: Delta2 / River2Pro alternate.",
         "interval_sec": 15,
         "builtin": "",
-        "command": "bash /home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/read/leapfrog-read.sh",
+        "command": f"bash {PACIFIC}/Energy/scripts/read/leapfrog-read.sh",
         "timeout_sec": 180,
-        "cwd": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy",
-        "env": {"ENERGY_EFLIB_PATH": "/home/rootrecord/.ollama/skills/energy/lib/vendor"},
+        "cwd": f"{PACIFIC}/Energy",
+        "env": {"ENERGY_EFLIB_PATH": f"{PACIFIC}/Energy/lib/vendor"},
     },
     {
         "id": "sys_stats_cycle",
@@ -317,6 +320,6 @@ def ecoflow_command(script: str) -> str:
 
 TOGGLES = []
 READS = [
-    {"id": "delta2_read", "script": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/read/delta2-read.sh"},
-    {"id": "river2pro_read", "script": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/read/river2pro-read.sh"},
+    {"id": "delta2_read", "script": f"{PACIFIC}/Energy/scripts/read/delta2-read.sh"},
+    {"id": "river2pro_read", "script": f"{PACIFIC}/Energy/scripts/read/river2pro-read.sh"},
 ]
