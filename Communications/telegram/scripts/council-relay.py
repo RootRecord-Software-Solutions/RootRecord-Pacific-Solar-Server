@@ -111,7 +111,7 @@ def clean_reply(text: str) -> str | None:
 def run_infer(cfg, voice, prompt, prior=""):
     run = cfg.get("RUN_INFER") or cfg.get("RUN_OLLAMA", "").replace("run-ollama.sh", "run-infer.sh")
     if not run or not Path(run).exists():
-        run = "/home/rootrecord/.ollama/skills/plumbing/scripts/run-infer.sh"
+        run = str(ROOT.parent.parent.parent / "System" / "scripts" / "plumbing" / "run-infer.sh")
     full = prompt if not prior else f"Prior turns:\n{prior}\n\nYour turn as {voice}.\nUser:\n{prompt}"
     p = subprocess.run([run, voice, full], capture_output=True, text=True, timeout=600)
     out = (p.stdout or "").strip()
