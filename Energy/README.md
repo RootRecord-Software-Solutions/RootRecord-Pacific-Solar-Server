@@ -4,21 +4,18 @@ Energy monitoring, EcoFlow device reads, and power subsystem ownership for the P
 
 ---
 
-## Status (2026-09-28 ~16:25 HST)
+## Status (2026-09-28 ~16:38 HST) — Phase 1 LIVE
 
 | Item | State |
 | --- | --- |
-| Domain folder | **Phase 1** — scripts + jobs on Pacific |
-| Scripts | `Energy/scripts/read/` (leapfrog, delta2, river2pro) on org git |
-| jobs.py | Commands + cwd point at Ecosystem Energy; paths quoted |
-| `ENERGY_EFLIB_PATH` | `{PACIFIC}/Energy/lib/vendor` |
-| Data writes | `/home/rootrecord/Database/ENERGY/` (never commit) |
+| Domain | **Live** on Pacific |
+| Scripts | `Energy/scripts/read/` |
+| jobs.py | Pacific paths (quoted) |
+| Package import | `Pacific/energy` → symlink to `Energy/` + `lib/py` puts Pacific root on PYTHONPATH |
+| Live reads | **OK** — SUMMARY delta2 + river2pro (api/db) observed |
+| Data | `/home/rootrecord/Database/ENERGY/` |
 | Logs / state | `/home/rootrecord/Database/Logs/Energy/`, `/home/rootrecord/Database/Energy/state/` |
-| Live BLE cycle | **Blocked** until `Energy/lib/read_runner.py` (and related modules) exist on desk |
-| Heartbeat ENERGY line | Works from Database snapshot even when BLE cycle FAILs |
 | Actions / hybrid | Phase 2+ |
-
-**Policy:** No old desk. Fill missing lib from G2 once, then own everything under Pacific Energy/.
 
 ### Ecosystem path
 
@@ -26,37 +23,35 @@ Energy monitoring, EcoFlow device reads, and power subsystem ownership for the P
 /home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/
 ```
 
-### Org git vs desk fill
+### Package name (required on Linux)
 
-On org main, `Energy/lib/` currently has: `config.py`, `envload.py`, `paths.py`, `py`, `vendor/`, `__init__.py`.
+Python imports use lowercase `energy` (`import energy.db.ingest`). Folder on disk is `Energy/`.
 
-Read scripts **require**:
-
-```text
-Energy/lib/py → Energy/lib/read_runner.py --device {delta2|river2pro}
-```
-
-If `read_runner.py` is missing, `ecoflow_read_boot` / `ecoflow_read_cycle` exit code 1.
-
-### Desk fill (P0)
+On every desk checkout:
 
 ```bash
-PACIFIC="/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server"
-G2="/home/rootrecord/.ollama/skills/energy"
-mkdir -p "$PACIFIC/Energy/lib" "$PACIFIC/Energy/db" "$PACIFIC/Energy/config"
-cp -an "$G2/lib/."    "$PACIFIC/Energy/lib/"
-cp -an "$G2/db/."     "$PACIFIC/Energy/db/"
-cp -an "$G2/config/." "$PACIFIC/Energy/config/"
-chmod +x "$PACIFIC/Energy/lib/py" "$PACIFIC/Energy/scripts/read/"*.sh
-# verify
-ls -la "$PACIFIC/Energy/lib/read_runner.py"
-export ENERGY_EFLIB_PATH="$PACIFIC/Energy/lib/vendor"
-bash -x "$PACIFIC/Energy/scripts/read/delta2-read.sh" 2>&1 | tail -40
-systemctl --user restart rr-rootserver-poller.service
+cd /home/rootrecord/RootRecord-Ecosystem/1\ -\ Servers/1\ -\ RootRecord-Pacific-Solar-Server
+ln -sfn Energy energy
 ```
 
-After soak: commit non-secret lib modules to org Pacific (or document intentional desk-only vendor bits). Then G2 `energy/` can be archived — not used at runtime.
+`Energy/lib/py` sets:
+
+```text
+PYTHONPATH = ENERGY_EFLIB_PATH|vendor : Pacific_root : …
+```
+
+### Verify
+
+```bash
+export ENERGY_EFLIB_PATH="$PWD/lib/vendor"   # from Energy/
+bash scripts/read/delta2-read.sh
+# expect: SUMMARY=delta2 soc=… src=api db=ok
+```
+
+### Policy
+
+No old desk for Energy reads. G2 `~/.ollama/skills/energy` is source-of-copy only until archived after soak.
 
 ---
 
-*Updated 2026-09-28 HST — systemd Pacific live; read_runner gap documented.*
+*Phase 1 live 2026-09-28 HST.*
