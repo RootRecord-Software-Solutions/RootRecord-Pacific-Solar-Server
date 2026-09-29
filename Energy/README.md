@@ -4,20 +4,17 @@ Energy monitoring, EcoFlow device reads, and power subsystem ownership for the P
 
 ---
 
-## Status (2026-09-28) — Phase 1 imported
+## Status (2026-09-28) — Phase 1 desk fill done
 
 | Item | State |
 | --- | --- |
 | Domain folder in this repo | **Phase 1 live read path** |
 | Scripts | `Energy/scripts/read/` (leapfrog, delta2, river2pro) |
-| Runtime | `Energy/lib/` + `Energy/db/` + `Energy/config/` (fill from G2 if incomplete after pull) |
+| Runtime | `Energy/lib/` + `Energy/db/` + `Energy/config/` (desk filled from G2) |
 | Data writes | `/home/rootrecord/Database/ENERGY/` (never commit) |
+| Logs / state | `/home/rootrecord/Database/Logs/Energy/`, `/home/rootrecord/Database/Energy/state/` |
 | Actions / hybrid reports | **Not yet** (Phase 2+) |
-| jobs.py | **Rewired** to Ecosystem `Energy/scripts/read/` |
-
-Source: G2 `Solar-Pacific-RootRecord-Server` `energy/` (read + lib + db + config).
-
-`ENERGY_EFLIB_PATH` job env points at live G2 vendor for BLE until vendor is vendored into this repo.
+| jobs.py | **Rewired** to Ecosystem `Energy/scripts/read/`; `ENERGY_EFLIB_PATH` → `Energy/lib/vendor` |
 
 ### Ecosystem path
 
@@ -33,15 +30,18 @@ Source: G2 `Solar-Pacific-RootRecord-Server` `energy/` (read + lib + db + config
 | ecoflow_read_cycle | `Energy/scripts/read/leapfrog-read.sh` every 15s |
 | READS helpers | same read/ scripts |
 
-### After pull on the desk
+### After this push on the desk
 
-1. `git pull` on Pacific Ecosystem checkout
-2. If `Energy/lib/read_runner.py` missing, copy from `~/.ollama/skills/energy/lib` (and db/config)
-3. `schedule-stack-reload` / full stop-start
-4. Confirm SUMMARY lines in poller window
+```bash
+PACIFIC="/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server"
+cd "$PACIFIC"
+git pull --ff-only origin main
+./Automations/scripts/stack/schedule-stack-reload.sh
+tail -f /home/rootrecord/Database/Logs/Automations/automations_current.log
+```
 
 Do not delete `~/.ollama/skills/energy` until soak is done.
 
 ---
 
-*Phase 1 import 2026-09-28 HST.*
+*Phase 1 import + desk fill + path tighten 2026-09-28 HST.*
