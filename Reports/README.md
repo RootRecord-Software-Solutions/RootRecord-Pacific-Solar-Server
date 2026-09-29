@@ -65,8 +65,8 @@ DRY_RUN=1 bash "…/Reports/scripts/weekly_archive_logs.sh"
 
 `template_fill.py` fills the four Library ops templates (`Documentation/01-operations/templates/`) from measured data,
 in the templates' exact structure; `template_validate.py` rejects any heading / table-column / vocabulary mismatch and
-flags numbers not found in the sources. Output: Database `Reports/Generated/<Template-Name>_current.md` (+ `Archive/`),
-never the Library. Free text only: `rr-exec` via `run-infer.sh` (facts-only prompt; unsupported drafts fall back to fixed text).
+flags numbers not found in the sources. Output: non-git `test-reports/Templates/<Template-Name>_current.md` (+ `Archive/`),
+never the Library; publishing to the Library stays manual. Free text only: `rr-exec` via `run-infer.sh` (facts-only prompt; unsupported drafts fall back to fixed text).
 Job `template_reports_daily` 18:40, **OFF** unless `RR_TEMPLATE_REPORTS=1`. Doc: Library `00-architecture/Template-Report-Generation.md`.
 
 ```bash

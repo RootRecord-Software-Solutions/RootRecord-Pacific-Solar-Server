@@ -34,7 +34,7 @@ from speakers import retire_current  # noqa: E402
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))
 LIB = Path(os.environ.get("RR_LIBRARY_ROOT", "/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library"))
 PACIFIC = HERE.parents[2]
-REPORTS = DB / "Media" / "Audio" / "Voice" / "Reports"
+REPORTS = Path(os.environ.get("RR_VOICE_REPORT_OUT", str(DB.parent / "test-reports" / "Voice")))
 WX = DB / "Weather" / "Hawai'i"
 ALERTS = WX / "hfo" / "api.weather.gov" / "alerts" / "active" / "area=HI" / "area=HI_current.json"
 SFP = WX / "reports" / "0 Level Processing" / "sfp_state_forecast_current.md"

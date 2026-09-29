@@ -20,7 +20,7 @@ from pathlib import Path
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))
 INF = DB / "Logs" / "AI" / "Inference"
 CUR = Path(os.environ.get("RR_INFER_LOG_FILE", str(INF / "inference_current.jsonl")))
-OUT_DIR = DB / "Logs" / "AI" / "Reports"
+OUT_DIR = Path(os.environ.get("RR_AI_REPORT_OUT", str(DB.parent / "test-reports" / "AI-Processing")))
 OUT = OUT_DIR / "ai-processing-report_current.md"
 GEN_PREFIX = "Generated: "
 

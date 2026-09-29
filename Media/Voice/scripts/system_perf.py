@@ -33,7 +33,7 @@ from speakers import retire_current  # noqa: E402
 
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))
 REPORT = "system_perf"
-MD = DB / "System" / "Reports" / f"{REPORT}_current.md"
+MD = Path(os.environ.get("RR_VOICE_REPORT_OUT", str(DB.parent / "test-reports" / "Voice"))) / f"{REPORT}_current.md"
 
 
 def cpu_pct(interval: float = 0.5) -> float:
