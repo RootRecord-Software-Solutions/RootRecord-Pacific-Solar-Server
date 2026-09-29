@@ -23,6 +23,7 @@
 # Energy Phase 1 read path imported under Energy/scripts/read (2026-09-28).
 # Residual skill paths remain for: a-eyes, github, plumbing, telegram, energy actions.
 # Live runtime: /home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server
+# Paths with spaces MUST be single-quoted in every bash command string.
 # ==============================================================================
 #
 # HOW TO ADD A JOB (no AI required)
@@ -52,11 +53,12 @@ DEFAULTS = {
 
 PACIFIC = "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server"
 
+# Paths with spaces: always single-quote inside bash -c / command strings.
 ECOFLOW_DUAL_READ = (
-    "flock -w 90 /tmp/ecoflow-ble.lock bash -c '"
-    f"ok=0; "
-    f"{PACIFIC}/Energy/scripts/read/delta2-read.sh && ok=1 || true; "
-    f"{PACIFIC}/Energy/scripts/read/river2pro-read.sh && ok=1 || true; "
+    "flock -w 90 /tmp/ecoflow-ble.lock bash -c "
+    f"'ok=0; "
+    f"bash \"{PACIFIC}/Energy/scripts/read/delta2-read.sh\" && ok=1 || true; "
+    f"bash \"{PACIFIC}/Energy/scripts/read/river2pro-read.sh\" && ok=1 || true; "
     "exit $((1-ok))'"
 )
 
@@ -161,9 +163,9 @@ ON_BOOT = [
     },
     {
         "id": "weather_poller",
-        "enabled": True,
+        "enabled": False,
         "priority": 8,
-        "description": "Ensure the weather/ scheduler daemon is running.",
+        "description": "Ensure the weather/ scheduler daemon is running. Disabled until Weather domain path exists on desk.",
         "builtin": "",
         "command": "bash /home/rootrecord/.ollama/skills/Weather/scripts/ensure-weather-poller.sh",
         "timeout_sec": 30,
@@ -177,7 +179,7 @@ ON_BOOT = [
         "priority": 9,
         "description": "Ensure the live Hawaii Network Globe SSH collector is running.",
         "builtin": "",
-        "command": f"bash {PACIFIC}/Communications/network/scripts/ensure-network-globe-hawaii.sh",
+        "command": f'bash "{PACIFIC}/Communications/network/scripts/ensure-network-globe-hawaii.sh"',
         "timeout_sec": 30,
         "needs_internet": False,
         "cwd": "/home/rootrecord/.ollama/skills/coms/ssh/local-data-globe",
@@ -216,7 +218,7 @@ EVERY_SECONDS = [
         "description": "Leap-frog: Delta2 / River2Pro alternate.",
         "interval_sec": 15,
         "builtin": "",
-        "command": f"bash {PACIFIC}/Energy/scripts/read/leapfrog-read.sh",
+        "command": f'bash "{PACIFIC}/Energy/scripts/read/leapfrog-read.sh"',
         "timeout_sec": 180,
         "cwd": f"{PACIFIC}/Energy",
         "env": {"ENERGY_EFLIB_PATH": f"{PACIFIC}/Energy/lib/vendor"},
