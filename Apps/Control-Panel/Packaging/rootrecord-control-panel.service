@@ -1,0 +1,20 @@
+# rootrecord-control-panel.service — systemd --user autostart for the RootRecord Control Panel (added 2026-09-29)
+# WRITTEN TO THE REPO ONLY. NOT installed, NOT enabled. Enabling is a SIGN-OFF item:
+#   cp "<repo>/Apps/Control-Panel/Packaging/rootrecord-control-panel.service" ~/.config/systemd/user/
+#   systemctl --user daemon-reload && systemctl --user enable --now rootrecord-control-panel.service
+# The panel is read-only; stopping this unit only closes the panel (poller untouched).
+[Unit]
+Description=RootRecord Control Panel (GTK4, read-only)
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Apps/Control-Panel/rr_control_panel.py"
+Nice=10
+Restart=on-failure
+RestartSec=10
+MemoryMax=200M
+
+[Install]
+WantedBy=graphical-session.target

@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "refresh_sec": 5,
+  "database_root": "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database",
+  "pacific_root": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server",
+  "stale_after_sec": 900,
+  "weather_zone": "Honolulu Metro",
+  "log_lines": 40,
+  "flm_port": 52625,
+  "start_page": "energy",
+  "camera_viewer_enabled": false,
+  "camera_refresh_sec": 10,
+  "camera_live_fallback": true,
+  "camera_live_fallback_url": "http://127.0.0.1:8791/{still}",
+  "cameras": {
+    "ch1": {
+      "enabled": true,
+      "label": "CH1"
+    },
+    "ch2": {
+      "enabled": true,
+      "label": "CH2"
+    },
+    "ch3": {
+      "enabled": true,
+      "label": "CH3"
+    },
+    "ch4": {
+      "enabled": true,
+      "label": "CH4"
+    }
+  },
+  "risky_actions_enabled": false,
+  "risky_actions": [
+    {
+      "id": "poller_restart",
+      "label": "Restart poller stack (rr-rootserver-poller.service)",
+      "argv": [
+        "systemctl",
+        "--user",
+        "restart",
+        "rr-rootserver-poller.service"
+      ],
+      "signed_off": false
+    },
+    {
+      "id": "telegram_send",
+      "label": "Telegram send (not wired \u2014 needs a signed-off command)",
+      "argv": [],
+      "signed_off": false
+    },
+    {
+      "id": "voice_send",
+      "label": "Voice playback / send (not wired \u2014 needs a signed-off command)",
+      "argv": [],
+      "signed_off": false
+    },
+    {
+      "id": "rr_flags",
+      "label": "Enable gated RR_* flags (not wired \u2014 needs sign-off + a poller restart)",
+      "argv": [],
+      "signed_off": false
+    }
+  ],
+  "known_urls": [
+    {
+      "name": "Poller status line (local /health)",
+      "url": "http://127.0.0.1:8799/"
+    },
+    {
+      "name": "Poller energy JSON (local)",
+      "url": "http://127.0.0.1:8799/energy"
+    },
+    {
+      "name": "Poller system-status JSON (local)",
+      "url": "http://127.0.0.1:8799/system-status.json"
+    },
+    {
+      "name": "RootServer public (tunnel)",
+      "url": "https://rootserver.rootrecord.cloud/"
+    },
+    {
+      "name": "A-EYES cameras (public, login)",
+      "url": "https://rootserver.rootrecord.cloud/aeyes"
+    },
+    {
+      "name": "A-EYES cameras (local, login)",
+      "url": "http://127.0.0.1:8791/aeyes"
+    },
+    {
+      "name": "Ollama models (local)",
+      "url": "http://127.0.0.1:11434/api/tags"
+    },
+    {
+      "name": "FLM / NPU models (local, on demand)",
+      "url": "http://127.0.0.1:52625/v1/models"
+    }
+  ]
+}

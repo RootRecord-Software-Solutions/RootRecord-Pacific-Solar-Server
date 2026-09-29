@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=RootRecord Control Panel
+GenericName=RootRecord status panel
+Comment=Native GTK4 read-only panel: energy, weather, system, NPU, AI log, services, cameras (added 2026-09-29)
+Exec=/usr/bin/python3 "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Apps/Control-Panel/rr_control_panel.py"
+TryExec=/usr/bin/python3
+Icon=utilities-system-monitor
+Terminal=false
+Categories=System;Monitor;Utility;
+Keywords=RootRecord;poller;solar;battery;npu;
+StartupNotify=true
+StartupWMClass=cloud.rootrecord.ControlPanel

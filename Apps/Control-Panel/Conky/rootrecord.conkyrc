@@ -1,0 +1,48 @@
+-- rootrecord.conkyrc — always-visible RootRecord readout (added 2026-09-29, Apps/Control-Panel/Conky)
+-- READ-ONLY. Shows B1/B2/B3 battery bars, SOC text, CPU/RAM (poller JSON + conky's own), NPU state, poller state.
+-- Not installed/started by agents: conky is not installed on the desk (sign-off: sudo apt install conky-all).
+-- Start manually after install:  conky -c "<this file>"   (add to autostart only after sign-off)
+-- Cost: one small python3 helper per value every 15-30 s; conky itself updates every 5 s.
+local H = '/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Apps/Control-Panel/Conky/conky_readout.py'
+local R = 'nice -n 10 python3 "' .. H .. '" '
+
+conky.config = {
+    alignment = 'top_right',
+    gap_x = 24, gap_y = 60,
+    minimum_width = 300, maximum_width = 300,
+    update_interval = 5,
+    double_buffer = true,
+    own_window = true,
+    own_window_type = 'desktop',
+    own_window_transparent = false,
+    own_window_argb_visual = true,
+    own_window_argb_value = 190,
+    own_window_colour = '002b36',
+    own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
+    use_xft = true,
+    font = 'DejaVu Sans Mono:size=9',
+    default_color = '93a1a1',
+    color1 = 'eee8d5', color2 = '859900', color3 = 'b58900', color4 = '2aa198',
+    default_bar_width = 150, default_bar_height = 8,
+    draw_shades = false, draw_borders = false,
+    no_buffers = true,
+    cpu_avg_samples = 2,
+}
+
+conky.text = [[
+${color1}${font DejaVu Sans:bold:size=10}RootRecord · Pacific${font}${color}  ${alignr}${time %H:%M HST}
+${color4}poller${color} ${execi 15 ]] .. R .. [[poller}
+${hr 1}
+${color1}B1${color} river2pro ${alignr}${execi 15 ]] .. R .. [[soctext river2pro}
+${color2}${execibar 15 ]] .. R .. [[soc river2pro}${color}
+${color1}B2${color} delta2    ${alignr}${execi 15 ]] .. R .. [[soctext delta2}
+${color2}${execibar 15 ]] .. R .. [[soc delta2}${color}
+${color1}B3${color} laptop    ${alignr}${execi 30 ]] .. R .. [[laptoptext}
+${color2}${execibar 30 ]] .. R .. [[laptop}${color}
+${hr 1}
+${color1}CPU${color} ${cpu cpu0}% ${alignr}${cpubar cpu0}
+${color1}RAM${color} ${memperc}% ${alignr}${membar}
+${color1}load${color} ${loadavg}
+${hr 1}
+${color1}NPU${color} ${execi 30 ]] .. R .. [[npu}
+]]
