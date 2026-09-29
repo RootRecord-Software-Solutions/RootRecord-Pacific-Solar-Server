@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Migrated from legacy energy/scripts/actions/solar-gate-status.sh; G3 Pacific path only.
+set -euo pipefail
+STATE="/home/rootrecord/Database/ENERGY/ports/solar-gate-state.json"
+if [[ -f "$STATE" ]]; then cat "$STATE"; else echo "WAITING"; echo "No data - solar gate state not written yet"; exit 2; fi
