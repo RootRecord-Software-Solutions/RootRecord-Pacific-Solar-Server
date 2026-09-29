@@ -45,8 +45,8 @@ fi
 # Launch detached so reload scripts are not tied to that client lifetime.
 if command -v gnome-terminal >/dev/null 2>&1; then
   echo "[open] gnome-terminal geometry=${GEOMETRY}"
-  nohup gnome-terminal --title="$TITLE" --geometry="$GEOMETRY" -- \
-    bash -lc "exec /usr/bin/python3 '$WATCH'" >/dev/null 2>&1 &
+  nohup setsid gnome-terminal --title="$TITLE" --geometry="$GEOMETRY" -- \
+    bash -lc "/usr/bin/python3 '$WATCH'; rc=\$?; echo; echo \"poller-watch exited (code=\$rc) — terminal left open for inspection.\"; read -r" >/dev/null 2>&1 &
   sleep 0.5
   exit 0
 fi
