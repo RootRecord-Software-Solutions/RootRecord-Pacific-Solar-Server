@@ -5,9 +5,8 @@
 # Size guard: skip files > MAX_FILE_MB (default 90). Token from master-key.env.
 # Baks/logs: /home/rootrecord/Database/GITHUB/
 #
-# When GitHub merges into the live skills tree, arm + immediately schedule a
-# deferred full poller stack reload (bash schedule-stack-reload.sh). Do not rely
-# on the parent sync-all process still running old in-memory code after merge.
+# When GitHub merges into the live Pacific (or legacy skills) tree, arm +
+# schedule a deferred full poller stack reload via Pacific Automations.
 # Never reset --hard. Never force-push.
 # ==============================================================================
 set -euo pipefail
@@ -22,7 +21,18 @@ ID="${1:-}"
 
 remote_url() { echo "git@github.com:${1}.git"; }
 
-RELOAD_SCRIPT="/home/rootrecord/.ollama/skills/automations/scripts/schedule-stack-reload.sh"
+# Live runtime is Pacific — not G2 automations
+RELOAD_SCRIPT="/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Automations/scripts/stack/schedule-stack-reload.sh"
+
+# True when this repo hosts poller/jobs code that must reload after merge
+is_runtime_code_tree() {
+  local id="$1" local_path="$2"
+  [[ "$id" == "pacific" ]] && return 0
+  [[ "$id" == "skills" ]] && return 0
+  [[ "$local_path" == *"RootRecord-Pacific-Solar-Server"* ]] && return 0
+  [[ "$local_path" == *"/.ollama/skills"* ]] && return 0
+  return 1
+}
 
 mark_code_pulled() {
   local id="$1"
@@ -31,12 +41,10 @@ mark_code_pulled() {
   echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) id=$id head=$remote_head path=$local_path" \
     >> "$BAK_ROOT/flags/code-pulled.log"
   echo "$remote_head" > "$BAK_ROOT/flags/code-pulled.$id"
-  # Skills tree runs the poller — merge requires full stack reload.
-  if [[ "$id" == "skills" || "$local_path" == *"/.ollama/skills"* || "$local_path" == *"/skills" ]]; then
-    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) skills-code-pulled id=$id head=$remote_head" \
+  if is_runtime_code_tree "$id" "$local_path"; then
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) runtime-code-pulled id=$id head=$remote_head" \
       > "$BAK_ROOT/flags/reload-poller-stack"
     echo "↻ [$id] CODE_PULLED — poller stack reload armed"
-    # Schedule NOW from disk (merged tree), not from parent sync-all's old in-memory script.
     if [[ -f "$RELOAD_SCRIPT" ]]; then
       bash "$RELOAD_SCRIPT" || echo "⚠ [$id] schedule-stack-reload failed"
     else
