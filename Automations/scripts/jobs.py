@@ -284,6 +284,17 @@ EVERY_MINUTE = [
 
 EVERY_HOUR = [
     {
+        "id": "automations_log_hourly_archive",
+        "enabled": True,
+        "description": "Cut and archive automations_current.log hourly into Database/Logs/Automations/Archive.",
+        "only_at_hours": [],
+        "builtin": "",
+        "command": f'bash "{PACIFIC}/Automations/scripts/archive_automations_log_hourly.sh"',
+        "timeout_sec": 120,
+        "cwd": f"{PACIFIC}/Automations/scripts",
+        "env": {},
+    },
+    {
         "id": "security_timelapse_hourly_compile",
         "enabled": True,
         "description": "Compile previous hour ch1 frames into hour_HH.mp4. Window 05:00-19:00 HST (hours 05-18).",
