@@ -19,7 +19,7 @@
 #   Local jobs (BLE, Ollama, FLM, heartbeat, worklog, reports roll-up/archive) always run.
 #
 # File layout (standing): keep SECTION banners + TEMPLATE blocks.
-# Energy + System + Reports LIVE (WO-RPT-001). Residual: energy-action retirement verification; Telegram and A-Eyes Pacific surfaces landed, runtime verification pending.
+# Energy + System + Reports LIVE (WO-RPT-001). Residual: energy-action retirement verification; Telegram and Security Pacific surfaces landed, runtime verification pending.
 # Live runtime: /home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server
 # Paths with spaces MUST be double-quoted in every bash command string.
 # ==============================================================================
@@ -143,7 +143,7 @@ ON_BOOT = [
         "priority": 6,
         "description": "Ensure Security camera server (127.0.0.1:8791) is running.",
         "builtin": "",
-        "command": f'bash "{PACIFIC}/Security/Cameras/scripts/ensure_cam_server.sh"',
+        "command": f'bash "{PACIFIC}/Security/Cameras/ensure_cam_server.sh"',
         "timeout_sec": 30,
         "cwd": f"{PACIFIC}/Security/Cameras",
         "env": {},
@@ -154,7 +154,7 @@ ON_BOOT = [
         "priority": 7,
         "description": "Compile any completed hour missing a chunk today + stitch master MP4 if past 19:00 HST (covers late boot/downtime).",
         "builtin": "",
-        "command": f'bash "{PACIFIC}/Security/Cameras/scripts/timelapse_catchup.sh"',
+        "command": f'bash "{PACIFIC}/Security/Cameras/timelapse_catchup.sh"',
         "timeout_sec": 600,
         "cwd": f"{PACIFIC}/Security/Cameras",
         "env": {},
@@ -258,10 +258,10 @@ EVERY_SECONDS = [
     {
         "id": "security_camera_frame_grab",
         "enabled": True,
-        "description": "Grab ch1-4 stills to RootRecord-Ecosystem/2 - RootRecord-Database/Media/Images/.",
+        "description": "Grab ch1-4 stills to /home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Media/Images/.",
         "interval_sec": 1,
         "builtin": "",
-        "command": f'bash "{PACIFIC}/Security/Cameras/scripts/grab_all.sh"',
+        "command": f'bash "{PACIFIC}/Security/Cameras/grab_all.sh"',
         "timeout_sec": 120,
         "cwd": f"{PACIFIC}/Security/Cameras",
         "env": {},
@@ -289,7 +289,7 @@ EVERY_HOUR = [
         "description": "Compile previous hour ch1 frames into hour_HH.mp4. Window 05:00-19:00 HST (hours 05-18).",
         "only_at_hours": [],
         "builtin": "",
-        "command": f'bash "{PACIFIC}/Security/Cameras/scripts/timelapse_hourly.sh"',
+        "command": f'bash "{PACIFIC}/Security/Cameras/timelapse_hourly.sh"',
         "timeout_sec": 600,
         "cwd": f"{PACIFIC}/Security/Cameras",
         "env": {},
@@ -303,7 +303,7 @@ ON_AT = [
         "description": "Stitch hour_HH.mp4 chunks (05-18) into master_stitched_timelapse.mp4 (MP4 only, no GIF).",
         "at_times": ["19:01"],
         "builtin": "",
-        "command": f'bash "{PACIFIC}/Security/Cameras/scripts/timelapse_daily.sh"',
+        "command": f'bash "{PACIFIC}/Security/Cameras/timelapse_daily.sh"',
         "timeout_sec": 900,
         "cwd": f"{PACIFIC}/Security/Cameras",
         "env": {},
