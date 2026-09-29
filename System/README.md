@@ -11,7 +11,8 @@ Host operating-system integration, system sampling, and desk host services.
 | Domain folder | **`System/` only** |
 | jobs.py | `sys_stats_cycle` → `System/scripts/sys-sample.sh` |
 | Sample writes | `/home/rootrecord/Database/SYSTEM/` |
-| Plumbing / worklog | Still G2 until imported |
+| Worklog | **Reports/** (WO-RPT-001) — no longer System residual |
+| Plumbing / telegram / a-eyes | Still G2 until imported |
 
 ### Naming
 
