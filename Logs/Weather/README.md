@@ -1,3 +1,0 @@
-# Weather
-
-Weather subsystem logs.

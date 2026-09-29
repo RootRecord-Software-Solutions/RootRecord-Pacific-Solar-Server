@@ -1,0 +1,258 @@
+#!/usr/bin/env python3
+"""Read live snapshot (BLE preferred, official API fallback) and persist."""
+from __future__ import annotations
+
+import argparse
+import asyncio
+import json
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+from zoneinfo import ZoneInfo
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parent.parent))
+
+from paths import SAMPLES, SOC, WATTS, ensure_dirs  # noqa: E402
+from ble_client import connect, BleUnavailable, eflib_ready  # noqa: E402
+from config import device as device_cfg, load as load_conf  # noqa: E402
+from Energy.db.ingest import persist_eflow_device  # noqa: E402
+from Energy.db.condense import condense_closed_periods  # noqa: E402
+
+HST = ZoneInfo("Pacific/Honolulu")
+
+
+def _fields_from_ble(device) -> dict:
+    def g(n, d=None):
+        return getattr(device, n, d)
+
+    solar = g("xt60_input_power")
+    if solar is None:
+        solar = g("solar_input_power")
+    return {
+        "ac_ports": g("ac_ports"),
+        "usb_ports": g("usb_ports"),
+        "dc_12v_port": g("dc_12v_port"),
+        "ac_output_power": g("ac_output_power"),
+        "ac_input_power": g("ac_input_power"),
+        "usbc_output_power": g("usbc_output_power"),
+        "usba_output_power": g("usba_output_power"),
+        "solar_input_power": solar,
+        "soc": g("battery_level", g("soc")),
+    }
+
+
+def _summary_line(alias: str, fields: dict, db_ok: bool, source: str, charge_source: str) -> str:
+    def fmt(v, unit=""):
+        if v is None:
+            return "—"
+        if isinstance(v, float) and v == int(v):
+            v = int(v)
+        return f"{v}{unit}"
+
+    cs = f" charge={charge_source}" if charge_source and charge_source != "none" else ""
+    return (
+        f"SUMMARY={alias}"
+        f" soc={fmt(fields.get('soc'), '%')}"
+        f" solar={fmt(fields.get('solar_input_power'), 'W')}"
+        f" ac_out={fmt(fields.get('ac_output_power'), 'W')}"
+        f" usbc={fmt(fields.get('usbc_output_power'), 'W')}"
+        f" src={source}{cs}"
+        f" db={'ok' if db_ok else 'fail'}"
+    )
+
+
+def _is_internal_only(alias: str) -> bool:
+    try:
+        cfg = device_cfg(alias)
+        return (cfg.get("track") or "").strip().lower() == "internal_only"
+    except Exception:
+        return False
+
+
+def _prefer_api(alias: str) -> bool:
+    try:
+        cfg = device_cfg(alias)
+        return (cfg.get("prefer_api") or "0").strip() in ("1", "true", "yes")
+    except Exception:
+        return False
+
+
+def _has_data(fields: dict) -> bool:
+    return any(
+        fields.get(k) is not None
+        for k in ("soc", "ac_output_power", "ac_input_power", "solar_input_power", "usbc_output_power")
+    )
+
+
+def derive_charge_source(fields: dict, source: str, other_ac_outs: list[float]) -> str:
+    """Generator status is API-only (per operator rule)."""
+    try:
+        ac_in = float(fields.get("ac_input_power") or 0)
+    except (TypeError, ValueError):
+        ac_in = 0.0
+    if ac_in <= 5:
+        return "none"
+    for out in other_ac_outs:
+        if out is not None and out > 20 and abs(out - ac_in) < max(80, ac_in * 0.4):
+            return "battery_transfer"
+    if source == "api":
+        return "generator"
+    return "ac"
+
+
+def _collect_other_ac_outs(exclude_alias: str) -> list[float]:
+    outs = []
+    try:
+        cp = load_conf()
+        for section in cp.sections():
+            if section in ("paths", "inventory", "ble", "env") or section == exclude_alias:
+                continue
+            if not cp.has_option(section, "sn"):
+                continue
+            p = WATTS / f"{section}-last.json"
+            if p.is_file():
+                try:
+                    data = json.loads(p.read_text(encoding="utf-8"))
+                    v = data.get("ac_output_power")
+                    if v is not None:
+                        outs.append(float(v))
+                except Exception:
+                    pass
+    except Exception:
+        pass
+    return outs
+
+
+async def _read_ble(alias: str):
+    device = await connect(alias)
+    await asyncio.sleep(2.0)
+    fields = _fields_from_ble(device)
+    if not _has_data(fields):
+        # Connected but no usable telemetry — treat as failure so API can run
+        try:
+            await device.disconnect()
+        except Exception:
+            pass
+        raise BleUnavailable("BLE connected but fields empty/None")
+    return device, fields
+
+
+def _read_api(alias: str) -> dict:
+    from ecoflow_api import fetch_device_fields, EcoflowApiError
+    cfg = device_cfg(alias)
+    sn = (cfg.get("sn") or "").strip()
+    if not sn:
+        raise EcoflowApiError(f"no sn for {alias}")
+    return fetch_device_fields(sn)
+
+
+def main() -> int:
+    p = argparse.ArgumentParser()
+    p.add_argument("--device", required=True)
+    args = p.parse_args()
+    ensure_dirs()
+    alias = args.device
+
+    source = "none"
+    fields: dict = {}
+    device = None
+    ble_err = None
+
+    # 1) Prefer BLE unless prefer_api=1
+    if not _prefer_api(alias):
+        ok, reason = eflib_ready()
+        if ok:
+            try:
+                device, fields = asyncio.run(_read_ble(alias))
+                source = "ble"
+            except BleUnavailable as e:
+                ble_err = str(e)
+            except Exception as e:
+                # Any connect/auth/disappear error → fall through to API
+                ble_err = f"{type(e).__name__}: {e}"
+        else:
+            ble_err = reason
+
+    # 2) API fallback when BLE missing or empty
+    if source != "ble":
+        try:
+            fields = _read_api(alias)
+            source = "api"
+            device = None
+        except Exception as e:
+            print("WAITING")
+            print(f"No data — BLE: {ble_err or 'skipped'}; API: {type(e).__name__}: {e}")
+            print("STATUS=WAITING")
+            return 2
+
+    # 3) Charge source
+    other_outs = _collect_other_ac_outs(alias)
+    charge_source = derive_charge_source(fields, source, other_outs)
+
+    observed_at = (
+        datetime.now(timezone.utc)
+        .isoformat(timespec="milliseconds")
+        .replace("+00:00", "Z")
+    )
+    snap = {
+        "alias": alias,
+        "fields": fields,
+        "at": datetime.now(HST).isoformat(timespec="seconds"),
+        "source": source,
+        "charge_source": charge_source,
+    }
+
+    # 4) Persist
+    db_ok = False
+    if device is not None:
+        try:
+            persist_eflow_device(device, alias, observed_at)
+            condense_closed_periods()
+            db_ok = True
+        except Exception as e:
+            print(f"DB_ERROR: {type(e).__name__}: {e}", file=sys.stderr)
+        try:
+            asyncio.run(device.disconnect())
+        except Exception:
+            pass
+    else:
+        db_ok = True  # JSON path is authoritative for API reads
+
+    # 5) Samples / last files
+    path = SAMPLES / f"read-{alias}-{datetime.now(HST).strftime('%Y%m%d-%H%M%S')}.json"
+    path.write_text(json.dumps(snap, indent=2), encoding="utf-8")
+
+    if fields.get("soc") is not None:
+        (SOC / f"{alias}-last.json").write_text(
+            json.dumps({"soc": fields["soc"], "at": snap["at"], "source": source}, indent=2)
+        )
+    watts = {
+        k: fields[k]
+        for k in ("ac_output_power", "ac_input_power", "usbc_output_power", "solar_input_power")
+        if fields.get(k) is not None
+    }
+    if watts:
+        (WATTS / f"{alias}-last.json").write_text(
+            json.dumps({**watts, "at": snap["at"], "source": source, "charge_source": charge_source}, indent=2)
+        )
+
+    # 6) Console
+    if not _is_internal_only(alias):
+        print(_summary_line(alias, fields, db_ok, source, charge_source))
+    else:
+        print(f"INTERNAL={alias} soc={fields.get('soc')} src={source} charge={charge_source}")
+
+    if not _has_data(fields):
+        print("WAITING")
+        print("No data — fields empty/None (not inventing)")
+        print("STATUS=WAITING")
+        return 2
+
+    print("STATUS=OK" + ("" if db_ok else " (json-only; db failed)"))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

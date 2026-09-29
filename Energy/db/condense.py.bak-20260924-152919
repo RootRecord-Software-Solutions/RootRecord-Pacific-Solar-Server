@@ -1,0 +1,33 @@
+"""Runtime condensation of newly closed telemetry periods."""
+from __future__ import annotations
+from datetime import datetime
+from Energy.db.store import connect, initialize_schema
+from Energy.db.aggregate import aggregate_period, period_bounds, LAYERS, _iso
+
+def condense_closed_periods(db_path=None):
+    conn=connect(db_path) if db_path else connect()
+    initialize_schema(conn)
+    total=0
+    try:
+        row=conn.execute("SELECT MIN(observed_at), MAX(observed_at) FROM observation").fetchone()
+        if not row or not row[0] or not row[1]:
+            return 0
+        earliest=datetime.fromisoformat(row[0].replace("Z","+00:00"))
+        latest=datetime.fromisoformat(row[1].replace("Z","+00:00"))
+
+        for layer in LAYERS:
+            start,_=period_bounds(layer,earliest)
+            while True:
+                _,end=period_bounds(layer,start)
+                if end>latest:
+                    break
+                key=(_iso(start),_iso(end))
+                done=conn.execute(
+                    "SELECT status FROM aggregation_run WHERE layer=? AND period_start=? AND period_end=?",
+                    (layer,*key)).fetchone()
+                if not done or done[0]!="complete":
+                    total += aggregate_period(conn,layer,start,end,"raw")
+                start=end
+        return total
+    finally:
+        conn.close()

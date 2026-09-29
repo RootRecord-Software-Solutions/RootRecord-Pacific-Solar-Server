@@ -1,0 +1,13 @@
+from ..props import computed_field
+from . import delta2
+
+
+class Device(delta2.Device):
+    """Delta 3 1500"""
+
+    SN_PREFIX = (b"D361", b"D365")
+    NAME_PREFIX = "EF-D3"
+
+    @computed_field
+    def ac_charging_power_max(self) -> int:
+        return 1500

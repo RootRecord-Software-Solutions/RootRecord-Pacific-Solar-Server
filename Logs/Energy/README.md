@@ -1,3 +1,0 @@
-# Energy
-
-Energy subsystem logs.

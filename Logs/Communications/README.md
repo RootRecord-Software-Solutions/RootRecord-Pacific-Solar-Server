@@ -1,3 +1,0 @@
-# Communications
-
-Communication subsystem logs.
