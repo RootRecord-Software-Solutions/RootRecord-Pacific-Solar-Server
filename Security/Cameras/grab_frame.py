@@ -2,7 +2,7 @@
 """Grab one JPEG still from a camera channel and save it to the Database.
 
 This script does exactly one thing: pull a single frame via RTSP/ffmpeg
-and write it to /home/rootrecord/Database/A-EYES/frames/. Nothing else
+and write it to /home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Media/Images/. Nothing else
 reads it, mirrors it, or serves it — that's the gateway's job.
 """
 from __future__ import annotations
@@ -18,7 +18,7 @@ from pathlib import Path
 SKILL = Path(__file__).resolve().parents[1]
 CONN_PATH = SKILL / "store" / "CONNECTION.json"
 MASTER_KEY = Path("/home/rootrecord/master/master-key.env")
-DB_FRAMES = Path("/home/rootrecord/Database/A-EYES/frames")
+DB_FRAMES = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Media/Images")
 
 FRAMES_LOCK_PATH = Path("/tmp/a-eyes-frames.lock")
 
