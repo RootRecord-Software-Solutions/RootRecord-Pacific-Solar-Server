@@ -24,7 +24,7 @@ WATTS = ENERGY_DATA / "watts"
 
 LOG_DIR = DATABASE_ROOT / "Logs" / "Energy"
 BLE_LOG = LOG_DIR / "ecoflow-ble.log"
-STATE_DIR = DATABASE_ROOT / "Energy" / "state"
+STATE_DIR = ENERGY_DATA / "state"
 
 
 def ensure_dirs() -> None:
