@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# ============================================================================
+# energy/lib/py — energy skill Python launcher
+# ----------------------------------------------------------------------------
+# WHAT: Run a script with the energy venv + eflib PYTHONPATH.
+# HOW:  Prefer ENERGY_PYTHON, else skill .venv, else system python3.
+# Layout style (standing): keep this header.
+# ============================================================================
+set -euo pipefail
+
+# ====================================================
+# SECTION: PATHS
+# ====================================================
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+VENV_PY="$ROOT/.venv/bin/python"
+VENDOR="$ROOT/lib/vendor"
+
+# ====================================================
+# SECTION: RESOLVE INTERPRETER
+# ====================================================
+if [[ -n "${ENERGY_PYTHON:-}" ]]; then
+  PY="$ENERGY_PYTHON"
+elif [[ -x "$VENV_PY" ]]; then
+  PY="$VENV_PY"
+else
+  PY="python3"
+fi
+
+# ====================================================
+# SECTION: ENV + EXEC
+# ====================================================
+export PYTHONPATH="${ENERGY_EFLIB_PATH:-$VENDOR}:${PYTHONPATH:-}"
+exec "$PY" "$@"
