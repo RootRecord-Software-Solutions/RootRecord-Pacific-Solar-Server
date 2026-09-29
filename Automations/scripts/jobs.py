@@ -20,8 +20,8 @@
 #
 # File layout (standing): keep SECTION banners + TEMPLATE blocks.
 # Repo domains: Automations/, Communications/, Weather/, Energy/, … at skills root.
-# External domain jobs (energy, a-eyes, github, plumbing, telegram) still point at
-# legacy lowercase skill paths until those domains are imported into this repo.
+# Energy Phase 1 read path imported under Energy/scripts/read (2026-09-28).
+# Residual skill paths remain for: a-eyes, github, plumbing, telegram, energy actions.
 # ==============================================================================
 #
 # HOW TO ADD A JOB (no AI required)
@@ -52,8 +52,8 @@ DEFAULTS = {
 ECOFLOW_DUAL_READ = (
     "flock -w 90 /tmp/ecoflow-ble.lock bash -c '"
     "ok=0; "
-    "/home/rootrecord/.ollama/skills/energy/scripts/read/delta2-read.sh && ok=1 || true; "
-    "/home/rootrecord/.ollama/skills/energy/scripts/read/river2pro-read.sh && ok=1 || true; "
+    "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/read/delta2-read.sh && ok=1 || true; "
+    "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/read/river2pro-read.sh && ok=1 || true; "
     "exit $((1-ok))'"
 )
 
@@ -190,8 +190,8 @@ ONCE_AT_START = [
         "builtin": "",
         "command": ECOFLOW_DUAL_READ,
         "timeout_sec": 180,
-        "cwd": "/home/rootrecord/.ollama/skills/energy",
-        "env": {},
+        "cwd": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy",
+        "env": {"ENERGY_EFLIB_PATH": "/home/rootrecord/.ollama/skills/energy/lib/vendor"},
     },
 ]
 
@@ -213,10 +213,10 @@ EVERY_SECONDS = [
         "description": "Leap-frog: Delta2 / River2Pro alternate.",
         "interval_sec": 15,
         "builtin": "",
-        "command": "bash /home/rootrecord/.ollama/skills/energy/scripts/read/leapfrog-read.sh",
+        "command": "bash /home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/read/leapfrog-read.sh",
         "timeout_sec": 180,
-        "cwd": "/home/rootrecord/.ollama/skills/energy",
-        "env": {},
+        "cwd": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy",
+        "env": {"ENERGY_EFLIB_PATH": "/home/rootrecord/.ollama/skills/energy/lib/vendor"},
     },
     {
         "id": "sys_stats_cycle",
@@ -317,6 +317,6 @@ def ecoflow_command(script: str) -> str:
 
 TOGGLES = []
 READS = [
-    {"id": "delta2_read", "script": "/home/rootrecord/.ollama/skills/energy/scripts/read/delta2-read.sh"},
-    {"id": "river2pro_read", "script": "/home/rootrecord/.ollama/skills/energy/scripts/read/river2pro-read.sh"},
+    {"id": "delta2_read", "script": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/read/delta2-read.sh"},
+    {"id": "river2pro_read", "script": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/read/river2pro-read.sh"},
 ]

@@ -11,7 +11,7 @@ STACK="$(cd "$(dirname "$0")" && pwd)"
 SCRIPTS="$(cd "$STACK/.." && pwd)"
 REPO="$(cd "$SCRIPTS/../.." && pwd)"
 
-LOG="${STACK_RELOAD_LOG:-/home/rootrecord/.ollama/skills/logs/store/stack-reload.log}"
+LOG="${STACK_RELOAD_LOG:-/home/rootrecord/Database/Logs/Automations/stack_reload_current.log}"
 BAK_ROOT="${BAK_ROOT:-/home/rootrecord/Database/GITHUB}"
 FLAG="$BAK_ROOT/flags/reload-poller-stack"
 LOCK="/tmp/rootrecord-stack-reload.lock"
@@ -30,7 +30,6 @@ export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 if [[ -z "${DBUS_SESSION_BUS_ADDRESS:-}" && -S "${XDG_RUNTIME_DIR}/bus" ]]; then
   export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
 fi
-# GUI window needs a display (desktop session)
 if [[ -z "${DISPLAY:-}" ]]; then
   if [[ -S /tmp/.X11-unix/X0 ]]; then
     export DISPLAY=:0
@@ -84,7 +83,6 @@ else
   systemctl --user start "$UNIT" 2>&1 || true
 fi
 
-# Reopen status window (desired effect after every auto-reload)
 window_ok=0
 if [[ -n "${DISPLAY:-}" ]]; then
   if [[ -f "$OPEN_WIN" ]]; then

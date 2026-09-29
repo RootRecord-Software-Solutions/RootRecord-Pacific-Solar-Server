@@ -88,7 +88,7 @@ STOP = SCRIPTS / "stack" / "stop-poller-stack.sh"
 LOG = Path(
     os.environ.get(
         "POLLER_LOG",
-        str(Path.home() / ".ollama/skills/logs/store/rootserver-poller.log"),
+        "/home/rootrecord/Database/Logs/Automations/automations_current.log",
     )
 )
 HOST = os.environ.get("POLLER_PUBLIC_HOST", "rootserver.rootrecord.cloud")
@@ -160,7 +160,6 @@ def _on_signal(signum: int, _frame) -> None:
     }
     reason = names.get(signum, f"signal {signum}")
     stop_everything(reason)
-    # Exit cleanly after stop so the terminal does not hang
     sys.exit(0)
 
 
@@ -170,7 +169,6 @@ def _install_handlers() -> None:
             signal.signal(sig, _on_signal)
         except Exception:
             pass
-    # Closing some terminals only triggers atexit / normal exit
     atexit.register(lambda: stop_everything("window exit"))
 
 
@@ -234,11 +232,6 @@ def format_line(raw: str) -> str | None:
     t = clock(ts)
     body = rest
 
-    # ------------------------------------------------
-    # A-EYES ffmpeg continuation stderr lines.
-    # The camera identity is on the previous line;
-    # ffmpeg emits follow-up errors separately.
-    # ------------------------------------------------
     if (
         "Error opening input:" in body
         or ("[in#" in body and "No route" in body)
@@ -246,10 +239,6 @@ def format_line(raw: str) -> str | None:
     ):
         return None
 
-    # ------------------------------------------------
-    # A-EYES raw ffmpeg/DVR failures.
-    # Hide noisy camera stderr and let solar state own display.
-    # ------------------------------------------------
     if (
         "a-eyes" in body.lower()
         and (
@@ -260,13 +249,8 @@ def format_line(raw: str) -> str | None:
         )
     ):
         solar = aeyes_solar_state()
-
         if solar:
-            return (
-                f"  {DIM}{t}{RST}  "
-                f"{DIM}📷 A-EYES {solar}{RST}"
-            )
-
+            return f"  {DIM}{t}{RST}  {DIM}📷 A-EYES {solar}{RST}"
         return None
 
     noise = (
@@ -335,19 +319,13 @@ def format_line(raw: str) -> str | None:
         return f"  {DIM}{t}{RST}  {YELLOW}⚡{RST}  {YELLOW}{body}{RST}"
     if body.startswith("SUMMARY="):
         payload = body[len("SUMMARY="):].strip()
-        fields = dict(
-            part.split("=", 1)
-            for part in payload.split()
-            if "=" in part
-        )
-
+        fields = dict(part.split("=", 1) for part in payload.split() if "=" in part)
         device = payload.split()[0] if payload else "unknown"
         soc = fields.get("soc", "—")
         solar = fields.get("solar", "—")
         ac = fields.get("ac_out", "—")
         usbc = fields.get("usbc", "—")
         src = fields.get("src", "—")
-
         src_mark = "✓" if src == "api" else src
         return (
             f"  {DIM}{t}{RST}  {YELLOW}⚡{RST}  "
@@ -365,7 +343,6 @@ def format_line(raw: str) -> str | None:
                 return f"  {DIM}{t}{RST}  {RED}✗{RST}  {RED}{payload}{RST}"
             repo = ""
             rest = payload
-
             if "] [" in payload:
                 try:
                     after = payload.split("] ", 1)[1]
@@ -374,17 +351,9 @@ def format_line(raw: str) -> str | None:
                         rest = after[after.index("]") + 1 :].strip()
                 except Exception:
                     rest = payload
-
-            # ------------------------------------------------
-            # EcoFlow summaries
-            # ------------------------------------------------
             if "SUMMARY=" in rest:
                 summary = rest.split("SUMMARY=", 1)[1].strip()
-                fields = dict(
-                    part.split("=", 1)
-                    for part in summary.split()
-                    if "=" in part
-                )
+                fields = dict(part.split("=", 1) for part in summary.split() if "=" in part)
                 device = summary.split()[0] if summary else "unknown"
                 soc = fields.get("soc", "—")
                 solar = fields.get("solar", "—")
@@ -392,21 +361,12 @@ def format_line(raw: str) -> str | None:
                 usbc = fields.get("usbc", "—")
                 src = fields.get("src", "—")
                 src_mark = "✓" if src == "api" else src
-
                 return (
                     f"  {DIM}{t}{RST}  {YELLOW}⚡{RST}  "
                     f"{YELLOW}ECOFLOW{RST}  {BOLD}{device}{RST}  "
                     f"SOC={soc}  solar={solar}  AC={ac}  USB-C={usbc}  "
                     f"src={src_mark}"
                 )
-
-
-
-
-            # ------------------------------------------------
-            # Suppress noisy A-EYES frame-grab failures outside
-            # daylight. Solar state owns the display.
-            # ------------------------------------------------
             if (
                 "a_eyes_frame_grab" in body.lower()
                 or "a-eyes" in rest.lower()
@@ -424,25 +384,9 @@ def format_line(raw: str) -> str | None:
                     or "No route to host" in rest
                 ):
                     solar = aeyes_solar_state()
-
-                    if solar and (
-                        solar.startswith("waiting")
-                        or solar.startswith("complete")
-                    ):
-                        return (
-                            f"  {DIM}{t}{RST}  "
-                            f"{DIM}📷 A-EYES {solar}{RST}"
-                        )
-
-                    return (
-                        f"  {DIM}{t}{RST}  "
-                        f"{RED}📷 A-EYES offline — DVR unreachable{RST}"
-                    )
-
-            # ------------------------------------------------
-            # A-EYES owns its own display identity.
-            # Do NOT route camera failures through "github".
-            # ------------------------------------------------
+                    if solar and (solar.startswith("waiting") or solar.startswith("complete")):
+                        return f"  {DIM}{t}{RST}  {DIM}📷 A-EYES {solar}{RST}"
+                    return f"  {DIM}{t}{RST}  {RED}📷 A-EYES offline — DVR unreachable{RST}"
             if (
                 "a_eyes" in rest.lower()
                 or "a-eyes" in rest.lower()
@@ -450,31 +394,13 @@ def format_line(raw: str) -> str | None:
             ):
                 if "FAILED" in rest or "FAIL" in rest or "grab failed" in rest.lower():
                     solar = aeyes_solar_state()
-
-                    if solar and (
-                        solar.startswith("waiting")
-                        or solar.startswith("complete")
-                    ):
-                        return (
-                            f"  {DIM}{t}{RST}  {DIM}📷{RST}  "
-                            f"{DIM}A-EYES {solar}{RST}"
-                        )
-
-                    return (
-                        f"  {DIM}{t}{RST}  {RED}📷{RST}  "
-                        f"{RED}A-EYES offline — DVR unreachable{RST}"
-                    )
+                    if solar and (solar.startswith("waiting") or solar.startswith("complete")):
+                        return f"  {DIM}{t}{RST}  {DIM}📷{RST}  {DIM}A-EYES {solar}{RST}"
+                    return f"  {DIM}{t}{RST}  {RED}📷{RST}  {RED}A-EYES offline — DVR unreachable{RST}"
                 short = rest
                 if len(short) > 90:
                     short = short[:87] + "…"
-                return (
-                    f"  {DIM}{t}{RST}  {DIM}📷{RST}  "
-                    f"{DIM}A-EYES  {short}{RST}"
-                )
-
-            # ------------------------------------------------
-            # Only GitHub jobs get GitHub formatting.
-            # ------------------------------------------------
+                return f"  {DIM}{t}{RST}  {DIM}📷{RST}  {DIM}A-EYES  {short}{RST}"
             is_github_job = any(
                 key in body.lower()
                 for key in (
@@ -484,19 +410,14 @@ def format_line(raw: str) -> str | None:
                     "github repo",
                 )
             )
-
             if is_github_job:
                 if "worklog" in rest.lower() or "WORKLOG" in rest or "worklog_current" in rest:
-                    short = rest
-                    if len(short) > 90:
-                        short = short[:87] + "…"
+                    short = rest if len(rest) <= 90 else rest[:87] + "…"
                     return f"  {DIM}{t}{RST}  {BRIGHT_GREEN}📓{RST}  {GREEN}{short}{RST}"
-
                 if "no changes" in rest or rest.startswith("—"):
                     if repo:
                         return f"  {DIM}{t}{RST}  {DIM}▸{RST}  {DIM}github {repo} · no changes{RST}"
                     return None
-
                 if rest.startswith("↑") or " files" in rest or "pushed" in rest.lower():
                     n = ""
                     for tok in rest.replace("file(s)", "files").split():
@@ -507,79 +428,53 @@ def format_line(raw: str) -> str | None:
                     if n:
                         return f"  {DIM}{t}{RST}  {GREEN}▸{RST}  {GREEN}github {label}{RST}  {DIM}↑ {n} files{RST}"
                     return f"  {DIM}{t}{RST}  {GREEN}▸{RST}  {GREEN}github {label}{RST}  {DIM}{rest}{RST}"
-
                 if rest.startswith("✗") or "FAIL" in rest or "ERROR" in rest:
                     label = repo or "repo"
                     return f"  {DIM}{t}{RST}  {RED}✗{RST}  {RED}github {label}{RST}  {DIM}{rest}{RST}"
-
-            # Generic non-GitHub job output.
-            if rest.startswith("✗") or "FAIL" in rest or "ERROR" in rest:
-                short = rest
-                if len(short) > 100:
-                    short = short[:97] + "…"
-                return f"  {DIM}{t}{RST}  {RED}✗{RST}  {RED}{short}{RST}"
-
+                short = rest if len(rest) <= 90 else rest[:87] + "…"
+                label = repo or "repo"
+                return f"  {DIM}{t}{RST}  {DIM}▸{RST}  {DIM}github {label}{RST}  {DIM}{short}{RST}"
             if "worklog" in rest.lower() or "WORKLOG" in rest:
-                short = rest
-                if len(short) > 90:
-                    short = short[:87] + "…"
+                short = rest if len(rest) <= 90 else rest[:87] + "…"
                 return f"  {DIM}{t}{RST}  {BRIGHT_GREEN}📓{RST}  {GREEN}{short}{RST}"
+            short = rest if len(rest) <= 100 else rest[:97] + "…"
+            return f"  {DIM}{t}{RST}  {DIM}▸{RST}  {DIM}{short}{RST}"
+        if "FAIL" in body or "ERROR" in body:
+            return f"  {DIM}{t}{RST}  {RED}✗{RST}  {RED}{body}{RST}"
+        return f"  {DIM}{t}{RST}  {DIM}▸{RST}  {DIM}{body}{RST}"
 
-            if len(rest) > 80:
-                return None
-
-            return f"  {DIM}{t}{RST}  {DIM}▸  {rest}{RST}"
-
-        if " FAIL" in body or " ERROR" in body or " TIMEOUT" in body:
-            short = body.split("job:", 1)[-1]
-            if len(short) > 60:
-                short = short[:57] + "…"
-            return f"  {DIM}{t}{RST}  {RED}✗{RST}  {RED}{short}{RST}"
-
-        if body.endswith(" OK") or " RUN  " in body:
-            return None
-
-        return None
-
-    if "ERR" in body or "DOWN" in body:
+    if "FAIL" in body or "ERROR" in body or "error" in body.lower():
         return f"  {DIM}{t}{RST}  {RED}✗{RST}  {RED}{body}{RST}"
-    if len(body) > 120:
-        return None
-    return f"  {DIM}{t}  {body}{RST}"
+    if body.startswith("boot:"):
+        return f"  {DIM}{t}{RST}  {BLUE}▶{RST}  {body}"
+    short = body if len(body) <= 110 else body[:107] + "…"
+    return f"  {DIM}{t}{RST}  {DIM}▸{RST}  {DIM}{short}{RST}"
 
 
-def follow() -> int:
-    banner()
+def main() -> None:
+    _install_handlers()
     LOG.parent.mkdir(parents=True, exist_ok=True)
     LOG.touch(exist_ok=True)
     try:
         existing = LOG.read_text(encoding="utf-8", errors="replace").splitlines()
-    except OSError:
+    except Exception:
         existing = []
-    buf: list[str] = []
-    for raw in existing[-200:]:
-        out = format_line(raw)
+    banner()
+    for line in existing[-80:]:
+        out = format_line(line)
         if out:
-            buf.append(out)
-    for out in buf[-18:]:
-        print(out, flush=True)
-
+            print(out, flush=True)
     with LOG.open("r", encoding="utf-8", errors="replace") as f:
-        f.seek(0, os.SEEK_END)
+        f.seek(0, 2)
         while True:
             line = f.readline()
-            if not line:
+            if line:
+                out = format_line(line)
+                if out:
+                    print(out, flush=True)
+            else:
                 time.sleep(0.25)
-                continue
-            out = format_line(line)
-            if out:
-                print(out, flush=True)
 
 
 if __name__ == "__main__":
-    _install_handlers()
-    try:
-        sys.exit(follow())
-    except KeyboardInterrupt:
-        stop_everything("Ctrl-C")
-        sys.exit(0)
+    main()
