@@ -266,6 +266,17 @@ EVERY_SECONDS = [
         "cwd": f"{PACIFIC}/Security/Cameras",
         "env": {},
     },
+    {
+        "id": "service_supervisor",
+        "enabled": True,
+        "description": "Mid-session auto-recovery (08-ideas weather-relay-auto-recovery, approved 2026-09-29): respawn weather / council relay via their ensure scripts if dead; max 3 per 30 min, then BLOCKED. Dry run: supervise-services.sh --dry-run.",
+        "interval_sec": 300,
+        "builtin": "",
+        "command": f'bash "{PACIFIC}/Automations/scripts/supervise-services.sh"',
+        "timeout_sec": 60,
+        "cwd": f"{PACIFIC}/Automations/scripts",
+        "env": {},
+    },
 ]
 
 EVERY_MINUTE = [
@@ -339,6 +350,17 @@ ON_AT = [
         "command": f'bash "{PACIFIC}/Reports/scripts/weekly_archive_logs.sh"',
         "timeout_sec": 180,
         "cwd": f"{PACIFIC}/Reports/scripts",
+        "env": {},
+    },
+    {
+        "id": "weather_retention",
+        "enabled": False,  # GATED: off until Alexander reviews the dry run (Logs/Weather/Retention/). Apply = swap --dry-run for --apply.
+        "description": "Weather retention (README §Retention, signed off 2026-09-29): move data past its window to Archive/Previous-Datasets/Weather-<YYYYMM>/ (never delete). Dry run by default.",
+        "at_times": ["00:30"],
+        "builtin": "",
+        "command": f'python3 "{PACIFIC}/Weather/scripts/weather-retention.py" --dry-run',
+        "timeout_sec": 600,
+        "cwd": f"{PACIFIC}/Weather",
         "env": {},
     },
 ]
