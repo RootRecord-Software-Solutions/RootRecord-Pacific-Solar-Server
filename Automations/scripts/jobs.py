@@ -410,6 +410,20 @@ EVERY_MINUTE = [
         "env": {},
     },
     {
+        # Kilauea voice report (2026-09-29, old-repo migration): G1 hourly Kilauea desk line + HVO notice excerpt, Carly.
+        # G1 ran it with the :02 hourly desks; :03 here so it never shares the single-flight lock with the :02 roll-ups.
+        # OFF unless RR_VOICE_KILAUEA=1 at poller start. Reads Database Geology/Volcanoes (needs geology_collect). No delivery.
+        "id": "voice_kilauea_report",
+        "enabled": os.environ.get("RR_VOICE_KILAUEA", "0") == "1",
+        "description": "Carly Kilauea report at :03 (HVO alert level, erupting state, latest notice excerpt). No delivery.",
+        "only_at_minutes": [3],
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" kilauea_report',
+        "timeout_sec": 300,
+        "cwd": f"{PACIFIC}/Media/Voice/scripts",
+        "env": {},
+    },
+    {
         "id": "ensure_tunnel_online",
         "enabled": True,
         "description": "Start Cloudflare if internet is up and tunnel is down.",
@@ -564,6 +578,20 @@ ON_AT = [
         "builtin": "",
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" late_report',
         "timeout_sec": 600,
+        "cwd": f"{PACIFIC}/Media/Voice/scripts",
+        "env": {},
+    },
+    {
+        # Hurricane desk voice report (2026-09-29, old-repo migration): G1 weather/hurricane-desk Hawaii block, Carly, at the
+        # G1 times. OFF unless RR_VOICE_HURRICANE=1 at poller start. Reads Database Weather/Hawai'i/hurricanes/tracking
+        # (weather poller) + NWS HI alerts. No delivery, no OBS/radio.
+        "id": "voice_hurricane_desk",
+        "enabled": os.environ.get("RR_VOICE_HURRICANE", "0") == "1",
+        "description": "Carly hurricane desk (nearest tracked storm to a Hawaiian island + NWS tropical alerts). No delivery.",
+        "at_times": ["05:50", "09:50", "12:50", "16:55", "20:50"],
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" hurricane_desk',
+        "timeout_sec": 300,
         "cwd": f"{PACIFIC}/Media/Voice/scripts",
         "env": {},
     },

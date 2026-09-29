@@ -3,7 +3,7 @@
 
   python3 voice_reports.py <report> [--no-voice]
   reports: hourly_chime · nws_weather · energy_report · remaining_tasks · morning_report · midday_report · late_report
-           · earthquake_report
+           · earthquake_report · hurricane_desk · kilauea_report
 
 Each run writes Database Media/Audio/Voice/Reports/<report>_current.md (old copy -> Reports/Archive/
 <report>_YYYYMMDDTHHMM.md) and a stitched WAV Media/Audio/Voice/<report>_current.wav via voice-render.sh
@@ -14,6 +14,11 @@ Weather/Hawai'i (NWS alerts + SFP state forecast, Pacific weather poller), Libra
 /proc, and Database Geology/Earthquakes/{hawaii,global}-last.json (Pacific Geology/scripts/geology_collect.py,
 job geology_collect gated RR_GEOLOGY=1). earthquake_report = G1 earthquake-hourly spoken script (Carly), job gated
 RR_VOICE_QUAKE=1 (2026-09-29, migration-geology). G1 council_quake (Telegram per-quake posts) stays NOT ported.
+hurricane_desk = G1 weather/hurricane-desk Hawaiʻi block (Carly), fed from Database Weather/Hawai'i/hurricanes/
+tracking/*/track.json (Pacific weather poller, NHC CurrentStorms, Hawaiʻi-relevant storms only) + NWS HI alerts; job gated
+RR_VOICE_HURRICANE=1. G1 global JTWC/RAMMB board, OBS and radio push stay NOT ported.
+kilauea_report = G1 hourly Kīlauea desk line (persona._kilauea_line) + the cached HVO-notice lead-in, from Database
+Geology/Volcanoes/{kilauea,mauna-loa}-last.json; job gated RR_VOICE_KILAUEA=1. G1 rr-kilauea Grok draft / Discord post NOT ported.
 Roll-ups can append an LLM summary via run-infer.sh only when RR_VOICE_ROLLUP_LLM=1 (off by default).
 Scheduling: jobs.py, one env gate per report (read at poller start). Added 2026-09-29 (g3-voice-reports2).
 """
@@ -45,11 +50,24 @@ ENERGY = DB / "Energy"
 QUAKES = DB / "Geology" / "Earthquakes"
 QUAKE_STATE = REPORTS / "earthquake_report_seen.json"  # G1 earthquake-hourly.json seen_ids (new since last report)
 QUAKE_STALE_MIN = 20
+VOLCANOES = DB / "Geology" / "Volcanoes"
+HVO_STALE_MIN = 30
 _MAX_HI, _MAX_GLOBAL = 6, 8  # G1 spoken caps
+HURRICANES = WX / "hurricanes" / "tracking"  # <Storm>_<first-seen>/track.json (Pacific Weather/hurricanes/scripts/sources.py)
+HUR_ACTIVE_H = 6  # a track polled within this many hours counts as on the board
+HAWAII_THREAT_NM = 800  # G1 hurricane_desk
+HAWAII_POS = {"Honolulu": (21.3069, -157.8583), "Hilo": (19.7297, -155.0900), "Līhuʻe": (21.9811, -159.3711),
+              "Kona": (19.6390, -155.9969)}  # G1 hurricane_desk HAWAII_POS
+TROPICAL_EVENTS = ("hurricane", "tropical storm", "tropical depression", "typhoon", "cyclone", "storm surge")
+COMPASS = ("north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest")
+STORM_CLASS = {"HU": "Hurricane", "TS": "Tropical Storm", "TD": "Tropical Depression", "STS": "Subtropical Storm",
+               "SS": "Subtropical Storm", "SD": "Subtropical Depression", "PTC": "Post-tropical Cyclone",
+               "PC": "Post-tropical Cyclone", "TY": "Typhoon", "STY": "Super Typhoon"}  # NHC classification codes
 DEVICES = (("delta2", "Delta 2"), ("river2pro", "River 2 Pro"))
 STALE_MIN = 30
 KIND = {"hourly_chime": "chime", "nws_weather": "nws", "energy_report": "energy", "remaining_tasks": "remaining",
-        "morning_report": "morning", "midday_report": "midday", "late_report": "late", "earthquake_report": "earthquake"}
+        "morning_report": "morning", "midday_report": "midday", "late_report": "late", "earthquake_report": "earthquake",
+        "hurricane_desk": "hurricane", "kilauea_report": "kilauea"}
 
 
 def now() -> datetime:
@@ -272,6 +290,184 @@ def b_earthquake_report(t: datetime):
     return "\n".join(md), sp
 
 
+def _gc_nm(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    import math
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    a = math.sin((p2 - p1) / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(math.radians(lon2 - lon1) / 2) ** 2
+    return 2 * 3440.065 * math.asin(min(1.0, math.sqrt(a)))
+
+
+def _bearing(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    import math  # G1 hurricane_desk._bearing
+    p1, p2, dl = math.radians(lat1), math.radians(lat2), math.radians(lon2 - lon1)
+    y = math.sin(dl) * math.cos(p2)
+    x = math.cos(p1) * math.sin(p2) - math.sin(p1) * math.cos(p2) * math.cos(dl)
+    return (math.degrees(math.atan2(y, x)) + 360.0) % 360.0
+
+
+def _compass(deg: float) -> str:
+    return COMPASS[int((deg + 22.5) // 45) % 8]
+
+
+def _nearest_island(lat: float, lon: float) -> tuple[str, float]:
+    return min(((k, _gc_nm(v[0], v[1], lat, lon)) for k, v in HAWAII_POS.items()), key=lambda kv: kv[1])
+
+
+def hurricane_facts(t: datetime) -> list[dict]:
+    """Storms from the G3 weather poller's track.json files (latest position, movement from the last two distinct fixes)."""
+    out = []
+    for tr in sorted(HURRICANES.glob("*/track.json")) if HURRICANES.is_dir() else []:
+        d = jload(tr) or {}
+        pos = [p for p in d.get("positions") or [] if p.get("lat") is not None and p.get("lon") is not None]
+        if not pos:
+            continue
+        last = pos[-1]
+        try:
+            lat, lon = float(last["lat"]), float(last["lon"])
+            age_h = (t - datetime.fromisoformat(last["polled_at_hst"])).total_seconds() / 3600
+        except (KeyError, TypeError, ValueError):
+            continue
+        fixes = []  # first poll time of each distinct position
+        for p in pos:
+            key = (float(p["lat"]), float(p["lon"]))
+            if not fixes or fixes[-1][0] != key:
+                fixes.append((key, p.get("polled_at_hst")))
+        island, nm = _nearest_island(lat, lon)
+        move_c = move_kt = approach = None
+        if len(fixes) >= 2:
+            (a, ta), (b, tb) = fixes[-2], fixes[-1]
+            move_c = _compass(_bearing(a[0], a[1], b[0], b[1]))
+            try:
+                hrs = (datetime.fromisoformat(tb) - datetime.fromisoformat(ta)).total_seconds() / 3600
+                move_kt = round(_gc_nm(a[0], a[1], b[0], b[1]) / hrs) if hrs > 0.5 else None
+            except (TypeError, ValueError):
+                move_kt = None
+            prev_nm = _nearest_island(a[0], a[1])[1]
+            approach = "toward" if nm < prev_nm - 5 else "away" if nm > prev_nm + 5 else "steady"
+        try:
+            kt = int(round(float(last.get("intensity")))) if last.get("intensity") not in (None, "") else None
+        except (TypeError, ValueError):
+            kt = None
+        code = str(last.get("classification") or "").upper()
+        out.append({"name": str(d.get("storm_name") or tr.parent.name.split("_")[0]).replace("_", " "),
+                    "label": STORM_CLASS.get(code, "Tropical system"), "code": code, "lat": lat, "lon": lon,
+                    "knots": kt, "island": island, "nm": int(round(nm)),
+                    "bearing": _compass(_bearing(HAWAII_POS[island][0], HAWAII_POS[island][1], lat, lon)),
+                    "movement_compass": move_c, "movement_kt": move_kt, "approach": approach, "fixes": len(fixes),
+                    "polled_at": last.get("polled_at_hst"), "age_h": round(age_h, 1), "active": age_h <= HUR_ACTIVE_H,
+                    "path": str(tr.relative_to(DB))})
+    return sorted(out, key=lambda s: s["nm"])
+
+
+def b_hurricane_desk(t: datetime):
+    """G1 hurricane_desk.hawaii_block + build spoken text, from G3 track.json + NWS HI alerts (never invents storms)."""
+    storms = hurricane_facts(t)
+    active = [s for s in storms if s["active"]]
+    rows, updated = alerts()
+    trop = [r for r in rows if any(k in str(r["event"]).lower() for k in TROPICAL_EVENTS)]
+    sp = ["Hurricane global desk, Pacific Root Server."]
+    if trop:
+        watch = " NWS Honolulu: " + "; ".join(f"{r['event']} for {r['area'] or 'Hawaii'}" for r in trop) + "."
+    elif updated is None:
+        watch = " NWS Hawaii alert data is not on file."
+    else:
+        watch = " No tropical watches or warnings for Hawaii in the last NWS pull."
+    if not active:
+        sp.append("Nearest Hurricane from a Hawaiian island. No tropical system with a mapped position is on the board."
+                  + watch)
+    else:
+        n = active[0]
+        local = bool(trop) or n["nm"] < HAWAII_THREAT_NM
+        title = "Nearest Hurricane from a Hawaiian island" if local else "Pacific basin cyclone, not a Hawaii threat"
+        ns, ew = ("north" if n["lat"] >= 0 else "south"), ("east" if n["lon"] >= 0 else "west")
+        move = ""
+        if n["movement_kt"] == 0:
+            move = " Nearly stationary."
+        elif n["movement_compass"]:
+            vs = {"toward": "toward Hawaii", "away": "away from Hawaii",
+                  "steady": "holding roughly steady relative to Hawaii"}.get(n["approach"] or "", "")
+            kt_s = f" at about {n['movement_kt']} knots" if n["movement_kt"] else ""
+            move = f" Moving {n['movement_compass']}{kt_s}" + (f", {vs}." if vs else ".")
+        wind = f" Maximum sustained winds {n['knots']} knots." if n["knots"] else ""
+        hint = ""
+        if not local:
+            hint = " Do not treat this as a Hawaii local storm."
+            if n["bearing"] == "west":
+                hint = " West of Kauai is toward Asia and Japan, not toward the islands." + hint
+        sp.append(f"{title}. {n['label']} {n['name']} is about {n['nm']} nautical miles from {n['island']}."
+                  f" Center {abs(n['lat']):.1f} {ns}, {abs(n['lon']):.1f} {ew}. It bears {n['bearing']} of {n['island']}."
+                  f"{hint}{move}{wind}{watch}")
+        if len(active) > 1:
+            others = "; ".join(f"{s['label']} {s['name']}, about {s['nm']} nautical miles from {s['island']}" for s in active[1:4])
+            sp.append(f"{len(active)} tropical systems are on the Hawaii tracking board. Also tracked: {others}.")
+    sp.append("Stay with NWS Honolulu for watches and warnings.")
+    md = [f"# Hurricane desk — {t.isoformat()}", "", " ".join(sp), "", "## Tracked systems (G3 weather poller)", ""]
+    md += ["| Storm | Class | Knots | Position | Nearest island | nm | Bearing | Movement | Last poll (HST) | On board |",
+           "|---|---|---|---|---|---|---|---|---|---|"]
+    md += [f"| {s['name']} | {s['label']} ({s['code'] or '?'}) | {s['knots'] if s['knots'] is not None else 'n/a'} | "
+           f"{s['lat']:.1f}, {s['lon']:.1f} | {s['island']} | {s['nm']} | {s['bearing']} | "
+           f"{(s['movement_compass'] or 'n/a')} {('~' + str(s['movement_kt']) + ' kt') if s['movement_kt'] else ''} {s['approach'] or ''} | "
+           f"{s['polled_at']} ({s['age_h']} h ago) | {'yes' if s['active'] else 'stale'} |" for s in storms] or ["| none on file | | | | | | | | | |"]
+    md += ["", f"NWS HI alerts (updated {updated or 'n/a'}): " + (", ".join(r["event"] for r in rows) or "none") +
+           f"; tropical: {len(trop)}.", "",
+           "_Sources: Database `Weather/Hawai'i/hurricanes/tracking/*/track.json` (NHC CurrentStorms, Hawaiʻi-relevant "
+           "storms only: 800 nm or CPHC) and the NWS HI alerts file. Movement is estimated from the last two distinct "
+           "tracked fixes. G1's global JTWC/RAMMB board is not collected in G3, so there is no global count._", ""]
+    return "\n".join(md), sp
+
+
+def _first_sentences(text: str, n: int = 2, cap: int = 420) -> str:
+    parts = re.split(r"(?<=[.!?])\s+", " ".join((text or "").split()))
+    return " ".join(parts[:n])[:cap].strip()
+
+
+def b_kilauea_report(t: datetime):
+    """G1 hourly Kīlauea desk (persona._kilauea_line wording) + HVO notice excerpt, from Database Geology/Volcanoes/."""
+    k, ml = jload(VOLCANOES / "kilauea-last.json"), jload(VOLCANOES / "mauna-loa-last.json")
+    hi = jload(QUAKES / "hawaii-last.json") or {}
+    md = [f"# Kilauea report — {t.isoformat()}", ""]
+    if not isinstance(k, dict) or not k.get("alert_level"):
+        md += ["_No HVO data on file (Database Geology/Volcanoes/kilauea-last.json missing). Run geology_collect.py._", ""]
+        return "\n".join(md), ["Kilauea: DOWN."]
+    level = str(k.get("alert_level") or "unknown").strip().lower()
+    erupting = k.get("erupting")
+    if erupting:
+        state = "is erupting"
+    elif level in {"advisory", "watch", "warning", "normal"} and erupting is False:
+        state = "not erupting"
+    else:
+        state = "eruption state unknown"
+    color = str(k.get("color_code") or "").lower()
+    sp = ["Kilauea Report.", f"It's {clock(t)} Hawaiian Standard Time.".replace("..", "."),
+          f"Kilauea volcano alert level: {level}" + (f", aviation color code {color}." if color else ".") +
+          f" Kilauea {state}."]
+    note = k.get("latest_activity_notice") if erupting and k.get("latest_activity_notice") else k.get("latest_notice")
+    note = note if isinstance(note, dict) else {}
+    excerpt = _first_sentences(note.get("synopsis") or "")
+    if excerpt:
+        sp += ["Here is the latest Hawaiian Volcano Observatory notice, unedited for honesty.", excerpt]
+    else:
+        sp.append("No HVO headline in this sample.")
+    if hi.get("kilauea_150km_count") is not None:
+        n = int(hi["kilauea_150km_count"])
+        sp.append(f"USGS: {n} earthquake{'s' if n != 1 else ''} magnitude 1 or greater within 150 kilometers of Kilauea in the last "
+                  f"{hi.get('window_h', 24)} hours.")
+    if isinstance(ml, dict) and ml.get("alert_level"):
+        sp.append(f"Mauna Loa alert level: {str(ml['alert_level']).lower()}.")
+    try:
+        age = int((t - datetime.fromisoformat(k["at"])).total_seconds() // 60)
+    except (KeyError, TypeError, ValueError):
+        age = None
+    if age is not None and age > HVO_STALE_MIN:
+        sp.append(f"That HVO status is {age} minutes old.")
+    md += [f"- **Kīlauea:** {k.get('alert_level')} / {k.get('color_code')} — erupting `{erupting}` — {k.get('headline')}",
+           f"- **Latest notice used:** {note.get('type', 'n/a')} ({note.get('sent_utc', 'n/a')} UTC) {note.get('url', '')}",
+           f"- **Mauna Loa:** {(ml or {}).get('alert_level', 'n/a')} / {(ml or {}).get('color_code', 'n/a')}",
+           f"- **Quakes ≤150 km of Kīlauea (M≥1, {hi.get('window_h', 24)} h):** {hi.get('kilauea_150km_count', 'n/a')}",
+           f"- **Collected:** {k.get('at')} (USGS HANS)", "", "## Spoken", "", " ".join(sp), ""]
+    return "\n".join(md), sp
+
+
 def _say_code(code: str) -> str:
     """WO-ECO -> 'E C O', WO-RPT-001 -> 'R P T 1' (short acronyms spelled out for Kokoro)."""
     parts = []
@@ -351,7 +547,8 @@ def llm_summary(lines: list[str]) -> str | None:
 BUILD = {"hourly_chime": b_hourly_chime, "nws_weather": b_nws_weather, "energy_report": b_energy_report,
          "remaining_tasks": b_remaining_tasks, "morning_report": lambda t: _rollup(t, "morning"),
          "midday_report": lambda t: _rollup(t, "midday"), "late_report": lambda t: _rollup(t, "late"),
-         "earthquake_report": b_earthquake_report}
+         "earthquake_report": b_earthquake_report, "hurricane_desk": b_hurricane_desk,
+         "kilauea_report": b_kilauea_report}
 
 
 def write_md(report: str, md: str) -> Path:
