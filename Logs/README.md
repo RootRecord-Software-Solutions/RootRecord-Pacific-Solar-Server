@@ -1,31 +1,33 @@
 # Logs
 
-Central logging ownership notes for Pacific server domains.
+Central logging **ownership and path contracts** for Pacific server domains.
+
+This tree is **not** a dump of rotating log files. Large or sensitive logs stay off-git under Database (or env overrides).
 
 ---
 
-## Status (2026-09-28)
+## Baseline (pre-cutover, observed 2026-09-28)
 
 | Item | State |
 | --- | --- |
-| Domain folder | Shell / ownership marker |
-| Poller log (observed) | `~/.ollama/skills/logs/store/rootserver-poller.log` |
-| Generated operational logs | Prefer Database / desk log stores — not this git tree |
-
-This folder is for **ownership and policy**, not a dump of rotating log files. Large or sensitive logs stay off-git.
-
----
-
-## Future optional layout
-
-```text
-Logs/
-  README.md
-  # optional: logrotate configs, path contracts per domain
-```
-
-Moving the poller log path into a Logs/Automations contract is optional and should not break the live unit until coordinated.
+| Domain folders | Ownership markers only |
+| Poller log (live) | `~/.ollama/skills/logs/store/rootserver-poller.log` |
+| Stack reload log | `~/.ollama/skills/logs/store/stack-reload.log` |
+| Policy | Prefer Database / desk stores — not this git tree |
 
 ---
 
-*Docs-only update 2026-09-28 HST.*
+## Target after cutover (WO-SYS-001 / log storage upgrade)
+
+| Stream | Path |
+| --- | --- |
+| Poller live log | `/home/rootrecord/Database/LOGS/Automations/rootserver-poller.log` |
+| Stack reload log | `/home/rootrecord/Database/LOGS/Automations/stack-reload.log` |
+
+Env overrides: `POLLER_LOG`, `STACK_RELOAD_LOG`.
+
+Code defaults in `Automations/scripts/poller/*` and `stack/*` will be updated in the same session; systemd unit must match or the status window will be empty.
+
+---
+
+*Baseline recorded 2026-09-28 HST — cutover next.*
