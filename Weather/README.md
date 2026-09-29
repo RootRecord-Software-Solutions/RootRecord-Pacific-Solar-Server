@@ -4,15 +4,17 @@ Weather subsystem ownership: collection, ensure scripts, and related desk weathe
 
 ---
 
-## Status (2026-09-29)
+## Status (2026-09-29 HST)
 
 | Item | State |
 | --- | --- |
 | Domain folder in this repo | **Imported** — G2 weather daemon copied here 2026-09-29 (G2 copy kept) |
 | Full daemon | Pacific `Weather/scripts/run_poller.py`, venv `Weather/.venv` (git-ignored, `requirements.txt`), job `weather_poller` enabled |
-| G1 Old packets | `weather/live-wx`, `nws-hawaii`, `rr-noaa`, `hurricane-*`, `radar-archive`, … |
+| Latest verification | **PASS** — statewide and county reports generated at ~01:59 HST; solar calculation table present for viewer sunrise/sunset consumption |
+| Runtime | One Weather process observed running; no errors reported in the verification pass |
 | Published data | `RootRecord-Weather-Database` |
 | Local data | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/WEATHER/Hawai'i/` (git-ignored in Database; old dataset archived under `Archive/Previous-Datasets/G2-old-root-20260929/WEATHER/`) |
+| Growth watch | ~17 MB observed over 8 minutes during the post-import pass (~3.1 GB/day if sustained); retention rule is a future maintenance item |
 
 **Import order:** G2 weather daemon/ensure alignment first; then selective G1 packets (skip bulk media archives into git).
 
@@ -48,4 +50,10 @@ Weather/
 
 ---
 
-*Docs-only 2026-09-28 HST.*
+## Retention
+
+Weather data is intentionally retained in the Database tree rather than Git. The current growth rate is acceptable for the present disk headroom, but a retention/archival rule should be added before the dataset becomes a multi-month accumulation.
+
+---
+
+*Updated 2026-09-29 HST — current reports passing; growth under watch.*
