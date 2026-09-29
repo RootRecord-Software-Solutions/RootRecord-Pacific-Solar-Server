@@ -3,14 +3,15 @@ from pathlib import Path
 # Code home = Pacific System/ (this file lives at System/lib/paths.py)
 SYSTEM_ROOT = Path(__file__).resolve().parents[1]
 
-# Measured data — Database authority (never under ~/.ollama/skills)
-SYSTEM_DATA = Path("/home/rootrecord/Database/SYSTEM")
+# Canonical Database root.
+DATABASE_ROOT = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database")
+SYSTEM_DATA = DATABASE_ROOT / "SYSTEM"
 SAMPLES = SYSTEM_DATA / "samples"
 CPU = SYSTEM_DATA / "cpu"
 MEM = SYSTEM_DATA / "mem"
 LOAD = SYSTEM_DATA / "load"
 LAST = SYSTEM_DATA / "last"
-LOG_DIR = Path("/home/rootrecord/Database/Logs/System")
+LOG_DIR = DATABASE_ROOT / "Logs" / "System"
 
 # SQLite isolation
 SYSTEM_DB = SYSTEM_DATA / "system.db"
