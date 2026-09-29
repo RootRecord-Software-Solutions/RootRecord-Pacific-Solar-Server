@@ -29,7 +29,7 @@ def aeyes_solar_state():
     tz = ZoneInfo("Pacific/Honolulu")
 
     report = Path(
-        "/home/rootrecord/Database/WEATHER/Hawai'i/reports/"
+        "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/WEATHER/Hawai'i/reports/"
         "0 Level Processing/solar_calculation_table_current.md"
     )
 
@@ -88,7 +88,7 @@ STOP = SCRIPTS / "stack" / "stop-poller-stack.sh"
 LOG = Path(
     os.environ.get(
         "POLLER_LOG",
-        "/home/rootrecord/Database/Logs/Automations/automations_current.log",
+        "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Automations/automations_current.log",
     )
 )
 HOST = os.environ.get("POLLER_PUBLIC_HOST", "rootserver.rootrecord.cloud")
