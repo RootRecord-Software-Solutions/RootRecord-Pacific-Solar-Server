@@ -18,7 +18,8 @@ REPO="$(cd "$SCRIPTS/../.." && pwd)"
 WATCH="$HERE/poller-watch.py"
 UNIT="rr-rootserver-poller.service"
 TITLE="RootRecord poller — rootserver"
-export POLLER_LOG="${POLLER_LOG:-$HOME/.ollama/skills/logs/store/rootserver-poller.log}"
+# Canonical log store (WO-SYS / Logs cutover 2026-09-28). Override with POLLER_LOG.
+export POLLER_LOG="${POLLER_LOG:-/home/rootrecord/Database/LOGS/Automations/rootserver-poller.log}"
 mkdir -p "$(dirname "$POLLER_LOG")"
 touch "$POLLER_LOG"
 
