@@ -39,11 +39,11 @@ Raw collected source data remains the authoritative record. Generated reports ar
 
 | Location | Conditions | Temp | Dew point | RH | Wind | Pressure |
 |---|---|---:|---:|---:|---|---:|
-| Honolulu | Mostly sunny | 89°F | 68°F | 49% | East 15 gusts to 29 | 29.95S |
-| Lihue | Mostly sunny | 83°F | 74°F | 74% | East 16 | 29.98F |
-| Kahului | Sunny | 90°F | 62°F | 39% | Northeast 18 gusts to 25 | 29.92F |
-| Hilo | Mostly sunny | 84°F | 69°F | 60% | Southeast 12 | 29.98F |
-| Kona | Mostly sunny | 87°F | 70°F | 56% | West 10 | 29.93S |
+| Honolulu | Partly cloudy | 78°F | 68°F | 71% | East 6 | 29.95S |
+| Lihue | Mostly cloudy | 79°F | 71°F | 76% | East 17 | 29.94F |
+| Kahului | Clear | 71°F | 65°F | 81% | Southeast 7 | 29.92F |
+| Hilo | Clear | 71°F | 63°F | 75% | Southwest 7 | 29.97F |
+| Kona | Clear | 80°F | 71°F | 74% | Southeast 3 | — |
 
 _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °F._
 
@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-28T16:11:45-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T01:59:12-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -67,7 +67,7 @@ The report below is generated from the same current product sections as `Hawaii_
 |---|---|
 | **Resource ID** | zfp_zone_forecast |
 | **Official source** | https://api.weather.gov/products/types/ZFP/locations/HFO |
-| **Collected** | 2026-09-28T15:05:46.951962-10:00 HST |
+| **Collected** | 2026-09-29T01:52:42.111167-10:00 HST |
 
 ```text
 000
@@ -1863,32 +1863,32 @@ shifting to the north in the afternoon.
 |---|---|
 | **Resource ID** | wa0_airmets |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=WA0&issuedby=HI |
-| **Collected** | 2026-09-28T11:31:51.246464-10:00 HST |
+| **Collected** | 2026-09-29T01:51:42.803956-10:00 HST |
 
 ```text
-802
-WAHW31 PHFO 282130
+170
+WAHW31 PHFO 290945
 WA0HI
 
-HNLS WA 282200
-AIRMET SIERRA UPDATE 3 FOR IFR VALID UNTIL 290400
+HNLS WA 291000
+AIRMET SIERRA UPDATE 1 FOR IFR VALID UNTIL 291600
 .
 NO SIGNIFICANT IFR EXP.
 
-=HNLT WA 282200
-AIRMET TANGO UPDATE 3 FOR TURB VALID UNTIL 290400
+=HNLT WA 291000
+AIRMET TANGO UPDATE 1 FOR TURB VALID UNTIL 291600
 .
 AIRMET TURB...HI
 OVER AND IMT S THRU W OF MTN.
 TEMPO MOD TURB BLW 090.
-COND CONT BEYOND 0400Z.
+COND CONT BEYOND 1600Z.
 
-=HNLZ WA 282200
-AIRMET ZULU UPDATE 3 FOR ICE AND FZLVL VALID UNTIL 290400
+=HNLZ WA 291000
+AIRMET ZULU UPDATE 1 FOR ICE AND FZLVL VALID UNTIL 291600
 .
 NO SIGNIFICANT ICE EXP.
 .
-FZLVL...156 PHLI SLOPING TO 169 PHTO.
+FZLVL...165-167.
 ```
 
 ---
@@ -1899,26 +1899,46 @@ FZLVL...156 PHLI SLOPING TO 169 PHTO.
 |---|---|
 | **Resource ID** | afd_area_forecast_discussion |
 | **Official source** | https://api.weather.gov/products/types/AFD/locations/HFO |
-| **Collected** | 2026-09-28T15:06:47.320518-10:00 HST |
+| **Collected** | 2026-09-29T01:54:42.214654-10:00 HST |
 
 ```text
 000
-FXHW60 PHFO 290103
+FXHW60 PHFO 290645
 AFDHFO
 
 Area Forecast Discussion
 National Weather Service Honolulu HI
-303 PM HST Mon Sep 28 2026
+845 PM HST Mon Sep 28 2026
 
 .SYNOPSIS...
-Breezy east southeast winds with a drier airmass will limit clouds
-and showers through tonight. Clouds and showers will increase 
-Tuesday through Thursday as Nolo passes to the west with rain 
-bands along the east side of the storm encroaching Kauai and Oahu.
-Nolo moves away to the northwest by this weekend with trades 
-filling in.
+Moderate to locally breezy trade winds will veer from the
+southeasterly direction by Tuesday with a gradual weakening 
+trend. Clouds and showers will increase Tuesday through Thursday 
+as Nolo passes to the west pulling up deep tropical moisture along
+the east side of the storm increasing showers over Niihau, Kauai 
+and Oahu. Nolo moves away to the northwest by this weekend with 
+drier easterly trade winds building back in across the Hawaii 
+Region.
 
-.DISCUSSION...
+.SHORT TERM UPDATE...
+The latest satellite imagery shows Hurricane Nolo remains on a
+northwestward track passing several hundred miles southwest of 
+Kauai. Deeper tropical moisture will be drawn northward into the 
+western islands over the next few days as Nolo passes west of 
+Kauai. This unstable moisture and southeasterly wind flow will 
+likely increase shower activity, possibly heavy showers at times, 
+over the western islands of Niihau and Kauai on Tuesday, and over 
+Oahu from Tuesday night into Wednesday. The typically drier south 
+and southeast facing mountain slopes will see elevated rainfall 
+amounts in this changing weather pattern. Deeper hot and humid 
+humidity levels and enhanced shower activity will likely linger 
+through Thursday, before decreasing on Friday just in time for 
+drier trends by the weekend.
+
+The current forecast grids look good. No evening updates.
+
+.PREVIOUS DISCUSSION...
+Issued at 303 PM HST Mon Sep 28 2026
 Breezy east southeast winds with a drier airmass will limit clouds
 and showers tonight. Major Hurricane Nolo (cat. 4) is around 415 
 miles west southwest of Honolulu this afternoon and has made it's
@@ -1951,63 +1971,62 @@ weekend, trade winds are forecast to build in bringing drier and
 more stable conditions again.
 
 .AVIATION...
-Breezy trade winds continue through this evening before winds 
-decrease overnight. Trade winds are generally expected to be 
-lighter tomorrow as Hurricane Nolo continues to move away from the
-state. Trade showers continue to the east of the islands and 
-across windward and mountain locations. Tuesday afternoon into 
-Wednesday, there will be an increase in moisture being transported
-towards Kauai and Oahu which will bring an increased likelihood 
-of shower chances there. Showers are most likely across Kauai 
-starting late Tuesday morning with shower chances gradually 
-increasing for Oahu late Tuesday into Wednesday.
+Moderate to locally breezy trade winds will veer from the
+southeasterly direction by Tuesday with a gradual weakening 
+trend. Isolated showers are possible across windward and mountain 
+areas tonight into Tuesday with brief MVFR conditions. Moisture 
+will increase across Kauai and Oahu Tuesday afternoon into 
+Wednesday bringing an increased likelihood of showers. Showers are
+most likely across Kauai starting late Tuesday morning with 
+shower chances gradually increasing for Oahu late Tuesday into 
+Wednesday.
 
 AIRMET Tango remains in effect for moderate turbulence below 
 9,000 feet over and immediately downwind of island terrain. This 
-AIRMET will likely be needed through mid- week.
+AIRMET will likely be needed at least through Wednesday.
 
 .MARINE...
-Strong E trades become moderate to breezy out of the SE tonight 
-in response to Hurricane Nolo advancing northwestward. The 
-exception will be around Kauai where proximity to Nolo will allow 
-for the gradient to remain strong. Near gales will be possible 
-immediately west of Kauai tonight through Wednesday, particularly 
-in the channel between Kauai and Niihau. Here, the Small Craft 
-Advisory (SCA) has been extended through Wednesday for both winds 
-and seas. Elsewhere, the SCA remains in place and is still 
-scheduled to expire Tuesday morning. Moderate easterlies 
+Strong east trades become moderate to breezy out of the southeast
+tonight in response to Hurricane Nolo advancing northwestward. 
+The exception will be around Kauai where proximity to Nolo will 
+allow for the gradient to remain strong. Near gales will be 
+possible immediately west of Kauai tonight through Wednesday, 
+particularly in the channel between Kauai and Niihau. Here, the 
+Small Craft Advisory (SCA) has been extended through Wednesday for
+both winds and seas. Elsewhere, the SCA remains in place and is 
+still scheduled to expire Tuesday morning. Winds remain 
+southeasterly through Friday as Nolo creeps slowly westward away 
+from the islands. Once it begins to accelerate away over the 
+weekend, east to northeasterly trades return.
 
-Tiny long period energy out of the S is noted on the Barber's
+Tiny long period energy out of the south is noted on the Barber's
 Point PacIOOS Buoy this afternoon. This energy represents the
-initial forerunners of a rather small (about 1 foot), long period
-swell that will maintain elevated surf for S shores through mid- 
-week. This is separate from the more substantial short to medium 
-period fresh swell emanating from Nolo which has prompted today's 
-High Surf Advisories (HSA) for S shores and W facing shores of the
-Big Island. Uncertainty related to the size of Nolo's swell 
-coupled with its slow forward motion Tuesday night through 
-Wednesday will be a theme in the forecast for the next couple of
-days. The latest observations support expiring the HSA for all but
-Kauai and Niihau where the bulk of the SW energy is directed. For
-Kauai/Niihau in particular, high surf may linger into midweek 
-conditional on the exact size of Nolo's swell. Likewise, as Nolo 
-lifts north, it's westerly swell influence will increase 
-potentially supporting an HSA for Big Island-West during the 
-middle of this week.
+initial forerunners of a rather small (about 1 foot), long-period
+swell that will maintain elevated surf for south shores through 
+mid-week. This is separate from the more substantial short to 
+medium period fresh swell emanating from Nolo. Uncertainty related
+to the size of Nolo's swell coupled with its slow forward motion 
+Tuesday night through Wednesday will be a theme in the forecast 
+for the next couple of days. For Kauai/Niihau in particular, high 
+surf may linger into midweek conditional on the exact size of 
+Nolo's swell. Likewise, as Nolo lifts north, its westerly swell 
+influence will increase, potentially supporting an HSA for Big 
+Island-West during the middle of this week.
 
-Surf along E shores slowly declines as trades veer to SE and 
-diminish then return as light to moderate easterlies this weekend.
-A small, long period S swell originating east of New Zealand is 
-poised to arrive early next week in maintenance of elevated surf
-along S facing shores.
+Surf along east shores slowly declines as trades veer southeast 
+and diminish, then return as light to moderate easterlies this 
+weekend. A small, long-period south swell originating east of New
+Zealand is poised to arrive early next week in maintenance of 
+elevated surf along south-facing shores.
 
-For N facing shores, the existing small medium period swell fades
-through Wednesday. Multiple rounds of tiny swell originating out 
-of the NW quadrant will reach N and select W facing exposures next
-week as the storm track in the vicinity of the Aleutian Islands 
-becomes increasingly active.
+For north-facing shores, the existing small, medium-period swell 
+fades through Wednesday. Multiple rounds of tiny swell originating
+out of the northwest quadrant will reach north and select west 
+facing exposures next week as the storm track in the vicinity of 
+the Aleutian Islands becomes increasingly active.
 
 .FIRE WEATHER...
+Issued at 303 PM HST Mon Sep 28 2026
 Dry and stable with breezy east southeast winds expected through
 through tonight, with a gradual increase in humidity through 
 midweek. Moisture drawn northward along the eastern sides of Nolo
@@ -2016,21 +2035,22 @@ Fire conditions will improve statewide over the next couple days
 as winds weaken and humidity levels rise.
 
 .HFO WATCHES/WARNINGS/ADVISORIES...
-High Surf Advisory until 6 AM HST Tuesday for Niihau-Kauai 
-Leeward-Kauai South.
+High Surf Advisory until 6 AM HST Tuesday for Kauai South-Kauai 
+Southwest-Niihau.
 
-Small Craft Advisory until 6 PM HST Wednesday for Kauai 
-Northwest Waters-Kauai Leeward Waters.
+Small Craft Advisory until 6 PM HST Wednesday for Kauai Leeward 
+Waters-Kauai Northwest Waters.
 
-Small Craft Advisory until 6 AM HST Tuesday for Kauai Windward 
-Waters-Kauai Channel-Oahu Windward Waters-Oahu Leeward Waters-
-Kaiwi Channel-Maui County Windward Waters-Maui County Leeward 
-Waters-Pailolo Channel-Alenuihaha Channel-Big Island Windward 
-Waters-Big Island Leeward Waters-Big Island Southeast Waters.
+Small Craft Advisory until 6 AM HST Tuesday for Alenuihaha 
+Channel-Big Island Leeward Waters-Big Island Southeast Waters-
+Big Island Windward Waters-Kaiwi Channel-Kauai Channel-Kauai 
+Windward Waters-Maui County Leeward Waters-Maui County Windward 
+Waters-Oahu Leeward Waters-Oahu Windward Waters-Pailolo Channel.
 
-DISCUSSION...Foster
-AVIATION...Kennedy
-MARINE...JVC
+SHORT TERM UPDATE...Bohlin
+PREVIOUS DISCUSSION...Foster 
+AVIATION...Pechacek 
+MARINE...Quesada 
 FIRE WEATHER...Foster
 ```
 
@@ -2042,7 +2062,7 @@ FIRE WEATHER...Foster
 |---|---|
 | **Resource ID** | cwf_coastal_waters |
 | **Official source** | https://api.weather.gov/products/types/CWF/locations/HFO |
-| **Collected** | 2026-09-28T15:08:46.975261-10:00 HST |
+| **Collected** | 2026-09-29T01:58:42.330051-10:00 HST |
 
 ```text
 000
@@ -2650,20 +2670,21 @@ morning. Scattered showers through the day.
 |---|---|
 | **Resource ID** | cli_daily_climate_summary_HNL |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=CLI&issuedby=HNL |
-| **Collected** | 2026-09-28T05:42:52.442725-10:00 HST |
+| **Collected** | 2026-09-29T01:50:27.645737-10:00 HST |
 
 ```text
-331
-CDHW40 PHFO 281245
+187
+CDHW40 PHFO 290245
 CLIHNL
 
 CLIMATE REPORT
 NATIONAL WEATHER SERVICE HONOLULU HI
-245 AM HST MON SEP 28 2026
+445 PM HST MON SEP 28 2026
 
 ...................................
 
-...THE HONOLULU CLIMATE SUMMARY FOR SEPTEMBER 27 2026...
+...THE HONOLULU CLIMATE SUMMARY FOR SEPTEMBER 28 2026...
+VALID TODAY AS OF 0425 PM LOCAL TIME.
 
 CLIMATE NORMAL PERIOD 1991 TO 2020
 CLIMATE RECORD PERIOD 1940 TO 2026
@@ -2673,58 +2694,58 @@ WEATHER ITEM   OBSERVED TIME   RECORD YEAR NORMAL DEPARTURE LAST
                                                   NORMAL
 ...................................................................
 TEMPERATURE (F)
- YESTERDAY
-  MAXIMUM         89    154 PM  93    1987  88      1       90
-  MINIMUM         79    639 AM  68    1945  75      4       75
-                                      1996
-  AVERAGE         84                        81      3       83
+ TODAY
+  MAXIMUM         90    300 PM  91    1988  88      2       89
+                                      1995
+                                      1997
+  MINIMUM         79    709 AM  68    1945  75      4       78
+  AVERAGE         85                        81      4       84
 
 PRECIPITATION (IN)
-  YESTERDAY        0.00          0.29 2000   0.02  -0.02      T
-  MONTH TO DATE    0.32                      0.80  -0.48     0.71
-  SINCE SEP 1      0.32                      0.80  -0.48     0.71
-  SINCE JAN 1     22.35                     10.39  11.96     9.59
+  TODAY            0.00          0.79 1948   0.03  -0.03     0.00
+  MONTH TO DATE    0.32                      0.83  -0.51     0.71
+  SINCE SEP 1      0.32                      0.83  -0.51     0.71
+  SINCE JAN 1     22.35                     10.42  11.93     9.59
 
 DEGREE DAYS
  HEATING
-  YESTERDAY        0                         0      0        0
+  TODAY            0                         0      0        0
   MONTH TO DATE    0                         0      0        0
   SINCE SEP 1      0                         0      0        0
   SINCE JUL 1      0                         0      0        0
 
  COOLING
-  YESTERDAY       19                        16      3       18
-  MONTH TO DATE  491                       449     42      478
-  SINCE SEP 1    491                       449     42      478
-  SINCE JAN 1   3701                      3526    175     3963
+  TODAY           20                        16      4       19
+  MONTH TO DATE  511                       465     46      497
+  SINCE SEP 1    511                       465     46      497
+  SINCE JAN 1   3721                      3542    179     3982
 ...................................................................
 
 WIND (MPH)
-  HIGHEST WIND SPEED    39   HIGHEST WIND DIRECTION     E (70)
-  HIGHEST GUST SPEED    53   HIGHEST GUST DIRECTION     E (70)
-  AVERAGE WIND SPEED    21.9
+  HIGHEST WIND SPEED    24   HIGHEST WIND DIRECTION     E (70)
+  HIGHEST GUST SPEED    33   HIGHEST GUST DIRECTION     E (80)
+  AVERAGE WIND SPEED    14.9
 
 SKY COVER
   POSSIBLE SUNSHINE  MM
   AVERAGE SKY COVER 0.3
 
 WEATHER CONDITIONS
-THE FOLLOWING WEATHER WAS RECORDED YESTERDAY.
+THE FOLLOWING WEATHER WAS RECORDED TODAY.
   NO SIGNIFICANT WEATHER WAS OBSERVED.
 
 RELATIVE HUMIDITY (PERCENT)
- HIGHEST    69          1000 PM
- LOWEST     47           100 PM
- AVERAGE    58
+ HIGHEST    74           600 AM
+ LOWEST     48           300 PM
+ AVERAGE    61
 
 ..........................................................
 
-THE HONOLULU CLIMATE NORMALS FOR TODAY
+THE HONOLULU CLIMATE NORMALS FOR TOMORROW
                          NORMAL    RECORD    YEAR
- MAXIMUM TEMPERATURE (F)   88        91      1988
-                                             1995
-                                             1997
- MINIMUM TEMPERATURE (F)   75        68      1945
+ MAXIMUM TEMPERATURE (F)   88        93      1993
+                                             2020
+ MINIMUM TEMPERATURE (F)   75        66      1975
 
 SUNRISE AND SUNSET
 SEPTEMBER 28 2026.....SUNRISE   622 AM HST   SUNSET   622 PM HST
@@ -2744,20 +2765,21 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | cli_daily_climate_summary_ITO |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=CLI&issuedby=ITO |
-| **Collected** | 2026-09-28T05:43:52.393294-10:00 HST |
+| **Collected** | 2026-09-29T01:52:57.859009-10:00 HST |
 
 ```text
-329
-CDHW43 PHFO 281245
+328
+CDHW43 PHFO 290245
 CLIITO
 
 CLIMATE REPORT
 NATIONAL WEATHER SERVICE HONOLULU HI
-245 AM HST MON SEP 28 2026
+445 PM HST MON SEP 28 2026
 
 ...................................
 
-...THE HILO/GEN.LYMAN FLD CLIMATE SUMMARY FOR SEPTEMBER 27 2026...
+...THE HILO/GEN.LYMAN FLD CLIMATE SUMMARY FOR SEPTEMBER 28 2026...
+VALID TODAY AS OF 0425 PM LOCAL TIME.
 
 CLIMATE NORMAL PERIOD 1991 TO 2020
 CLIMATE RECORD PERIOD 1949 TO 2026
@@ -2767,58 +2789,57 @@ WEATHER ITEM   OBSERVED TIME   RECORD YEAR NORMAL DEPARTURE LAST
                                                   NORMAL
 ...................................................................
 TEMPERATURE (F)
- YESTERDAY
-  MAXIMUM         83    415 PM  92    2019  83      0       84
-  MINIMUM         69   1159 PM  64    1950  70     -1       71
-  AVERAGE         76                        76      0       78
+ TODAY
+  MAXIMUM         85   1230 PM  90    2019  83      2       84
+  MINIMUM         67    631 AM  64    1956  70     -3       68
+  AVERAGE         76                        76      0       76
 
 PRECIPITATION (IN)
-  YESTERDAY        1.49          5.82 1960   0.30   1.19     0.00
-  MONTH TO DATE   16.18                      7.82   8.36     2.73
-  SINCE SEP 1     16.18                      7.82   8.36     2.73
-  SINCE JAN 1    124.42                     82.81  41.61    38.11
+  TODAY            0.00          1.78 1986   0.30  -0.30     0.01
+  MONTH TO DATE   16.18                      8.12   8.06     2.74
+  SINCE SEP 1     16.18                      8.12   8.06     2.74
+  SINCE JAN 1    124.42                     83.11  41.31    38.12
 
 DEGREE DAYS
  HEATING
-  YESTERDAY        0                         0      0        0
+  TODAY            0                         0      0        0
   MONTH TO DATE    0                         0      0        0
   SINCE SEP 1      0                         0      0        0
   SINCE JUL 1      0                         0      0        0
 
  COOLING
-  YESTERDAY       11                        11      0       13
-  MONTH TO DATE  354                       323     31      342
-  SINCE SEP 1    354                       323     31      342
-  SINCE JAN 1   2783                      2434    349     2843
+  TODAY           11                        11      0       11
+  MONTH TO DATE  365                       334     31      353
+  SINCE SEP 1    365                       334     31      353
+  SINCE JAN 1   2794                      2445    349     2854
 ...................................................................
 
 WIND (MPH)
-  HIGHEST WIND SPEED    15   HIGHEST WIND DIRECTION     E (90)
-  HIGHEST GUST SPEED    20   HIGHEST GUST DIRECTION    SE (120)
-  AVERAGE WIND SPEED     6.3
+  HIGHEST WIND SPEED    15   HIGHEST WIND DIRECTION     E (110)
+  HIGHEST GUST SPEED    25   HIGHEST GUST DIRECTION     E (80)
+  AVERAGE WIND SPEED     9.4
 
 SKY COVER
   POSSIBLE SUNSHINE  MM
-  AVERAGE SKY COVER 0.7
+  AVERAGE SKY COVER 0.1
 
 WEATHER CONDITIONS
-THE FOLLOWING WEATHER WAS RECORDED YESTERDAY.
-  HEAVY RAIN
-  RAIN
-  LIGHT RAIN
-  FOG
+THE FOLLOWING WEATHER WAS RECORDED TODAY.
+  NO SIGNIFICANT WEATHER WAS OBSERVED.
 
 RELATIVE HUMIDITY (PERCENT)
- HIGHEST    97           200 AM
- LOWEST     59          1100 PM
- AVERAGE    78
+ HIGHEST    78           100 AM
+ LOWEST     57           800 AM
+ AVERAGE    68
 
 ..........................................................
 
-THE HILO/GEN.LYMAN FLD CLIMATE NORMALS FOR TODAY
+THE HILO/GEN.LYMAN FLD CLIMATE NORMALS FOR TOMORROW
                          NORMAL    RECORD    YEAR
- MAXIMUM TEMPERATURE (F)   83        90      2019
- MINIMUM TEMPERATURE (F)   70        64      1956
+ MAXIMUM TEMPERATURE (F)   83        89      1974
+                                             2014
+                                             2019
+ MINIMUM TEMPERATURE (F)   70        64      1955
 
 SUNRISE AND SUNSET
 SEPTEMBER 28 2026.....SUNRISE   610 AM HST   SUNSET   611 PM HST
@@ -2838,20 +2859,21 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | cli_daily_climate_summary_LIH |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=CLI&issuedby=LIH |
-| **Collected** | 2026-09-28T05:43:07.398566-10:00 HST |
+| **Collected** | 2026-09-29T01:51:13.309173-10:00 HST |
 
 ```text
-328
-CDHW41 PHFO 281245
+329
+CDHW41 PHFO 290245
 CLILIH
 
 CLIMATE REPORT
 NATIONAL WEATHER SERVICE HONOLULU HI
-245 AM HST MON SEP 28 2026
+445 PM HST MON SEP 28 2026
 
 ...................................
 
-...THE LIHUE CLIMATE SUMMARY FOR SEPTEMBER 27 2026...
+...THE LIHUE CLIMATE SUMMARY FOR SEPTEMBER 28 2026...
+VALID TODAY AS OF 0425 PM LOCAL TIME.
 
 CLIMATE NORMAL PERIOD 1991 TO 2020
 CLIMATE RECORD PERIOD 1950 TO 2026
@@ -2861,58 +2883,60 @@ WEATHER ITEM   OBSERVED TIME   RECORD YEAR NORMAL DEPARTURE LAST
                                                   NORMAL
 ...................................................................
 TEMPERATURE (F)
- YESTERDAY
-  MAXIMUM         85    139 PM  88    1981  85      0       84
-                                      2017
-  MINIMUM         77    657 AM  66    1977  75      2       70
-  AVERAGE         81                        80      1       77
+ TODAY
+  MAXIMUM         85   1134 AM  89    1981  85      0       85
+                                      2019
+  MINIMUM         77    508 AM  66    1958  75      2       78
+                                      1970
+  AVERAGE         81                        80      1       82
 
 PRECIPITATION (IN)
-  YESTERDAY        0.02          0.79 1987   0.07  -0.05     0.00
-  MONTH TO DATE    3.13                      1.93   1.20     3.49
-  SINCE SEP 1      3.13                      1.93   1.20     3.49
-  SINCE JAN 1     42.92                     24.03  18.89    14.95
+  TODAY            T             1.31 1994   0.08  -0.08     0.01
+  MONTH TO DATE    3.13                      2.01   1.12     3.50
+  SINCE SEP 1      3.13                      2.01   1.12     3.50
+  SINCE JAN 1     42.92                     24.11  18.81    14.96
 
 DEGREE DAYS
  HEATING
-  YESTERDAY        0                         0      0        0
+  TODAY            0                         0      0        0
   MONTH TO DATE    0                         0      0        0
   SINCE SEP 1      0                         0      0        0
   SINCE JUL 1      0                         0      0        0
 
  COOLING
-  YESTERDAY       16                        15      1       12
-  MONTH TO DATE  408                       405      3      416
-  SINCE SEP 1    408                       405      3      416
-  SINCE JAN 1   3111                      3039     72     3354
+  TODAY           16                        15      1       17
+  MONTH TO DATE  424                       420      4      433
+  SINCE SEP 1    424                       420      4      433
+  SINCE JAN 1   3127                      3054     73     3371
 ...................................................................
 
 WIND (MPH)
-  HIGHEST WIND SPEED    29   HIGHEST WIND DIRECTION     E (70)
-  HIGHEST GUST SPEED    38   HIGHEST GUST DIRECTION    NE (60)
-  AVERAGE WIND SPEED    20.7
+  HIGHEST WIND SPEED    22   HIGHEST WIND DIRECTION     E (70)
+  HIGHEST GUST SPEED    29   HIGHEST GUST DIRECTION     E (70)
+  AVERAGE WIND SPEED    16.4
 
 SKY COVER
   POSSIBLE SUNSHINE  MM
-  AVERAGE SKY COVER 0.6
+  AVERAGE SKY COVER 0.5
 
 WEATHER CONDITIONS
-THE FOLLOWING WEATHER WAS RECORDED YESTERDAY.
+THE FOLLOWING WEATHER WAS RECORDED TODAY.
   LIGHT RAIN
+  FOG
 
 RELATIVE HUMIDITY (PERCENT)
- HIGHEST    84           600 AM
- LOWEST     63          1200 PM
- AVERAGE    74
+ HIGHEST    85           400 AM
+ LOWEST     74           300 PM
+ AVERAGE    80
 
 ..........................................................
 
-THE LIHUE CLIMATE NORMALS FOR TODAY
+THE LIHUE CLIMATE NORMALS FOR TOMORROW
                          NORMAL    RECORD    YEAR
- MAXIMUM TEMPERATURE (F)   85        89      1981
-                                             2019
- MINIMUM TEMPERATURE (F)   75        66      1958
-                                             1970
+ MAXIMUM TEMPERATURE (F)   85        88      1981
+                                             2014
+                                             2017
+ MINIMUM TEMPERATURE (F)   75        65      1952
 
 SUNRISE AND SUNSET
 SEPTEMBER 28 2026.....SUNRISE   628 AM HST   SUNSET   628 PM HST
@@ -2932,20 +2956,21 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | cli_daily_climate_summary_OGG |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=CLI&issuedby=OGG |
-| **Collected** | 2026-09-28T05:43:22.844551-10:00 HST |
+| **Collected** | 2026-09-29T01:52:13.221983-10:00 HST |
 
 ```text
-330
-CDHW42 PHFO 281245
+331
+CDHW42 PHFO 290245
 CLIOGG
 
 CLIMATE REPORT
 NATIONAL WEATHER SERVICE HONOLULU HI
-245 AM HST MON SEP 28 2026
+445 PM HST MON SEP 28 2026
 
 ...................................
 
-...THE KAHULUI/MAUI CLIMATE SUMMARY FOR SEPTEMBER 27 2026...
+...THE KAHULUI/MAUI CLIMATE SUMMARY FOR SEPTEMBER 28 2026...
+VALID TODAY AS OF 0425 PM LOCAL TIME.
 
 CLIMATE NORMAL PERIOD 1991 TO 2020
 CLIMATE RECORD PERIOD 1954 TO 2026
@@ -2955,58 +2980,58 @@ WEATHER ITEM   OBSERVED TIME   RECORD YEAR NORMAL DEPARTURE LAST
                                                   NORMAL
 ...................................................................
 TEMPERATURE (F)
- YESTERDAY
-  MAXIMUM         89    228 PM  93    1972  90     -1       89
-                                      1984
-                                      2020
-  MINIMUM         75    206 AM  60    1975  71      4       73
-  AVERAGE         82                        80      2       81
+ TODAY
+  MAXIMUM         93R  1223 PM  93    2019  90      3       90
+  MINIMUM         65    555 AM  63    1965  71     -6       76
+                                      2010
+  AVERAGE         79                        80     -1       83
 
 PRECIPITATION (IN)
-  YESTERDAY        0.00          0.54 2000   0.02  -0.02     0.00
-  MONTH TO DATE    0.60                      0.41   0.19     0.04
-  SINCE SEP 1      0.60                      0.41   0.19     0.04
-  SINCE JAN 1     30.28                     10.73  19.55     6.61
+  TODAY            0.00          0.09 1980   0.01  -0.01     0.00
+  MONTH TO DATE    0.60                      0.42   0.18     0.04
+  SINCE SEP 1      0.60                      0.42   0.18     0.04
+  SINCE JAN 1     30.28                     10.74  19.54     6.61
 
 DEGREE DAYS
  HEATING
-  YESTERDAY        0                         0      0        0
+  TODAY            0                         0      0        0
   MONTH TO DATE    0                         0      0        0
   SINCE SEP 1      0                         0      0        0
   SINCE JUL 1      0                         0      0        0
 
  COOLING
-  YESTERDAY       17                        15      2       16
-  MONTH TO DATE  440                       427     13      425
-  SINCE SEP 1    440                       427     13      425
-  SINCE JAN 1   3224                      3274    -50     3280
+  TODAY           14                        15     -1       18
+  MONTH TO DATE  454                       442     12      443
+  SINCE SEP 1    454                       442     12      443
+  SINCE JAN 1   3238                      3289    -51     3298
 ...................................................................
 
 WIND (MPH)
-  HIGHEST WIND SPEED    38   HIGHEST WIND DIRECTION     E (70)
-  HIGHEST GUST SPEED    58   HIGHEST GUST DIRECTION     E (70)
-  AVERAGE WIND SPEED    24.5
+  HIGHEST WIND SPEED    26   HIGHEST WIND DIRECTION    NE (60)
+  HIGHEST GUST SPEED    39   HIGHEST GUST DIRECTION    NE (50)
+  AVERAGE WIND SPEED     9.9
 
 SKY COVER
   POSSIBLE SUNSHINE  MM
-  AVERAGE SKY COVER 0.3
+  AVERAGE SKY COVER 0.0
 
 WEATHER CONDITIONS
-THE FOLLOWING WEATHER WAS RECORDED YESTERDAY.
+THE FOLLOWING WEATHER WAS RECORDED TODAY.
   NO SIGNIFICANT WEATHER WAS OBSERVED.
 
 RELATIVE HUMIDITY (PERCENT)
- HIGHEST    79           100 AM
- LOWEST     39           200 PM
- AVERAGE    59
+ HIGHEST    84           600 AM
+ LOWEST     38           200 PM
+ AVERAGE    61
 
 ..........................................................
 
-THE KAHULUI/MAUI CLIMATE NORMALS FOR TODAY
+THE KAHULUI/MAUI CLIMATE NORMALS FOR TOMORROW
                          NORMAL    RECORD    YEAR
- MAXIMUM TEMPERATURE (F)   90        93      2019
- MINIMUM TEMPERATURE (F)   71        63      1965
-                                             2010
+ MAXIMUM TEMPERATURE (F)   90        93      1996
+ MINIMUM TEMPERATURE (F)   71        63      1974
+                                             1975
+                                             2002
 
 SUNRISE AND SUNSET
 SEPTEMBER 28 2026.....SUNRISE   616 AM HST   SUNSET   616 PM HST
@@ -3026,19 +3051,19 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-28T15:56:00.387125-10:00 HST |
+| **Collected** | 2026-09-29T01:52:43.188664-10:00 HST |
 
 ```text
-101
-SRHW80 PHFO 290146
+982
+SRHW80 PHFO 291146
 RRAHFO
 
 Hawaii Rainfall Summary
 National Weather Service Honolulu HI
-345 PM HST Mon Sep 28 2026
+145 AM HST Tue Sep 29 2026
 
 :
-.B HFO  0928 H  DH15 /DRH-03/PPT/DRH-06/PPQ/DRH-12/PPK/DRH-24/PPD
+.B HFO  0929 H  DH01 /DRH-03/PPT/DRH-06/PPQ/DRH-12/PPK/DRH-24/PPD
 :
 :Automated rain gage reports from around the State of Hawaii.
 :These are provisional reports that have not been quality
@@ -3046,7 +3071,7 @@ National Weather Service Honolulu HI
 :
 :T=Trace Rainfall, M=Missing Data
 :
-:Precipitation totals ending  3 PM HST
+:Precipitation totals ending  1 AM HST
 :
 :Island of Kauai                                   Inches
 :ID     Location                         3-Hr    6-Hr   12-Hr   24-Hr
@@ -3054,30 +3079,30 @@ National Weather Service Honolulu HI
 MKAH1 : Makaha Ridge (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
 PLRH1 : Puu Lua (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
 WKRH1 : Waiakoali (USGS)            :    0.00  /  0.00  /  0.00  /  0.00
-KLOH1 : Kilohana (USGS)             :    0.00  /  0.00  /  0.02  /  0.12
-MCRH1 : Mohihi Crossing (USGS)      :    0.00  /  0.00  /  0.02  /  0.05
-WLGH1 : Waialae (USGS)              :    0.00  /  0.01  /  0.02  /  0.12
-LLMH1 : Lower Limahuli (UHM)        :    0.00  /  0.01  /  0.04  /  0.11
-WNHH1 : Wainiha (12010)             :    0.00  /  0.01  /  0.01  /  0.08
-WIPH1 : Waipa (UHM)                 :    0.01  /  0.09  /  0.16  /  0.26
-HNIH1 : Hanalei (12009)             :    0.00  /  0.10  /  0.18  /  0.31
+KLOH1 : Kilohana (USGS)             :    0.00  /  0.00  /  0.00  /  0.03
+MCRH1 : Mohihi Crossing (USGS)      :    0.00  /  0.00  /  0.00  /  0.03
+WLGH1 : Waialae (USGS)              :    0.00  /  0.00  /  0.01  /  0.10
+LLMH1 : Lower Limahuli (UHM)        :    0.00  /  0.00  /  0.00  /  0.06
+WNHH1 : Wainiha (12010)             :    0.00  /  0.00  /  0.00  /  0.06
+WIPH1 : Waipa (UHM)                 :    0.00  /  0.00  /  0.00  /  0.19
+HNIH1 : Hanalei (12009)             :    0.00  /  0.00  /  0.00  /  0.23
 WLLH1 : Mount Waialeale (USGS)      :      M   /    M   /    M   /    M
-PRIH1 : Princeville Airport (12011) :    0.00  /  0.07  /  0.14  /  0.17
-CMGH1 : Common Ground (UHM)         :    0.00  /  0.08  /  0.37  /  0.42
-HLIH1 : Hanalei (RAWS)              :    0.02  /  0.14  /  0.41  /  0.55
+PRIH1 : Princeville Airport (12011) :    0.00  /  0.01  /  0.01  /  0.16
+CMGH1 : Common Ground (UHM)         :    0.00  /  0.00  /  0.00  /  0.39
+HLIH1 : Hanalei (RAWS)              :    0.00  /  0.00  /  0.01  /  0.45
 MLDH1 : Moloaa Dairy (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
-ANHH1 : Anahola (12001)             :    0.00  /  0.11  /  0.18  /  0.18
-KPIH1 : Kapahi (12003)              :    0.01  /  0.03  /  0.09  /  0.15
-WLDH1 : N Wailua Ditch (USGS)       :    0.00  /  0.38  /  0.54  /  0.66
-WUHH1 : Wailua (12005)              :    0.00  /  0.02  /  0.09  /  0.13
-WIRH1 : Waiahi Rain Gage (USGS)     :    0.01  /  0.10  /  0.25  /  0.29
-LIHH1 : Lihue Var. Stn. (12006)     :    0.00  /  0.01  /  0.09  /  0.12
-HNMH1 : Hanamaulu (UHM)             :    0.00  /  0.06  /  0.20  /  0.28
-HLI   : Lihue Airport (ASOS)        :      T   /    T   /    T   /  0.01
+ANHH1 : Anahola (12001)             :    0.00  /  0.00  /  0.00  /  0.18
+KPIH1 : Kapahi (12003)              :    0.00  /  0.00  /  0.00  /  0.09
+WLDH1 : N Wailua Ditch (USGS)       :    0.01  /  0.01  /  0.05  /  0.67
+WUHH1 : Wailua (12005)              :    0.00  /  0.00  /  0.00  /  0.11
+WIRH1 : Waiahi Rain Gage (USGS)     :    0.00  /  0.00  /  0.01  /  0.26
+LIHH1 : Lihue Var. Stn. (12006)     :    0.00  /  0.00  /  0.00  /  0.09
+HNMH1 : Hanamaulu (UHM)             :    0.00  /  0.00  /  0.00  /  0.20
+HLI   : Lihue Airport (ASOS)        :    0.00  /  0.00  /    T   /    T
 :       Leeward Sites
-OMAH1 : Omao (12004)                :    0.00  /  0.00  /  0.02  /  0.02
-LNTH1 : Lawai NTBG (UHM)            :    0.00  /  0.00  /  0.01  /  0.06
-KHEH1 : Kalaheo (12008)             :    0.00  /  0.00  /  0.05  /  0.06
+OMAH1 : Omao (12004)                :    0.00  /  0.00  /  0.00  /  0.02
+LNTH1 : Lawai NTBG (UHM)            :    0.00  /  0.00  /  0.00  /  0.02
+KHEH1 : Kalaheo (12008)             :    0.00  /  0.00  /  0.00  /  0.06
 PAKH1 : Port Allen (HSOIS)          :    0.00  /  0.00  /  0.00  /  0.00
 HNPH1 : Hanapepe (12002)            :    0.00  /  0.00  /  0.00  /  0.00
 POPH1 : Puu Opae (RAWS)             :    0.00  /  0.00  /  0.00  /  0.00
@@ -3091,23 +3116,23 @@ MNRH1 : Mana (RAWS)                 :    0.00  /  0.00  /  0.00  /  0.00
 KAHH1 : Kahuku (13027)              :    0.00  /  0.00  /  0.00  /  0.00
 KTAH1 : Kahuku Training Area (RAWS) :    0.00  /  0.00  /  0.00  /  0.00
 KFWH1 : Kii (RAWS)                  :    0.00  /  0.00  /  0.00  /  0.00
-PUNH1 : Punaluu Pump (13013)        :    0.00  /  0.00  /  0.01  /  0.01
-PNSH1 : Punaluu Stream (USGS)       :    0.00  /  0.00  /  0.13  /  0.15
-KNRH1 : Kahana (USGS)               :    0.00  /  0.01  /  0.05  /  0.08
-HAKH1 : Hakipuu Mauka (13004)       :    0.00  /  0.01  /  0.03  /  0.03
-WPPH1 : Waihee Pump (13002)         :    0.00  /  0.00  /  0.09  /  0.09
+PUNH1 : Punaluu Pump (13013)        :    0.00  /  0.00  /  0.00  /  0.01
+PNSH1 : Punaluu Stream (USGS)       :    0.00  /  0.00  /  0.00  /  0.14
+KNRH1 : Kahana (USGS)               :    0.00  /  0.00  /  0.00  /  0.06
+HAKH1 : Hakipuu Mauka (13004)       :    0.00  /  0.00  /  0.00  /  0.03
+WPPH1 : Waihee Pump (13002)         :    0.00  /  0.00  /  0.00  /  0.09
 WHSH1 : Waiahole (USGS)             :    0.00  /  0.00  /  0.00  /  0.00
-OFRH1 : Oahu Forest NWR (USFWS)     :    0.00  /  0.00  /  0.01  /  0.01
-AHUH1 : Ahuimanu Loop (13005)       :    0.00  /  0.00  /  0.02  /  0.02
-HRRH1 : Heeia NERR (NOAA/NOS)       :    0.00  /  0.00  /  0.01  /  0.01
+OFRH1 : Oahu Forest NWR (USFWS)     :    0.00  /  0.00  /  0.00  /  0.01
+AHUH1 : Ahuimanu Loop (13005)       :    0.00  /  0.00  /  0.00  /  0.02
+HRRH1 : Heeia NERR (NOAA/NOS)       :    0.00  /  0.00  /  0.00  /  0.01
 LULH1 : Luluku (13016)              :    0.00  /  0.00  /  0.00  /  0.00
 NRSH1 : Nuuanu Res No. 1 (UHM)      :    0.00  /  0.00  /  0.00  /  0.00
-KWIH1 : Kalawahine (UHM)            :    0.00  /  0.00  /  0.01  /  0.01
-LYOH1 : Lyon (UHM)                  :    0.00  /  0.00  /  0.00  /  0.02
+KWIH1 : Kalawahine (UHM)            :    0.00  /  0.00  /  0.00  /  0.01
+LYOH1 : Lyon (UHM)                  :    0.00  /  0.00  /  0.00  /  0.00
 MNLH1 : Manoa Lyon Arboretum (13023):    0.00  /  0.00  /  0.00  /  0.00
-STVH1 : St. Stephens (13006)        :    0.00  /  0.00  /  0.01  /  0.01
+STVH1 : St. Stephens (13006)        :    0.00  /  0.00  /  0.00  /  0.01
 MAUH1 : Maunawili (13008)           :      M   /    M   /    M   /    M
-OFSH1 : Olomana Fire Station (13009):    0.00  /  0.00  /  0.02  /  0.02
+OFSH1 : Olomana Fire Station (13009):    0.00  /  0.00  /  0.00  /  0.02
 WMLH1 : Waimanalo (13011)           :    0.00  /  0.00  /  0.00  /  0.00
 BELH1 : Bellows AFS (HSOIS)         :    0.00  /  0.00  /  0.00  /  0.00
 KMHH1 : Kamehame (13012)            :    0.00  /  0.00  /  0.00  /  0.00
@@ -3117,22 +3142,22 @@ KUXH1 : Kaluanui (UHM)              :    0.00  /  0.00  /  0.00  /  0.00
 NIUH1 : Niu Valley (13001)          :    0.00  /  0.00  /  0.00  /  0.00
 PFSH1 : Palolo Fire Station (13010) :    0.00  /  0.00  /  0.00  /  0.00
 HNL   : Honolulu Airport (ASOS)             See note at bottom  :
-MOAH1 : Moanalua (13003)            :    0.00  /  0.01  /  0.01  /  0.01
-MOGH1 : Moanalua RG (USGS)          :    0.00  /  0.00  /  0.07  /  0.07
-TNLH1 : Tunnel RG (USGS)            :    0.00  /  0.00  /  0.10  /  0.10
+MOAH1 : Moanalua (13003)            :    0.00  /  0.00  /  0.00  /  0.01
+MOGH1 : Moanalua RG (USGS)          :    0.00  /  0.00  /  0.00  /  0.07
+TNLH1 : Tunnel RG (USGS)            :    0.00  /  0.00  /  0.00  /  0.10
 PACH1 : Palisades (13020)           :    0.00  /  0.00  /  0.00  /  0.00
-WAWH1 : Waiawa C.F. (13025)         :    0.00  /  0.00  /  0.01  /  0.01
+WAWH1 : Waiawa C.F. (13025)         :    0.00  /  0.00  /  0.00  /  0.01
 MITH1 : Mililani (13022)            :    0.00  /  0.00  /  0.00  /  0.00
 SCBH1 : Schofield Barracks (RAWS)   :    0.00  /  0.00  /  0.00  /  0.00
 SCEH1 : Schofield East (RAWS)       :    0.00  /  0.00  /  0.00  /  0.00
 WAFH1 : Wheeler Airfield            :    0.00  /  0.00  /  0.00  /  0.00
 POAH1 : Poamoho (13018)             :    0.00  /  0.00  /  0.00  /  0.00
 KRGH1 : Kalahee Ridge (UHM)         :    0.00  /  0.00  /  0.00  /  0.00
-KMRH1 : Kamananui Stream (USGS)     :    0.00  /  0.00  /  0.01  /  0.01
-PPRH1 : Pupukea Road (USGS)         :    0.00  /  0.00  /  0.01  /  0.01
-PMHH1 : Poamoho RG 1 (USGS)         :    0.00  /  0.00  /  0.04  /  0.07
+KMRH1 : Kamananui Stream (USGS)     :    0.00  /  0.00  /  0.00  /  0.01
+PPRH1 : Pupukea Road (USGS)         :    0.00  /  0.00  /  0.00  /  0.01
+PMHH1 : Poamoho RG 1 (USGS)         :    0.00  /  0.00  /  0.00  /  0.05
 DLGH1 : Dillingham (RAWS)           :    0.00  /  0.00  /  0.00  /  0.00
-AALH1 : Kaala (UHM)                 :    0.00  /  0.00  /  0.02  /  0.02
+AALH1 : Kaala (UHM)                 :    0.01  /  0.01  /  0.01  /  0.03
 PECH1 : Waipio (13019)              :    0.00  /  0.00  /  0.00  /  0.00
 KUNH1 : Kunia Substation (13021)    :    0.00  /  0.00  /  0.00  /  0.00
 HOFH1 : Honouliuli (RAWS)           :    0.00  /  0.00  /  0.00  /  0.00
@@ -3153,7 +3178,7 @@ KOPH1 : Keopukaloa (UHM)            :    0.00  /  0.00  /  0.00  /  0.00
 HOMH1 : Honolimaloo (UHM)           :    0.00  /  0.00  /  0.00  /  0.00
 KMLH1 : Kamalo (14013)              :    0.00  /  0.00  /  0.00  /  0.00
 MKPH1 : Makapulapai (RAWS)          :    0.00  /  0.00  /  0.00  /  0.00
-PAFH1 : Puu Alii (RAWS)             :    0.00  /  0.00  /  0.01  /  0.01
+PAFH1 : Puu Alii (RAWS)             :    0.00  /  0.00  /  0.00  /  0.01
 MLKH1 : Molokai 1 (RAWS)            :      M   /    M   /    M   /    M
 KACH1 : Kaunakakai Mauka (14004)    :    0.00  /  0.00  /  0.00  /  0.00
 HMK   : Molokai Airport (ASOS)      :    0.00  /  0.00  /  0.00  /  0.00
@@ -3172,19 +3197,19 @@ KAOH1 : Kaneloa (RAWS)              :      M   /    M   /    M   /    M
 :ID     Location                         3-Hr    6-Hr   12-Hr   24-Hr
 :       Windward Sites
 HNAH1 : Hana Airport (HSOIS)        :      M   /    M   /    M   /    M
-WWKH1 : West Wailuaiki (USGS)       :    0.00  /  0.00  /  0.01  /  0.02
+WWKH1 : West Wailuaiki (USGS)       :    0.00  /  0.00  /  0.00  /  0.01
 EBYH1 : EMI Baseyard (UHM)          :    0.00  /  0.00  /  0.00  /  0.00
 AIKH1 : Haiku (14001)               :    0.00  /  0.00  /  0.00  /  0.00
 HOG   : Kahului Airport (ASOS)      :    0.00  /  0.00  /  0.00  /  0.00
 WUKH1 : Wailuku (14007)             :    0.00  /  0.00  /  0.00  /  0.00
 KHKH1 : Kahakuloa (14002)           :    0.00  /  0.00  /  0.00  /  0.00
-PKKH1 : Puu Kukui (USGS)            :    0.00  /  0.00  /  0.00  /  0.06
+PKKH1 : Puu Kukui (USGS)            :    0.00  /  0.00  /  0.00  /  0.00
 :       Leeward/Upcountry Sites
 NKUH1 : Na Kula (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
 KPNH1 : Kepuni (USGS)               :    0.00  /  0.00  /  0.00  /  0.00
 PILH1 : Piiholo (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
 WKTH1 : Waikamoi Treeline (UHM)     :    0.00  /  0.00  /  0.00  /  0.00
-PUKH1 : Pukalani (14006)            :    0.00  /  0.00  /    M   /  0.00
+PUKH1 : Pukalani (14006)            :    0.00  /  0.00  /  0.00  /  0.00
 KBSH1 : Kula Branch Station (14008) :      M   /    M   /    M   /    M
 KLGH1 : Kula Ag (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
 PHQH1 : Park HQ (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
@@ -3196,7 +3221,7 @@ KMEH1 : Kamehamenui 1 (RAWS)        :    0.00  /  0.00  /  0.00  /  0.00
 KKEH1 : Keokea (UHM)                :    0.00  /  0.00  /  0.00  /  0.00
 ULUH1 : Ulupalakua (14003)          :    0.00  /  0.00  /  0.00  /  0.00
 LPOH1 : Lipoa (UHM)                 :    0.00  /  0.00  /  0.00  /  0.00
-KHIH1 : Kihei #2 (14009)            :    0.00  /  0.00  /  0.00  /  0.00
+KHIH1 : Kihei #2 (14009)            :      M   /    M   /    M   /  0.00
 KPDH1 : Kealia Pond (USFWS)         :    0.00  /  0.00  /  0.00  /  0.00
 WCCH1 : Waikapu Country Club (14005):    0.00  /  0.00  /  0.00  /  0.00
 HULH1 : Hanaula (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
@@ -3215,17 +3240,17 @@ KUUH1 : Kamuela Upper (15002)       :    0.00  /  0.00  /  0.00  /  0.00
 KMUH1 : Kamuela (15005)             :    0.00  /  0.00  /  0.00  /  0.00
 HNKH1 : Honokaa (15010)             :    0.00  /  0.00  /  0.00  /  0.00
 PMLH1 : Puu Mali (RAWS)             :    0.00  /  0.00  /  0.00  /  0.00
-WPNH1 : Waipunalei (UHM)            :    0.00  /  0.00  /  0.00  /  0.00
+WPNH1 : Waipunalei (UHM)            :      M   /    M   /  0.00  /  0.00
 KNKH1 : Kanakaleonui (UHM)          :    0.00  /  0.00  /  0.00  /  0.00
 LPHH1 : Laupahoehoe PD (15001)      :    0.00  /  0.00  /  0.00  /  0.00
 LAUH1 : Laupahoehoe (UHM)           :    0.00  /  0.00  /  0.00  /  0.00
 SPNH1 : Spencer (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
 HKUH1 : Hakalau (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
 KLXH1 : Kulaimano (UHM)             :    0.00  /  0.00  /  0.00  /  0.00
-NLIH1 : Honolii Stream (USGS)       :    0.00  /  0.01  /  0.01  /  0.01
-SDQH1 : Saddle Quarry (USGS)        :    0.00  /  0.00  /  0.00  /  0.02
+NLIH1 : Honolii Stream (USGS)       :    0.00  /  0.00  /  0.00  /  0.01
+SDQH1 : Saddle Quarry (USGS)        :    0.00  /  0.00  /  0.00  /  0.00
 PIOH1 : Piihonua (UHM)              :    0.00  /  0.00  /  0.00  /  0.00
-PIIH1 : Piihonua (15016)            :    0.00  /  0.00  /  0.00  /  0.01
+PIIH1 : Piihonua (15016)            :    0.00  /  0.00  /  0.00  /  0.00
 IPIH1 : IPIF (UHM)                  :    0.00  /  0.00  /  0.00  /  0.00
 WKAH1 : Waiakea Uka (15017)         :    0.00  /  0.00  /  0.00  /  0.00
 WEXH1 : Waiakea Exp Stn (NOAA/CRN)  :    0.00  /  0.00  /  0.00  /  0.00
@@ -3236,29 +3261,29 @@ MTVH1 : Mountain View (15014)       :    0.00  /  0.00  /  0.00  /  0.00
 GLNH1 : Glenwood (15013)            :    0.00  /  0.00  /  0.00  /  0.00
 :       Leeward Sites
 MOBH1 : Mauna Loa Ob Stn (NOAA/CRN) :    0.00  /  0.00  /  0.00  /  0.00
-NHKH1 : Nahuku (UHM)                :    0.00  /  0.00  /  0.00  /  0.01
+NHKH1 : Nahuku (UHM)                :    0.00  /  0.00  /  0.00  /  0.00
 KKUH1 : Keaumo (RAWS)               :    0.00  /  0.00  /  0.00  /  0.00
 KMOH1 : Kealakomo (RAWS)            :    0.00  /  0.00  /  0.00  /  0.00
 PLIH1 : Pali 2 (RAWS)               :    0.00  /  0.00  /  0.00  /  0.00
 KPRH1 : Kapapala (RAWS)             :    0.00  /  0.00  /  0.00  /  0.00
-KAYH1 : Kapapala Ranch (15003)      :    0.00  /  0.00  /  0.00  /  0.00
+KAYH1 : Kapapala Ranch (15003)      :    0.01  /  0.01  /  0.01  /  0.01
 PPLH1 : Pahala (15004)              :    0.00  /  0.00  /  0.00  /  0.00
 KIOH1 : Kaiholena (UHM)             :      M   /    M   /    M   /    M
 NENH1 : Nene Cabin (RAWS)           :    0.00  /  0.00  /  0.00  /  0.00
 SOPH1 : South Point (HSOIS)         :    0.00  /  0.00  /  0.00  /  0.00
-LKHH1 : Lower Kahuku (RAWS)         :    0.00  /  0.00  /  0.00  /  0.01
+LKHH1 : Lower Kahuku (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
 KRCH1 : Kahuku Ranch (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
 KOMH1 : Kona Hema (UHM)             :    0.00  /  0.00  /  0.00  /  0.00
-PHRH1 : Puho CS (RAWS)              :    0.00  /  0.00  /  0.13  /  0.17
-HAUH1 : Honaunau (15007)            :    0.00  /  0.00  /  0.00  /  0.73
-KLEH1 : Kealakekua (15008)          :    0.00  /  0.00  /  0.00  /  0.13
-WIHH1 : Waiaha Stream (15009)       :    0.00  /  0.00  /  0.00  /  0.46
-KOUH1 : Keahuolu (UHM)              :    0.00  /  0.00  /  0.00  /  0.51
+PHRH1 : Puho CS (RAWS)              :    0.00  /  0.00  /  0.00  /  0.16
+HAUH1 : Honaunau (15007)            :    0.00  /  0.00  /  0.00  /  0.00
+KLEH1 : Kealakekua (15008)          :    0.00  /  0.00  /  0.00  /  0.00
+WIHH1 : Waiaha Stream (15009)       :    0.00  /  0.00  /  0.00  /  0.01
+KOUH1 : Keahuolu (UHM)              :    0.00  /  0.00  /  0.00  /  0.00
 KHOH1 : Kaloko-Honokohau (RAWS)     :    0.00  /  0.00  /  0.00  /  0.00
 HKO   : Kona Intl Airport (ASOS)    :    0.00  /  0.00  /  0.00  /  0.00
-PLMH1 : Palamanui (UHM)             :    0.00  /  0.00  /  0.00  /  0.06
-KIRH1 : Kiholo RG (USGS)            :    0.00  /  0.00  /  0.00  /  0.03
-KPLH1 : Kaupulehu (RAWS)            :    0.00  /  0.00  /  0.00  /  0.08
+PLMH1 : Palamanui (UHM)             :    0.00  /  0.00  /  0.00  /  0.00
+KIRH1 : Kiholo RG (USGS)            :    0.00  /  0.00  /  0.00  /  0.00
+KPLH1 : Kaupulehu (RAWS)            :    0.00  /  0.00  /  0.00  /  0.00
 PULH1 : Puuanahulu (RAWS)           :    0.00  /  0.00  /  0.00  /  0.00
 MMLH1 : Mamalahoa (UHM)             :    0.00  /  0.00  /  0.00  /  0.00
 PWWH1 : Puu Waawaa (RAWS)           :    0.00  /  0.00  /  0.00  /  0.00
@@ -3299,7 +3324,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-28T16:05:05.140629-10:00 HST |
+| **Collected** | 2026-09-29T01:52:46.110453-10:00 HST |
 
 ```text
                         
@@ -3393,16 +3418,16 @@ $$
 |---|---|
 | **Resource ID** | hsf_high_seas_npac |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=HSF&issuedby=NP |
-| **Collected** | 2026-09-28T12:39:47.366272-10:00 HST |
+| **Collected** | 2026-09-29T01:50:42.757884-10:00 HST |
 
 ```text
-115
-FZPN40 PHFO 282232
+388
+FZPN40 PHFO 291001
 HSFNP
 
 HIGH SEAS FORECAST
 NATIONAL WEATHER SERVICE HONOLULU HI
-2300 UTC MON SEP 28 2026
+1100 UTC TUE SEP 29 2026
 
 SUPERSEDED BY NEXT ISSUANCE IN 6 HOURS
 
@@ -3417,70 +3442,59 @@ SECURITE
 
 NORTH PACIFIC EQUATOR TO 30N BETWEEN 140W AND 180W
 
-SYNOPSIS VALID 1800 UTC SEP 28 2026.
-24 HOUR FORECAST VALID 1800 UTC SEP 29 2026.
-48 HOUR FORECAST VALID 1800 UTC SEP 30 2026.
+SYNOPSIS VALID 0600 UTC SEP 29 2026.
+24 HOUR FORECAST VALID 0600 UTC SEP 30 2026.
+48 HOUR FORECAST VALID 0600 UTC OCT 01 2026.
 
 .WARNINGS.
 
 ...HURRICANE WARNING...
-.HURRICANE NOLO NEAR 17.7N 163.1W 933 MB AT 2100 UTC SEP 28
-MOVING WNW OR 300 DEG AT 10 KT. MAXIMUM SUSTAINED WINDS 125 KT
-GUSTS 150 KT. TROPICAL STORM FORCE WINDS WITHIN 130 NM NE
-QUADRANT...100 NM SE QUADRANT...80 NM SW QUADRANT...AND 110 NM NW
-QUADRANT. WINDS 20 TO 34 KT ELSEWHERE FROM 21N TO 15N BETWEEN 166W
-AND 157W. SEAS 4 M OR GREATER WITHIN 270 NM NE QUADRANT...120 NM
-SE QUADRANT...210 NM SW QUADRANT...AND 390 NM NW QUADRANT WITH
-SEAS TO 11 M. SEAS 2.5 TO 4 M ELSEWHERE N OF 11N BETWEEN 176W AND
-150W. ISOLATED MODERATE TSTMS FROM 20N TO 14N BETWEEN 165W AND
-160W.
-.24 HOUR FORECAST HURRICANE NOLO NEAR 20.8N 164.0W. MAXIMUM
-SUSTAINED WINDS 110 KT GUSTS 135 KT. TROPICAL STORM FORCE WINDS
-WITHIN 130 NM NE QUADRANT...110 NM SE QUADRANT...80 NM SW
-QUADRANT...AND 100 NM NW QUADRANT. WINDS 20 TO 34 KT ELSEWHERE
-FROM 25N TO 19N BETWEEN 166W AND 158W. SEAS 4 M OR GREATER FROM
-24N TO 18N BETWEEN 168W AND 160W WITH SEAS TO 10.5 M. SEAS 2.5 TO
-4 M ELSEWHERE 27N TO 13N W OF 156W.
-.48 HOUR FORECAST HURRICANE NOLO NEAR 22.4N 164.2W. MAXIMUM
-SUSTAINED WINDS 75 KT GUSTS 90 KT. TROPICAL STORM FORCE WINDS
-WITHIN 120 NM NE QUADRANT...90 NM SE QUADRANT...80 NM SW
-QUADRANT...AND 110 NM NW QUADRANT. WINDS 20 TO 34 KT ELSEWHERE
-FROM 27N TO 19N BETWEEN 169W AND 158W. SEAS 4 M OR GREATER FROM
-25N TO 19N BETWEEN 169W AND 162W WITH SEAS TO 8 M. SEAS 2.5 TO 4 M
-ELSEWHERE FROM 27N TO 17N W OF 160W.
+.HURRICANE NOLO NEAR 20.0N 164.3W 958 MB AT 0900 UTC SEP 29
+MOVING NNW OR 330 DEG AT 13 KT. MAXIMUM SUSTAINED WINDS 100 KT
+GUSTS 120 KT. TROPICAL STORM FORCE WINDS WITHIN 150 NM NE
+QUADRANT...100 NM SE QUADRANT...80 NM SW QUADRANT...AND 110 NM
+NW QUADRANT. SEAS 4 M OR GREATER WITHIN 240 NM NE AND SW
+QUADRANTS...330 NM NW QUADRANT AND 180 NM SE QUADRANT WITH SEAS
+TO 11 M. SEAS 2.5 TO 3.5 M ELSEWHERE FROM 13N TO 27N E OF 176W.
+WINDS 20 TO 30 KT ELSEWHERE FROM 17N TO 23N BETWEEN 158W AND 167W.
+SCATTERED MODERATE TO STRONG TSTMS WITHIN 90 NM OF CENTER.
+.24 HOUR FORECAST HURRICANE NOLO NEAR 22.5N 164.6W. MAXIMUM
+SUSTAINED WINDS 70 KT GUSTS 85 KT. TROPICAL STORM FORCE WINDS
+WITHIN 140 NM NE QUADRANT...95 NM SE QUADRANT...80 NM SW
+QUADRANT...AND 110 NM NW QUADRANT. SEAS 4 M OR GREATER FROM 20N TO
+26N BETWEEN 161W AND 168W WITH SEAS TO 11 M. SEAS 2.5 TO 3.5 M
+ELSEWHERE FROM 17N TO 27N BETWEEN 158W AND 180W. WINDS 20 TO 30
+KT ELSEWHERE FROM 20N TO 26N BETWEEN 160W AND 169W.
+.48 HOUR FORECAST TROPICAL STORM NOLO NEAR 22.6N 165.4W. MAXIMUM
+SUSTAINED WINDS 55 KT GUSTS 65 KT. TROPICAL STORM FORCE WINDS
+WITHIN 110 NM NE QUADRANT...80 NM SE QUADRANT...75 NM SW
+QUADRANT...AND 100 NM NW QUADRANT. SEAS 4 M OR GREATER FROM 15N
+TO 23N BETWEEN 159W AND 167W WITH SEAS TO 11 M. SEAS 2.5 TO 3.5 M
+ELSEWHERE FROM 16N TO 30N BETWEEN 160W AND 176W. WINDS 20 TO 30
+KT ELSEWHERE FROM 19N TO 28N BETWEEN 161W AND 171W.
 
 FORECAST WINDS IN AND NEAR ACTIVE TROPICAL CYCLONES SHOULD BE
-USED WITH CAUTION DUE TO UNCERTAINTY IN FORECAST TRACK...SIZE AND
-INTENSITY.
+USED WITH CAUTION DUE TO UNCERTAINTY IN FORECAST TRACK...SIZE
+AND INTENSITY.
 
 .SYNOPSIS AND FORECAST.
 
-.24 HOUR FORECAST NEW TROUGH 30N164W 26N168W.
-.48 HOUR FORECAST TROUGH 30N159W 28N160W.
+.24 HOUR FORECAST NEW TROUGH 30N166W 28N171W 29N175W.
+.48 HOUR FORECAST TROUGH ABSORBED BY FRONT DESCRIBED BELOW.
 
-.48 HOUR FORECAST NEW COLD FRONT 30N161W 27N172W. WINDS 20 TO 25
-KT FROM 30N TO 27N BETWEEN 175W AND 164W. SEAS 2.5 TO 3 M N OF 27N
-BETWEEN 176W AND 162W.
-
-.WINDS 20 TO 25 KT FROM 26N TO 21N BETWEEN 169W AND 153W...AND
-FROM 10N TO 06N E OF 145W.
-.24 HOUR FORECAST WINDS EASED TO 20 KT OR LESS.
+.48 HOUR FORECAST NEW FRONT 30N155W 28N157W THENCE TROUGH TO
+25N161W. WINDS 20 TO 25 KT N OF 27N BETWEEN 171W AND 164W.
 
 .WINDS 20 KT OR LESS OVER REMAINDER OF FORECAST AREA.
 
-.SEAS 2.5 TO 3 M N OF 15N E OF 150W...AND FROM 15N TO 06N E OF 144W.
-.24 HOUR FORECAST SEAS 2.5 TO 3 M FROM 28N TO 12N E OF 153W.
-.48 HOUR FORECAST SEAS LOWERED TO 2.5 M OR LOWER.
-
 .SEAS 2.5 M OR LOWER OVER REMAINDER OF FORECAST AREA.
 
-.MONSOON TROUGH 13N140W 11N147W 11N152W...AND 12N165W 09N170W 08N180W.
-ISOLATED MODERATE TSTMS FROM 10N TO 07N E OF 147W...AND FROM 08N
-TO 05N BETWEEN 174W AND 165W.
+.MONSOON TROUGH 13N140W 14N143W 11N150W 12N156W...AND 15N168W
+09N176W 08N180W. SCATTERED MODERATE TSTMS WITHIN 60 NM EITHER SIDE
+OF A LINE 08N160W 06N176W. ISOLATED MODERATE TSTMS ELSEWHERE S OF
+10N.
 
-.ISOLATED MODERATE TSTMS FROM 09N TO 01N BETWEEN 157W AND 150W.
-
-.FORECASTER TROTTER. HONOLULU HI.
+.FORECASTER TSAMOUS. HONOLULU HI.
 ```
 
 ---
@@ -3491,206 +3505,206 @@ TO 05N BETWEEN 174W AND 165W.
 |---|---|
 | **Resource ID** | oso_hourly_obs |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=OSO&issuedby=HFO |
-| **Collected** | 2026-09-28T11:52:06.522097-10:00 HST |
+| **Collected** | 2026-09-29T01:54:27.556574-10:00 HST |
 
 ```text
-633
-SXHW50 PHFO 282144
+465
+SXHW50 PHFO 291143
 OSOHFO
 
 Hawaii Wind Data
 National Weather Service Honolulu HI
-1143 AM HST Mon Sep 28 2026
+143 AM HST Tue Sep 29 2026
 
                             W I N D        D A T A
                             ----------------------
                                                                    IN KNOTS
  ID                Location              Date     Time     DIR    SPD   GUST
 --------   -------------------------    -------  -(HST)-  ----   ----   ----
-0000LLMH1  Lower Limahuli     Kauai     28Sep26   11:15      0      3     10
-0000CMGH1  Common Ground      Kauai     28Sep26   11:15    110      5     11
-0000HLIH1  Hanalei            Kauai     28Sep26   10:41    100     10     15
-0000MLDH1  Moloaa Dairy       Kauai     28Sep26   09:45    120      9     16
-0000HNMH1  Hanamaulu          Kauai     28Sep26   11:15     50      5     14
-0000PHLI   Lihue              Kauai     28Sep26   11:00     70     14     21
-0000NWWH1  Nawiliwili NOS     Kauai     28Sep26   11:30     70     16     20
+0000LLMH1  Lower Limahuli     Kauai     29Sep26   01:15     40      3      8
+0000CMGH1  Common Ground      Kauai     29Sep26   01:15    120      5      8
+0000HLIH1  Hanalei            Kauai     29Sep26   00:41    100      6     11
+0000MLDH1  Moloaa Dairy       Kauai     29Sep26   00:45    110     10     17
+0000HNMH1  Hanamaulu          Kauai     29Sep26   01:15     90      4      8
+0000PHLI   Lihue              Kauai     29Sep26   01:09    100     15    MSG
+0000NWWH1  Nawiliwili NOS     Kauai     29Sep26   01:30     90     14     16
 0000POIH1  Poipu              Kauai                MSG    MSG    MSG    MSG
-0000LNTH1  Lawai NTBG         Kauai     28Sep26   11:15     80     13     19
-0000PAKH1  Port Allen         Kauai     28Sep26   11:00     80     18     25
-0000MKAH1  Makaha Ridge       Kauai     28Sep26   11:11    260      2      6
-0000MNRH1  Mana               Kauai     28Sep26   11:34    130      4     12
-0000PHBK   Barking Sands      Kauai     28Sep26   11:00    110      7    MSG
-0000PLRH1  Puu Lua            Kauai     28Sep26   11:35     80     10     17
-0000POPH1  Puu Opae           Kauai     28Sep26   11:34    120      8     21
-0000WHGH1  Waimea Heights     Kauai     28Sep26   11:35     30     10     23
+0000LNTH1  Lawai NTBG         Kauai     29Sep26   01:15     80      7      9
+0000PAKH1  Port Allen         Kauai     29Sep26   01:00     90     12     19
+0000MKAH1  Makaha Ridge       Kauai     29Sep26   01:11    350      1      5
+0000MNRH1  Mana               Kauai     29Sep26   01:34    160      3      4
+0000PHBK   Barking Sands      Kauai     29Sep26   01:00    150      3    MSG
+0000PLRH1  Puu Lua            Kauai     29Sep26   01:35     70     10     18
+0000POPH1  Puu Opae           Kauai     29Sep26   01:34    120      6     13
+0000WHGH1  Waimea Heights     Kauai     29Sep26   01:35     30      8     16
 
-0000KRGH1  Kalahee Ridge      Oahu      28Sep26   11:10    130      6     15
+0000KRGH1  Kalahee Ridge      Oahu      29Sep26   01:10     50      2      4
 0000KAHH1  Kahuku             Oahu                 MSG    MSG    MSG    MSG
-0000KTAH1  Kahuku Trng        Oahu      28Sep26   10:59    120      2     13
-0000KFWH1  Kii                Oahu      28Sep26   10:45    110     17     23
-0000OFRH1  Oahu Forest NWR    Oahu      28Sep26   11:36     70      7     30
-0000KWMH1  Kaaawa Makai       Oahu      28Sep26   11:15     90      4     10
-0000PHNG   Kaneohe MCBH       Oahu      28Sep26   11:20     80     12     19
-0000MOKH1  Mokuoloe Is NOS    Oahu      28Sep26   11:30    100      7     15
-0000BELH1  Bellows AFS        Oahu      28Sep26   11:15     70     12    MSG
-0000KUXH1  Kaluanui           Oahu      28Sep26   11:15    180      4     10
-0000LYOH1  Lyon               Oahu      28Sep26   11:05    200      5     10
-0000NRSH1  Nuuanu Res No 1    Oahu      28Sep26   11:15     60      3      9
-0000PHNL   Honolulu AP        Oahu      28Sep26   11:00     80     13     25
-0000OOUH1  Honolulu Hbr NOS   Oahu      28Sep26   11:24     60      8     17
-0000HOFH1  Honouliuli PHB     Oahu      28Sep26   11:41     90     13     20
-0000SCBH1  Schofield Brks     Oahu      28Sep26   10:57    100     10     17
-0000SCEH1  Schofield East     Oahu      28Sep26   10:58    110      9     24
-0000HWLH1  HECO Wilikina      Oahu      28Sep26   11:30    110      9     16
-0000PHJR   Kalaeloa           Oahu      28Sep26   11:00    100      9     25
-0000HFHH1  HECO Farrington    Oahu      28Sep26   11:30     80     10     18
-0000HPLH1  HECO Palehua       Oahu      28Sep26   11:30     80     11     21
-0000HPDH1  HECO Palehua 2     Oahu      28Sep26   11:30     80     15     23
-0000HPHH1  HECO Palehua 3     Oahu      28Sep26   11:30     80      8     20
-0000HPRH1  HECO Paakea        Oahu      28Sep26   11:30    330      4      9
-0000HLRH1  HECO Lualualei     Oahu      28Sep26   11:30     80     11     19
-0000HWVH1  HECO Waianae Vly   Oahu      28Sep26   11:30    120      8     18
-0000PLHH1  Palehua            Oahu      28Sep26   11:36     80      0      0
-0000WNVH1  Waianae Valley     Oahu      28Sep26   11:37    160      7     21
-0000HHSH1  HECO Ala Hema St   Oahu      28Sep26   11:30    110      9     16
+0000KTAH1  Kahuku Trng        Oahu      29Sep26   00:59    120      0      3
+0000KFWH1  Kii                Oahu      29Sep26   00:45    110     11     21
+0000OFRH1  Oahu Forest NWR    Oahu      29Sep26   01:36     90      3      6
+0000KWMH1  Kaaawa Makai       Oahu      29Sep26   01:15    100      5     10
+0000PHNG   Kaneohe MCBH       Oahu      29Sep26   01:00    110      7     16
+0000MOKH1  Mokuoloe Is NOS    Oahu      29Sep26   01:30    130      9     11
+0000BELH1  Bellows AFS        Oahu      29Sep26   01:15    110     10    MSG
+0000KUXH1  Kaluanui           Oahu      29Sep26   01:15    150      1      5
+0000LYOH1  Lyon               Oahu      29Sep26   01:10    350      1      3
+0000NRSH1  Nuuanu Res No 1    Oahu      29Sep26   01:15     10      2      5
+0000PHNL   Honolulu AP        Oahu      29Sep26   01:00     70      5    MSG
+0000OOUH1  Honolulu Hbr NOS   Oahu      29Sep26   01:24     60      3      5
+0000HOFH1  Honouliuli PHB     Oahu      29Sep26   01:41    330      1      3
+0000SCBH1  Schofield Brks     Oahu      29Sep26   00:57    230      3      3
+0000SCEH1  Schofield East     Oahu      29Sep26   00:58    100      1      6
+0000HWLH1  HECO Wilikina      Oahu      29Sep26   01:30     80      1      1
+0000PHJR   Kalaeloa           Oahu      29Sep26   01:00     30      5    MSG
+0000HFHH1  HECO Farrington    Oahu      29Sep26   01:30     40      6     10
+0000HPLH1  HECO Palehua       Oahu      29Sep26   01:30     90      4     12
+0000HPDH1  HECO Palehua 2     Oahu      29Sep26   01:30     60      5      9
+0000HPHH1  HECO Palehua 3     Oahu      29Sep26   01:30     70      4      8
+0000HPRH1  HECO Paakea        Oahu      29Sep26   01:30     60      2      8
+0000HLRH1  HECO Lualualei     Oahu      29Sep26   01:30     50      1      2
+0000HWVH1  HECO Waianae Vly   Oahu                 MSG    MSG    MSG    MSG
+0000PLHH1  Palehua            Oahu      29Sep26   01:36     70      0      0
+0000WNVH1  Waianae Valley     Oahu      29Sep26   01:37     50      3      6
+0000HHSH1  HECO Ala Hema St   Oahu      29Sep26   01:30     90      3      5
 0000WBHH1  Waianae Harbor     Oahu                 MSG    MSG    MSG    MSG
-0000HKRH1  HECO Kili Dr       Oahu      28Sep26   11:30    220      4     19
-0000HMVH1  HECO Makaha Vly    Oahu      28Sep26   11:30    310      5     12
-0000MKRH1  Makua Range        Oahu      28Sep26   10:58    270      5     10
-0000KKRH1  Kuaokala           Oahu      28Sep26   11:36     40      5     17
-0000AALH1  Kaala              Oahu      28Sep26   11:15    130      3     12
-0000HFRH1  HECO Farrington2   Oahu      28Sep26   11:30    100      8     16
-0000HFYH1  HECO Farrington3   Oahu      28Sep26   11:30     80     15     26
-0000DLGH1  Dillingham         Oahu      28Sep26   10:49     90      8     18
+0000HKRH1  HECO Kili Dr       Oahu      29Sep26   01:30     20      2      6
+0000HMVH1  HECO Makaha Vly    Oahu      29Sep26   01:30     10      2      5
+0000MKRH1  Makua Range        Oahu      29Sep26   00:58    130      3      7
+0000KKRH1  Kuaokala           Oahu      29Sep26   01:36     30      0      5
+0000AALH1  Kaala              Oahu      29Sep26   01:15    150      2      6
+0000HFRH1  HECO Farrington2   Oahu      29Sep26   01:30    110      1      2
+0000HFYH1  HECO Farrington3   Oahu      29Sep26   01:30    130      2      4
+0000DLGH1  Dillingham         Oahu      29Sep26   00:49    130      1      3
 
-0000MKPH1  Makapulapai        Molokai   28Sep26   11:15     90     17     26
-0000PAFH1  Puu Alii           Molokai   28Sep26   11:22    110      3     15
-0000HOMH1  Honolimaloo        Molokai   28Sep26   11:15    130      8     15
-0000KOPH1  Keopukaloa         Molokai   28Sep26   11:15    130     12     19
+0000MKPH1  Makapulapai        Molokai   29Sep26   01:15    110      6     16
+0000PAFH1  Puu Alii           Molokai   29Sep26   01:22    160      2      8
+0000HOMH1  Honolimaloo        Molokai   29Sep26   01:15    110      5      9
+0000KOPH1  Keopukaloa         Molokai   29Sep26   01:15    130      9     14
 0000MLKH1  Molokai 1          Molokai              MSG    MSG    MSG    MSG
-0000MMPH1  MECO Makaena       Molokai   28Sep26   11:30    130      8     17
-0000MKYH1  MECO Kalae Hwy     Molokai   28Sep26   11:30     20      7     15
-0000PHMK   Molokai AP         Molokai   28Sep26   11:00     50     10     20
-0000ANPH1  Anapuka            Molokai   28Sep26   11:15     70     12     17
+0000MMPH1  MECO Makaena       Molokai   29Sep26   01:30     40      7      8
+0000MKYH1  MECO Kalae Hwy     Molokai   29Sep26   01:30     10      5      6
+0000PHMK   Molokai AP         Molokai   29Sep26   01:00      0      0    MSG
+0000ANPH1  Anapuka            Molokai   29Sep26   01:15     60      4      6
 
-0000LNIH1  Lanai 1            Lanai     28Sep26   11:37    130      0      0
+0000LNIH1  Lanai 1            Lanai     29Sep26   01:37     40      0      0
 
 0000KAOH1  Kaneloa            Kahoolawe            MSG    MSG    MSG    MSG
 
-0000PHOG   Kahului AP         Maui      28Sep26   11:00     60     16     22
-0000KLIH1  Kahului Hbr NOS    Maui      28Sep26   11:24     60     21     26
-0000MHRH1  MECO Hansen Rd     Maui      28Sep26   11:30    120      4     12
-0000MHKH1  MECO Haleakala Hwy Maui      28Sep26   11:30     60      9     17
-0000MMKH1  MECO Makawao       Maui      28Sep26   11:30    290      4      9
-0000MKTH1  MECO Kula 2        Maui      28Sep26   11:30    330      2      6
-0000PILH1  Piiholo            Maui      28Sep26   11:15     90      6     12
-0000EBYH1  EMI Baseyard       Maui      28Sep26   11:10     60      2      6
+0000PHOG   Kahului AP         Maui      29Sep26   01:00    130      6    MSG
+0000KLIH1  Kahului Hbr NOS    Maui      29Sep26   01:24    300      3      5
+0000MHRH1  MECO Hansen Rd     Maui      29Sep26   01:30    310      1      3
+0000MHKH1  MECO Haleakala Hwy Maui      29Sep26   01:30    160      2      4
+0000MMKH1  MECO Makawao       Maui      29Sep26   01:30    200      5      6
+0000MKTH1  MECO Kula 2        Maui      29Sep26   01:30    170      2      2
+0000PILH1  Piiholo            Maui      29Sep26   01:15    150      4      5
+0000EBYH1  EMI Baseyard       Maui      29Sep26   01:10    160      1      5
 0000HNAH1  Hana               Maui                 MSG    MSG    MSG    MSG
-0000NKUH1  Na Kula            Maui      28Sep26   11:35     90     21     38
+0000NKUH1  Na Kula            Maui      29Sep26   01:35     60      7     21
 0000AWAH1  Auwahi             Maui                 MSG    MSG    MSG    MSG
-0000KLFH1  Kula 1             Maui      28Sep26   10:48    320      4      7
-0000KKNH1  Kahikinui 1        Maui      28Sep26   11:34    120      6     11
-0000KMEH1  Kamehamenui 1      Maui      28Sep26   10:48    340      4      7
-0000SUMH1  Summit             Maui      28Sep26   11:15    100     10     15
-0000NNEH1  Nene Nest          Maui      28Sep26   11:15    150      6     15
-0000PHQH1  Park HQ            Maui      28Sep26   11:15    360      4      9
-0000WKTH1  Waikamoi Treeline  Maui      28Sep26   11:15     50      5     10
-0000MCTH1  MECO Crater Rd     Maui      28Sep26   11:30    260      3      6
-0000KLGH1  Kula Ag            Maui      28Sep26   11:15    330      1      3
-0000MWAH1  MECO Waipoli Rd    Maui      28Sep26   11:30    260      2      7
-0000KKEH1  Keokea             Maui      28Sep26   11:15    290      4      7
-0000MKUH1  MECO Kula          Maui      28Sep26   11:30    190      5     10
-0000PHUH1  Pulehu             Maui      28Sep26   11:15    240      4      8
-0000MNDH1  MECO Naalaea Rd    Maui      28Sep26   11:30    230      6     11
-0000MURH1  MECO Ulupalakua    Maui      28Sep26   11:30    240      3      9
-0000LPOH1  Lipoa              Maui      28Sep26   11:15    210      4      8
-0000MVHH1  MECO Veterans Hwy  Maui      28Sep26   11:30    170      6     12
-0000KPDH1  Kealia Pond        Maui      28Sep26   11:20    210      9     14
-0000MMAH1  MECO Maalaea       Maui      28Sep26   11:30    140      5     10
-00000P36   Maalaea Bay        Maui      28Sep26   11:15      0      0      0
-0000HULH1  Hanaula            Maui      28Sep26   11:15     40      2      7
-0000OLUH1  Olowalu            Maui      28Sep26   11:15    260      4      6
-0000MMMH1  MECO Mamane Pl     Maui      28Sep26   11:30    310     10     17
-0000MHOH1  MECO Honoapiilani  Maui      28Sep26   11:30     20     13     18
-0000MHHH1  MECO Honoapiilani2 Maui      28Sep26   11:30    330     10     18
-0000MKEH1  MECO Kealaloloa Rg Maui      28Sep26   11:30    230      8     15
-0000MUGH1  MECO Ukumehame Gul Maui      28Sep26   11:30    220      6     10
-0000MOOH1  MECO Olowalu       Maui      28Sep26   11:30    260      5      8
-0000OLUH1  Olowalu            Maui      28Sep26   11:15    260      4      6
-0000MLPH1  MECO Launiupoko    Maui      28Sep26   11:30    220      5      9
-0000MLTH1  MECO Launiupoko 2  Maui      28Sep26   11:30    190      3      8
-0000MLRH1  MECO Lahainaluna   Maui      28Sep26   11:30    220      5      9
-0000LWTH1  Lahaina WTP        Maui      28Sep26   11:15    260      3      7
-0000MKNH1  MECO Kaanapali     Maui      28Sep26   11:30    220      5      9
+0000KLFH1  Kula 1             Maui      29Sep26   00:48    100      3      3
+0000KKNH1  Kahikinui 1        Maui      29Sep26   01:34     20      6     10
+0000KMEH1  Kamehamenui 1      Maui      29Sep26   00:48    150      5      8
+0000SUMH1  Summit             Maui      29Sep26   01:15    140      7      8
+0000NNEH1  Nene Nest          Maui      29Sep26   01:15    150      8     12
+0000PHQH1  Park HQ            Maui      29Sep26   01:15    130      3      5
+0000WKTH1  Waikamoi Treeline  Maui      29Sep26   01:15    180      5     10
+0000MCTH1  MECO Crater Rd     Maui      29Sep26   01:30    130      4      8
+0000KLGH1  Kula Ag            Maui      29Sep26   01:15    100      2      2
+0000MWAH1  MECO Waipoli Rd    Maui      29Sep26   01:30     90      3      3
+0000KKEH1  Keokea             Maui      29Sep26   01:15    140      2      3
+0000MKUH1  MECO Kula          Maui      29Sep26   01:30     80      4      5
+0000PHUH1  Pulehu             Maui      29Sep26   01:15    120      2      4
+0000MNDH1  MECO Naalaea Rd    Maui      29Sep26   01:30    120      3      5
+0000MURH1  MECO Ulupalakua    Maui      29Sep26   01:30     70      2      3
+0000LPOH1  Lipoa              Maui      29Sep26   01:15     90      4      5
+0000MVHH1  MECO Veterans Hwy  Maui      29Sep26   01:30    340      2      4
+0000KPDH1  Kealia Pond        Maui      29Sep26   01:20    100      1      6
+0000MMAH1  MECO Maalaea       Maui      29Sep26   01:30     20      2      4
+00000P36   Maalaea Bay        Maui      29Sep26   01:15      0      0      0
+0000HULH1  Hanaula            Maui      29Sep26   01:10     60      0      2
+0000OLUH1  Olowalu            Maui      29Sep26   01:15     60      3      6
+0000MMMH1  MECO Mamane Pl     Maui      29Sep26   01:30    230      2      4
+0000MHOH1  MECO Honoapiilani  Maui      29Sep26   01:30     40      1      3
+0000MHHH1  MECO Honoapiilani2 Maui      29Sep26   01:30    310      1      3
+0000MKEH1  MECO Kealaloloa Rg Maui      29Sep26   01:30    280      8      9
+0000MUGH1  MECO Ukumehame Gul Maui      29Sep26   01:30      0      6      8
+0000MOOH1  MECO Olowalu       Maui      29Sep26   01:30     30      3      5
+0000OLUH1  Olowalu            Maui      29Sep26   01:15     60      3      6
+0000MLPH1  MECO Launiupoko    Maui      29Sep26   01:30     50      6      7
+0000MLTH1  MECO Launiupoko 2  Maui      29Sep26   01:30     30      7     10
+0000MLRH1  MECO Lahainaluna   Maui      29Sep26   01:30    100      5      7
+0000LWTH1  Lahaina WTP        Maui      29Sep26   01:15    130      3      5
+0000MKNH1  MECO Kaanapali     Maui      29Sep26   01:30    130      7     10
 0000PHJH   Kapalua-W Maui     Maui                 MSG    MSG    MSG    MSG
-0000HOOH1  Honolua            Maui      28Sep26   11:15    130     10     25
+0000HOOH1  Honolua            Maui      29Sep26   01:15    160      6      9
 
-0000UPLH1  Upolu Airport      Hawaii    28Sep26   11:15     90     14     22
-0000KMMH1  Kaluamakani        Hawaii    28Sep26   11:15    280      4      8
-0000PMLH1  Puu Mali           Hawaii    28Sep26   11:00     30      5      9
-0000KNKH1  Kanakaleonui       Hawaii    28Sep26   11:15    150     11     17
-0000WPNH1  Waipunalei         Hawaii    28Sep26   11:15    110      5     14
-0000LAUH1  Laupahoehoe        Hawaii               MSG    MSG    MSG    MSG
-0000SPNH1  Spencer            Hawaii               MSG    MSG    MSG    MSG
-0000HKUH1  Hakalau            Hawaii    28Sep26   10:45    180      3      8
-0000KLXH1  Kulaimano          Hawaii    28Sep26   11:15    120      8     15
-0000PIOH1  Piihonua           Hawaii    28Sep26   11:15    140      2      7
-0000PHTO   Hilo AP            Hawaii    28Sep26   11:00    130     10     14
-0000ILOH1  Hilo Hbr NOS       Hawaii    28Sep26   11:24    140      9     13
-0000IPIH1  IPIF               Hawaii    28Sep26   11:15    110      3      7
-0000WEXH1  Waiakea Exp Stn    Hawaii    28Sep26   11:00    MSG      5      9
-0000KEUH1  Keaau              Hawaii    28Sep26   11:15     90      4      7
-0000PAOH1  Pahoa              Hawaii    28Sep26   11:15     60      1      3
-0000NHKH1  Nahuku             Hawaii    28Sep26   11:15     90      5      8
-0000KKUH1  Keaumo             Hawaii    28Sep26   11:34    180      5     16
-0000MOBH1  Mauna Loa Obs      Hawaii    28Sep26   11:00    MSG      6     11
-0000PLIH1  Pali 2             Hawaii    28Sep26   11:01    130     10     15
-0000KMOH1  Kealakomo          Hawaii    28Sep26   10:44     90     11     16
-0000KPRH1  Kapapala           Hawaii    28Sep26   10:48    100      4     12
-0000NENH1  Nene Cabin         Hawaii    28Sep26   11:23    110      7     14
-0000KIOH1  Kaiholena          Hawaii    28Sep26   11:15     90      7     10
-0000LKHH1  Lower Kahuku       Hawaii    28Sep26   11:23     90      3     13
-0000SOPH1  South Point        Hawaii    28Sep26   11:00     70     17     22
-0000KOMH1  Kona Hema          Hawaii    28Sep26   11:15    230      6     10
-0000KRCH1  Kahuku Ranch       Hawaii    28Sep26   11:29    230      5     11
-0000PHRH1  Puho CS            Hawaii    28Sep26   11:22    300      3     10
-0000HLNH1  HELCO Lolo Ln      Hawaii    28Sep26   11:30    250      4      8
-0000HHUH1  HELCO Hualalai Rd  Hawaii    28Sep26   11:30    260      4     10
-0000KOUH1  Keahuolu           Hawaii    28Sep26   11:15    270      2      4
-0000PHKO   Kona Intl AP       Hawaii    28Sep26   11:00    270      9    MSG
-0000KHOH1  Kaloko-Honokohau   Hawaii    28Sep26   11:15    270      7     11
-0000PLMH1  Palamanui          Hawaii    28Sep26   11:15    280      1      5
-0000PWAH1  Puu Waawaa (UHM)   Hawaii    28Sep26   11:15     10      3      7
-0000KIUH1  Kaiaulu Puu Waawaa Hawaii    28Sep26   11:15     40      6     11
-0000KPLH1  Kaupulehu          Hawaii    28Sep26   11:36    270     10     15
-0000PWWH1  Puu Waawaa         Hawaii    28Sep26   11:37    300      5     13
-0000HMHH1  HELCO Mamalahoa 2  Hawaii    28Sep26   11:30    280     10     13
-0000MMLH1  Mamalahoa          Hawaii    28Sep26   11:15    280      2      4
-0000HMWH1  HELCO Mamalahoa 3  Hawaii    28Sep26   11:30    300     10     16
-0000PULH1  Puuanahulu         Hawaii    28Sep26   11:37    310      7     18
-0000AHMH1  Ahumoa             Hawaii    28Sep26   11:35    340      6     10
-0000AIPH1  Aipaloa            Hawaii    28Sep26   11:15    340      5      8
-0000HSRH1  HELCO Saddle Rd    Hawaii    28Sep26   11:30    310      7     11
-0000HMYH1  HELCO Mamalahoa    Hawaii    28Sep26   11:30    290      7     11
-0000HHCH1  HELCO Hokuloa UCC  Hawaii    28Sep26   11:30    280      7     14
-0000HWRH1  HELCO Waikoloa Rd  Hawaii    28Sep26   11:30    280      7     12
-0000HWXH1  HELCO Waikoloa 2   Hawaii    28Sep26   11:30    280      8     15
-0000WKVH1  Waikoloa           Hawaii    28Sep26   11:35    300      6     12
-0000HLOH1  HELCO Lalamilo     Hawaii    28Sep26   11:30    240      7     12
-0000LLAH1  Lalamilo           Hawaii    28Sep26   11:15    230      3      6
-0000HKWH1  HELCO Kawaihae Rd  Hawaii    28Sep26   11:30    260      7     12
-0000PKAH1  PTA Kipuka Alala   Hawaii    28Sep26   10:55    320      6     10
-0000PKWH1  PTA West           Hawaii    28Sep26   10:56    330      8     11
-0000PKMH1  PTA Keamuku        Hawaii    28Sep26   10:50    330      0      0
-0000PTRH1  PTA Range 17       Hawaii    28Sep26   10:49    130     11     19
-0000PERH1  Puhe CS            Hawaii    28Sep26   11:24    260      3      7
+0000UPLH1  Upolu Airport      Hawaii    29Sep26   01:15    130      6     10
+0000KMMH1  Kaluamakani        Hawaii    29Sep26   01:15    170      7      9
+0000PMLH1  Puu Mali           Hawaii    29Sep26   01:00    220      7     10
+0000KNKH1  Kanakaleonui       Hawaii    29Sep26   01:15    230      8     12
+0000WPNH1  Waipunalei         Hawaii               MSG    MSG    MSG    MSG
+0000LAUH1  Laupahoehoe        Hawaii    29Sep26   01:15    180      6     10
+0000SPNH1  Spencer            Hawaii    29Sep26   01:15    160      4     11
+0000HKUH1  Hakalau            Hawaii    29Sep26   00:45    210      3     10
+0000KLXH1  Kulaimano          Hawaii    29Sep26   01:15    210      5      7
+0000PIOH1  Piihonua           Hawaii    29Sep26   01:15    250      4      6
+0000PHTO   Hilo AP            Hawaii    29Sep26   01:00    240      6    MSG
+0000ILOH1  Hilo Hbr NOS       Hawaii    29Sep26   01:24    210      2      6
+0000IPIH1  IPIF               Hawaii    29Sep26   01:15    240      2      5
+0000WEXH1  Waiakea Exp Stn    Hawaii    29Sep26   01:00    MSG      0      2
+0000KEUH1  Keaau              Hawaii    29Sep26   01:15      0      0      0
+0000PAOH1  Pahoa              Hawaii    29Sep26   01:15    170      1      1
+0000NHKH1  Nahuku             Hawaii    29Sep26   01:15      0      4      5
+0000KKUH1  Keaumo             Hawaii    29Sep26   01:34    330      5      7
+0000MOBH1  Mauna Loa Obs      Hawaii    29Sep26   01:00    MSG      5      8
+0000PLIH1  Pali 2             Hawaii    29Sep26   01:01     20      7     10
+0000KMOH1  Kealakomo          Hawaii    29Sep26   00:44     10      4      7
+0000KPRH1  Kapapala           Hawaii    29Sep26   00:48     10      3      6
+0000NENH1  Nene Cabin         Hawaii    29Sep26   01:23     20      5      8
+0000KIOH1  Kaiholena          Hawaii    29Sep26   01:15    320      5      8
+0000LKHH1  Lower Kahuku       Hawaii    29Sep26   01:23    340      2      9
+0000SOPH1  South Point        Hawaii    29Sep26   01:00     50     12     18
+0000KOMH1  Kona Hema          Hawaii    29Sep26   01:15     40      3      4
+0000KRCH1  Kahuku Ranch       Hawaii    29Sep26   01:29    160      4      8
+0000PHRH1  Puho CS            Hawaii    29Sep26   01:22     80      3      4
+0000HLNH1  HELCO Lolo Ln      Hawaii    29Sep26   01:30     80      2      3
+0000HHUH1  HELCO Hualalai Rd  Hawaii    29Sep26   01:30     40      2      3
+0000KOUH1  Keahuolu           Hawaii    29Sep26   01:15     60      1      2
+0000PHKO   Kona Intl AP       Hawaii    29Sep26   01:00    140      3    MSG
+0000KHOH1  Kaloko-Honokohau   Hawaii    29Sep26   01:15     50      3      4
+0000PLMH1  Palamanui          Hawaii    29Sep26   01:15     90      1      2
+0000PWAH1  Puu Waawaa (UHM)   Hawaii    29Sep26   01:15    120      1      2
+0000KIUH1  Kaiaulu Puu Waawaa Hawaii    29Sep26   01:15    250      1      2
+0000KPLH1  Kaupulehu          Hawaii    29Sep26   01:36    150      5      6
+0000PWWH1  Puu Waawaa         Hawaii    29Sep26   01:37    140      3      3
+0000HMHH1  HELCO Mamalahoa 2  Hawaii    29Sep26   01:30    160      5      6
+0000MMLH1  Mamalahoa          Hawaii    29Sep26   01:15      0      0      0
+0000HMWH1  HELCO Mamalahoa 3  Hawaii    29Sep26   01:30    150      3      5
+0000PULH1  Puuanahulu         Hawaii    29Sep26   01:37    140      4      6
+0000AHMH1  Ahumoa             Hawaii    29Sep26   01:35     70      4      6
+0000AIPH1  Aipaloa            Hawaii    29Sep26   01:15    150      7      9
+0000HSRH1  HELCO Saddle Rd    Hawaii    29Sep26   01:30    120      5      6
+0000HMYH1  HELCO Mamalahoa    Hawaii    29Sep26   01:30    130      8      9
+0000HHCH1  HELCO Hokuloa UCC  Hawaii    29Sep26   01:30    150      5      6
+0000HWRH1  HELCO Waikoloa Rd  Hawaii    29Sep26   01:30     90      8     10
+0000HWXH1  HELCO Waikoloa 2   Hawaii    29Sep26   01:30    140      9     11
+0000WKVH1  Waikoloa           Hawaii    29Sep26   01:35    130      5      9
+0000HLOH1  HELCO Lalamilo     Hawaii    29Sep26   01:30     60      9     11
+0000LLAH1  Lalamilo           Hawaii    29Sep26   01:15     40      1      2
+0000HKWH1  HELCO Kawaihae Rd  Hawaii    29Sep26   01:30    100      3      6
+0000PKAH1  PTA Kipuka Alala   Hawaii    29Sep26   00:55    150      3      8
+0000PKWH1  PTA West           Hawaii    29Sep26   00:56    140      4      9
+0000PKMH1  PTA Keamuku        Hawaii    29Sep26   00:50    140      0      0
+0000PTRH1  PTA Range 17       Hawaii    29Sep26   00:49    140     10     14
+0000PERH1  Puhe CS            Hawaii    29Sep26   01:24     80      4      8
 0000KWHH1  Kawaihae NOS       Hawaii               MSG    MSG    MSG    MSG
-0000HHKH1  HELCO Hulukupuna   Hawaii    28Sep26   11:30    260      6      9
-0000PLAH1  Puuloa             Hawaii    28Sep26   11:15    160      6     10
+0000HHKH1  HELCO Hulukupuna   Hawaii    29Sep26   01:30     70      5      7
+0000PLAH1  Puuloa             Hawaii    29Sep26   01:15    300      4      5
 0000HMLH1  HELCO Maluokalani  Hawaii               MSG    MSG    MSG    MSG
-0000HKDH1  HELCO Ala Kahua    Hawaii    28Sep26   11:30    280      5      9
-0000KHRH1  Kohala Ranch       Hawaii    28Sep26   11:35    220      4     10
-0000KEHH1  Kehena             Hawaii    28Sep26   10:00     90      2      5
+0000HKDH1  HELCO Ala Kahua    Hawaii    29Sep26   01:30    220      6      7
+0000KHRH1  Kohala Ranch       Hawaii    29Sep26   01:35     70      3      8
+0000KEHH1  Kehena             Hawaii    29Sep26   01:15    230      3      5
 ```
 
 ---
@@ -3701,7 +3715,7 @@ National Weather Service Honolulu HI
 |---|---|
 | **Resource ID** | clm_monthly_climate_summary_HNL |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=CLM&issuedby=HNL |
-| **Collected** | 2026-09-27T22:59:23.864727-10:00 HST |
+| **Collected** | 2026-09-29T01:53:12.911878-10:00 HST |
 
 ```text
 434
@@ -3802,7 +3816,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | clm_monthly_climate_summary_ITO |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=CLM&issuedby=ITO |
-| **Collected** | 2026-09-27T23:00:09.780072-10:00 HST |
+| **Collected** | 2026-09-29T01:53:57.677824-10:00 HST |
 
 ```text
 433
@@ -3898,7 +3912,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | clm_monthly_climate_summary_LIH |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=CLM&issuedby=LIH |
-| **Collected** | 2026-09-27T22:59:38.927207-10:00 HST |
+| **Collected** | 2026-09-29T01:53:27.741476-10:00 HST |
 
 ```text
 436
@@ -3996,7 +4010,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | clm_monthly_climate_summary_OGG |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=CLM&issuedby=OGG |
-| **Collected** | 2026-09-27T22:59:53.943975-10:00 HST |
+| **Collected** | 2026-09-29T01:53:42.710549-10:00 HST |
 
 ```text
 435
@@ -4097,10 +4111,10 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_atlc_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=2 |
-| **Collected** | 2026-09-28T16:09:44.728236-10:00 HST |
+| **Collected** | 2026-09-29T01:56:47.335713-10:00 HST |
 
 ```text
-814 ACCA62 KNHC 290208TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 PM EDT lunes 28 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Depresión Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Reinhart*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
+750 ACCA62 KNHC 291124TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
 ```
 
 ---
@@ -4111,10 +4125,10 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_atlc_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=7 |
-| **Collected** | 2026-09-28T16:10:44.705914-10:00 HST |
+| **Collected** | 2026-09-29T01:57:46.769687-10:00 HST |
 
 ```text
-814 ACCA62 KNHC 290208TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 PM EDT lunes 28 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Depresión Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Reinhart*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
+750 ACCA62 KNHC 291124TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
 ```
 
 ---
@@ -4125,10 +4139,10 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_cpac_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=2 |
-| **Collected** | 2026-09-28T13:49:44.849642-10:00 HST |
+| **Collected** | 2026-09-29T01:52:46.795062-10:00 HST |
 
 ```text
-701 ACCA62 KNHC 281738TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 PM EDT lunes 28 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Depresión Tropical Fay, ubicada aloeste-suroeste de las Azores y sobre la recién formada TormentaTropical Hanna, ubicada al este-noreste de las Bermudas.No se anticipa la formación de ciclones tropicales en los próximos 7días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Papin*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
+750 ACCA62 KNHC 291124TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
 ```
 
 ---
@@ -4139,10 +4153,10 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_cpac_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=7 |
-| **Collected** | 2026-09-28T13:50:44.546500-10:00 HST |
+| **Collected** | 2026-09-29T01:53:46.936082-10:00 HST |
 
 ```text
-701 ACCA62 KNHC 281738TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 PM EDT lunes 28 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Depresión Tropical Fay, ubicada aloeste-suroeste de las Azores y sobre la recién formada TormentaTropical Hanna, ubicada al este-noreste de las Bermudas.No se anticipa la formación de ciclones tropicales en los próximos 7días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Papin*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
+750 ACCA62 KNHC 291124TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
 ```
 
 ---
@@ -4153,577 +4167,10 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_epac_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=epac&fdays=2 |
-| **Collected** | 2026-09-28T16:07:44.728958-10:00 HST |
+| **Collected** | 2026-09-29T01:54:46.709406-10:00 HST |
 
 ```text
-Graphical Tropical Weather Outlook
-
-Home
-
-Mobile Site
-
-Text Version
-
-RSS
-
-Local Forecast
-
-NATIONAL HURRICANE CENTER and
-CENTRAL PACIFIC HURRICANE CENTER
-
-National Oceanic and Atmospheric Administration
-
-Analysis & Forecasts
-
-Tropical Cyclone Products
-
-Tropical Weather Outlooks
-
-Marine Products
-
-Rip Currents Map
-
-RSS Feeds
-
-GIS Products
-
-Alternate Formats
-
-Tropical Cyclone Product Descriptions
-
-Tropical Cyclone Product Examples
-
-Marine Product Descriptions
-
-Data & Tools
-
-Satellite Imagery
-
-Radar Imagery
-
-Aircraft Reconnaissance
-
-Tropical Analysis Tools
-
-Experimental Products
-
-Lat/Lon Distance Calculator
-
-Blank Tracking Maps
-
-Educational Resources
-
-Be Prepared!
-NWS Hurricane Prep Week
-
-Outreach Documents
-
-TC Videos
-
-Rip Currents
-
-Storm Surge
-
-Watch/Warning Breakpoints
-
-Climatology
-
-Tropical Cyclone Names
-
-Wind Scale
-
-Records and Facts
-
-Historical Hurricane Summaries
-
-Forecast Models
-
-NHC Publications
-
-NHC Glossary
-
-Acronyms
-
-Frequent Questions
-
-Archives
-
-Tropical Cyclone Advisories
-
-Tropical Weather Outlooks
-
-Tropical Cyclone Reports and Season Summaries
-
-Tropical Cyclone Forecast Verification
-
-NHC News Archive
-
-Other Archives: HURDAT, Track Maps, Marine Products, and more
-
-About
-
-National Hurricane Center
-
-Central Pacific Hurricane Center
-
-Library
-
-Contact Us
-
-Search
-
-Search for
-
-Search
-
-Graphical Tropical Weather Outlook
-
-Archived Outlooks
-
-GIS Shapefiles
-
-Graphical Tropical Weather Outlook (Static Images)
-
-JavaScript is currently disabled in your browser or you are using an older browser that is incompatible with this map. To view the interactive map, please enable JavaScript or update your browser if possible. Direct links to the latest high-resolution forecast images are provided below:
-
-View Atlantic 2-Day Outlook
-
-View Atlantic 7-Day Outlook
-
-View Eastern Pacific 2-Day Outlook
-
-View Eastern Pacific 7-Day Outlook
-
-View Central Pacific 2-Day Outlook
-
-View Central Pacific 7-Day Outlook
-
-Central Pacific
-
-Pacific
-
-Atlantic
-
-2-Day Forecast
-
-7-Day Forecast
-
-Disturbances:
-
-None
-
-Disturbances:
-
-None
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Close (X)
-
-View Storm Details
-
-Tropical Weather Outlook Text
-
-Central Pacific
-
-Pacific
-
-Atlantic
-
-Select Language
-
-English
-
-Español
-
-English
-
-Español
-
-English
-
-Español (Unavailable)
-
-ZCZC HFOTWOCP ALL
-TTAA00 PHFO DDHHMM
-
-Tropical Weather Outlook
-NWS Central Pacific Hurricane Center Honolulu HI
-Issued by NWS National Hurricane Center Miami FL
-200 PM HST Mon Sep 28 2026
-
-For the central North Pacific...between 140W and 180W:
-
-Active Systems:
-The National Hurricane Center is issuing advisories on Hurricane
-Polo, located near Baja California Sur, on Hurricane Nolo, located
-several hundred miles southwest of the main Hawaiian Islands, and
-on Tropical Storm Rachel, located a couple of hundred miles
-south-southwest of Acapulco, Mexico.
-
-1. Well East-Southeast of the Hawaiian Islands (EP91):
-Showers and thunderstorms are limited and disorganized in
-association with an area of low pressure located well east-southeast
-of the Hawaiian Islands. Although the system has lost some
-organization today, it is still expected to become a tropical
-depression during the next day or two while it drifts northeastward.
-Environmental conditions are expected to become less conducive for
-development late this week.
-* Formation chance through 48 hours...high...90 percent.
-* Formation chance through 7 days...high...90 percent.
-
-Forecaster Cangialosi
-
-500
-
-ACPN51 PHFO 282336
-
-TWOSCP
-
-Perspectiva de tiempo tropical
-
-Centro de Huracanes del Pacífico Central del SNM Honolulu HI
-
-Emitido por el Centro Nacional de Huracanes del SNM Miami FL
-
-200 PM HST lunes 28 de septiembre de 2026
-
-Para el Pacífico Norte central…entre 140 y 180 longitud oeste
-
-Sistemas activos: El Centro Nacional de Huracanes está emitiendo
-
-advertencias sobre el Huracán Polo, ubicado cerca de Baja California
-
-Sur, sobre el Huracán Nolo, ubicado a varios cientos de millas al
-
-suroeste de las principales Islas Hawaii, y sobre la Tormenta
-
-Tropical Rachel, ubicada a un par de cientos de millas al suroeste
-
-de Acapulco, México.
-
-Bien este-sureste de las Islas Hawaii (EP91): Las lluvias y
-
-tormentas eléctricas son limitadas y desorganizadas en asociación
-
-con un área de baja presión ubicada en el este-sureste de las Islas
-
-Hawaii. Aunque el sistema ha perdido algo de organización hoy,
-
-todavía se espera que se convierta en una depresión tropical durante
-
-el próximo día o dos, mientras se desplaza hacia el noreste. Se
-
-espera que las condiciones ambientales se vuelvan menos propicias
-
-para el desarrollo a finales de esta semana.
-
-* Probabilidad de formación hasta 48 horas...alta...90 por ciento.
-
-* Probabilidad de formación hasta 7 días...alta...90 por ciento.
-
-$$
-
-Pronosticador Cangialosi
-
-*** Este producto ha sido procesado automáticamente utilizando un
-
-programa de traducción y puede contener omisiones y errores. El
-
-Servicio Nacional de Meteorología no puede garantizar la precisión
-
-del texto convertido. De haber alguna duda, el texto en inglés es
-
-siempre la versión autorizada. ***
-
-ZCZC MIATWOEP ALL
-TTAA00 KNHC DDHHMM
-
-Tropical Weather Outlook
-NWS National Hurricane Center Miami FL
-500 PM PDT Mon Sep 28 2026
-
-For the eastern and central North Pacific east of 180 longitude:
-
-Active Systems:
-The National Hurricane Center is issuing advisories on Hurricane
-Polo, located near Baja California Sur, on Hurricane Nolo, located
-several hundred miles southwest of the main Hawaiian Islands, and
-on Tropical Storm Rachel, located a couple of hundred miles
-south-southwest of Acapulco, Mexico.
-
-1. Well East-Southeast of the Hawaiian Islands (EP91):
-Showers and thunderstorms are limited and disorganized in
-association with an area of low pressure located well east-southeast
-of the Hawaiian Islands. Although the system has lost some
-organization today, it is still expected to become a tropical
-depression during the next day or two while it drifts northeastward.
-Environmental conditions are expected to become less conducive for
-development late this week.
-* Formation chance through 48 hours...high...90 percent.
-* Formation chance through 7 days...high...90 percent.
-
-Forecaster Cangialosi
-
-Tropical Weather Discussion
-
-499
-
-ABPZ21 KNHC 282336
-
-TWOSEP
-
-Perspectiva de tiempo tropical
-
-Centro Nacional de Huracanes del SNM Miami FL
-
-500 PM PDT lunes 28 de septiembre de 2026
-
-Para el Pacífico Norte oriental y central al este de 180 longitud
-
-Sistemas activos: El Centro Nacional de Huracanes está emitiendo
-
-advertencias sobre el Huracán Polo, ubicado cerca de Baja California
-
-Sur, sobre el Huracán Nolo, ubicado a varios cientos de millas al
-
-suroeste de las principales Islas Hawaii, y sobre la Tormenta
-
-Tropical Rachel, ubicada a un par de cientos de millas al suroeste
-
-de Acapulco, México.
-
-Bien este-sureste de las Islas Hawaii (EP91): Las lluvias y
-
-tormentas eléctricas son limitadas y desorganizadas en asociación
-
-con un área de baja presión ubicada en el este-sureste de las Islas
-
-Hawaii. Aunque el sistema ha perdido algo de organización hoy,
-
-todavía se espera que se convierta en una depresión tropical durante
-
-el próximo día o dos, mientras se desplaza hacia el noreste. Se
-
-espera que las condiciones ambientales se vuelvan menos propicias
-
-para el desarrollo a finales de esta semana.
-
-* Probabilidad de formación hasta 48 horas...alta...90 por ciento.
-
-* Probabilidad de formación hasta 7 días...alta...90 por ciento.
-
-$$
-
-Pronosticador Cangialosi
-
-*** Este producto ha sido procesado automáticamente utilizando un
-
-programa de traducción y puede contener omisiones y errores. El
-
-Servicio Nacional de Meteorología no puede garantizar la precisión
-
-del texto convertido. De haber alguna duda, el texto en inglés es
-
-siempre la versión autorizada. ***
-
-Tropical Weather Discussion
-
-ZCZC MIATWOAT ALL
-TTAA00 KNHC DDHHMM
-
-Tropical Weather Outlook
-NWS National Hurricane Center Miami FL
-800 PM EDT Mon Sep 28 2026
-
-For the North Atlantic...Caribbean Sea and the Gulf of America:
-
-Active Systems:
-The National Hurricane Center is issuing advisories on Tropical
-Depression Fay, located well to the west-southwest of the Azores,
-and on Tropical Storm Hanna, located well to the east-northeast of
-Bermuda.
-
-Tropical cyclone formation is not expected over the next 7 days.
-
-&&
-Public Advisories on Tropical Storm Hanna are issued under WMO
-header WTNT33 KNHC and under AWIPS header MIATCPAT3.
-Forecast/Advisories on Tropical Storm Hanna are issued under WMO
-header WTNT23 KNHC and under AWIPS header MIATCMAT3.
-
-$$
-Forecaster Reinhart
-NNNN
-
-Tropical Weather Discussion
-
-Tropical Weather Discussion
-
-Quick Links and Additional Resources
-
-Tropical Cyclone Forecasts
-
-Tropical Cyclone Advisories
-
-Tropical Weather Outlook
-
-Audio/Podcasts
-
-About Advisories
-
-Marine Forecasts
-
-Offshore Waters Forecasts
-
-Gridded Forecasts
-
-Graphicast
-
-About Marine
-
-Social Media
-
-NHC on Facebook
-
-NHC on X
-
-NHC on YouTube
-
-NHC Blog:
-"Inside the Eye"
-
-Hurricane Preparedness
-
-Preparedness Guide
-
-Hurricane Hazards
-
-Watches and Warnings
-
-Marine Safety
-
-Ready.gov Hurricanes
-
-Weather-Ready Nation
-
-Emergency Management Offices
-
-Research and Development
-
-NOAA Hurricane Research Division
-
-Hurricane and Ocean Testbed
-
-Hurricane Forecast Improvement Program
-
-Other Resources
-
-Q & A with NHC
-
-NHC/AOML Library Branch
-
-NOAA: Hurricane FAQs
-
-National Hurricane Operations Plan
-
-WX4NHC Amateur Radio
-
-NWS Forecast Offices
-
-Weather Prediction Center
-
-Storm Prediction Center
-
-Ocean Prediction Center
-
-Local Forecast Offices
-
-Worldwide Tropical Cyclone Centers
-
-Canadian Hurricane Centre
-
-Joint Typhoon Warning Center
-
-Other Tropical Cyclone Centers
-
-WMO Severe Weather Info Centre
-
-US Dept of Commerce
-
-National Oceanic and Atmospheric Administration
-
-National Hurricane Center
-
-11691 SW 17th Street
-
-Miami, FL, 33165
-
-nhcwebmaster@noaa.gov
-
-Central Pacific Hurricane Center
-
-2525 Correa Rd
-
-Suite 250
-
-Honolulu, HI 96822
-
-W-HFO.webmaster@noaa.gov
-
-Disclaimer
-
-Information Quality
-
-Help
-
-Glossary
+750 ACCA62 KNHC 291124TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
 ```
 
 ---
@@ -4734,577 +4181,10 @@ Glossary
 |---|---|
 | **Resource ID** | nhc_gtwo_epac_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=epac&fdays=7 |
-| **Collected** | 2026-09-28T16:08:44.584889-10:00 HST |
+| **Collected** | 2026-09-29T01:55:46.979665-10:00 HST |
 
 ```text
-Graphical Tropical Weather Outlook
-
-Home
-
-Mobile Site
-
-Text Version
-
-RSS
-
-Local Forecast
-
-NATIONAL HURRICANE CENTER and
-CENTRAL PACIFIC HURRICANE CENTER
-
-National Oceanic and Atmospheric Administration
-
-Analysis & Forecasts
-
-Tropical Cyclone Products
-
-Tropical Weather Outlooks
-
-Marine Products
-
-Rip Currents Map
-
-RSS Feeds
-
-GIS Products
-
-Alternate Formats
-
-Tropical Cyclone Product Descriptions
-
-Tropical Cyclone Product Examples
-
-Marine Product Descriptions
-
-Data & Tools
-
-Satellite Imagery
-
-Radar Imagery
-
-Aircraft Reconnaissance
-
-Tropical Analysis Tools
-
-Experimental Products
-
-Lat/Lon Distance Calculator
-
-Blank Tracking Maps
-
-Educational Resources
-
-Be Prepared!
-NWS Hurricane Prep Week
-
-Outreach Documents
-
-TC Videos
-
-Rip Currents
-
-Storm Surge
-
-Watch/Warning Breakpoints
-
-Climatology
-
-Tropical Cyclone Names
-
-Wind Scale
-
-Records and Facts
-
-Historical Hurricane Summaries
-
-Forecast Models
-
-NHC Publications
-
-NHC Glossary
-
-Acronyms
-
-Frequent Questions
-
-Archives
-
-Tropical Cyclone Advisories
-
-Tropical Weather Outlooks
-
-Tropical Cyclone Reports and Season Summaries
-
-Tropical Cyclone Forecast Verification
-
-NHC News Archive
-
-Other Archives: HURDAT, Track Maps, Marine Products, and more
-
-About
-
-National Hurricane Center
-
-Central Pacific Hurricane Center
-
-Library
-
-Contact Us
-
-Search
-
-Search for
-
-Search
-
-Graphical Tropical Weather Outlook
-
-Archived Outlooks
-
-GIS Shapefiles
-
-Graphical Tropical Weather Outlook (Static Images)
-
-JavaScript is currently disabled in your browser or you are using an older browser that is incompatible with this map. To view the interactive map, please enable JavaScript or update your browser if possible. Direct links to the latest high-resolution forecast images are provided below:
-
-View Atlantic 2-Day Outlook
-
-View Atlantic 7-Day Outlook
-
-View Eastern Pacific 2-Day Outlook
-
-View Eastern Pacific 7-Day Outlook
-
-View Central Pacific 2-Day Outlook
-
-View Central Pacific 7-Day Outlook
-
-Central Pacific
-
-Pacific
-
-Atlantic
-
-2-Day Forecast
-
-7-Day Forecast
-
-Disturbances:
-
-None
-
-Disturbances:
-
-None
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Disturbances:
-
-ALL
-
-1
-
-Close (X)
-
-View Storm Details
-
-Tropical Weather Outlook Text
-
-Central Pacific
-
-Pacific
-
-Atlantic
-
-Select Language
-
-English
-
-Español
-
-English
-
-Español
-
-English
-
-Español (Unavailable)
-
-ZCZC HFOTWOCP ALL
-TTAA00 PHFO DDHHMM
-
-Tropical Weather Outlook
-NWS Central Pacific Hurricane Center Honolulu HI
-Issued by NWS National Hurricane Center Miami FL
-200 PM HST Mon Sep 28 2026
-
-For the central North Pacific...between 140W and 180W:
-
-Active Systems:
-The National Hurricane Center is issuing advisories on Hurricane
-Polo, located near Baja California Sur, on Hurricane Nolo, located
-several hundred miles southwest of the main Hawaiian Islands, and
-on Tropical Storm Rachel, located a couple of hundred miles
-south-southwest of Acapulco, Mexico.
-
-1. Well East-Southeast of the Hawaiian Islands (EP91):
-Showers and thunderstorms are limited and disorganized in
-association with an area of low pressure located well east-southeast
-of the Hawaiian Islands. Although the system has lost some
-organization today, it is still expected to become a tropical
-depression during the next day or two while it drifts northeastward.
-Environmental conditions are expected to become less conducive for
-development late this week.
-* Formation chance through 48 hours...high...90 percent.
-* Formation chance through 7 days...high...90 percent.
-
-Forecaster Cangialosi
-
-500
-
-ACPN51 PHFO 282336
-
-TWOSCP
-
-Perspectiva de tiempo tropical
-
-Centro de Huracanes del Pacífico Central del SNM Honolulu HI
-
-Emitido por el Centro Nacional de Huracanes del SNM Miami FL
-
-200 PM HST lunes 28 de septiembre de 2026
-
-Para el Pacífico Norte central…entre 140 y 180 longitud oeste
-
-Sistemas activos: El Centro Nacional de Huracanes está emitiendo
-
-advertencias sobre el Huracán Polo, ubicado cerca de Baja California
-
-Sur, sobre el Huracán Nolo, ubicado a varios cientos de millas al
-
-suroeste de las principales Islas Hawaii, y sobre la Tormenta
-
-Tropical Rachel, ubicada a un par de cientos de millas al suroeste
-
-de Acapulco, México.
-
-Bien este-sureste de las Islas Hawaii (EP91): Las lluvias y
-
-tormentas eléctricas son limitadas y desorganizadas en asociación
-
-con un área de baja presión ubicada en el este-sureste de las Islas
-
-Hawaii. Aunque el sistema ha perdido algo de organización hoy,
-
-todavía se espera que se convierta en una depresión tropical durante
-
-el próximo día o dos, mientras se desplaza hacia el noreste. Se
-
-espera que las condiciones ambientales se vuelvan menos propicias
-
-para el desarrollo a finales de esta semana.
-
-* Probabilidad de formación hasta 48 horas...alta...90 por ciento.
-
-* Probabilidad de formación hasta 7 días...alta...90 por ciento.
-
-$$
-
-Pronosticador Cangialosi
-
-*** Este producto ha sido procesado automáticamente utilizando un
-
-programa de traducción y puede contener omisiones y errores. El
-
-Servicio Nacional de Meteorología no puede garantizar la precisión
-
-del texto convertido. De haber alguna duda, el texto en inglés es
-
-siempre la versión autorizada. ***
-
-ZCZC MIATWOEP ALL
-TTAA00 KNHC DDHHMM
-
-Tropical Weather Outlook
-NWS National Hurricane Center Miami FL
-500 PM PDT Mon Sep 28 2026
-
-For the eastern and central North Pacific east of 180 longitude:
-
-Active Systems:
-The National Hurricane Center is issuing advisories on Hurricane
-Polo, located near Baja California Sur, on Hurricane Nolo, located
-several hundred miles southwest of the main Hawaiian Islands, and
-on Tropical Storm Rachel, located a couple of hundred miles
-south-southwest of Acapulco, Mexico.
-
-1. Well East-Southeast of the Hawaiian Islands (EP91):
-Showers and thunderstorms are limited and disorganized in
-association with an area of low pressure located well east-southeast
-of the Hawaiian Islands. Although the system has lost some
-organization today, it is still expected to become a tropical
-depression during the next day or two while it drifts northeastward.
-Environmental conditions are expected to become less conducive for
-development late this week.
-* Formation chance through 48 hours...high...90 percent.
-* Formation chance through 7 days...high...90 percent.
-
-Forecaster Cangialosi
-
-Tropical Weather Discussion
-
-499
-
-ABPZ21 KNHC 282336
-
-TWOSEP
-
-Perspectiva de tiempo tropical
-
-Centro Nacional de Huracanes del SNM Miami FL
-
-500 PM PDT lunes 28 de septiembre de 2026
-
-Para el Pacífico Norte oriental y central al este de 180 longitud
-
-Sistemas activos: El Centro Nacional de Huracanes está emitiendo
-
-advertencias sobre el Huracán Polo, ubicado cerca de Baja California
-
-Sur, sobre el Huracán Nolo, ubicado a varios cientos de millas al
-
-suroeste de las principales Islas Hawaii, y sobre la Tormenta
-
-Tropical Rachel, ubicada a un par de cientos de millas al suroeste
-
-de Acapulco, México.
-
-Bien este-sureste de las Islas Hawaii (EP91): Las lluvias y
-
-tormentas eléctricas son limitadas y desorganizadas en asociación
-
-con un área de baja presión ubicada en el este-sureste de las Islas
-
-Hawaii. Aunque el sistema ha perdido algo de organización hoy,
-
-todavía se espera que se convierta en una depresión tropical durante
-
-el próximo día o dos, mientras se desplaza hacia el noreste. Se
-
-espera que las condiciones ambientales se vuelvan menos propicias
-
-para el desarrollo a finales de esta semana.
-
-* Probabilidad de formación hasta 48 horas...alta...90 por ciento.
-
-* Probabilidad de formación hasta 7 días...alta...90 por ciento.
-
-$$
-
-Pronosticador Cangialosi
-
-*** Este producto ha sido procesado automáticamente utilizando un
-
-programa de traducción y puede contener omisiones y errores. El
-
-Servicio Nacional de Meteorología no puede garantizar la precisión
-
-del texto convertido. De haber alguna duda, el texto en inglés es
-
-siempre la versión autorizada. ***
-
-Tropical Weather Discussion
-
-ZCZC MIATWOAT ALL
-TTAA00 KNHC DDHHMM
-
-Tropical Weather Outlook
-NWS National Hurricane Center Miami FL
-800 PM EDT Mon Sep 28 2026
-
-For the North Atlantic...Caribbean Sea and the Gulf of America:
-
-Active Systems:
-The National Hurricane Center is issuing advisories on Tropical
-Depression Fay, located well to the west-southwest of the Azores,
-and on Tropical Storm Hanna, located well to the east-northeast of
-Bermuda.
-
-Tropical cyclone formation is not expected over the next 7 days.
-
-&&
-Public Advisories on Tropical Storm Hanna are issued under WMO
-header WTNT33 KNHC and under AWIPS header MIATCPAT3.
-Forecast/Advisories on Tropical Storm Hanna are issued under WMO
-header WTNT23 KNHC and under AWIPS header MIATCMAT3.
-
-$$
-Forecaster Reinhart
-NNNN
-
-Tropical Weather Discussion
-
-Tropical Weather Discussion
-
-Quick Links and Additional Resources
-
-Tropical Cyclone Forecasts
-
-Tropical Cyclone Advisories
-
-Tropical Weather Outlook
-
-Audio/Podcasts
-
-About Advisories
-
-Marine Forecasts
-
-Offshore Waters Forecasts
-
-Gridded Forecasts
-
-Graphicast
-
-About Marine
-
-Social Media
-
-NHC on Facebook
-
-NHC on X
-
-NHC on YouTube
-
-NHC Blog:
-"Inside the Eye"
-
-Hurricane Preparedness
-
-Preparedness Guide
-
-Hurricane Hazards
-
-Watches and Warnings
-
-Marine Safety
-
-Ready.gov Hurricanes
-
-Weather-Ready Nation
-
-Emergency Management Offices
-
-Research and Development
-
-NOAA Hurricane Research Division
-
-Hurricane and Ocean Testbed
-
-Hurricane Forecast Improvement Program
-
-Other Resources
-
-Q & A with NHC
-
-NHC/AOML Library Branch
-
-NOAA: Hurricane FAQs
-
-National Hurricane Operations Plan
-
-WX4NHC Amateur Radio
-
-NWS Forecast Offices
-
-Weather Prediction Center
-
-Storm Prediction Center
-
-Ocean Prediction Center
-
-Local Forecast Offices
-
-Worldwide Tropical Cyclone Centers
-
-Canadian Hurricane Centre
-
-Joint Typhoon Warning Center
-
-Other Tropical Cyclone Centers
-
-WMO Severe Weather Info Centre
-
-US Dept of Commerce
-
-National Oceanic and Atmospheric Administration
-
-National Hurricane Center
-
-11691 SW 17th Street
-
-Miami, FL, 33165
-
-nhcwebmaster@noaa.gov
-
-Central Pacific Hurricane Center
-
-2525 Correa Rd
-
-Suite 250
-
-Honolulu, HI 96822
-
-W-HFO.webmaster@noaa.gov
-
-Disclaimer
-
-Information Quality
-
-Help
-
-Glossary
+750 ACCA62 KNHC 291124TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Fay, ubicada aloeste-suroeste de las Azores, y sobre la Tormenta Tropical Hanna,ubicada al este-noreste de las Bermudas.No se espera la formación de ciclones tropicales durante lospróximos 7 días.&&Las Advertencias Públicas sobre la Tormenta Tropical Hanna se emitenbajo el encabezado de la OMM WTNT33 KNHC y bajo el encabezado deAWIPS MIATCPAT3. Pronóstico/Advertencias sobre la Tormenta TropicalHanna se emiten bajo el encabezado de la OMM WTNT23 KNHC y bajo elencabezado de AWIPS MIATCMAT3.$$Pronosticador Kelly*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
 ```
 
 ---
@@ -5315,7 +4195,7 @@ Glossary
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-28T16:11:44.568609-10:00 HST |
+| **Collected** | 2026-09-29T01:58:46.592022-10:00 HST |
 
 ```text
 Home
@@ -5439,11 +4319,11 @@ Search
 Top News of the Day...
 view past news
 
-Last update Tue, 29 Sep 2026 02:08:33 UTC
+Last update Tue, 29 Sep 2026 11:56:17 UTC
 
 NHC issuing advisories for the Atlantic on
 
-TD Fay
+TS Fay
 
 and
 
@@ -5461,7 +4341,7 @@ NHC issuing advisories for the Central Pacific on
 
 Hurricane Nolo
 
-Marine warnings are in effect for the Eastern Pacific
+Marine warnings are in effect for the Atlantic and Eastern Pacific
 
 Key messages regarding Hurricane Polo
 
@@ -5567,11 +4447,11 @@ Tropical Weather Outlook
 
 (en Español*)
 
-500 PM PDT Mon Sep 28 2026
+500 AM PDT Tue Sep 29 2026
 
 Tropical Weather Discussion
 
-2205 UTC Mon Sep 28 2026
+1005 UTC Tue Sep 29 2026
 
 Hurricane Polo
 
@@ -5580,50 +4460,50 @@ Buoys |
 Grids |
 Storm Archive
 
-...POLO NEARING LANDFALL IN BAJA CALIFORNIA SUR...
-...LIFE-THREATENING WINDS AND FLASH FLOODING ONGOING...
+...POLO NOW CROSSING THE GULF OF CALIFORNIA...
+...CONDITIONS EXPECTED TO DETERIORATE IN SONORA EARLY THIS MORNING...
 
-5:00 PM MST Mon Sep 28
+5:00 AM MST Tue Sep 29
 
-Location: 25.5°N 112.8°W
+Location: 26.9°N 111.7°W
 
-Moving: NE at 12 mph
+Moving: NE at 10 mph
 
-Min pressure: 963 mb
+Min pressure: 981 mb
 
-Max sustained: 115 mph
+Max sustained: 75 mph
 
 Public
 
 Advisory
 
-#33A
+#35A
 
-500 PM MST
+500 AM MST
 
 Forecast
 
 Advisory
 
-#33
+#35
 
-2100 UTC
+0900 UTC
 
 Forecast
 
 Discussion
 
-#33
+#35
 
-200 PM MST
+200 AM MST
 
 Wind Speed
 
 Probabilities
 
-#33
+#35
 
-2100 UTC
+0900 UTC
 
 Productos en español:
 
@@ -5683,15 +4563,15 @@ Buoys |
 Grids |
 Storm Archive
 
-...RACHEL SLIGHTLY STRONGER...
+...RACHEL BECOMING BETTER ORGANIZED OFFSHORE OF SOUTHWESTERN MEXICO...
 
-6:00 PM CST Mon Sep 28
+6:00 AM CST Tue Sep 29
 
-Location: 14.3°N 102.5°W
+Location: 15.1°N 104.8°W
 
-Moving: WNW at 10 mph
+Moving: WNW at 13 mph
 
-Min pressure: 997 mb
+Min pressure: 992 mb
 
 Max sustained: 60 mph
 
@@ -5699,33 +4579,33 @@ Public
 
 Advisory
 
-#7A
+#9A
 
-600 PM CST
+600 AM CST
 
 Forecast
 
 Advisory
 
-#7
+#9
 
-2100 UTC
+0900 UTC
 
 Forecast
 
 Discussion
 
-#7
+#9
 
-300 PM CST
+300 AM CST
 
 Wind Speed
 
 Probabilities
 
-#7
+#9
 
-2100 UTC
+0900 UTC
 
 Productos en español:
 
@@ -5785,7 +4665,7 @@ Tropical Weather Outlook
 
 (en Español*)
 
-200 PM HST Mon Sep 28 2026
+200 AM HST Tue Sep 29 2026
 
 Hurricane Nolo
 
@@ -5794,50 +4674,49 @@ Buoys |
 Grids |
 Storm Archive
 
-...NOLO HAS TURNED NORTHWESTWARD...
-...DANGEROUS CONDITIONS EXPECTED NEAR THE PAPAHANAUMOKUAKEA MARINE NATIONAL MONUMENT STARTING ON TUESDAY...
+...DANGEROUS CONDITIONS SPREADING ACROSS THE SOUTHEASTERN WATERS OF THE PAPAHANAUMOKUAKEA MARINE NATIONAL MONUMENT...
 
-2:00 PM HST Mon Sep 28
+2:00 AM HST Tue Sep 29
 
-Location: 18.2°N 163.4°W
+Location: 20.1°N 164.0°W
 
-Moving: NW at 12 mph
+Moving: N at 10 mph
 
-Min pressure: 933 mb
+Min pressure: 958 mb
 
-Max sustained: 145 mph
+Max sustained: 115 mph
 
 Public
 
 Advisory
 
-#33A
+#35A
 
-200 PM HST
+200 AM HST
 
 Forecast
 
 Advisory
 
-#33
+#35
 
-2100 UTC
+0900 UTC
 
 Forecast
 
 Discussion
 
-#33
+#35
 
-1100 AM HST
+1100 PM HST
 
 Wind Speed
 
 Probabilities
 
-#33
+#35
 
-2100 UTC
+0900 UTC
 
 Productos en español:
 
@@ -5884,62 +4763,62 @@ Tropical Weather Outlook
 
 (en Español*)
 
-800 PM EDT Mon Sep 28 2026
+800 AM EDT Tue Sep 29 2026
 
 Tropical Weather Discussion
 
-0015 UTC Tue Sep 29 2026
+1215 UTC Tue Sep 29 2026
 
-Tropical Depression Fay
+Tropical Storm Fay
 
 Satellite |
 Buoys |
 Grids |
 Storm Archive
 
-...FAY HOLDING STEADY...
+...FAY CONTINUES TO MOVE SOUTHWESTWARD OVER THE ATLANTIC OCEAN...
 
-5:00 PM AST Mon Sep 28
+5:00 AM AST Tue Sep 29
 
-Location: 26.6°N 45.3°W
+Location: 25.0°N 46.8°W
 
-Moving: SW at 9 mph
+Moving: SW at 13 mph
 
-Min pressure: 1011 mb
+Min pressure: 1008 mb
 
-Max sustained: 35 mph
+Max sustained: 40 mph
 
 Public
 
 Advisory
 
-#35
+#37
 
-500 PM AST
+500 AM AST
 
 Forecast
 
 Advisory
 
-#35
+#37
 
-2100 UTC
+0900 UTC
 
 Forecast
 
 Discussion
 
-#35
+#37
 
-500 PM AST
+500 AM AST
 
 Wind Speed
 
 Probabilities
 
-#35
+#37
 
-2100 UTC
+0900 UTC
 
 Productos en español:
 
@@ -5990,15 +4869,15 @@ Buoys |
 Grids |
 Storm Archive
 
-...HANNA FORECAST TO BE A SHORT LIVED TROPICAL STORM AS IT MOVES EASTWARD ACROSS THE CENTRAL SUBTROPICAL ATLANTIC...
+...HANNA HOLDS STEADY WHILE MAINTAINING AN EAST-SOUTHEAST TRACK...
 
-5:00 PM AST Mon Sep 28
+5:00 AM AST Tue Sep 29
 
-Location: 36.5°N 48.7°W
+Location: 35.2°N 46.2°W
 
-Moving: ESE at 17 mph
+Moving: ESE at 15 mph
 
-Min pressure: 1006 mb
+Min pressure: 1002 mb
 
 Max sustained: 45 mph
 
@@ -6006,33 +4885,33 @@ Public
 
 Advisory
 
-#2
+#4
 
-500 PM AST
+500 AM AST
 
 Forecast
 
 Advisory
 
-#2
+#4
 
-2100 UTC
+0900 UTC
 
 Forecast
 
 Discussion
 
-#2
+#4
 
-500 PM AST
+500 AM AST
 
 Wind Speed
 
 Probabilities
 
-#2
+#4
 
-2100 UTC
+0900 UTC
 
 Productos en español:
 
@@ -6234,7 +5113,7 @@ Glossary
 |---|---|
 | **Resource ID** | solar_calculation_table |
 | **Official source** | https://gml.noaa.gov/grad/solcalc/table.php?lat=21.3&lon=-157.85&year=2026 |
-| **Collected** | 2026-09-27T22:57:55.728502-10:00 HST |
+| **Collected** | 2026-09-29T01:52:45.566726-10:00 HST |
 
 ```text
 Solar Calculator - NOAA Global Monitoring Laboratory
@@ -8854,16 +7733,16 @@ Global Monitoring Laboratory
 |---|---|
 | **Resource ID** | off_offshore_forecast |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=OFF&issuedby=HFO |
-| **Collected** | 2026-09-28T11:13:51.533987-10:00 HST |
+| **Collected** | 2026-09-29T01:50:12.996870-10:00 HST |
 
 ```text
-131
-FZHW60 PHFO 282110
+639
+FZHW60 PHFO 290909
 OFFHFO
 
 Offshore Waters Forecast for Hawaii
 National Weather Service Honolulu HI
-1110 AM HST Mon Sep 28 2026
+1109 PM HST Mon Sep 28 2026
 
 Hawaiian offshore waters beyond 40 nautical miles out to 240
 nautical miles including the portion of the Papahanaumokuakea
@@ -8873,56 +7752,64 @@ Seas given as significant wave height, which is the average height
 of the highest 1/3 of the waves. Individual waves may be more than
 twice the significant wave height.
 
-PHZ105-290430-
-1110 AM HST Mon Sep 28 2026
+PHZ105-291715-
+1109 PM HST Mon Sep 28 2026
 
 .Synopsis for the Hawaiian offshore waters...
-The center of Hurricane Nolo remains just outside the far SW
-offshore waters boundary today. Nolo will track NW and turn N by
-Tuesday, when it will re-enter the far W offshore waters. Strong
-high pressure N of the area will maintain fresh to strong trade
-winds outside of the Nolo wind field during this time. Nolo will
-then turn W on Wednesday and exit the offshore waters by Thursday.
-Trade winds decrease as high pressure weakens and Nolo moves west
-of the islands.
+The center of Hurricane Nolo remains just outside the far W
+offshore waters boundary tonight, but track N into the offshore
+waters on Tuesday. Strong high pressure N of the area will
+maintain fresh to strong trade winds outside of the Nolo wind
+field during this time. Nolo will then turn W slowly on Wednesday
+and exit the offshore waters by Thursday. Trade winds decrease as
+high pressure weakens and Nolo moves west of the islands.
 
-AT 1100 AM HST HURRICANE NOLO WAS CENTERED AT 17.7N 163.1W...MOVING
-WNW AT 10 KT
+AT 1100 PM HST HURRICANE NOLO WAS CENTERED AT 20.0N 164.3W...MOVING
+NNW AT 13 KT
 
-800 PM HST MONDAY 19.0N 163.7W
-800 AM HST TUESDAY 20.8N 164.0W
-800 PM HST TUESDAY 22.0N 164.1W
-800 AM HST WEDNESDAY 22.4N 164.2W
-800 PM HST MONDAY 22.5N 164.8W
-800 AM HST TUESDAY 22.7N 165.7W
-800 AM HST WEDNESDAY 23.2N 167.8W
-800 AM HST THURSDAY 23.8N 171.2W
-800 AM HST FRIDAY 25.0N 176.5W
-800 AM HST SATURDAY 26.5N 178.2E
+NOLO FORECAST POSITIONS
+800 AM HST TUESDAY 21.3N 164.5W
+800 PM HST TUESDAY 22.5N 164.6W
+800 AM HST WEDNESDAY 22.7N 164.9W
+800 PM HST WEDNESDAY 22.6N 165.4W
+800 AM HST THURSDAY 22.7N 166.0W
+800 PM HST THURSDAY 23.1N 167.0W
+800 PM HST FRIDAY 23.4N 168.5W
+800 PM HST SATURDAY 24.1N 174.0W
+800 PM HST SUNDAY 26.0N 179.8E
+800 PM HST MONDAY 27.0N 174.7E
 
-PHZ180-290430-
+PHZ180-291715-
 Hawaiian Offshore Waters-
-1110 AM HST Mon Sep 28 2026
+1109 PM HST Mon Sep 28 2026
 
 ...HURRICANE WARNING IN EFFECT...
 
-.THIS AFTERNOON...Winds E winds 45 to 55 kt. Seas 8 to 14 ft.
-Isolated thunderstorms S of 24N.
-.TONIGHT...NW Half, E winds 50 to 60 kt, becoming SE 90 to
-100 kt. SE Half, E winds 10 to 20 kt. Seas 8 to 14 ft. Isolated
-thunderstorms S of 24N.
-.TUESDAY...NW Half, SE winds 90 to 100 kt, diminishing to 80 to
-90 kt late in the afternoon. SE Half, E winds 10 to 20 kt. Seas
-7 to 14 ft. Isolated thunderstorms NW Half.
-.TUESDAY NIGHT...NW Half, SE winds 80 to 90 kt, diminishing to
-70 to 80 kt after midnight. SE Half, SE winds 70 to 80 kt,
-diminishing to 10 to 20 kt after midnight. Seas 7 to 14 ft.
-Isolated thunderstorms.
-.WEDNESDAY...SE winds 60 to 70 kt NW Half, E 10 to 20 kt SE Half.
-Seas 6 to 12 ft. Isolated thunderstorms.
-.THURSDAY...SE winds 10 to 20 kt. Seas 6 to 9 ft. Isolated
-thunderstorms NW Half.
-.FRIDAY...SE winds 10 to 20 kt. Seas 6 to 8 ft.
+.REST OF TONIGHT...Hurricane conditions expected S of 23N W of
+162W. Elsewhere NW half, E to SE winds 15 to 30 kt and seas 8 to
+14 ft. SE half, E to SE winds 10 to 20 kt and seas 7 to 8 ft.
+Isolated thunderstorms near Hurricane Nolo.
+.TUESDAY...Hurricane conditions expected S of 25N W of 162W.
+Elsewhere NW half, E to SE winds 15 to 30 kt and seas 8 to 14 ft.
+SE half, E to SE winds 10 to 20 kt and seas 6 to 8 ft. Isolated
+thunderstorms near Hurricane Nolo.
+.TUESDAY NIGHT...Hurricane conditions expected N of 20N W of
+162W. Elsewhere NW half, SE to S winds 15 to 30 kt and seas 8 to
+14 ft. SE half, E to SE winds 10 to 20 kt and seas 6 to 8 ft.
+Isolated thunderstorms near Hurricane Nolo.
+.WEDNESDAY...Hurricane conditions expected W of 162W. Elsewhere
+NW half, SE to S winds 15 to 30 kt and seas 8 to 12 ft. SE half, E
+to SE winds 10 to 20 kt and seas 6 to 8 ft. Isolated
+thunderstorms near Hurricane Nolo.
+.WEDNESDAY NIGHT...Tropical storm conditions possible W of 163W.
+Elsewhere NW half, SE to S winds 15 to 30 kt and seas 7 to 12 ft.
+SE half, E to SE winds 10 to 15 kt and seas 6 ft. Isolated
+thunderstorms near Hurricane Nolo.
+.THURSDAY...W of 160W, SE to S winds 15 to 30 kt and seas 7 to 11
+ft. Elsewhere, E to SE winds 10 to 15 kt and seas 5 to 7 ft.
+.FRIDAY...NW half, SE winds 15 to 25 kt and seas 6 to 9 ft. SE
+half, E to SE winds 10 to 15 kt and seas 6 ft or less.
+.SATURDAY...NE to SE winds 10 to 20 kt. Seas 6 to 7 ft.
 ```
 
 ---
@@ -8933,7 +7820,7 @@ thunderstorms NW Half.
 |---|---|
 | **Resource ID** | ftm_radar_status |
 | **Official source** | https://www.weather.gov/hfo/FTM |
-| **Collected** | 2026-09-27T22:56:35.595779-10:00 HST |
+| **Collected** | 2026-09-29T01:50:24.670225-10:00 HST |
 
 ```text
 Kauai Radar (PHKI/SOK)
@@ -8981,7 +7868,7 @@ No outage message at this time.
 |---|---|
 | **Resource ID** | sfp_state_forecast |
 | **Official source** | https://api.weather.gov/products/types/SFP/locations/HFO |
-| **Collected** | 2026-09-28T15:04:47.047947-10:00 HST |
+| **Collected** | 2026-09-29T01:50:42.487162-10:00 HST |
 
 ```text
 000
@@ -9154,7 +8041,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-28T16:04:47.225351-10:00 HST |
+| **Collected** | 2026-09-29T01:51:58.160206-10:00 HST |
 
 ```text
 National Weather Service
