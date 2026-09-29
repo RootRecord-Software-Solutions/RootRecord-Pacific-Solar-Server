@@ -22,7 +22,7 @@ UNIT="rr-rootserver-poller.service"
 TITLE="RootRecord poller — rootserver"
 # Cols x Rows + X + Y  (pixels for +X+Y under X11; Wayland may approximate)
 GEOMETRY="${POLLER_WINDOW_GEOMETRY:-100x36+480+160}"
-export POLLER_LOG="${POLLER_LOG:-/home/rootrecord/Database/Logs/Automations/automations_current.log}"
+export POLLER_LOG="${POLLER_LOG:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Automations/automations_current.log}"
 mkdir -p "$(dirname "$POLLER_LOG")"
 touch "$POLLER_LOG"
 
