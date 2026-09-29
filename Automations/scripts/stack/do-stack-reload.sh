@@ -11,7 +11,7 @@ STACK="$(cd "$(dirname "$0")" && pwd)"
 SCRIPTS="$(cd "$STACK/.." && pwd)"
 REPO="$(cd "$SCRIPTS/../.." && pwd)"
 
-LOG="${STACK_RELOAD_LOG:-/home/rootrecord/.ollama/skills/logs/store/stack-reload.log}"
+LOG="${STACK_RELOAD_LOG:-/home/rootrecord/Database/LOGS/Automations/stack-reload.log}"
 BAK_ROOT="${BAK_ROOT:-/home/rootrecord/Database/GITHUB}"
 FLAG="$BAK_ROOT/flags/reload-poller-stack"
 LOCK="/tmp/rootrecord-stack-reload.lock"
