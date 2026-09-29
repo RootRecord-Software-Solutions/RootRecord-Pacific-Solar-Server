@@ -8,32 +8,14 @@ Host operating-system integration, system sampling, and desk host services.
 
 | Item | State |
 | --- | --- |
-| Domain | **LIVE** on Pacific |
-| jobs.py | `sys_stats_cycle` → `System/scripts/sys-sample.sh` (quoted) |
-| Evidence | `SYSTEM cpu=… OK wrote …/Database/SYSTEM/samples/sys-20260928-164937.json` |
+| Domain folder | **`System/` only** |
+| jobs.py | `sys_stats_cycle` → `System/scripts/sys-sample.sh` |
 | Sample writes | `/home/rootrecord/Database/SYSTEM/` |
-| Plumbing (ollama/flm) | Still G2 |
-| worklog | Still G2 reports/ |
+| Plumbing / worklog | Still G2 until imported |
 
-### Ecosystem path
+### Naming
 
-```text
-/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/System/
-```
-
-### Layout on desk
-
-```text
-System/
-  README.md
-  scripts/sys-sample.sh
-  lib/{sample.py,paths.py,status_json.py}
-  db/{store.py,schema.sql,aggregate.py,…}
-```
-
-### Policy
-
-No old desk for sys-stats. G2 `system-stats` is archive-only for this job.
+Use this folder name only. Do not create a parallel `system` or `system-stats` path for imports. Future Python under System should use package name **`System`** (or local modules under `System/lib` with PYTHONPATH set to `System/`). Full SOP: Library Pacific Domain Import Playbook — standing rules.
 
 ---
 

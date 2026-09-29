@@ -1,35 +1,27 @@
 # Github
 
-GitHub repository catalog, sync automation, mirrors, and metadata for the Pacific desk.
+GitHub repository catalog and **automated push/pull (sync)** for the Pacific desk.
 
 ---
 
-## Status (2026-09-28)
+## Status (2026-09-28 ~17:05 HST) — Phase 1 import
 
 | Item | State |
 | --- | --- |
-| Domain folder | **Shell only** (+ automation-records placeholders) |
-| G2 residual | `~/.ollama/skills/github/` |
-| G1 cousin | `git-auto-push/` (diff after G2) |
-| Canonical Library | `RootRecord-Software-Solutions/RootRecord-Library` |
-| Canonical Pacific | `RootRecord-Software-Solutions/RootRecord-Pacific-Solar-Server` |
+| Domain folder | **`Github/` only** (no parallel `github` symlink) |
+| Scripts | Import from G2 `~/.ollama/skills/github/` → `Github/scripts/` |
+| Catalog | `Github/scripts/repos.conf` — same repo **ids** as old; **local_path** + **org** remotes updated |
+| jobs.py | `github_setup_remotes` + `github_sync_all` → Pacific paths (after rewire) |
+| Logs | Prefer `/home/rootrecord/Database/GITHUB/logs/` (not Pacific Logs/) |
+| Tokens | Local only — never commit |
 
-Related: Library WO-GH, WO-OLD.
+### Ecosystem path
 
----
+```text
+/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Github/
+```
 
-## jobs.py (residual G2)
-
-| Job id | Path |
-| --- | --- |
-| `github_setup_remotes` | `…/skills/github/scripts/setup-all-remotes.sh` |
-| `github_sync_all` | `…/skills/github/scripts/sync-all.sh` |
-
-Align `repos.conf` local_path to Ecosystem `1 - Servers/…` when catalog is imported.
-
----
-
-## Expected layout after G2 import
+### Expected layout after desk fill
 
 ```text
 Github/
@@ -40,11 +32,29 @@ Github/
     sync-all.sh
     push-repo-once.sh
     setup-remote.sh
+    …
   automation-records/
+  metadata/
+  mirrors/
+  repositories/
 ```
 
-Tokens stay local — never commit.
+### Canonical org (standing)
+
+| Id (typical) | Remote |
+| --- | --- |
+| pacific / server | `RootRecord-Software-Solutions/RootRecord-Pacific-Solar-Server` |
+| database | `RootRecord-Software-Solutions/RootRecord-Database` |
+| library | `RootRecord-Software-Solutions/RootRecord-Library` |
+
+Plus the **same additional rows** as the old catalog (skills, website, mainland, …) with corrected `local_path` under Ecosystem or documented desk paths. Do not invent new ids unless the old `repos.conf` had them.
+
+### Policy
+
+- Same automation behavior as G2; new home is **`Github/`**.
+- No force-push; no secrets in git.
+- Quote Pacific paths with spaces in jobs.
 
 ---
 
-*Docs-only 2026-09-28 HST.*
+*Phase 1 import started 2026-09-28 HST.*
