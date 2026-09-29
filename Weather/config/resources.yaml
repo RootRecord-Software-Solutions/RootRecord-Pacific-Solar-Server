@@ -6,7 +6,7 @@
 #   -> <base_dir>/<host>/<path>/<name>/<name>_current.<ext>          (live)
 #   -> <base_dir>/<host>/<path>/<name>/archive/<MM-DD-YYYY>/<name>_<TIMESTAMP>.<ext>  (history)
 #
-# base_dir = /home/rootrecord/Database/WEATHER/Hawai'i/hfo
+# base_dir = /home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/WEATHER/Hawai'i/hfo
 # path_resolver.py derives local_path_template mechanically from `url` at
 # runtime for any resource that follows the general rule — the templates
 # below are recorded for the handful of URLs where the name/extension

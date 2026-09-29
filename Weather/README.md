@@ -22,7 +22,7 @@ Weather subsystem ownership: collection, ensure scripts, and related desk weathe
 
 | Job id | Path note |
 | --- | --- |
-| `weather_poller` | skills-prefixed absolute; ensure also in-repo under `Weather/scripts/` |
+| `weather_poller` | ON_BOOT, enabled 2026-09-29 → Pacific `Weather/scripts/ensure-weather-poller.sh` |
 
 ---
 
