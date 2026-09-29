@@ -17,7 +17,7 @@ STACK="$(cd "$(dirname "$0")" && pwd)"
 SCRIPTS="$(cd "$STACK/.." && pwd)"
 REPO="$(cd "$SCRIPTS/../.." && pwd)"
 
-LOG="${STACK_RELOAD_LOG:-/home/rootrecord/Database/Logs/Automations/stack_reload_current.log}"
+LOG="${STACK_RELOAD_LOG:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Automations/stack_reload_current.log}"
 BAK_ROOT="${BAK_ROOT:-/home/rootrecord/Database/GITHUB}"
 FLAG="$BAK_ROOT/flags/reload-poller-stack"
 LOCK="/tmp/rootrecord-stack-reload.lock"

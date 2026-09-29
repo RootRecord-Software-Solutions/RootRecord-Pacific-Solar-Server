@@ -7,7 +7,7 @@
 # ============================================================================
 set -euo pipefail
 
-WORKLOG_DIR="${WORKLOG_DIR:-/home/rootrecord/Database/WORKLOG}"
+WORKLOG_DIR="${WORKLOG_DIR:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/WORKLOG}"
 LIBRARY_ROOT="${LIBRARY_ROOT:-/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library}"
 LOG_DIR="${LIBRARY_ROOT}/Documentation/01-operations/0 - Human Operator Work Logs"
 TODAY="$(TZ=Pacific/Honolulu date '+%Y-%m-%d')"

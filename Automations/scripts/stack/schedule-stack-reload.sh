@@ -12,7 +12,7 @@ DO_RELOAD="$STACK/do-stack-reload.sh"
 BAK_ROOT="${BAK_ROOT:-/home/rootrecord/Database/GITHUB}"
 FLAG="$BAK_ROOT/flags/reload-poller-stack"
 LOCK="/tmp/rootrecord-stack-reload.lock"
-LOG="${STACK_RELOAD_LOG:-/home/rootrecord/Database/Logs/Automations/stack_reload_current.log}"
+LOG="${STACK_RELOAD_LOG:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Automations/stack_reload_current.log}"
 
 mkdir -p "$(dirname "$LOG")" "$BAK_ROOT/flags"
 
