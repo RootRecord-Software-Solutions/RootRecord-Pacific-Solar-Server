@@ -19,11 +19,11 @@
 #   Local jobs (BLE, Ollama, FLM, heartbeat, worklog) always run.
 #
 # File layout (standing): keep SECTION banners + TEMPLATE blocks.
-# Repo domains: Automations/, Communications/, Weather/, Energy/, … at Pacific root.
-# Energy Phase 1 read path imported under Energy/scripts/read (2026-09-28).
-# Residual skill paths remain for: a-eyes, github, plumbing, telegram, energy actions.
+# Repo domains: Automations/, Communications/, Weather/, Energy/, System/, … at Pacific root.
+# Energy Phase 1 LIVE (2026-09-28). System Phase 1: sys-sample under System/scripts.
+# Residual skill paths: a-eyes, github, plumbing, telegram, reports/worklog, energy actions.
 # Live runtime: /home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server
-# Paths with spaces MUST be single-quoted in every bash command string.
+# Paths with spaces MUST be double-quoted in every bash command string.
 # ==============================================================================
 #
 # HOW TO ADD A JOB (no AI required)
@@ -53,7 +53,7 @@ DEFAULTS = {
 
 PACIFIC = "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server"
 
-# Paths with spaces: always single-quote inside bash -c / command strings.
+# Paths with spaces: always double-quote inside bash command strings.
 ECOFLOW_DUAL_READ = (
     "flock -w 90 /tmp/ecoflow-ble.lock bash -c "
     f"'ok=0; "
@@ -229,9 +229,9 @@ EVERY_SECONDS = [
         "description": "Host CPU/load/mem → Database/SYSTEM.",
         "interval_sec": 5,
         "builtin": "",
-        "command": "bash /home/rootrecord/.ollama/skills/system-stats/scripts/sys-sample.sh",
+        "command": f'bash "{PACIFIC}/System/scripts/sys-sample.sh"',
         "timeout_sec": 60,
-        "cwd": "/home/rootrecord/.ollama/skills/system-stats",
+        "cwd": f"{PACIFIC}/System",
         "env": {},
     },
     {
