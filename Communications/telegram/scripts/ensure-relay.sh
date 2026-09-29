@@ -29,4 +29,10 @@ if legacy_up; then
   exit 0
 fi
 nohup python3 "$HERE/council-relay.py" >>"$LOG" 2>&1 &
-echo "[ok] council-relay started pid=$! → $LOG"
+pid=$!
+sleep 3
+if ! kill -0 "$pid" 2>/dev/null; then
+  echo "[FAIL] council-relay pid=$pid exited within 3s — last log: $(tail -n 1 "$LOG" 2>/dev/null | sed -E 's/[0-9]{6,}:[A-Za-z0-9_-]{25,}/[REDACTED]/g')"
+  exit 1
+fi
+echo "[ok] council-relay started pid=$pid → $LOG"
