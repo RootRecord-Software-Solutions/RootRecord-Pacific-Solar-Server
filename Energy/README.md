@@ -4,94 +4,44 @@ Energy monitoring, EcoFlow device reads, and power subsystem ownership for the P
 
 ---
 
-## Status (2026-09-28)
+## Status (2026-09-28) — Phase 1 imported
 
 | Item | State |
 | --- | --- |
-| Domain folder in this repo | **Shell only** (README + `.gitkeep`) |
-| Live EcoFlow / ENERGY data | **Active** via poller jobs |
-| Script location today (**G2**) | `~/.ollama/skills/energy/` |
-| Historical packets (**G1**) | `Solar-Pacific-RootRecord-Server-Old` → `energy/ecoflow-*` |
+| Domain folder in this repo | **Phase 1 live read path** |
+| Scripts | `Energy/scripts/read/` (leapfrog, delta2, river2pro) |
+| Runtime | `Energy/lib/` + `Energy/db/` + `Energy/config/` (fill from G2 if incomplete after pull) |
 | Data writes | `/home/rootrecord/Database/ENERGY/` (never commit) |
+| Actions / hybrid reports | **Not yet** (Phase 2+) |
+| jobs.py | **Rewired** to Ecosystem `Energy/scripts/read/` |
 
-**Import order:** bring **G2** skills energy tree here first (matches `jobs.py`). Only then selectively diff G1 packets for missing features.
+Source: G2 `Solar-Pacific-RootRecord-Server` `energy/` (read + lib + db + config).
 
-See Library:
+`ENERGY_EFLIB_PATH` job env points at live G2 vendor for BLE until vendor is vendored into this repo.
 
-- `Documentation/00-architecture/Migration-Lineage-Three-Generations-2026-09-28.md`
-- `Documentation/00-architecture/Solar-Pacific-Old-Inventory-Map-2026-09-28.md`
-- `Documentation/00-architecture/Pacific-Domain-Import-Playbook-2026-09-28.md`
-
----
-
-## Owned by this domain (when imported)
-
-- EcoFlow BLE / API read scripts (Delta 2, River 2 Pro)
-- Leap-frog / dual-read orchestration wrappers
-- Action scripts gated by `/tmp/ecoflow-ble.lock`
-- Energy-facing skill docs (no secrets)
-
-## Not owned here
-
-- Generated samples / SOC time series → Database
-- Poller engine / job catalog → `Automations/`
-- Public tunnel → `Communications/network/`
-
----
-
-## jobs.py references (residual G2)
-
-| Job id | Role |
-| --- | --- |
-| `ecoflow_read_boot` | ONCE_AT_START dual read |
-| `ecoflow_read_cycle` | EVERY_SECONDS leap-frog |
-| `heartbeat` | Builtin ENERGY snapshot (engine) |
-| READS / `ecoflow_command()` | Manual/API action helpers |
-
-**G2 path prefix:** `/home/rootrecord/.ollama/skills/energy/`
-
-**Target after G2 import:** `Energy/scripts/…` under this repo on the Ecosystem Servers path.
-
----
-
-## G1 Old packets (recover only after G2)
-
-| Old path | Role |
-| --- | --- |
-| `energy/ecoflow-ble-poller` | BLE poller ancestry |
-| `energy/ecoflow-automations` | Automation helpers |
-| `energy/ecoflow-ac-solar-gate` | AC/solar gate |
-| `energy/ecoflow-quota` | Quota |
-| `energy/ecoflow-river-car` | Device-specific |
-
----
-
-## Expected layout after G2 import
+### Ecosystem path
 
 ```text
-Energy/
-  README.md
-  scripts/
-    read/
-      delta2-read.sh
-      river2pro-read.sh
-      leapfrog-read.sh
-    actions/
+/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/
 ```
 
-Do not commit BLE keys, cloud API tokens, or device credentials.
+### jobs rewired
+
+| Job | Path |
+| --- | --- |
+| ecoflow_read_boot | dual delta2 + river2pro under flock |
+| ecoflow_read_cycle | `Energy/scripts/read/leapfrog-read.sh` every 15s |
+| READS helpers | same read/ scripts |
+
+### After pull on the desk
+
+1. `git pull` on Pacific Ecosystem checkout
+2. If `Energy/lib/read_runner.py` missing, copy from `~/.ollama/skills/energy/lib` (and db/config)
+3. `schedule-stack-reload` / full stop-start
+4. Confirm SUMMARY lines in poller window
+
+Do not delete `~/.ollama/skills/energy` until soak is done.
 
 ---
 
-## Import checklist (operator)
-
-1. Provide G2 source from live `~/.ollama/skills/energy/`.
-2. Copy into `Energy/`; strip secrets.
-3. Rewire `Automations/scripts/jobs.py`.
-4. `schedule-stack-reload` after sync.
-5. Confirm SUMMARY / ENERGY lines.
-6. Optional later: diff G1 `ecoflow-*` packets for unique scripts only.
-
----
-
-*Docs-only update 2026-09-28 HST.*
+*Phase 1 import 2026-09-28 HST.*
