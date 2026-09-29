@@ -1,20 +1,18 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # do-stack-reload.sh — full stop/start of poller stack after code pull
-# Standing format: stop every poller-operated process, start clean.
+# Standing format: stop every poller-operated process, start clean, reopen viewer.
 # Does NOT touch ava-ecoflow-ble.
 #
-# Window policy (2026-09-28):
-#   Automated reloads do NOT open the status window. poller-watch treats
-#   window close as intentional full-stack stop; when the deferred reload
-#   launches a terminal that exits, the whole stack was being torn down.
-#   Set OPEN_POLLER_WINDOW=1 to restore the old open-window behavior.
-#   Operator can open the viewer anytime with:
-#     bash "…/Automations/scripts/poller/open-poller-window.sh"
+# Window policy (2026-09-28 evening):
+#   Reopen status window after reload by default (operator wants it back in place).
+#   open-poller-window.sh uses fixed geometry (POLLER_WINDOW_GEOMETRY) and a
+#   detached gnome-terminal launch so the client hand-off does not race reload.
+#   Set OPEN_POLLER_WINDOW=0 to skip the viewer on automated reload.
+#   Closing the viewer still stops the whole stack (poller-watch design).
 # ==============================================================================
 set +e
 
-# This file lives at Automations/scripts/stack/
 STACK="$(cd "$(dirname "$0")" && pwd)"
 SCRIPTS="$(cd "$STACK/.." && pwd)"
 REPO="$(cd "$SCRIPTS/../.." && pwd)"
@@ -92,20 +90,19 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Status window — OFF by default on automated reload.
-# poller-watch stops the whole stack when the terminal exits; deferred
-# gnome-terminal launches often exit and were killing the stack after every
-# github_sync code pull. Opt in with OPEN_POLLER_WINDOW=1.
+# Status window — ON by default after reload (operator preference).
+# OPEN_POLLER_WINDOW=0 skips. Geometry via POLLER_WINDOW_GEOMETRY.
 # ---------------------------------------------------------------------------
 window_ok=0
-if [[ "${OPEN_POLLER_WINDOW:-0}" == "1" ]]; then
+if [[ "${OPEN_POLLER_WINDOW:-1}" == "1" ]]; then
   if [[ -n "${DISPLAY:-}" ]]; then
     if [[ -f "$OPEN_WIN" ]]; then
-      echo "opening poller window via open-poller-window.sh (OPEN_POLLER_WINDOW=1)"
-      bash "$OPEN_WIN" &
+      echo "opening poller window via open-poller-window.sh"
+      # Detached; open-poller-window itself nohups gnome-terminal
+      bash "$OPEN_WIN" || echo "WARNING: open-poller-window returned non-zero"
       window_ok=1
     elif [[ -f "$CLI" ]]; then
-      echo "opening poller window via CLI window (OPEN_POLLER_WINDOW=1)"
+      echo "opening poller window via CLI window"
       "$CLI" window &
       window_ok=1
     fi
@@ -119,7 +116,7 @@ if [[ "${OPEN_POLLER_WINDOW:-0}" == "1" ]]; then
     echo "DISPLAY unset — cannot open GUI window (unit still started)"
   fi
 else
-  echo "skip status window on automated reload (set OPEN_POLLER_WINDOW=1 to enable)"
+  echo "skip status window (OPEN_POLLER_WINDOW=0)"
 fi
 
 date +%s > "$STAMP"
