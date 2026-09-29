@@ -149,7 +149,7 @@
       "name": "Cloudflare tunnel credential recovery",
       "wo": "WO-CF-2026-09-27",
       "state": "BLOCKED",
-      "note": "OPEN. cloudflared is not installed on this desk (rr-aws ProxyCommand points at a missing binary).",
+      "note": "OPEN. The tunnel itself runs as a poller child from Pacific Communications/network/cloudflare/bin/cloudflared; the rr-aws SSH ProxyCommand still points at ~/.local/bin/cloudflared, which is missing on this desk.",
       "settings": "network",
       "sources": []
     },

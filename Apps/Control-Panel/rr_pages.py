@@ -119,7 +119,7 @@ class ExtraPages:
         self.run_ports.set_text("  ".join(f":{p}{' ' + known[p] if p in known else ''}" for p in sn["listen_ports"]) or "—")
         tun = sn["tunnels"]
         self.run_tun.set([{"key": "summary", "title": tun[0]["summary"], "page": "network",
-                           "sub": "rr-aws ProxyCommand and poller tunnel_start need cloudflared"}] +
+                           "sub": "poller tunnel_start runs cloudflared as a poller child · SSH page shows whether rr-aws's ProxyCommand binary exists"}] +
                          [{"key": t["pid"], "title": t["cmd"], "sub": f"pid {t['pid']} · {t['kind']}", "page": "network"} for t in tun[1:]])
         ol = sn["ollama"]
         npu = src.npu(self.paths, self.argvs(), int(self.s.get("flm_port", 52625)))

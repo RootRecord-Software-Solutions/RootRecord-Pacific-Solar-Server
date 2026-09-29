@@ -76,8 +76,20 @@ def mask_argv(argv: list[str]) -> list[str]:
     return out
 
 
+# Paths that must never be shown or referenced (private archive / model drafts). Other tools name them in their
+# own command lines (e.g. worklog find -prune); Root Monitor replaces them with a neutral tag.
+HIDDEN_PATHS = (str(Path.home() / "Desktop/old txt"), f"{ECO}/I'll sort these models tomorrow",
+                "Desktop/old txt", "I'll sort these models tomorrow")
+
+
+def hide_paths(s: str) -> str:
+    for h in HIDDEN_PATHS:
+        s = s.replace(h, "<excluded path>")
+    return s
+
+
 def short_cmd(argv: list[str], width=150) -> str:
-    a = mask_argv(argv)
+    a = [hide_paths(x) for x in mask_argv(argv)]
     if not a:
         return ""
     parts = [os.path.basename(a[0])]
@@ -281,9 +293,17 @@ def tunnels(procs: list[dict]) -> list[dict]:
                 ifs.append(f"{n} ({st})")
     except OSError:
         pass
-    cf_bin = next((c for c in ("/usr/local/bin/cloudflared", "/usr/bin/cloudflared", str(Path.home() / ".local/bin/cloudflared"))
-                   if os.path.exists(c)), None)
-    return [{"summary": f"cloudflared binary: {cf_bin or 'NOT INSTALLED'} · tunnel/VPN interfaces: {', '.join(ifs) or 'none'}"}] + out
+    cf_run = []
+    for t in out:
+        if t["kind"] == "cloudflared":
+            try:
+                cf_run.append(os.readlink(f"/proc/{t['pid']}/exe").replace(ECO + "/", "…/"))
+            except OSError:
+                pass
+    import shutil
+    cf_bin = sorted(set(cf_run)) or [c for c in (shutil.which("cloudflared"),) if c]
+    return [{"summary": f"cloudflared: {', '.join(cf_bin) if cf_bin else 'no binary on PATH and none running'} · "
+                        f"tunnel/VPN interfaces: {', '.join(ifs) or 'none'}"}] + out
 
 
 def snapshot() -> dict:
