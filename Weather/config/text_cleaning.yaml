@@ -1,0 +1,76 @@
+# NWS text-product cleanup rules, as data. Source: nws_plan.md Section 4.
+# Consumed by core/text_cleaner.py — every text-product fetch is cleaned
+# BEFORE it touches disk (neither `_current` nor any archive copy is ever
+# raw). These are old NOAAPORT/AFOS teletype segment/product-end markers.
+
+strip_tokens:
+  # Order matters: longer tokens first, so "$$" isn't partially matched by "$".
+  - "$$"
+  - "&&"
+  - "$"
+  - "&"
+
+strip_mode: literal_token
+# literal_token = straight character/token removal, not line deletion.
+# These markers usually sit alone on their own line (e.g. a lone "$$"
+# closing a segment) or trail a line, so stripping can leave a blank line
+# behind — that's expected and handled by collapse_blank_lines below.
+
+collapse_blank_lines: true
+collapse_blank_lines_to: 1
+# After stripping, collapse runs of 2+ blank lines down to exactly 1, so
+# cleaned text stays readable rather than gap-toothed.
+
+applies_to:
+  # Anything that is fundamentally NWS forecaster-typed prose.
+  - SFP
+  - SFT
+  - ZFP
+  - AFD
+  - PFM
+  - NOWHFO
+  - FWF
+  - HWO
+  - PNS
+  - LSR
+  - RER
+  - TCM
+  - TCP
+  - TCD
+  - TCU
+  - HLS
+  - CWF
+  - OFF
+  - HSF
+  - MFM
+  - SRF
+  - MWW
+  - TAFPA
+  - FA0
+  - WA0
+  - CLI
+  - CLM
+  - RRA
+  - OSO
+  - RTP
+  - RWR
+
+applies_to_json_note: >
+  For JSON responses (e.g. alerts/active), cleaning applies ONLY to
+  natural-language text fields (description, instruction, headline) —
+  never to structured/machine-readable fields (id, effective, expires,
+  geocode, etc.). See core/text_cleaner.py for the field allowlist this
+  drives.
+
+json_text_fields:
+  - description
+  - instruction
+  - headline
+  - senderName
+  - areaDesc
+
+raw_copy_retained: false
+# Per nws_plan.md Section 4 / Open Item 3: no "raw" pre-cleaning copy is
+# kept alongside the cleaned one. Flagged as an open decision, not
+# currently planned — if this changes, add a second write path in
+# core/archiver.py rather than changing this cleaning contract.

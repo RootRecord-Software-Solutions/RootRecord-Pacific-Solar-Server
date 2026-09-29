@@ -1,0 +1,676 @@
+# Every resource from NWS_Hawaii_Resource_Map.md, tagged with category
+# (→ which fetch/ module owns it), tier (→ config/tiers.yaml), and a
+# local_path_template following nws_plan.md Section 1's rule:
+#
+#   https://<host>/<path>/<name>.<ext>
+#   -> <base_dir>/<host>/<path>/<name>/<name>_current.<ext>          (live)
+#   -> <base_dir>/<host>/<path>/<name>/archive/<MM-DD-YYYY>/<name>_<TIMESTAMP>.<ext>  (history)
+#
+# base_dir = /home/rootrecord/Database/WEATHER/Hawai'i/hfo
+# path_resolver.py derives local_path_template mechanically from `url` at
+# runtime for any resource that follows the general rule — the templates
+# below are recorded for the handful of URLs where the name/extension
+# isn't obvious from the URL alone (query strings, extensionless paths).
+#
+# method: api (structured JSON, primary) | scrape (product.php HTML, fallback
+#         or only option) | image (static gif/png/jpg/tif) | json (non-product
+#         structured API, e.g. alerts/points/CurrentStorms)
+
+# ---------------------------------------------------------------------------
+# 1. TEXT PRODUCTS — fetch/text_products.py (primary) / text_products_fallback.py
+# ---------------------------------------------------------------------------
+text_products:
+  - id: sfp_state_forecast
+    awips_id: SFPHFO
+    name: "State Forecast for Hawaii"
+    tier: 1
+    method: api
+    url: "https://api.weather.gov/products/types/SFP/locations/HFO"
+    fallback_url: "/hfo/SFP"
+    clean_text: true
+
+  - id: sft_tabular_forecast
+    awips_id: SFTHFO
+    name: "Tabular State Forecast"
+    tier: 4
+    method: scrape
+    url: "https://forecast.weather.gov/product.php?site=HFO&product=SFT&issuedby=HFO"
+    clean_text: true
+
+  - id: zfp_zone_forecast
+    awips_id: ZFPHFO
+    name: "7-Day Zone Forecasts (all islands)"
+    tier: 4
+    method: api
+    url: "https://api.weather.gov/products/types/ZFP/locations/HFO"
+    fallback_url: "/hfo/ZFP"
+    clean_text: true
+
+  - id: afd_area_forecast_discussion
+    awips_id: AFDHFO
+    name: "Area Forecast Discussion"
+    tier: 1
+    method: api
+    url: "https://api.weather.gov/products/types/AFD/locations/HFO"
+    fallback_url: "/hfo/AFD"
+    clean_text: true
+
+  - id: pfm_point_forecast_matrix
+    awips_id: PFMHFO
+    name: "Point Forecast Matrix"
+    tier: 4
+    method: scrape
+    url: "https://forecast.weather.gov/product.php?site=HFO&product=PFM&issuedby=HFO"
+    clean_text: true
+
+  - id: nowhfo_short_term_forecast
+    awips_id: NOWHFO
+    name: "Short Term Forecast (nowcast)"
+    tier: 1
+    method: api
+    url: "https://api.weather.gov/products/types/NOW/locations/HFO"
+    fallback_url: "/hfo/NOWHI"
+    clean_text: true
+
+  - id: fwf_fire_weather_forecast
+    awips_id: FWFHFO
+    name: "Fire Weather Forecast"
+    tier: 4
+    method: scrape
+    url: "https://forecast.weather.gov/product.php?site=HFO&product=FWF&issuedby=HFO"
+    clean_text: true
+
+  - id: hwo_hazardous_weather_outlook
+    awips_id: HWOHFO
+    name: "Hazardous Weather Outlook"
+    tier: 1
+    method: api
+    url: "https://api.weather.gov/products/types/HWO/locations/HFO"
+    fallback_url: "/hfo/watchwarn"
+    clean_text: true
+
+  - id: pns_public_information_statement
+    awips_id: PNSHFO
+    name: "Public Information Statement"
+    tier: 4
+    method: scrape
+    url: "/hfo/pns"
+    rss_url: "/source/hfo/xml/PNSHFO.xml"
+    clean_text: true
+
+  - id: lsr_local_storm_reports
+    awips_id: LSRHFO
+    name: "Local Storm Reports"
+    tier: 1
+    method: scrape
+    url: "/hfo/lsr"
+    rss_url: "/source/hfo/xml/LSRHFO.xml"
+    clean_text: true
+
+  - id: rer_record_event_reports
+    awips_id: RERHFO
+    name: "Record Event Reports"
+    tier: 5
+    method: scrape
+    url: "/hfo/rer"
+    rss_url: "/source/hfo/xml/RERHFO.xml"
+    clean_text: true
+
+# Watches/Warnings/Advisories — all funnel through the alerts API (Tier 0)
+# rather than being polled individually; AWIPS IDs listed for reference/
+# cross-check against alerts JSON `parameters.AWIPSidentifier`, not as
+# separate fetch targets.
+watch_warning_awips_ids_reference_only:
+  - FFAHFO   # Flood Watch
+  - FLSHFO   # Flood Statement
+  - FFWHFO   # Flash Flood Warning
+  - FFSHFO   # Flash Flood Statement
+  - CFWHFO   # High Surf Advisory/Warning
+  - SPSHFO   # Special Weather Statement
+  - WCNHFO   # Tornado/Severe T-storm Watch
+  - SVRHFO   # Severe Thunderstorm Warning
+  - TORHFO   # Tornado Warning
+  - SVSHFO   # Severe Weather Statement
+  - SMWHFO   # Special Marine Warning
+  - MWSHFO   # Marine Weather Statement
+  - NPWHFO   # Non-Precipitation Warnings
+  - WSWHFO   # Winter Storm Watch/Warning/Advisory (summits)
+  - RFWHFO   # Fire Weather Red Flag Warning
+  - ESFHFO   # Hydrologic Outlook
+
+# ---------------------------------------------------------------------------
+# 2. ALERTS — fetch/alerts.py (Tier 0, the one true minute-level resource)
+# ---------------------------------------------------------------------------
+alerts:
+  - id: alerts_active_hi
+    name: "Active alerts, statewide"
+    tier: 0
+    method: json
+    url: "https://api.weather.gov/alerts/active?area=HI"
+    local_path_template: "hfo/api.weather.gov/alerts/active/area=HI/area=HI_current.json"
+    clean_text: false  # cleaned selectively per-field by core/text_cleaner.py, not whole-file
+    note: "Do not scrape /hfo/watchwarn — it's client-rendered JS and returns an empty shell on plain fetch."
+
+  - id: wwamap_png
+    name: "Statewide watch/warning map (PNG)"
+    tier: 2
+    method: image
+    url: "https://www.weather.gov/wwamap/png/hfo.png"
+
+# ---------------------------------------------------------------------------
+# 3. HURRICANES / CPHC — owned by hurricanes/scripts/, NOT fetch/.
+#    Listed here for completeness of the full resource inventory only.
+# ---------------------------------------------------------------------------
+hurricanes_reference_only:
+  - id: tcm_forecast_advisory
+    awips_id_pattern: "TCMCP1-5"
+    name: "Tropical Cyclone Forecast/Advisory"
+    method: api
+    url: "https://api.weather.gov/products/types/TCM/locations/HFO"
+
+  - id: tcp_public_advisory
+    awips_id_pattern: "TCPCP1-5"
+    name: "Tropical Cyclone Public Advisory"
+    method: api
+    url: "https://api.weather.gov/products/types/TCP/locations/HFO"
+
+  - id: tcd_discussion
+    awips_id_pattern: "TCDCP1-5"
+    name: "Tropical Cyclone Discussion"
+    method: api
+    url: "https://api.weather.gov/products/types/TCD/locations/HFO"
+
+  - id: tcu_position_update
+    awips_id_pattern: "TCUCP1-5"
+    name: "Tropical Cyclone Position Update"
+    method: api
+    url: "https://api.weather.gov/products/types/TCU/locations/HFO"
+
+  - id: hls_local_statement
+    awips_id: HLSHFO
+    name: "Tropical Cyclone Local Statement (impacts/evacuations)"
+    method: api
+    url: "https://api.weather.gov/products/types/HLS/locations/HFO"
+
+  - id: gtwo_tropical_weather_outlook
+    name: "Tropical Weather Outlook"
+    method: scrape
+    url: "https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=5"
+
+  - id: hfotwscp_monthly_summary
+    name: "Monthly Tropical Weather Summary"
+    method: scrape
+    url: "https://www.nhc.noaa.gov/text/HFOTWSCP.shtml"
+
+  - id: tcsnp_central_npac_summary
+    name: "Central N. Pacific Tropical Cyclone Summary (satellite fix)"
+    method: scrape
+    url: "/hfo/TCSNP"
+
+  - id: tcssp_south_pacific_summary
+    name: "South Pacific Tropical Cyclone Summary"
+    method: scrape
+    url: "/hfo/TCSSP"
+
+  - id: cphc_landing_page
+    name: "CPHC landing page (all active storms)"
+    method: scrape
+    url: "https://www.weather.gov/cphc/"
+
+  - id: nhc_current_storms
+    name: "NHC Current Storms (all basins, structured)"
+    method: json
+    url: "https://www.nhc.noaa.gov/CurrentStorms.json"
+    note: "Primary trigger for 'is anything CPHC-relevant active right now' — cleaner than parsing prose."
+
+# ---------------------------------------------------------------------------
+# 4. SATELLITE — fetch/satellite.py
+# ---------------------------------------------------------------------------
+satellite:
+  items:
+  - id: hawaii_ir_latest
+    name: "State of Hawaii — Infrared (latest frame)"
+    tier: 2
+    method: image
+    url: "https://www.weather.gov/images/hfo/satellite/Hawaii_IR.gif"
+
+  - id: hawaii_ir_loop
+    name: "State of Hawaii — Infrared (loop)"
+    tier: 2
+    method: image
+    url: "https://www.weather.gov/images/hfo/satellite/Hawaii_IR_loop.gif"
+
+  - id: state_vis_latest
+    name: "State of Hawaii — Visible (latest frame)"
+    tier: 2
+    method: image
+    url: "https://www.weather.gov/images/hfo/satellite/State_VIS.gif"
+
+  - id: state_vis_loop
+    name: "State of Hawaii — Visible (loop)"
+    tier: 2
+    method: image
+    url: "https://www.weather.gov/images/hfo/satellite/State_VIS_loop.gif"
+
+  - id: kauai_vis_latest
+    name: "Kauai — Visible (latest frame)"
+    tier: 2
+    method: image
+    url: "https://www.weather.gov/images/hfo/satellite/Kauai_VIS.gif"
+
+  - id: kauai_vis_loop
+    name: "Kauai — Visible (loop)"
+    tier: 2
+    method: image
+    url: "https://www.weather.gov/images/hfo/satellite/Kauai_VIS_loop.gif"
+
+  - id: oahu_maui_vis_latest
+    name: "Oahu–Maui — Visible (latest frame)"
+    tier: 2
+    method: image
+    url: "https://www.weather.gov/images/hfo/satellite/Oahu-Maui_VIS.gif"
+
+  - id: oahu_maui_vis_loop
+    name: "Oahu–Maui — Visible (loop)"
+    tier: 2
+    method: image
+    url: "https://www.weather.gov/images/hfo/satellite/Oahu-Maui_VIS_loop.gif"
+
+  - id: hawaii_vis_latest
+    name: "Big Island — Visible (latest frame)"
+    tier: 2
+    method: image
+    url: "https://www.weather.gov/images/hfo/satellite/Hawaii_VIS.gif"
+
+  - id: hawaii_vis_loop
+    name: "Big Island — Visible (loop)"
+    tier: 2
+    method: image
+    url: "https://www.weather.gov/images/hfo/satellite/Hawaii_VIS_loop.gif"
+
+  - id: goes18_hi_geocolor
+    name: "GOES-18 Hawaii sector, GeoColor (full-res, NESDIS)"
+    tier: 2
+    method: image
+    url: "https://cdn.star.nesdis.noaa.gov/GOES18/ABI/SECTOR/hi/GEOCOLOR/GOES18-HI-GEOCOLOR-1000x1000.gif"
+    note: "Higher resolution than HFO's own gifs. NESDIS-hosted, not NWS proper, but public."
+
+  # Individual loop frames (00-10) — one resource id per sector, frame index
+  # is a path segment (not a separate resource entry per frame; fetch/satellite.py
+  # iterates 00-10 for each of the 5 sector keys below at runtime).
+  loop_frame_sectors:
+    frame_range: [0, 10]
+    tier: 2
+    sectors:
+      - key: IRHawaii
+        base_url: "https://www.weather.gov/images/hfo/loops/IRHawaii/"
+      - key: VISState
+        base_url: "https://www.weather.gov/images/hfo/loops/VISState/"
+      - key: VISKauai
+        base_url: "https://www.weather.gov/images/hfo/loops/VISKauai/"
+      - key: VISOahuMaui
+        base_url: "https://www.weather.gov/images/hfo/loops/VISOahuMaui/"
+      - key: VISHawaii
+        base_url: "https://www.weather.gov/images/hfo/loops/VISHawaii/"
+
+  external_reference_only:
+    - name: "GOES-17/18 Hawaii sector viewer"
+      url: "https://www.star.nesdis.noaa.gov/GOES/sector.php?sat=G17&sector=hi"
+    - name: "Full GOES sector index"
+      url: "https://www.star.nesdis.noaa.gov/GOES/index.php"
+
+# ---------------------------------------------------------------------------
+# 5. ANALYSES / MODEL CHARTS — fetch/analyses.py
+# ---------------------------------------------------------------------------
+analyses:
+  items:
+  - id: stream_latest
+    name: "Pacific Streamline Analysis (latest)"
+    tier: 3
+    method: image
+    url: "https://www.weather.gov/images/hfo/graphics/stream.gif"
+  - id: stream_loop
+    name: "Pacific Streamline Analysis (loop)"
+    tier: 3
+    method: image
+    url: "https://www.weather.gov/images/hfo/graphics/streamloop.gif"
+  - id: npac_surface_latest
+    name: "N. Pacific Surface Analysis (latest)"
+    tier: 3
+    method: image
+    url: "https://www.weather.gov/images/hfo/graphics/npac.gif"
+  - id: npac_surface_loop
+    name: "N. Pacific Surface Analysis (loop)"
+    tier: 3
+    method: image
+    url: "https://www.weather.gov/images/hfo/graphics/npacloop.gif"
+  - id: seastate_00
+    name: "Pacific Wind/Wave (Sea State) Analysis, 00Z"
+    tier: 3
+    method: image
+    url: "https://www.weather.gov/images/hfo/graphics/seastate_00.gif"
+  - id: seastate_12
+    name: "Pacific Wind/Wave (Sea State) Analysis, 12Z"
+    tier: 3
+    method: image
+    url: "https://www.weather.gov/images/hfo/graphics/seastate_12.gif"
+  - id: sat_altimetry_swh
+    name: "Satellite Altimetry Sig. Wave Height"
+    tier: 3
+    method: image
+    url: "https://www.weather.gov/images/hfo/graphics/allSatellites_sgwh_latest.png"
+
+  cycle_gif_families:
+    tier: 3
+    # Cycle-based series: {stem}_{cycle}.gif for cycle in [00,06,12,18]
+    # (surface forecast + sea-state only run 00/12 per the map).
+    families:
+      - stem: "24hr_sfcprog"
+        cycles: ["00", "12"]
+        base_url: "https://www.weather.gov/images/hfo/graphics/"
+      - stem: "48hr_sfcprog"
+        cycles: ["00", "12"]
+        base_url: "https://www.weather.gov/images/hfo/graphics/"
+      - stem: "72hr_sfcprog"
+        cycles: ["00", "12"]
+        base_url: "https://www.weather.gov/images/hfo/graphics/"
+      - stem: "24hr_seastate"
+        cycles: ["00", "12"]
+        base_url: "https://www.weather.gov/images/hfo/graphics/"
+      - stem: "48hr_seastate"
+        cycles: ["00", "12"]
+        base_url: "https://www.weather.gov/images/hfo/graphics/"
+      - stem: "72hr_seastate"
+        cycles: ["00", "12"]
+        base_url: "https://www.weather.gov/images/hfo/graphics/"
+      - stem: "npac_sfc"
+        cycles: ["00", "06", "12", "18"]
+        base_url: "https://www.weather.gov/images/hfo/graphics/"
+
+  tif_variants_note: >
+    TIF versions exist in parallel for several analyses gifs (swap .gif→.tif,
+    some have different filename stems). Not individually enumerated here —
+    see /hfo/analyses for exact TIF names before enabling; treat as Tier 6
+    (best-effort) until confirmed.
+
+# ---------------------------------------------------------------------------
+# 6. RADAR — fetch/radar.py
+# ---------------------------------------------------------------------------
+radar:
+  items:
+  - id: hawaii_radar_loop
+    name: "Hawaii radar loop (static gif, all 4 sites mosaic)"
+    tier: 6
+    method: image
+    url: "https://radar.weather.gov/ridge/standard/HAWAII_loop.gif"
+    note: "Legacy static endpoint, still live as of Sept 2026 — corrects the assumption that no static radar gifs remain."
+
+  - id: ftm_radar_status
+    name: "Radar status/outage text messages"
+    tier: 5
+    method: scrape
+    url: "/hfo/FTM"
+    clean_text: true
+
+  interactive_reference_only:
+    # Not fetched — tile-based viewer, out of scope per the plan.
+    - "https://radar.weather.gov/station/PHKI/standard"   # Kauai
+    - "https://radar.weather.gov/station/PHMO/standard"   # Molokai
+    - "https://radar.weather.gov/station/PHKM/standard"   # Kohala, Big Island
+    - "https://radar.weather.gov/station/PHWA/standard"   # South Point, Big Island
+    - "https://radar.weather.gov/region/hawaii/standard"  # Regional mosaic
+
+# ---------------------------------------------------------------------------
+# 7. MARINE — fetch/marine.py
+# ---------------------------------------------------------------------------
+marine:
+  - id: cwf_coastal_waters
+    awips_id: CWFHFO
+    name: "Coastal Waters Forecast (within 40nm)"
+    tier: 4
+    method: api
+    url: "https://api.weather.gov/products/types/CWF/locations/HFO"
+    fallback_url: "/hfo/CWF"
+    clean_text: true
+
+  - id: off_offshore_forecast
+    name: "Offshore Forecast (40-240nm)"
+    tier: 4
+    method: scrape
+    url: "https://forecast.weather.gov/product.php?site=HFO&product=OFF&issuedby=HFO"
+    clean_text: true
+
+  - id: hsf_high_seas_npac
+    name: "High Seas Forecast N. Pacific"
+    tier: 4
+    method: scrape
+    url: "https://forecast.weather.gov/product.php?site=HFO&product=HSF&issuedby=NP"
+    clean_text: true
+
+  - id: hsf_high_seas_spac
+    name: "High Seas Forecast S. Pacific"
+    tier: 4
+    method: scrape
+    url: "https://forecast.weather.gov/product.php?site=HFO&product=HSF&issuedby=SP"
+    clean_text: true
+
+  - id: mfm_marine_forecast_matrix
+    name: "Marine Forecast Matrix (Hawaiian Waters)"
+    tier: 4
+    method: scrape
+    url: "/hfo/MFM"
+    clean_text: true
+
+  - id: srf_statewide_surf_forecast
+    name: "Statewide Surf Forecast (+discussion)"
+    tier: 4
+    method: scrape
+    url: "/hfo/SRF"
+    rss_url: "/source/hfo/xml/SurfState.xml"
+    clean_text: true
+
+  - id: surfreports_statewide_observations
+    name: "Statewide Surf Observations"
+    tier: 4
+    method: scrape
+    url: "/hfo/surfreports"
+    clean_text: true
+
+  - id: mww_marine_weather_message
+    name: "Marine Weather Message"
+    tier: 1
+    method: scrape
+    url: "https://forecast.weather.gov/product.php?site=HFO&product=MWW&site=hfo"
+    clean_text: true
+
+  - id: marine_names_zone_map
+    name: "Coastal Marine Zone Map"
+    tier: 6
+    method: image
+    url: "https://www.weather.gov/images/hfo/graphics/aor/Marine_names.jpg"
+
+  - id: offhfomz_offshore_zone_map
+    name: "Offshore Marine Zone Map"
+    tier: 6
+    method: image
+    url: "https://www.weather.gov/images/marine/offhfomz.jpg"
+
+  - id: plbz08_sst_test_chart
+    name: "SST Test Chart"
+    tier: 6
+    method: image
+    url: "https://www.weather.gov/images/marine/PLBZ08.gif"
+
+# ---------------------------------------------------------------------------
+# 8. AVIATION — fetch/aviation.py
+# ---------------------------------------------------------------------------
+aviation:
+  - id: tafpa_tafs
+    name: "TAFs (HNL, LIH, OGG, ITO, KOA, MKK, JHM, LNY, MDY, PPG)"
+    tier: 4
+    method: scrape
+    url: "/hfo/TAFPA"
+    clean_text: true
+
+  - id: fa0_area_forecast
+    name: "Area Forecast (FA)"
+    tier: 4
+    method: scrape
+    url: "https://forecast.weather.gov/product.php?site=HFO&product=FA0&issuedby=HI"
+    clean_text: true
+
+  - id: wa0_airmets
+    name: "AIRMETs"
+    tier: 4
+    method: scrape
+    url: "https://forecast.weather.gov/product.php?site=HFO&product=WA0&issuedby=HI"
+    clean_text: true
+
+  - id: aviation_sigmets
+    name: "SIGMETs / Tropical Cyclone SIGMETs / Volcanic Ash SIGMETs"
+    tier: 4
+    method: scrape
+    url: "/hfo/aviation"
+    clean_text: true
+
+# ---------------------------------------------------------------------------
+# 9. CLIMATE / RAINFALL / OBSERVATIONS — fetch/climate.py
+# ---------------------------------------------------------------------------
+climate:
+  items:
+  - id: cli_daily_climate_summary
+    name: "Daily Climate Summary"
+    tier: 5
+    method: scrape
+    url_template: "https://forecast.weather.gov/product.php?site=HFO&product=CLI&issuedby={station}"
+    stations: [HNL, LIH, OGG, ITO]
+    clean_text: true
+
+  - id: clm_monthly_climate_summary
+    name: "Monthly Climate Summary"
+    tier: 5
+    method: scrape
+    url_template: "https://forecast.weather.gov/product.php?site=HFO&product=CLM&issuedby={station}"
+    stations: [HNL, LIH, OGG, ITO]
+    clean_text: true
+
+  - id: rra_hawaii_rainfall_summary
+    name: "Hawaii Rainfall Summary"
+    tier: 5
+    method: scrape
+    url: "https://forecast.weather.gov/product.php?site=HFO&product=RRA&issuedby=HFO"
+    clean_text: true
+
+  - id: oso_hourly_obs
+    name: "Hourly Wind/Precip Observations"
+    tier: 5
+    method: scrape
+    url: "https://forecast.weather.gov/product.php?site=HFO&product=OSO&issuedby=HFO"
+    clean_text: true
+
+  - id: rtp_temp_precip_summary
+    name: "Hawaii Temp/Precip Summary"
+    tier: 5
+    method: scrape
+    url: "https://forecast.weather.gov/product.php?site=HFO&product=RTP&issuedby=HI"
+    clean_text: true
+
+  - id: rwr_state_roundup
+    name: "State Weather Roundup + Buoy Reports"
+    tier: 5
+    method: scrape
+    url: "/hfo/RWR"
+    clean_text: true
+
+  - id: hrs_archive_90day_rainfall
+    name: "90-day rainfall archive"
+    tier: 5
+    method: scrape
+    url: "/hfo/HRS_archive"
+
+  - id: rain_summary_graphical
+    name: "Graphical rainfall summary"
+    tier: 5
+    method: image
+    url: "/hfo/rain_summary"
+
+  - id: rr5_archive_hydromet
+    name: "Hydro-Met Data Report Pt.5 (72hr archive)"
+    tier: 5
+    method: scrape
+    url: "/hfo/RR5_archive"
+
+  full_catalog_reference_only:
+    name: "Full text-product catalog (275+ AWIPS IDs, includes obscure ones)"
+    url: "https://www.weather.gov/prh/data_products_hfo"
+    note: "Reference page, not itself fetched on a cadence — consult when adding new resources."
+
+# ---------------------------------------------------------------------------
+# 10. STATION OBSERVATIONS — fetch/climate.py (obhistory) shares this module;
+#     revisit if this grows enough to earn its own fetch/observations.py.
+# ---------------------------------------------------------------------------
+observations:
+  stations: [PHLI, PHBK, PHNL, PHNG, PHJR, PHHI, PHOG, PHJH, PHMK, PHNY, PHTO, PHKO, PHSF]
+  tier: 5
+  obhistory_url_template: "http://www.weather.gov/data/obhistory/{icao}.html"
+  rss_url_template: "http://www.weather.gov/xml/current_obs/{icao}.rss"
+  xml_url_template: "http://www.weather.gov/xml/current_obs/{icao}.xml"
+  interactive_map_reference_only: "/hfo/obs"
+
+# ---------------------------------------------------------------------------
+# 11. GFE GRAPHICAL FORECASTS — fetch/maps.py, Tier 6 (self-reported broken)
+# ---------------------------------------------------------------------------
+gfe_graphics:
+  - id: gfe_graphics_page
+    name: "GFE local graphical forecasts (max/min temp, sky, PoP, QPF, wind)"
+    tier: 6
+    method: scrape
+    url: "/hfo/gfe_graphics"
+    note: >
+      HFO self-reported this page as broken ("images are not updating").
+      JS/AJAX-driven; underlying image paths not recoverable via plain
+      HTML fetch. May need a headless-browser approach, or may simply stay
+      down at the source — attempted every Tier 6 cycle regardless, a
+      failure here is informative, not a blocker.
+    sub_sectors: ["Short Term", "7 Day", "Fire Weather", "Volcano Nat'l Park", "Marine", "7-Day Marine", "Big Island", "Kauai", "Oahu", "Maui County"]
+
+# ---------------------------------------------------------------------------
+# 12. NDFD GRIDPOINT — fetch/ndfd_gridpoint.py
+# ---------------------------------------------------------------------------
+ndfd:
+  items:
+  - id: points_resolver
+    name: "NWS gridpoint resolver"
+    tier: 6
+    method: json
+    url_template: "https://api.weather.gov/points/{lat},{lon}"
+    note: "Resolves a coordinate to its NDFD gridpoint forecast URL. Cache the result — do not re-resolve every poll (per plan's open item)."
+    # Coordinate list confirmed by user (session after nextagent.md's
+    # handoff): reuse the same four ICAO stations already polled elsewhere
+    # in this file (see e.g. clm_monthly_climate_summary's `stations` list
+    # above), rather than a Hawaii-wide grid. Airport reference-point
+    # coordinates, standard published values.
+    points:
+    - id: HNL
+      lat: 21.3187
+      lon: -157.9225
+    - id: LIH
+      lat: 21.9760
+      lon: -159.3390
+    - id: OGG
+      lat: 20.8986
+      lon: -156.4305
+    - id: ITO
+      lat: 19.7203
+      lon: -155.0485
+  reference_only:
+    name: "NDFD home / background"
+    url: "https://www.weather.gov/mdl/ndfd_home"
+
+# ---------------------------------------------------------------------------
+# 13. MISC / SITE CHROME — not fetched, reference only
+# ---------------------------------------------------------------------------
+site_chrome_not_fetched:
+  - "https://www.weather.gov/images/hfo/reference/xml.gif"
+  - "https://www.weather.gov/images/hfo/reference/rss-blue.png"
+  - "https://www.weather.gov/bundles/templating/images/wwamap/*.gif"

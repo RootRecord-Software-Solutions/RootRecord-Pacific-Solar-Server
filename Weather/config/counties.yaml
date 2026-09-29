@@ -1,0 +1,52 @@
+# SAME/UGC → county map, plus area-text regex fallback for when an alert's
+# geocode is missing. Ported from the old nws-hawaii module (`nws_hawaii.py`),
+# which had this working in production against api.weather.gov alert JSON.
+#
+# Consumed by alerts/county_map.py — this file has no logic, only data.
+
+counties:
+  - key: honolulu
+    same: "015003"
+    speech: "Honolulu County"
+    order: 1
+    # areaDesc fallback pattern (used only when SAME/UGC geocode is absent)
+    area_text_pattern: '\b(Honolulu|O[`ʻ'']?ahu|Waianae|Ewa|Koolau|Olomana|Pearl Harbor)\b'
+
+  - key: hawaii
+    same: "015001"
+    speech: "Hawaii County"
+    order: 2
+    area_text_pattern: '\b(Big Island|Puna|Hilo|Kona|Kohala|Ka[`ʻ'']?u|Volcano|Mountain View)\b'
+
+  - key: maui
+    same: "015009"
+    speech: "Maui County"
+    order: 3
+    area_text_pattern: '\b(Maui|Molokai|Lanai|Lana[`ʻ'']i|Kahoolawe|Haleakala|Kipahulu)\b'
+
+  - key: kauai
+    same: "015007"
+    speech: "Kauai County"
+    order: 4
+    area_text_pattern: '\b(Kauai|Kaua[`ʻ'']i|Niihau|Ni[`ʻ'']ihau|Lihue|L[`ʻ'']ihue)\b'
+
+  - key: kalawao
+    same: "015005"
+    speech: "Kalawao County"
+    order: 5
+    # Kalawao is spoken only when it has products of its own — see
+    # alerts/county_map.py docstring for the "quiet counties" convention
+    # this inherits from the old system.
+    area_text_pattern: '\bKalawao\b'
+
+# County order for speech/report generation — same order as the `order`
+# field above, kept explicit here since consumers shouldn't have to sort.
+speech_order: [honolulu, hawaii, maui, kauai, kalawao]
+
+# regex flags to apply to every area_text_pattern above
+regex_flags: [IGNORECASE]
+
+notes:
+  - "SAME code is authoritative when present (props.geocode.SAME in the alert JSON)."
+  - "UGC codes are also present in most alerts but SAME is what the old system matched on; UGC kept for reference/cross-check, not primary matching."
+  - "area_text_pattern is a fallback ONLY — used when an alert has no SAME geocode at all, matched against areaDesc."

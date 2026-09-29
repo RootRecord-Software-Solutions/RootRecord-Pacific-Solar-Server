@@ -12,6 +12,7 @@ secrets/
 
 # Python
 __pycache__/
+.venv/
 *.py[cod]
 
 # Databases / runtime state

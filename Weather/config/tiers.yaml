@@ -1,0 +1,69 @@
+# Cadence per tier + per-host rate-limit floors.
+# Source: nws_plan.md Section 5. All resources in resources.yaml carry a
+# `tier:` field that indexes into this table.
+
+tiers:
+  0:
+    name: critical
+    cadence_seconds: 60
+    description: "The one true minute-level resource — single call, whole state."
+  1:
+    name: high_freq_text
+    cadence_seconds: 300
+    description: "High-frequency text products: SFP, AFD, HWO, NOWHFO, active TCM/TCP/TCD/TCU."
+  2:
+    name: satellite_imagery
+    cadence_seconds: 600
+    cadence_seconds_max: 900
+    description: "State IR latest + loop gifs."
+  3:
+    name: analyses_charts
+    cadence_seconds: 3600
+    description: "Streamline, N. Pacific surface analysis, sea-state, surface forecast. Synoptic-aligned (00/06/12/18Z cycles)."
+  4:
+    name: zone_marine_aviation_text
+    cadence_seconds: 900
+    cadence_seconds_max: 1200
+    description: "ZFP, CWF, OFF, HSF, SRF, TAF, MFM."
+  5:
+    name: climate_obs_low_volatility
+    cadence_seconds: 21600
+    description: "CLI/CLM per airport, RRA, station obhistory. Daily/monthly for CLM."
+  6:
+    name: best_effort_unconfirmed
+    cadence_seconds: 1800
+    cadence_seconds_max: 3600
+    description: >
+      gfe_graphics sub-images, radar tile/frame data, NDFD gridded pulls.
+      Attempted every cycle regardless of known/uncertain source issues
+      (per "if it's on there, I want it"). Higher baseline failure rate is
+      expected and not itself a problem — a failure here is informative,
+      not a blocker to inclusion.
+
+# Per-host rate-limit floors — nothing may poll a host faster than this,
+# regardless of what a resource's own tier cadence would otherwise allow.
+host_floors_seconds:
+  api.weather.gov: 30
+  www.weather.gov: 10
+  forecast.weather.gov: 15
+  radar.weather.gov: 15
+  cdn.star.nesdis.noaa.gov: 15
+  www.star.nesdis.noaa.gov: 15
+  www.nhc.noaa.gov: 60
+
+special_cases:
+  - resource: alerts_active_hi
+    note: >
+      Single api.weather.gov call, whole-state scope. This is Tier 0 and the
+      only Tier 0 resource — nothing else needs minute-level polling.
+  - host: radar.weather.gov
+    note: >
+      Interactive Ridge2 tile viewer is out of automation scope (not a
+      single downloadable gif). The one exception is the legacy static
+      HAWAII_loop.gif mosaic endpoint, which is still live and used instead.
+
+daily_archive_trigger:
+  time_hst: "00:00"
+  description: >
+    Fires archive/consolidate.py once per HST calendar day rollover, per
+    nws_plan.md Section 8. Not itself a fetch tier — a scheduler event.

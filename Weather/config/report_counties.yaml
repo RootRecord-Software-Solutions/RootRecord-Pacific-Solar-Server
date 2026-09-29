@@ -1,0 +1,58 @@
+# Deterministic Level-1 geographic routing. No AI/LLM classification.
+
+counties:
+  - key: honolulu
+    display_name: "Honolulu County"
+    same: HIC003
+    aliases: ["Honolulu County", "Honolulu", "Oahu", "O'ahu", "Oʻahu"]
+  - key: hawaii
+    display_name: "Hawaii County"
+    same: HIC001
+    aliases: ["Hawaii County", "Hawai'i County", "Hawaiʻi County", "Big Island", "Hilo", "Kona"]
+  - key: maui
+    display_name: "Maui County"
+    same: HIC009
+    aliases: ["Maui County", "Maui", "Molokai", "Moloka'i", "Molokaʻi", "Lanai", "Lana'i", "Lānaʻi", "Kahoolawe", "Kahoʻolawe"]
+  - key: kauai
+    display_name: "Kauai County"
+    same: HIC007
+    aliases: ["Kauai County", "Kaua'i County", "Kauaʻi County", "Kauai", "Kaua'i", "Kauaʻi", "Niihau", "Niʻihau"]
+  - key: kalawao
+    display_name: "Kalawao County"
+    same: HIC005
+    aliases: ["Kalawao County", "Kalawao"]
+
+statewide_resource_ids:
+  - sfp_state_forecast
+  - zfp_zone_forecast
+  - afd_area_forecast_discussion
+  - nowhfo_short_term_forecast
+  - hwo_hazardous_weather_outlook
+  - pns_public_information_statement
+  - lsr_local_storm_reports
+  - rra_hawaii_rainfall_summary
+  - oso_hourly_obs
+  - rtp_temp_precip_summary
+  - rwr_state_roundup
+  - hrs_archive_90day_rainfall
+  - rr5_archive_hydromet
+  - srf_statewide_surf_forecast
+  - surfreports_statewide_observations
+  - cwf_coastal_waters
+  - off_offshore_forecast
+  - hsf_high_seas_npac
+  - hsf_high_seas_spac
+  - mfm_marine_forecast_matrix
+  - mww_marine_weather_message
+  - tafpa_tafs
+  - fa0_area_forecast
+  - wa0_airmets
+  - aviation_sigmets
+
+resource_routing:
+  county_patterns:
+    honolulu: ["honolulu", "oahu", "o_ahu"]
+    hawaii: ["hawaii", "hilo", "kona", "big_island"]
+    maui: ["maui", "molokai", "lanai", "kahoolawe"]
+    kauai: ["kauai", "niihau", "lihue"]
+    kalawao: ["kalawao"]

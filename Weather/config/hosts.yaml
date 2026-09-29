@@ -1,0 +1,56 @@
+# Per-host network defaults. This is the ONE place a User-Agent string or
+# (if ever needed) an API key lives — never in resources.yaml or anything
+# under Database/WEATHER/, since that tree is meant to eventually be public.
+#
+# NOTE: no API keys are currently required by anything on the resource map.
+# If one is ever added for a host below, put it here as `api_key_env: NAME`
+# (an environment variable name, never the literal key) — do not hardcode
+# secrets into this file even though it lives in the code tree.
+
+defaults:
+  user_agent: "WeatherSkill/1.0 (Hawaii NWS mirror; contact: rootrecord)"
+  timeout_seconds: 20
+  max_retries: 3
+  backoff_base_seconds: 5
+  backoff_max_seconds: 300
+
+hosts:
+  api.weather.gov:
+    rate_floor_seconds: 30
+    accept_header: "application/geo+json"
+    notes: "Primary structured API for alerts, products, and gridpoints."
+
+  www.weather.gov:
+    rate_floor_seconds: 2
+    notes: "Static image/gif hosting under /images/hfo/, plus /hfo/* text redirect pages."
+
+  forecast.weather.gov:
+    rate_floor_seconds: 15
+    notes: "product.php text scrape — fallback path only, now that api.weather.gov/products is primary."
+
+  radar.weather.gov:
+    rate_floor_seconds: 15
+    notes: "Only the legacy static HAWAII_loop.gif endpoint is polled; the interactive tile viewer is out of scope."
+
+  cdn.star.nesdis.noaa.gov:
+    rate_floor_seconds: 15
+    notes: "GOES-18 Hawaii sector GeoColor gif, full resolution."
+
+  www.star.nesdis.noaa.gov:
+    rate_floor_seconds: 15
+    notes: "GOES sector index / lower-res sector viewer."
+
+  www.nhc.noaa.gov:
+    rate_floor_seconds: 60
+    notes: "CurrentStorms.json + Tropical Weather Outlook + monthly summary. Used by hurricanes/ sub-skill."
+
+  # Placeholders — referenced by hurricanes/references/sources.md, not yet
+  # confirmed live in the resource map. Kept here so hurricanes/scripts can
+  # look up a floor without a KeyError once they're wired up.
+  www.cpc.ncep.noaa.gov:
+    rate_floor_seconds: 60
+    notes: "Reserved for CPHC-adjacent products if a distinct host is confirmed."
+
+  www.metoc.navy.mil:
+    rate_floor_seconds: 60
+    notes: "JTWC. Reserved — confirm exact host/paths before enabling in hurricanes/scripts/sources.py."

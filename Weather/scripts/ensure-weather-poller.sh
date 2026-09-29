@@ -22,13 +22,13 @@ set -u
 # ====================================================
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKILLS_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-WEATHER_ROOT="$SKILLS_ROOT/weather"
+WEATHER_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"  # Pacific Weather/ (imported from G2 2026-09-29)
 ENTRY="$WEATHER_ROOT/scripts/run_poller.py"
 
-LOG_DIR="/home/rootrecord/Database/WEATHER/Hawai'i/logs"
+LOG_DIR="${WEATHER_LOG_DIR:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/WEATHER/Hawai'i/logs}"
 LOG_FILE="$LOG_DIR/weather-poller.log"
 
-MATCH_PATTERN='weather/scripts/run_poller\.py'
+MATCH_PATTERN='[Ww]eather/scripts/run_poller\.py'  # also sees a G2 instance (no parallel owners)
 
 # ====================================================
 # SECTION: ALREADY RUNNING? -- idempotent, exit clean
@@ -49,7 +49,8 @@ fi
 mkdir -p "$LOG_DIR"
 
 echo "[ensure-weather-poller] starting -- entry=$ENTRY log=$LOG_FILE"
-nohup setsid /home/rootrecord/.ollama/skills/weather/.venv/bin/python "$ENTRY" >>"$LOG_FILE" 2>&1 &
+PY="${WEATHER_PYTHON:-$WEATHER_ROOT/.venv/bin/python}"
+nohup setsid "$PY" "$ENTRY" >>"$LOG_FILE" 2>&1 &
 disown
 
 sleep 1

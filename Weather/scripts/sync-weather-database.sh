@@ -24,6 +24,9 @@ cleanup_temp_files() {
 
 trap cleanup_temp_files EXIT
 
+# Guard: without its own .git, git would act on the parent Database repo.
+[ -d "$REPO/.git" ] || { echo "Weather database sync: $REPO is not its own git repo; skipping."; exit 0; }
+
 cd "$REPO"
 
 # GitHub may be unreachable during off-grid/network outages.
