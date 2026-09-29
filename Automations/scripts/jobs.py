@@ -19,7 +19,7 @@
 #   Local jobs (BLE, Ollama, FLM, heartbeat, worklog, reports roll-up/archive) always run.
 #
 # File layout (standing): keep SECTION banners + TEMPLATE blocks.
-# Energy + System + Reports LIVE (WO-RPT-001). Residual: A-Eyes hourly wrapper, Telegram inference plumbing dependency, energy-action retirement verification.
+# Energy + System + Reports LIVE (WO-RPT-001). Residual: A-Eyes hourly wrapper, energy-action retirement verification; Telegram inference plumbing surface landed, runtime verification pending.
 # Live runtime: /home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server
 # Paths with spaces MUST be double-quoted in every bash command string.
 # ==============================================================================
