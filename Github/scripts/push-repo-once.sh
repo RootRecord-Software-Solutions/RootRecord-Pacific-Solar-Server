@@ -27,10 +27,9 @@ RELOAD_SCRIPT="/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-
 # True when this repo hosts poller/jobs code that must reload after merge
 is_runtime_code_tree() {
   local id="$1" local_path="$2"
+  # G2 (~/.ollama/skills) pulls are NOT runtime code: syncs must not restart the poller (2026-09-29).
   [[ "$id" == "pacific" ]] && return 0
-  [[ "$id" == "skills" ]] && return 0
   [[ "$local_path" == *"RootRecord-Pacific-Solar-Server"* ]] && return 0
-  [[ "$local_path" == *"/.ollama/skills"* ]] && return 0
   return 1
 }
 

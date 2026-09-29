@@ -8,10 +8,11 @@ from __future__ import annotations
 
 import sqlite3
 from pathlib import Path
+import os
 from typing import Any, Iterable, Mapping, Optional
 
 SCHEMA_PATH = Path(__file__).with_name("schema.sql")
-DEFAULT_DB_PATH = Path("/home/rootrecord/Database/ROOTRECORD/rootrecord.db")
+DEFAULT_DB_PATH = Path(os.environ.get("ROOTRECORD_DB", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/ROOTRECORD/rootrecord.db"))
 
 
 def connect(db_path: Path | str = DEFAULT_DB_PATH) -> sqlite3.Connection:
@@ -41,7 +42,7 @@ def initialize_schema(conn: sqlite3.Connection) -> None:
     conn.commit()
 
 
-LAYERS_DIR = Path("/home/rootrecord/Database/ROOTRECORD/layers")
+LAYERS_DIR = Path(os.environ.get("ROOTRECORD_LAYERS_DIR", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/ROOTRECORD/layers"))
 LAYER_SCHEMA_PATH = Path(__file__).with_name("schema_layers.sql")
 
 
