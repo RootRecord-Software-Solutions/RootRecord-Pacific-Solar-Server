@@ -5,7 +5,7 @@
 # (poller + cloudflared + systemd unit). Never "window only".
 # Data intake → /home/rootrecord/Database/intake/
 # Baks/logs  → /home/rootrecord/Database/GITHUB/
-# GitHub set: skills + website + mainland + library (repos.conf).
+# GitHub catalog: Github/scripts/repos.conf (same ids as G2; Ecosystem local_path).
 # Pacific .gitignore excludes us-mainland-server/ (own repo). No rclone / aws-sync.
 # Inference: prefer FLM llama3.2:3b on NPU (:52625); Ollama dolphin lanes = CPU fallback.
 # Telegram council-relay via coms/telegram (one getUpdates). Plumbing single-flight.
@@ -19,9 +19,8 @@
 #   Local jobs (BLE, Ollama, FLM, heartbeat, worklog) always run.
 #
 # File layout (standing): keep SECTION banners + TEMPLATE blocks.
-# Repo domains: Automations/, Communications/, Weather/, Energy/, System/, … at Pacific root.
-# Energy Phase 1 LIVE (2026-09-28). System Phase 1: sys-sample under System/scripts.
-# Residual skill paths: a-eyes, github, plumbing, telegram, reports/worklog, energy actions.
+# Energy + System LIVE. Github Phase 1: scripts under Github/scripts.
+# Residual skill paths: a-eyes, plumbing, telegram, reports/worklog, energy actions.
 # Live runtime: /home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server
 # Paths with spaces MUST be double-quoted in every bash command string.
 # ==============================================================================
@@ -97,12 +96,12 @@ ON_BOOT = [
         "id": "github_setup_remotes",
         "enabled": True,
         "priority": 2,
-        "description": "Ensure remotes for skills + website + mainland + library (repos.conf).",
+        "description": "Ensure remotes for all repos.conf rows (Pacific Github catalog).",
         "builtin": "",
-        "command": "bash /home/rootrecord/.ollama/skills/github/scripts/setup-all-remotes.sh",
+        "command": f'bash "{PACIFIC}/Github/scripts/setup-all-remotes.sh"',
         "timeout_sec": 180,
         "needs_internet": True,
-        "cwd": "/home/rootrecord/.ollama/skills/github",
+        "cwd": f"{PACIFIC}/Github",
         "env": {},
     },
     {
@@ -237,13 +236,13 @@ EVERY_SECONDS = [
     {
         "id": "github_sync_all",
         "enabled": True,
-        "description": "Push skills + website + mainland + library.",
+        "description": "Sync all repos.conf rows (pull/merge/push) via Pacific Github catalog.",
         "interval_sec": 300,
         "builtin": "",
-        "command": "bash /home/rootrecord/.ollama/skills/github/scripts/sync-all.sh",
+        "command": f'bash "{PACIFIC}/Github/scripts/sync-all.sh"',
         "timeout_sec": 300,
         "needs_internet": True,
-        "cwd": "/home/rootrecord/.ollama/skills/github",
+        "cwd": f"{PACIFIC}/Github",
         "env": {},
     },
     {
