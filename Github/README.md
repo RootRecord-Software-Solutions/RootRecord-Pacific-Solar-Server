@@ -1,60 +1,36 @@
 # Github
 
-GitHub repository catalog and **automated push/pull (sync)** for the Pacific desk.
+GitHub repository catalog and automated push/pull for the Pacific desk.
 
 ---
 
-## Status (2026-09-28 ~17:05 HST) — Phase 1 import
+## Status (2026-09-28 ~17:11 HST) — Phase 1 LIVE
 
 | Item | State |
 | --- | --- |
-| Domain folder | **`Github/` only** (no parallel `github` symlink) |
-| Scripts | Import from G2 `~/.ollama/skills/github/` → `Github/scripts/` |
-| Catalog | `Github/scripts/repos.conf` — same repo **ids** as old; **local_path** + **org** remotes updated |
-| jobs.py | `github_setup_remotes` + `github_sync_all` → Pacific paths (after rewire) |
-| Logs | Prefer `/home/rootrecord/Database/GITHUB/logs/` (not Pacific Logs/) |
-| Tokens | Local only — never commit |
+| Domain | **`Github/` only** |
+| Scripts | `Github/scripts/` (from G2 github skill) |
+| Catalog | `Github/scripts/repos.conf` (tab-separated) |
+| jobs.py | `github_setup_remotes` + `github_sync_all` → Pacific paths |
+| Evidence | Poller 17:11 — fetch pacific, database, library, skills (no website/mainland retries) |
+| Logs / bak | `/home/rootrecord/Database/GITHUB/` |
+| Token | `/home/rootrecord/master/master-key.env` (`GITHUB_TOKEN`) — never commit |
 
-### Ecosystem path
+### Catalog rows
 
-```text
-/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Github/
-```
-
-### Expected layout after desk fill
-
-```text
-Github/
-  README.md
-  scripts/
-    repos.conf
-    setup-all-remotes.sh
-    sync-all.sh
-    push-repo-once.sh
-    setup-remote.sh
-    …
-  automation-records/
-  metadata/
-  mirrors/
-  repositories/
-```
-
-### Canonical org (standing)
-
-| Id (typical) | Remote |
-| --- | --- |
-| pacific / server | `RootRecord-Software-Solutions/RootRecord-Pacific-Solar-Server` |
-| database | `RootRecord-Software-Solutions/RootRecord-Database` |
-| library | `RootRecord-Software-Solutions/RootRecord-Library` |
-
-Plus the **same additional rows** as the old catalog (skills, website, mainland, …) with corrected `local_path` under Ecosystem or documented desk paths. Do not invent new ids unless the old `repos.conf` had them.
+| id | enabled | mode | notes |
+| --- | --- | --- | --- |
+| pacific | 1 | inplace | Ecosystem Pacific → org `RootRecord-Pacific-Solar-Server` |
+| database | 1 | inplace | Ecosystem Database → org `RootRecord-Database` |
+| library | 1 | inplace | Ecosystem Library → org `RootRecord-Library` |
+| skills | 1 | inplace | `~/.ollama/skills` → legacy Solar-Pacific remote |
+| website | 0 | mirror | enable when worktree under `Database/GITHUB/worktrees/website` exists |
+| mainland | 0 | inplace | enable when path is a real git clone |
 
 ### Policy
 
-- Same automation behavior as G2; new home is **`Github/`**.
-- No force-push; no secrets in git.
-- Quote Pacific paths with spaces in jobs.
+Same automation as G2; home is **`Github/`**. No parallel `github/` folder. Quote paths with spaces in jobs.
 
 ---
 
-*Phase 1 import started 2026-09-28 HST.*
+*Phase 1 LIVE 2026-09-28 HST.*
