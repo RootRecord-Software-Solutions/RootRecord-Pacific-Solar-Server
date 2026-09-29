@@ -23,11 +23,23 @@ import rr_netstat as net
 import rr_running as run
 import rr_ssh
 import rr_sources as src
-from rr_ui import Adw, RowList, action_row, badge_css, esc, lbl, section, spawn
+import rr_ui
+from rr_ui import Adw, RowList, action_row, badge_css, boxed_list, esc, lbl, light_row, redact, section, set_row_text, spawn
 
 HERE = Path(__file__).resolve().parent
 MIGRATION_FILE = HERE / "Lib/rr_migration.json"
 REL_UNIT = r"^(rr-|ava-|network-globe|ollama|flm|cloudflared|rootrecord|council|cam|weather|conky|github|bluetooth|NetworkManager|ssh|cron)"
+
+
+def _trim():
+    """Return freed heap to the OS after releasing a sub-page (glibc malloc_trim; no-op elsewhere)."""
+    import gc
+    gc.collect()
+    try:
+        import ctypes
+        ctypes.CDLL("libc.so.6").malloc_trim(0)
+    except (OSError, AttributeError):
+        pass
 
 
 def _sub_stack(box: Gtk.Box, width=210):
@@ -126,7 +138,7 @@ class ExtraPages:
                           "page": run.settings_page(u["unit"] + " " + u["desc"])} for u in rel])
         ex, l = self.run_uu_rest
         ex.set_label(f"all user units ({len(uu)})")
-        l.set_text("\n".join(f"{u['unit']:<48} {u['active']}/{u['sub']}" for u in uu))
+        l.set_text(redact("\n".join(f"{u['unit']:<48} {u['active']}/{u['sub']}" for u in uu)))
         su = sn["system_units"]
         rel = [u for u in su if re.search(REL_UNIT, u["unit"])]
         self.run_su.set([{"key": u["unit"], "title": f"{u['unit']}  —  {u['active']}/{u['sub']}", "sub": u["desc"],
@@ -134,12 +146,12 @@ class ExtraPages:
         ex, l = self.run_su_rest
         rest = [u for u in su if u not in rel]
         ex.set_label(f"other running system units ({len(rest)})")
-        l.set_text("\n".join(f"{u['unit']:<48} {u['sub']}" for u in rest))
+        l.set_text(redact("\n".join(f"{u['unit']:<48} {u['sub']}" for u in rest)))
         cr = sn["cron"]
-        self.run_timers.set_text("user timers:\n  " + ("\n  ".join(sn["user_timers"]) or "none") +
+        self.run_timers.set_text(redact("user timers:\n  " + ("\n  ".join(sn["user_timers"]) or "none") +
                                  "\nsystem timers:\n  " + ("\n  ".join(sn["system_timers"]) or "none") +
                                  "\nuser crontab (masked):\n  " + ("\n  ".join(cr["user"]) or "none") +
-                                 "\nsystem cron entries:\n  " + (", ".join(cr["system"]) or "none"))
+                                 "\nsystem cron entries:\n  " + (", ".join(cr["system"]) or "none")))
         self.run_sum.set_text(f"{len(sn['procs'])} RootRecord-related processes of {sn['proc_total']} · poller "
                               f"{'pid ' + str(pol['pid']) if pol else 'NOT FOUND'} with {len(sn['children'])} child processes · "
                               f"{len(uu)} user units · {len(su)} running system units · read-only, refreshed every "
@@ -332,13 +344,21 @@ class ExtraPages:
         if self.check:
             for k in self.mig_items:
                 self._mig_build(k)
+                self.check_texts.append("\n".join(rr_ui.widget_texts(self.mig_items[k][1])))
         elif items:
             self._mig_build(items[0]["id"])
         self.report["migration"] = {"placeholders": len(items), "blocked": sum(1 for x in items if x["state"] == "BLOCKED"),
                                     "verify_pending": sum(1 for x in items if x["state"] == "VERIFY PENDING")}
 
     def _mig_build(self, key):
-        if not key or key in self.mig_built or key not in self.mig_items:
+        """Placeholder sub-pages: built on visit, released when another one is shown."""
+        if not key or key not in self.mig_items:
+            return
+        for other in list(self.mig_built):
+            if other != key:
+                self._clear(self.mig_items[other][1])
+                self.mig_built.discard(other)
+        if key in self.mig_built:
             return
         self.mig_built.add(key)
         it, b = self.mig_items[key]
@@ -384,14 +404,23 @@ class ExtraPages:
             self.set_boxes[pid] = b
         st.set_visible_child_name("panel")
         st.connect("notify::visible-child-name", lambda *_: self._set_build(st.get_visible_child_name()))
+        self._set_build("panel")
         if self.check:
+            # build every sub-page once; collect its strings for the leak test, then release it (peak = one page)
             for pid in self.set_boxes:
                 self._set_build(pid)
-        else:
-            self._set_build("panel")
+                self.check_texts.append("\n".join(rr_ui.widget_texts(self.set_boxes[pid])))
 
     def _set_build(self, pid):
-        if not pid or pid in self.set_built:
+        """Registry sub-pages are built on visit and RELEASED when you switch to another sub-page
+        (rebuild takes ~10–150 ms), so RSS stays at one sub-page. The Panel sub-page is kept."""
+        if not pid:
+            return
+        for other in list(self.set_built):
+            if other != pid and other != "panel":
+                self._clear(self.set_boxes[other])
+                self.set_built.discard(other)
+        if pid in self.set_built:
             return
         self.set_built.add(pid)
         box = self.set_boxes[pid]
@@ -400,11 +429,24 @@ class ExtraPages:
             return
         self.b_reg_page(pid, box)
 
+    @staticmethod
+    def _clear(box):
+        while (c := box.get_first_child()) is not None:
+            box.remove(c)
+        _trim()
+
     def goto_settings(self, page):
         self.stack.set_visible_child_name("settings")
         self.ensure_built("settings")
         if page in getattr(self, "set_boxes", {}):
             self.set_stack.set_visible_child_name(page)
+
+    GROUP_MAX, GROUP_HEAD = 20, 12   # big files render their first 12 rows; the rest are built on demand
+
+    def ensure_redact(self):
+        """Fill rr_ui.REDACT once (first visit of a page that shows config / process text)."""
+        if not rr_ui.REDACT:
+            rr_ui.REDACT[:] = self.reg.secret_values()
 
     def b_reg_page(self, pid, box):
         t0 = time.process_time()
@@ -420,10 +462,11 @@ class ExtraPages:
         box.append(lbl(f"{len(sets)} settings · {n_edit} editable · {n_sec} secret (masked) · {len(sets) - n_edit} read-only",
                        "heading"))
         if pid == "environment" and self.reg.security_items:
-            g = Adw.PreferencesGroup(title=f"SECURITY ITEMS — secret-looking keys in git-tracked files ({len(self.reg.security_items)})",
-                                     description="Never written from here. File and key names only; values are never shown.")
+            box.append(lbl(f"SECURITY ITEMS — secret-looking keys in git-tracked files ({len(self.reg.security_items)})", "heading rr-warn"))
+            box.append(lbl("Never written from here. File and key names only; values are never shown.", "dim-label"))
+            g = boxed_list()
             for it in self.reg.security_items:
-                g.add(action_row(f"{Path(it['file']).name} → {it['key']}", f"{it['file']} · {it['assessment']}"))
+                g.append(light_row(f"{Path(it['file']).name} → {it['key']}", f"{it['file']} · {it['assessment']}")[0])
             box.append(g)
         for gk, ss in groups.items():
             first = ss[0]
@@ -437,32 +480,40 @@ class ExtraPages:
                 title = Path(first.path).name if spec is None else f"{spec.path.name}  ({spec.id})"
                 desc = (f"{first.path}\nservice: {first.service} · {first.restart}"
                         + (f"\nREAD-ONLY: {spec.read_only}" if spec is not None and spec.read_only else ""))
-            g = Adw.PreferencesGroup(title=esc(title), description=esc(desc))
-            for s in ss:
-                g.add(self._setting_row(s))
+            box.append(lbl(title, "heading", wrap=True))
+            box.append(lbl(redact(desc), "dim-label", wrap=True))
+            g = boxed_list()
+            shown = ss if len(ss) <= self.GROUP_MAX else ss[:self.GROUP_HEAD]
+            for s in shown:
+                g.append(self._setting_row(s))
+            if len(ss) > len(shown):
+                more = Gtk.Button(label=f"Show the other {len(ss) - len(shown)} settings of this file", halign=Gtk.Align.START)
+                more.add_css_class("flat")
+
+                def expand(btn, g=g, rest=ss[len(shown):]):
+                    g.remove(btn.get_parent())
+                    for s in rest:
+                        g.append(self._setting_row(s))
+                more.connect("clicked", expand)
+                g.append(more)
             box.append(g)
         self.report.setdefault("settings_pages", {})[pid] = {"settings": len(sets), "editable": n_edit, "secret": n_sec,
                                                              "build_ms": round(1000 * (time.process_time() - t0))}
 
     def _setting_row(self, s):
-        sub = f"{s.display}\n{s.kind}" + (f" · {s.restart}" if s.editable else f" · read-only: {s.ro_reason}")
-        r = action_row(s.key, sub, 3)
-        if Adw is None:
-            return r
+        sub = f"{s.display} · {s.kind}" + (f" · {s.restart}" if s.editable else f" · read-only: {s.ro_reason}")
+        r, l = light_row(s.key, sub)
         if s.editable and s.secret:
             for text, mode in (("Replace…", "replace"), ("Clear", "clear")):
                 b = Gtk.Button(label=text, valign=Gtk.Align.CENTER)
                 b.add_css_class("flat")
-                b.connect("clicked", lambda _b, m=mode: self.edit_setting(s, m, r))
-                r.add_suffix(b)
+                b.connect("clicked", lambda _b, m=mode: self.edit_setting(s, m, l))
+                r.append(b)
         elif s.editable:
             b = Gtk.Button(label="Edit…", valign=Gtk.Align.CENTER)
             b.add_css_class("flat")
-            b.connect("clicked", lambda _b: self.edit_setting(s, "edit", r))
-            r.add_suffix(b)
-        else:
-            im = Gtk.Image(icon_name="changes-prevent-symbolic", tooltip_text=s.ro_reason or "read-only")
-            r.add_suffix(im)
+            b.connect("clicked", lambda _b: self.edit_setting(s, "edit", l))
+            r.append(b)
         return r
 
     def edit_setting(self, s, mode, row):
@@ -502,7 +553,7 @@ class ExtraPages:
                 self.toast(f"Saved {plan.path.name} · backup {Path(res['backup']).name} · {plan.restart_note} (nothing restarted)")
                 fresh = next((x for x in self.reg.page_settings(s.page) if x.file_id == s.file_id and x.key == s.key), None)
                 if fresh is not None:
-                    row.set_subtitle(f"{fresh.display}\n{fresh.kind} · saved — {plan.restart_note}")
+                    set_row_text(row, fresh.key, f"{fresh.display} · {fresh.kind} · saved — {plan.restart_note}")
             except Exception as ex:
                 self.toast(f"Save failed: {ex}")
         self.confirm(f"Save {plan.path.name}?", f"Masked diff below. {plan.restart_note}. Nothing will be restarted.", "Save", ok, extra=sc)

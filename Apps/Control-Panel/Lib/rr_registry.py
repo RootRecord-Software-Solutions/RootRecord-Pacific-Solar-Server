@@ -102,7 +102,7 @@ FILES: list[FileSpec] = [
              key_pages=[(r"^(TELEGRAM_|RR_DATAPACK_)", "messaging"), (r"^(ROOTSERVER_TUNNEL|CLOUDFLARE_|API_TOKEN|ACCESS_KEY_R2|S3_API)", "network"),
                         (r"^AEYES_", "cameras")]),
     FileSpec("gh-hosts", HOME / ".config/gh/hosts.yml", "yaml", "environment", "GitHub CLI (gh)", "gh reads it per call",
-             secret_file=True, read_only="managed by `gh auth` — not edited here"),
+             read_only="managed by `gh auth` — not edited here (oauth_token is detected by key name and masked)"),
     FileSpec("gh-config", HOME / ".config/gh/config.yml", "yaml", "environment", "GitHub CLI (gh)", "gh reads it per call",
              read_only="managed by `gh config`"),
     FileSpec("repos.conf", PAC / "Github/scripts/repos.conf", "tsv", "services", "github_sync_all / github_autopush", R_EACH,
@@ -198,11 +198,15 @@ class Registry:
 
     # ---------------------------------------------------------- git tracking (3 calls, cached)
     def tracked(self) -> set[str]:
+        """Which registry files are git-tracked. Asks git only about those paths (cheap; no full index listing)."""
         if self._tracked is None:
             s = set()
             for r in REPOS:
+                mine = [str(f.path.relative_to(r)) for f in FILES if str(f.path).startswith(str(r) + "/")]
+                if not mine:
+                    continue
                 try:
-                    out = subprocess.run(["git", "-C", str(r), "ls-files", "-z"], capture_output=True, timeout=10).stdout
+                    out = subprocess.run(["git", "-C", str(r), "ls-files", "-z", "--", *mine], capture_output=True, timeout=10).stdout
                     s.update(str(r / p.decode(errors="replace")) for p in out.split(b"\0") if p)
                 except Exception:
                     pass
@@ -263,6 +267,9 @@ class Registry:
                     ro = "SECURITY: secret-looking key in a git-tracked file — never written here"
                     self._flag(spec, e, text)
                 disp = io.describe(e.value if not isinstance(e.value, (list, dict)) else str(e.value)) if secret else _short(e.value)
+                if not secret and disp and any(v in str(e.value) for v in self.secret_values()):
+                    disp = "masked (value matches a secret held in another file)"
+                    ro = ro or "value matches a secret held in another file — edit offline"
                 out.append(Setting(page, spec.id, str(p), e.key, "secret" if secret else kind, secret, spec.service, spec.restart,
                                    not ro and os.access(p, os.W_OK), ro or ("" if os.access(p, os.W_OK) else "no write permission"),
                                    disp, e.dup, e.value))
@@ -445,7 +452,19 @@ class Registry:
                             columns=spec.columns)
 
     def secret_values(self) -> list[str]:
-        """ONLY for leak tests / screenshot guard. Never print the result."""
+        """Credential-like secret values (for masking elsewhere, the leak tests and the screenshot guard).
+        NEVER print the result. Path references and env-var NAMES are not credentials and are skipped.
+        Cached by the mtimes of the files involved."""
+        stamp = []
+        for spec in FILES:
+            try:
+                st = spec.path.stat()
+                stamp.append((spec.id, st.st_mtime_ns, st.st_size))
+            except OSError:
+                pass
+        stamp = tuple(stamp)
+        if getattr(self, "_sv", None) and self._sv[0] == stamp:
+            return self._sv[1]
         vals = []
         for spec in FILES:
             try:
@@ -461,11 +480,19 @@ class Registry:
                 continue
             for e in ents:
                 leaf = e.key.rsplit(".", 1)[-1]
+                if any(re.search(rx, e.key) for rx in spec.not_secret):
+                    continue
                 if spec.secret_file or io.is_secret_key(leaf):
                     v = e.value
-                    if isinstance(v, (str, int, float)) and len(str(v)) >= 6:
-                        vals.append(str(v))
-        return sorted(set(vals), key=len, reverse=True)
+                    if not isinstance(v, (str, int, float)) or len(str(v)) < 6:
+                        continue
+                    sv = str(v)
+                    if sv.startswith(("/", "~", "$", "./")) or re.fullmatch(r"[A-Z][A-Z0-9_]+", sv) or sv.lower() in ("true", "false"):
+                        continue  # path reference / env-var name, not a credential
+                    vals.append(sv)
+        res = sorted(set(vals), key=len, reverse=True)
+        self._sv = (stamp, res)
+        return res
 
 
 def _short(v) -> str:

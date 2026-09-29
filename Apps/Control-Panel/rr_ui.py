@@ -10,6 +10,18 @@ except ImportError:  # pragma: no cover
     Adw = None
 
 
+REDACT: list[str] = []   # known secret values (filled lazily by the panel); never printed
+
+
+def redact(s: str) -> str:
+    """Replace any known secret value inside a display string with <masked len N>."""
+    if s and REDACT:
+        for v in REDACT:
+            if v in s:
+                s = s.replace(v, f"<masked len {len(v)}>")
+    return s
+
+
 def lbl(text="", css=None, xalign=0.0, wrap=False, select=False, markup=False) -> Gtk.Label:
     w = Gtk.Label(xalign=xalign)
     (w.set_markup if markup else w.set_text)(text)
@@ -69,11 +81,33 @@ def action_row(title: str, subtitle: str = "", lines: int = 2):
         return b
     r = Adw.ActionRow()
     r.set_use_markup(False)
-    r.set_title(title)
-    r.set_subtitle(subtitle)
+    r.set_title(redact(title))
+    r.set_subtitle(redact(subtitle))
     r.set_subtitle_lines(lines)
     r.set_title_lines(2)
     return r
+
+
+def light_row(title: str, sub: str = "", tooltip: str | None = None):
+    """Cheap settings row: ONE label (title + small subtitle) in a box; suffix widgets appended by the caller.
+    About half the widgets of an Adw.ActionRow — the Settings hub renders hundreds of these."""
+    row = Gtk.Box(spacing=8, margin_top=5, margin_bottom=5, margin_start=10, margin_end=6)
+    l = Gtk.Label(xalign=0, hexpand=True, wrap=True, wrap_mode=Pango.WrapMode.WORD_CHAR)
+    set_row_text(l, title, sub)
+    if tooltip:
+        l.set_tooltip_text(redact(tooltip))
+    row.append(l)
+    return row, l
+
+
+def set_row_text(l: Gtk.Label, title: str, sub: str):
+    l.set_markup(f"{esc(redact(title))}\n<span size='small' alpha='75%'>{esc(redact(sub))}</span>")
+
+
+def boxed_list() -> Gtk.ListBox:
+    lb = Gtk.ListBox(selection_mode=Gtk.SelectionMode.NONE)
+    lb.add_css_class("boxed-list")
+    return lb
 
 
 class RowList:
@@ -109,10 +143,11 @@ class RowList:
         elif Adw is not None:
             for it in items:
                 r = self.rows[it["key"]]
-                if r.get_title() != it["title"]:
-                    r.set_title(it["title"])
-                if r.get_subtitle() != it.get("sub", ""):
-                    r.set_subtitle(it.get("sub", ""))
+                ti, su = redact(it["title"]), redact(it.get("sub", ""))
+                if r.get_title() != ti:
+                    r.set_title(ti)
+                if r.get_subtitle() != su:
+                    r.set_subtitle(su)
 
 
 def widget_texts(w) -> list[str]:

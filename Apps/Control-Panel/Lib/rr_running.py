@@ -16,7 +16,6 @@ import os
 import re
 import subprocess
 import time
-import urllib.request
 from pathlib import Path
 
 SLOW_TTL = 15
@@ -236,16 +235,32 @@ def cron() -> dict:
     return _cached("cron", get)
 
 
+def _local_get(port: int, path: str, timeout=1.0) -> dict:
+    """Tiny HTTP/1.0 GET to 127.0.0.1 (no urllib: keeps http.client/ssl/email out of memory)."""
+    import socket
+    with socket.create_connection(("127.0.0.1", port), timeout=timeout) as s:
+        s.settimeout(timeout)
+        s.sendall(f"GET {path} HTTP/1.0\r\nHost: 127.0.0.1\r\nAccept: application/json\r\n\r\n".encode())
+        buf = b""
+        while len(buf) < 300_000:
+            chunk = s.recv(65536)
+            if not chunk:
+                break
+            buf += chunk
+    head, _sep, body = buf.partition(b"\r\n\r\n")
+    if b" 200 " not in head.split(b"\r\n", 1)[0]:
+        raise OSError("HTTP " + head.split(b"\r\n", 1)[0].decode(errors="replace")[:40])
+    return json.loads(body or b"{}")
+
+
 def ollama() -> dict:
-    def get(path):
-        with urllib.request.urlopen(f"http://127.0.0.1:11434{path}", timeout=1.0) as r:
-            return json.loads(r.read(200_000))
+    """Ollama GET /api/version + /api/ps (lists loaded models; never loads one)."""
     try:
-        ver = get("/api/version").get("version")
-        ps = get("/api/ps").get("models", [])
+        ver = _local_get(11434, "/api/version").get("version")
+        ps = _local_get(11434, "/api/ps").get("models", [])
         return {"up": True, "version": ver,
                 "loaded": [{"name": m.get("name"), "size_mb": round((m.get("size") or 0) / 1048576),
-                            "vram_mb": round((m.get("size_vram") or 0) / 1048576), "until": m.get("expires_at", "")[:19]}
+                            "vram_mb": round((m.get("size_vram") or 0) / 1048576), "until": (m.get("expires_at") or "")[:19]}
                            for m in ps]}
     except Exception as e:
         return {"up": False, "error": type(e).__name__}

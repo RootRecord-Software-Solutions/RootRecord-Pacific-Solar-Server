@@ -127,6 +127,7 @@ class Panel(ExtraPages):
         self.cam_timer_id = 0
         self.cam_fetching: set[str] = set()
         self.errors: list[str] = []
+        self.check_texts: list[str] = []   # --check: strings of sub-pages released after building
         self.win = None
         self.report: dict = {}
         self._argvs = None
@@ -189,6 +190,8 @@ class Panel(ExtraPages):
         """Pages are built on first visit in the window (keeps RSS down); --check builds all of them."""
         if name not in self.built:
             self.built.add(name)
+            if name in ("running", "network", "ssh", "migration", "settings"):
+                self.ensure_redact()
             self.builders[name](self.page_boxes[name])
 
     # ----------------------------------------------------------- energy
@@ -877,8 +880,13 @@ def run_check(args, settings) -> int:
         sl = p.starlink_once()
         p.report["starlink"] = {k: sl.get(k) for k in ("ok", "state", "uptime_s", "pop_ping_latency_ms", "fraction_obstructed",
                                                          "downlink_bps", "uplink_bps", "error") if k in sl}
+    ru_app = resource.getrusage(resource.RUSAGE_SELF)   # app work done; test-harness allocations follow
     # secret leak test: every string in the built widget tree vs. the known secret values (never printed)
-    texts = "\n".join(widget_texts(p.root))
+    texts = "\n".join(widget_texts(p.root)) + "\n".join(p.check_texts)
+    # plus every string a Settings row would render (big files are collapsed in the UI, so test the data too)
+    import rr_registry
+    texts += "\n".join(f"{s.key} {s.display} {s.ro_reason} {s.restart}" for pid, _t in rr_registry.PAGES
+                       for s in p.reg.page_settings(pid))
     secrets = p.reg.secret_values()
     leaks = sum(1 for v in secrets if v and v in texts)
     ru = resource.getrusage(resource.RUSAGE_SELF)
@@ -901,7 +909,8 @@ def run_check(args, settings) -> int:
     print(f"errors: {len(p.errors)}")
     for e in p.errors:
         print("  ERR", e)
-    print(f"peak RSS: {ru.ru_maxrss / 1024:.1f} MB · CPU user {ru.ru_utime:.2f}s sys {ru.ru_stime:.2f}s "
+    print(f"peak RSS (app: build every page + load all data once): {ru_app.ru_maxrss / 1024:.1f} MB")
+    print(f"peak RSS incl. leak-test harness: {ru.ru_maxrss / 1024:.1f} MB · CPU user {ru.ru_utime:.2f}s sys {ru.ru_stime:.2f}s "
           f"(process CPU {time.process_time() - t0:.2f}s, wall {time.time() - w0:.2f}s) · children peak RSS "
           f"{ruc.ru_maxrss / 1024:.1f} MB (git ls-files / systemctl / Starlink helper)")
     print("RESULT:", "PASS" if not p.errors else "FAIL")
