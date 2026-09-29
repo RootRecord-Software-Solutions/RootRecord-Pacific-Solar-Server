@@ -36,7 +36,7 @@ echo "[open] starting ${UNIT}…"
 systemctl --user start "${UNIT}"
 
 # Avoid stacking duplicate viewers: keep the one that is already open.
-if pgrep -f "$(basename "$WATCH" | sed 's/\./\\./g')" >/dev/null 2>&1; then
+if pgrep -f "^[^ ]*python3 .*$(basename "$WATCH" | sed 's/\./\\./g')" >/dev/null 2>&1; then
   echo "[open] viewer already open ($(basename "$WATCH")) — leaving it"
   exit 0
 fi
