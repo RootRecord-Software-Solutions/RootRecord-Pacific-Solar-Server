@@ -161,14 +161,14 @@ ON_BOOT = [
     },
     {
         "id": "weather_poller",
-        "enabled": False,
+        "enabled": True,
         "priority": 8,
-        "description": "Ensure the weather/ scheduler daemon is running. Disabled until Weather domain path exists on desk.",
+        "description": "Ensure the Pacific Weather/ scheduler daemon is running (Pacific venv; data under canonical Database WEATHER/). Enabled 2026-09-29.",
         "builtin": "",
-        "command": "bash /home/rootrecord/.ollama/skills/Weather/scripts/ensure-weather-poller.sh",
+        "command": f'bash "{PACIFIC}/Weather/scripts/ensure-weather-poller.sh"',
         "timeout_sec": 30,
         "needs_internet": False,
-        "cwd": "/home/rootrecord/.ollama/skills/Weather",
+        "cwd": f"{PACIFIC}/Weather",
         "env": {},
     },
     {
