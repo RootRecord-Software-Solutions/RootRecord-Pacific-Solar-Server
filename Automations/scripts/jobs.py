@@ -236,7 +236,7 @@ EVERY_SECONDS = [
         "id": "github_sync_all",
         "enabled": True,
         "description": "Sync all repos.conf rows (pull/merge/push) via Pacific Github catalog.",
-        "interval_sec": 300,
+        "interval_sec": 5,
         "builtin": "",
         "command": f'bash "{PACIFIC}/Github/scripts/sync-all.sh"',
         "timeout_sec": 300,
