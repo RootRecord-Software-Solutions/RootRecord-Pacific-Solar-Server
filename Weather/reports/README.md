@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T10:52:30-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T11:01:31-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -2811,19 +2811,19 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-29T10:45:45.708539-10:00 HST |
+| **Collected** | 2026-09-29T10:54:47.394966-10:00 HST |
 
 ```text
-636
-SRHW80 PHFO 291946
+698
+SRHW80 PHFO 292046
 RRAHFO
 
 Hawaii Rainfall Summary
 National Weather Service Honolulu HI
-945 AM HST Tue Sep 29 2026
+1045 AM HST Tue Sep 29 2026
 
 :
-.B HFO  0929 H  DH09 /DRH-03/PPT/DRH-06/PPQ/DRH-12/PPK/DRH-24/PPD
+.B HFO  0929 H  DH10 /DRH-03/PPT/DRH-06/PPQ/DRH-12/PPK/DRH-24/PPD
 :
 :Automated rain gage reports from around the State of Hawaii.
 :These are provisional reports that have not been quality
@@ -2831,7 +2831,7 @@ National Weather Service Honolulu HI
 :
 :T=Trace Rainfall, M=Missing Data
 :
-:Precipitation totals ending  9 AM HST
+:Precipitation totals ending  10 AM HST
 :
 :Island of Kauai                                   Inches
 :ID     Location                         3-Hr    6-Hr   12-Hr   24-Hr
@@ -2841,23 +2841,23 @@ PLRH1 : Puu Lua (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
 WKRH1 : Waiakoali (USGS)            :    0.00  /  0.00  /  0.00  /  0.00
 KLOH1 : Kilohana (USGS)             :    0.00  /  0.00  /  0.00  /  0.00
 MCRH1 : Mohihi Crossing (USGS)      :    0.00  /  0.00  /  0.00  /  0.00
-WLGH1 : Waialae (USGS)              :    0.00  /  0.00  /  0.00  /  0.02
+WLGH1 : Waialae (USGS)              :    0.00  /  0.00  /  0.00  /  0.01
 LLMH1 : Lower Limahuli (UHM)        :    0.00  /  0.00  /  0.00  /  0.01
 WNHH1 : Wainiha (12010)             :    0.00  /  0.00  /  0.00  /  0.01
-WIPH1 : Waipa (UHM)                 :    0.00  /  0.00  /  0.00  /  0.09
+WIPH1 : Waipa (UHM)                 :    0.00  /  0.00  /  0.00  /  0.07
 HNIH1 : Hanalei (12009)             :    0.00  /  0.00  /  0.00  /  0.10
 WLLH1 : Mount Waialeale (USGS)      :      M   /    M   /    M   /    M
-PRIH1 : Princeville Airport (12011) :    0.00  /  0.00  /  0.00  /  0.08
+PRIH1 : Princeville Airport (12011) :    0.00  /  0.00  /  0.00  /  0.05
 CMGH1 : Common Ground (UHM)         :    0.00  /  0.00  /  0.00  /  0.08
-HLIH1 : Hanalei (RAWS)              :    0.00  /  0.00  /  0.00  /  0.14
+HLIH1 : Hanalei (RAWS)              :    0.00  /  0.00  /  0.00  /  0.12
 MLDH1 : Moloaa Dairy (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
 ANHH1 : Anahola (12001)             :    0.00  /  0.00  /  0.00  /  0.11
-KPIH1 : Kapahi (12003)              :    0.00  /  0.00  /  0.00  /  0.03
-WLDH1 : N Wailua Ditch (USGS)       :    0.00  /  0.00  /  0.05  /  0.47
-WUHH1 : Wailua (12005)              :    0.00  /  0.00  /  0.00  /  0.02
+KPIH1 : Kapahi (12003)              :    0.00  /  0.00  /  0.00  /  0.01
+WLDH1 : N Wailua Ditch (USGS)       :    0.00  /  0.00  /  0.05  /  0.27
+WUHH1 : Wailua (12005)              :    0.00  /  0.00  /  0.00  /  0.00
 WIRH1 : Waiahi Rain Gage (USGS)     :    0.00  /  0.00  /  0.00  /  0.10
 LIHH1 : Lihue Var. Stn. (12006)     :    0.00  /  0.00  /  0.00  /  0.01
-HNMH1 : Hanamaulu (UHM)             :    0.00  /  0.00  /  0.00  /  0.06
+HNMH1 : Hanamaulu (UHM)             :    0.00  /  0.00  /  0.00  /  0.05
 HLI   : Lihue Airport (ASOS)        :    0.00  /  0.00  /  0.00  /  0.00
 :       Leeward Sites
 OMAH1 : Omao (12004)                :    0.00  /  0.00  /  0.00  /  0.00
@@ -2918,7 +2918,7 @@ PPRH1 : Pupukea Road (USGS)         :    0.00  /  0.00  /  0.00  /  0.00
 PMHH1 : Poamoho RG 1 (USGS)         :    0.00  /  0.00  /  0.00  /  0.00
 DLGH1 : Dillingham (RAWS)           :    0.00  /  0.00  /  0.00  /  0.00
 AALH1 : Kaala (UHM)                 :    0.00  /  0.00  /  0.01  /  0.01
-PECH1 : Waipio (13019)              :      M   /  0.01  /  0.01  /  0.01
+PECH1 : Waipio (13019)              :      M   /  0.00  /  0.00  /  0.00
 KUNH1 : Kunia Substation (13021)    :      M   /  0.00  /  0.00  /  0.00
 HOFH1 : Honouliuli (RAWS)           :    0.00  /  0.00  /  0.00  /  0.00
 PTWH1 : Ewa Beach USGS (13024)      :    0.00  /  0.00  /  0.00  /  0.00
@@ -2969,7 +2969,7 @@ NKUH1 : Na Kula (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
 KPNH1 : Kepuni (USGS)               :    0.00  /  0.00  /  0.00  /  0.00
 PILH1 : Piiholo (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
 WKTH1 : Waikamoi Treeline (UHM)     :    0.00  /  0.00  /  0.00  /  0.00
-PUKH1 : Pukalani (14006)            :    0.00  /    M   /  0.00  /  0.00
+PUKH1 : Pukalani (14006)            :    0.00  /  0.00  /  0.00  /  0.00
 KBSH1 : Kula Branch Station (14008) :      M   /    M   /    M   /    M
 KLGH1 : Kula Ag (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
 PHQH1 : Park HQ (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
@@ -2981,7 +2981,7 @@ KMEH1 : Kamehamenui 1 (RAWS)        :    0.00  /  0.00  /  0.00  /  0.00
 KKEH1 : Keokea (UHM)                :    0.00  /  0.00  /  0.00  /  0.00
 ULUH1 : Ulupalakua (14003)          :    0.00  /  0.00  /  0.00  /  0.00
 LPOH1 : Lipoa (UHM)                 :    0.00  /  0.00  /  0.00  /  0.00
-KHIH1 : Kihei #2 (14009)            :      M   /    M   /    M   /  0.00
+KHIH1 : Kihei #2 (14009)            :      M   /    M   /    M   /    M
 KPDH1 : Kealia Pond (USFWS)         :    0.00  /  0.00  /  0.00  /  0.00
 WCCH1 : Waikapu Country Club (14005):    0.00  /  0.00  /  0.00  /  0.00
 HULH1 : Hanaula (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
@@ -3000,7 +3000,7 @@ KUUH1 : Kamuela Upper (15002)       :    0.00  /  0.00  /  0.00  /  0.00
 KMUH1 : Kamuela (15005)             :    0.00  /  0.00  /  0.00  /  0.00
 HNKH1 : Honokaa (15010)             :    0.00  /  0.00  /  0.00  /  0.00
 PMLH1 : Puu Mali (RAWS)             :    0.00  /  0.00  /  0.00  /  0.00
-WPNH1 : Waipunalei (UHM)            :      M   /    M   /    M   /  0.00
+WPNH1 : Waipunalei (UHM)            :    0.00  /  0.00  /    M   /  0.00
 KNKH1 : Kanakaleonui (UHM)          :    0.00  /  0.00  /  0.00  /  0.00
 LPHH1 : Laupahoehoe PD (15001)      :    0.00  /  0.00  /  0.00  /  0.00
 LAUH1 : Laupahoehoe (UHM)           :    0.00  /  0.00  /  0.00  /  0.00
@@ -3060,7 +3060,7 @@ WKVH1 : Waikoloa (RAWS)             :    0.00  /  0.00  /  0.00  /  0.00
 PERH1 : Puhe CS (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
 KHRH1 : Kohala Ranch (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
 KASH1 : Kahua Ranch (15006)         :    0.00  /  0.00  /  0.00  /  0.00
-KEHH1 : Kehena (UHM)                :    0.00  /  0.01  /  0.01  /  0.01
+KEHH1 : Kehena (UHM)                :    0.00  /  0.00  /  0.01  /  0.01
 PLAH1 : Puuloa (UHM)                :    0.00  /  0.00  /  0.00  /  0.00
 .END
 
@@ -3084,7 +3084,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T10:45:48.381345-10:00 HST |
+| **Collected** | 2026-09-29T10:54:50.673506-10:00 HST |
 
 ```text
                         
@@ -3957,7 +3957,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-29T10:52:30.082045-10:00 HST |
+| **Collected** | 2026-09-29T11:01:30.655835-10:00 HST |
 
 ```text
 Home
@@ -4081,7 +4081,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Tue, 29 Sep 2026 20:51:21 UTC
+Last update Tue, 29 Sep 2026 20:59:19 UTC
 
 NHC issuing advisories for the Atlantic on
 
@@ -7868,7 +7868,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-29T10:45:30.852675-10:00 HST |
+| **Collected** | 2026-09-29T10:54:32.650919-10:00 HST |
 
 ```text
 National Weather Service
