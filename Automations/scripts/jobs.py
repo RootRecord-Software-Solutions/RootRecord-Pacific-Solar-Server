@@ -332,7 +332,7 @@ ON_AT = [
     },
 ]
 
-ECOFLOW_ACTIONS = "/home/rootrecord/.ollama/skills/energy/scripts/actions"
+ECOFLOW_ACTIONS = f"{PACIFIC}/Energy/scripts/actions"
 ECOFLOW_LOCK = "/tmp/ecoflow-ble.lock"
 
 
