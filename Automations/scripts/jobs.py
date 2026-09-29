@@ -293,6 +293,20 @@ EVERY_SECONDS = [
         "cwd": f"{PACIFIC}/Geology",
         "env": {},
     },
+    {
+        # Kilauea webcam stills (2026-09-29, migration-geology): G1 kilauea/kilauea-cams port (catalog + USGS still
+        # fallback; OBS push not ported). OFF unless RR_KILAUEA_CAMS=1 at poller start. Conditional GET, ~0.85 MB per change.
+        "id": "geology_kilauea_cams",
+        "enabled": os.environ.get("RR_KILAUEA_CAMS", "0") == "1",
+        "description": "USGS HVO V1/V2/V3 Halemaumau stills -> Database Geology/Volcanoes/Cams/*-last.jpg + cams-last.json (YouTube live ids).",
+        "interval_sec": 600,
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Geology/scripts/kilauea_cams.py"',
+        "timeout_sec": 60,
+        "needs_internet": True,
+        "cwd": f"{PACIFIC}/Geology",
+        "env": {},
+    },
 ]
 
 EVERY_MINUTE = [
