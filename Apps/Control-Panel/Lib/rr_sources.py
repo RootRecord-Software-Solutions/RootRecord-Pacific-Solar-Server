@@ -1,4 +1,4 @@
-"""rr_sources.py — read-only data readers for the RootRecord Control Panel (GTK) and Conky readout.
+"""rr_sources.py — read-only data readers for Root Monitor (GTK, was "RootRecord Control Panel") and Conky readout.
 
 INFO — MUST HAVE (future agents), added 2026-09-29:
 - READ-ONLY. Every function here only reads existing JSON / log / report files, sysfs and /proc.

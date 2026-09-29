@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""rr_control_panel.py — RootRecord Control Panel: native GTK4 / libadwaita desk app (no browser, no Electron).
+"""rr_control_panel.py — Root Monitor (was "RootRecord Control Panel"): native GTK4 / libadwaita desk app (no browser, no Electron).
 
 INFO — MUST HAVE (future agents), added 2026-09-29:
 - READ-ONLY viewer ADDED ALONGSIDE poller-dashboard.py, poller-watch.py, the poller ENERGY status line and
@@ -15,6 +15,11 @@ INFO — MUST HAVE (future agents), added 2026-09-29:
   Agents must never click them. Enabling them is a sign-off item.
 - --check builds every widget and loads each data source once, prints a report and exits; no window shown.
 - --screenshot DIR opens the window, captures each page to PNG (renders the window itself), then quits.
+  Before each PNG is saved, every string in the window is checked against the known secret values; a match
+  skips that PNG (secret guard).
+- Renamed "Root Monitor" 2026-09-29 (file paths + APP_ID unchanged so the existing launcher keeps working).
+  New pages (rr_pages.py): Running, Network (+ Starlink), SSH, Not migrated, and the Settings hub
+  (Lib/rr_registry.py + Lib/rr_config_io.py). Every page does nothing unless it is visible.
 """
 from __future__ import annotations
 
@@ -51,8 +56,10 @@ except (ValueError, ImportError):
 from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk, Pango  # noqa: E402
 
 APP_ID = "cloud.rootrecord.ControlPanel"
+APP_NAME = "Root Monitor"
 PAGES = [("energy", "Energy"), ("weather", "Weather"), ("system", "System"), ("npu", "NPU"), ("ai", "AI log"),
-         ("poller", "Poller / services"), ("cameras", "Cameras"), ("controls", "Controls"), ("settings", "Settings")]
+         ("poller", "Poller / services"), ("running", "Running"), ("network", "Network"), ("ssh", "SSH"),
+         ("cameras", "Cameras"), ("controls", "Controls"), ("migration", "Not migrated"), ("settings", "Settings")]
 
 CSS = b"""
 .rr-mono { font-family: monospace; font-size: 9.5pt; }
@@ -72,53 +79,8 @@ def now_hst() -> str:
     return datetime.now(src.TZ).strftime("%a %d %b %Y  %H:%M:%S HST")
 
 
-def lbl(text="", css=None, xalign=0.0, wrap=False, select=False, markup=False) -> Gtk.Label:
-    w = Gtk.Label(xalign=xalign)
-    (w.set_markup if markup else w.set_text)(text)
-    if wrap:
-        w.set_wrap(True)
-        w.set_wrap_mode(Pango.WrapMode.WORD_CHAR)
-    if select:
-        w.set_selectable(True)
-    for c in (css or "").split():
-        w.add_css_class(c)
-    return w
-
-
-def esc(s) -> str:
-    return GLib.markup_escape_text(str(s))
-
-
-def badge_css(state: str) -> str:
-    return {"PASS": "rr-pass", "WARN": "rr-warn", "FAIL": "rr-fail"}.get(state, "dim-label")
-
-
-def section(title: str) -> tuple[Gtk.Box, Gtk.Box]:
-    outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-    outer.append(lbl(title, "heading"))
-    inner = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
-    inner.add_css_class("card")
-    inner.add_css_class("rr-card")
-    outer.append(inner)
-    return outer, inner
-
-
-def spawn(argv: list[str], on_done=None, capture=False):
-    """Start a child without blocking the UI; always reaped (wait_check_async)."""
-    flags = Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_MERGE if capture else Gio.SubprocessFlags.NONE
-    proc = Gio.Subprocess.new(argv, flags)
-    if capture:
-        def fin(p, res):
-            try:
-                ok, out, _e = p.communicate_utf8_finish(res)
-            except GLib.Error as e:
-                out = f"error: {e.message}"
-            if on_done:
-                on_done(out or "", p.get_exit_status() if p.get_if_exited() else -1)
-        proc.communicate_utf8_async(None, None, fin)
-    else:
-        proc.wait_async(None, lambda p, r: p.wait_finish(r))
-    return proc
+from rr_ui import badge_css, esc, lbl, section, spawn, widget_texts  # noqa: E402
+from rr_pages import ExtraPages  # noqa: E402
 
 
 class BarRow:
@@ -151,7 +113,7 @@ class BarRow:
         self.detail.set_text(detail)
 
 
-class Panel:
+class Panel(ExtraPages):
     def __init__(self, settings: dict, check: bool = False, camera_override: bool | None = None):
         self.s = settings
         self.check = check
@@ -199,10 +161,12 @@ class Panel:
         self.root.append(body)
         self.builders = {"energy": self.b_energy, "weather": self.b_weather, "system": self.b_system,
                          "npu": self.b_npu, "ai": self.b_ai, "poller": self.b_poller, "cameras": self.b_cameras,
-                         "controls": self.b_controls, "settings": self.b_settings}
+                         "controls": self.b_controls, "settings": self.b_settings, "running": self.b_running,
+                         "network": self.b_network, "ssh": self.b_ssh, "migration": self.b_migration}
         self.refreshers = {"energy": self.r_energy, "weather": self.r_weather, "system": self.r_system,
                            "npu": self.r_npu, "ai": self.r_ai, "poller": self.r_poller, "cameras": self.r_cameras,
-                           "controls": self.r_controls, "settings": lambda: None}
+                           "controls": self.r_controls, "settings": lambda: None, "running": self.r_running,
+                           "network": self.r_network, "ssh": lambda: None, "migration": lambda: None}
         self.page_boxes, self.built = {}, set()
         self.cam_tiles = {}
         for name, title in PAGES:
@@ -630,7 +594,8 @@ class Panel:
                      "Run", lambda: spawn(list(action["argv"])))
 
     # ----------------------------------------------------------- settings
-    def b_settings(self, box):
+    def b_panel_settings(self, box):
+        """Settings → Panel sub-page (Root Monitor's own settings.json)."""
         s = self.s
         self.set_widgets = {}
         if Adw is None:
@@ -642,8 +607,11 @@ class Panel:
         self._spin(g, "stale_after_sec", "Mark SOC stale after (s)", 60, 7200)
         self._spin(g, "log_lines", "Poller log lines shown", 10, 200)
         self._entry(g, "weather_zone", "Weather zone (ZFP name)")
-        self._entry(g, "start_page", "Start page (energy, weather, system, npu, ai, poller, controls, settings)")
+        self._entry(g, "start_page", "Start page (energy, weather, system, npu, ai, poller, running, network, ssh, controls, migration, settings)")
         self._entry(g, "gsk_renderer", "GTK renderer (cairo = lightest; applies on next start)")
+        self._switch(g, "starlink_enabled", "Starlink status on the Network page", "helper runs only while that page is visible")
+        self._spin(g, "starlink_poll_sec", "Starlink poll interval (s, minimum 10)", 10, 300)
+        self._entry(g, "ssh_mainland_alias", "Mainland SSH Host alias (empty = placeholder)")
         page.add(g)
         g = Adw.PreferencesGroup(title="Paths (read-only sources)")
         self._entry(g, "database_root", "Database root")
@@ -826,7 +794,7 @@ class Panel:
         lap = e["laptop"]
         la = self.logd().get("log_age")
         self.header.set_markup(
-            f"<b>RootRecord · Pacific Solar Server</b>   poller <span foreground='{col}'><b>● {st}</b></span> ({n} proc)"
+            f"<b>Root Monitor · Pacific Solar Server</b>   poller <span foreground='{col}'><b>● {st}</b></span> ({n} proc)"
             f"   B1 {f(e['river2pro']['soc'])} · B2 {f(e['delta2']['soc'])} · B3 laptop {f(lap[0]) if lap else 'n/a'}"
             f"   log {int(la) if la is not None else '—'}s   <span alpha='70%'>{esc(now_hst())}</span>")
 
@@ -866,6 +834,14 @@ class Panel:
         self._logd = None
         self.safe(self.refresh_visible)
         self.cam_timer_update()
+        self.sl_update()
+
+    def sl_update(self):
+        """Starlink helper process lives only while the Network page is visible in the window."""
+        if self.win is not None and self.stack.get_visible_child_name() == "network" and "network" in self.built:
+            self.sl_start()
+        else:
+            self.sl_stop()
 
     def attach(self, win):
         self.win = win
@@ -873,6 +849,7 @@ class Panel:
         self.restart_timer()
 
     def stop(self):
+        self.sl_stop()
         for attr in ("timer_id", "cam_timer_id"):
             if getattr(self, attr):
                 GLib.source_remove(getattr(self, attr))
@@ -895,8 +872,18 @@ def run_check(args, settings) -> int:
                 p.report["cameras"] = {"viewer": "off"}
         else:
             p.safe(p.refreshers[name])
+    if "network" in dict(PAGES) and not args.no_starlink:
+        p.safe(p.r_network)  # second sample -> real rates
+        sl = p.starlink_once()
+        p.report["starlink"] = {k: sl.get(k) for k in ("ok", "state", "uptime_s", "pop_ping_latency_ms", "fraction_obstructed",
+                                                         "downlink_bps", "uplink_bps", "error") if k in sl}
+    # secret leak test: every string in the built widget tree vs. the known secret values (never printed)
+    texts = "\n".join(widget_texts(p.root))
+    secrets = p.reg.secret_values()
+    leaks = sum(1 for v in secrets if v and v in texts)
     ru = resource.getrusage(resource.RUSAGE_SELF)
-    print(f"RootRecord Control Panel --check  {now_hst()}")
+    ruc = resource.getrusage(resource.RUSAGE_CHILDREN)
+    print(f"{APP_NAME} --check  {now_hst()}")
     print(f"toolkit: Gtk {Gtk.get_major_version()}.{Gtk.get_minor_version()}.{Gtk.get_micro_version()}"
           + (f" · Adw {Adw.get_major_version()}.{Adw.get_minor_version()}" if Adw else " · Adw missing (plain GTK4)"))
     print(f"settings: {rr_settings.SETTINGS_FILE} (exists={rr_settings.SETTINGS_FILE.exists()})")
@@ -906,18 +893,24 @@ def run_check(args, settings) -> int:
         print(f"  {k:<9} {v}")
     print(f"camera stats: {src.STATS}")
     print(f"known URLs: {len(settings.get('known_urls', []))}")
+    print(f"secret leak test: {len(secrets)} known secret values checked against {len(texts):,} chars of widget text -> "
+          f"{leaks} leaks ({'PASS' if leaks == 0 else 'FAIL'})")
+    print(f"security items (secret-looking keys in git-tracked files): {len(p.reg.security_items)}")
+    if leaks:
+        p.errors.append(f"secret leak test: {leaks} values visible")
     print(f"errors: {len(p.errors)}")
     for e in p.errors:
         print("  ERR", e)
     print(f"peak RSS: {ru.ru_maxrss / 1024:.1f} MB · CPU user {ru.ru_utime:.2f}s sys {ru.ru_stime:.2f}s "
-          f"(process CPU {time.process_time() - t0:.2f}s, wall {time.time() - w0:.2f}s)")
+          f"(process CPU {time.process_time() - t0:.2f}s, wall {time.time() - w0:.2f}s) · children peak RSS "
+          f"{ruc.ru_maxrss / 1024:.1f} MB (git ls-files / systemctl / Starlink helper)")
     print("RESULT:", "PASS" if not p.errors else "FAIL")
     return 0 if not p.errors else 1
 
 
 def build_window(app, panel: Panel):
     cls = Adw.ApplicationWindow if Adw else Gtk.ApplicationWindow
-    win = cls(application=app, title="RootRecord Control Panel")
+    win = cls(application=app, title=APP_NAME)
     win.set_default_size(1100, 760)
     tb = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
     hb = Adw.HeaderBar() if Adw else Gtk.HeaderBar()
@@ -983,43 +976,63 @@ def run_gui(args, settings) -> int:
 
 
 def shoot(app, win, panel: Panel, out: Path):
+    """Capture every page (and every Settings / Not-migrated sub-page) to PNG. Secret guard: before each PNG,
+    all window strings are compared with the known secret values; any match skips that PNG."""
+    import rr_registry
     out.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(src.TZ).strftime("%Y%m%d-%H%M%S")
-    seq = [(n, None) for n, _ in PAGES if n != "cameras"] + [("cameras", False), ("cameras", True)]
+    seq = [(n, None) for n, _ in PAGES if n not in ("cameras", "settings", "migration")]
+    seq += [("cameras", False), ("cameras", True), ("migration", None), ("migration", "discord")]
+    seq += [("settings", pid) for pid, _t in rr_registry.PAGES]
+    secrets = [v for v in panel.reg.secret_values() if v]
     done = []
+
+    def select(name, sub):
+        if name == "cameras":
+            panel.camera_override = sub
+        panel.stack.set_visible_child_name(name)
+        panel.on_page()
+        if name == "settings" and sub:
+            panel.set_stack.set_visible_child_name(sub)
+        if name == "migration" and sub and sub in getattr(panel, "mig_items", {}):
+            panel.mig_stack.set_visible_child_name(sub)
 
     def step(i=[0]):  # noqa: B006
         if i[0] > 0:
-            name, cam = seq[i[0] - 1]
-            fn = out / f"{ts}-{i[0]:02d}-{name}{'' if cam is None else ('-viewer-on' if cam else '-viewer-off')}.png"
-            ok = capture(win, fn)
-            done.append((str(fn), ok))
+            name, sub = seq[i[0] - 1]
+            tag = "" if sub is None else ("-viewer-on" if sub is True else "-viewer-off" if sub is False else f"-{sub}")
+            fn = out / f"{ts}-{i[0]:02d}-{name}{tag}.png"
+            texts = "\n".join(widget_texts(win))
+            leak = sum(1 for v in secrets if v in texts)
+            if leak:
+                done.append((str(fn), False, f"SKIPPED by secret guard ({leak} matches)"))
+            else:
+                done.append((str(fn), capture(win, fn), "secret guard PASS (0 matches)"))
         if i[0] >= len(seq):
-            for f, ok in done:
-                print(("SAVED " if ok else "FAILED ") + f)
+            for f, ok, note in done:
+                print(("SAVED " if ok else "NOT SAVED ") + f + " · " + note)
             ru = resource.getrusage(resource.RUSAGE_SELF)
             print(f"window peak RSS: {ru.ru_maxrss / 1024:.1f} MB · CPU user {ru.ru_utime:.2f}s sys {ru.ru_stime:.2f}s")
-            print(f"camera stats: {src.STATS}")
+            print(f"camera stats: {src.STATS} · starlink helper running at exit: {panel.sl_proc is not None}")
             panel.stop()
             win.close()
             app.quit()
             return False
-        name, cam = seq[i[0]]
-        if cam is not None:
-            panel.camera_override = cam
-        panel.stack.set_visible_child_name(name)
-        panel.on_page()
+        name, sub = seq[i[0]]
+        select(name, sub)
         i[0] += 1
-        GLib.timeout_add(2500 if name == "cameras" else 1200, step)
+        slow = name == "cameras" or name == "network" or (name == "settings" and sub in ("environment", "flags"))
+        GLib.timeout_add(3500 if slow else 1300, step)
         return False
     GLib.timeout_add(1500, step)
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="RootRecord Control Panel (GTK4, read-only)")
+    ap = argparse.ArgumentParser(description="Root Monitor — RootRecord control panel (GTK4)")
     ap.add_argument("--check", action="store_true", help="build widgets + load data once, print report, exit (no window)")
     ap.add_argument("--camera-viewer", choices=("on", "off"), help="override camera_viewer_enabled for this run (not saved)")
     ap.add_argument("--screenshot", metavar="DIR", help="open the window, save a PNG of every page into DIR, quit")
+    ap.add_argument("--no-starlink", action="store_true", help="--check: skip the one read-only Starlink poll")
     ap.add_argument("--run-for", type=int, metavar="SEC", help="open the window, quit after SEC seconds, print peak RSS (testing)")
     args = ap.parse_args()
     settings = rr_settings.load()

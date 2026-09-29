@@ -1,4 +1,4 @@
-"""rr_settings.py — single settings file for the RootRecord Control Panel (Apps/Control-Panel/settings.json).
+"""rr_settings.py — single settings file for Root Monitor (was "RootRecord Control Panel"; Apps/Control-Panel/settings.json).
 
 INFO — MUST HAVE (future agents), added 2026-09-29:
 - ONE file holds every panel setting. Missing keys fall back to DEFAULTS; unknown keys are kept.
@@ -47,6 +47,9 @@ DEFAULTS: dict = {
          "argv": [], "signed_off": False},
     ],
     "known_urls": [],
+    "starlink_enabled": True,
+    "starlink_poll_sec": 10,
+    "ssh_mainland_alias": "",
 }
 
 # Seeded 2026-09-29 by read-only discovery from poller-watch.py, rootserver_poller.py, cam_server.py,

@@ -1,10 +1,10 @@
-# rootrecord-control-panel.service — systemd --user autostart for the RootRecord Control Panel (added 2026-09-29)
+# rootrecord-control-panel.service — systemd --user autostart for Root Monitor (was RootRecord Control Panel) (added 2026-09-29)
 # WRITTEN TO THE REPO ONLY. NOT installed, NOT enabled. Enabling is a SIGN-OFF item:
 #   cp "<repo>/Apps/Control-Panel/Packaging/rootrecord-control-panel.service" ~/.config/systemd/user/
 #   systemctl --user daemon-reload && systemctl --user enable --now rootrecord-control-panel.service
 # The panel is read-only; stopping this unit only closes the panel (poller untouched).
 [Unit]
-Description=RootRecord Control Panel (GTK4, read-only)
+Description=Root Monitor (RootRecord GTK4 control panel)
 PartOf=graphical-session.target
 After=graphical-session.target
 

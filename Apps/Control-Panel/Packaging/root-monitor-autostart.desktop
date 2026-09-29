@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Root Monitor
+Comment=Root Monitor as the default RootRecord viewer at login (installed ONLY by swap-default-viewer.sh apply — sign-off item)
+Exec=/usr/bin/python3 "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Apps/Control-Panel/rr_control_panel.py"
+TryExec=/usr/bin/python3
+Terminal=false
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Delay=10
+OnlyShowIn=GNOME;

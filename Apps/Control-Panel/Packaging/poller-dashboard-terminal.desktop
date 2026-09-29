@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Poller Dashboard (terminal)
+GenericName=RootRecord terminal poller dashboard
+Comment=The original read-only terminal dashboard (poller-dashboard.py) via open-poller-window.sh — unchanged; kept alongside Root Monitor (launcher added 2026-09-29)
+Exec=/bin/bash "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Automations/scripts/poller/open-poller-window.sh"
+TryExec=/bin/bash
+Icon=utilities-terminal
+Terminal=false
+Categories=System;Monitor;
+Keywords=RootRecord;poller;dashboard;terminal;
