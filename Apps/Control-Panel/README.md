@@ -1,15 +1,16 @@
-# Control-Panel — RootRecord native desk panel (GTK4 + libadwaita) and Conky readout
+# Root Monitor (Apps/Control-Panel) — RootRecord native desk control panel (GTK4 + libadwaita) and Conky readout
 
-Added 2026-09-29. A **read-only** native Linux app. No browser, no Chromium, no Electron, no network server. It is added **alongside** the existing viewers. `poller-dashboard.py`, `poller-watch.py`, `open-poller-window.sh`, the poller ENERGY status line and `npu-status.sh` are unchanged and still work.
+Added 2026-09-29 as "RootRecord Control Panel"; renamed **Root Monitor** 2026-09-29 ~13:00 HST (folder, file names and app id unchanged, so the existing launcher keeps working). A native Linux app, read-only except the Settings editor (masked diff + confirm + backup + atomic write; never restarts anything). No browser, no Chromium, no Electron, no network server. It is added **alongside** the existing viewers. `poller-dashboard.py`, `poller-watch.py`, `open-poller-window.sh`, the poller ENERGY status line and `npu-status.sh` are unchanged and still work.
 
-State: **LANDED**. Headless `--check` PASS, real-window render PASS (screenshots below). The Conky widget and the autostart unit are **VERIFY PENDING**: conky is not installed and the unit is not enabled.
+State: **LANDED**. Headless `--check` PASS, settings editor tests 103/103 PASS, real-window render PASS. `--check` RSS 84.5 MB is over the 80 MB target (flagged). **VERIFY PENDING** (sign-off): default-viewer swap, autostart unit, starting Conky (now installed; config copied, not started).
 
 ## Launch
 
-- **App menu:** "RootRecord Control Panel". The launcher is installed at `~/.local/share/applications/rootrecord-control-panel.desktop`.
+- **App menu:** "Root Monitor" (`~/.local/share/applications/rootrecord-control-panel.desktop`). The original terminal dashboard stays installed: app menu **"Poller Dashboard (terminal)"** (`rootrecord-poller-dashboard-terminal.desktop` → unchanged `open-poller-window.sh`), plus the untouched Desktop launcher and autostart entry.
+- **Make Root Monitor the default viewer at login (sign-off):** `bash Packaging/swap-default-viewer.sh status|apply|revert`. `apply` moves the unchanged `~/.config/autostart/rootrecord-poller-watch.desktop` into `~/.config/autostart/.root-monitor-swap/` (sha256 kept) and installs `root-monitor.desktop`; `revert` restores it byte-identically. The poller still starts at login by itself (unit enabled via `default.target`).
 - **Terminal:** `python3 "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Apps/Control-Panel/rr_control_panel.py"`
 - It runs as a single instance. A second launch raises the open window. Closing the window closes only the panel; the poller keeps running.
-- **Test (no window):** `nice -n 10 python3 rr_control_panel.py --check [--camera-viewer on|off]` or `bash Tests/run-check.sh <outdir>`. The suite runs both modes under `/usr/bin/time` and `strace`.
+- **Test (no window):** `nice -n 10 python3 rr_control_panel.py --check [--camera-viewer on|off] [--no-starlink]` or `bash Tests/run-check.sh <outdir>` (both modes under `/usr/bin/time` and `strace`, then `Tests/test_settings_io.py`, which edits **temporary copies** only).
 - **Other modes:** `--screenshot DIR` opens the window, saves a PNG of every page and quits. `--run-for SEC` opens the window, quits after SEC seconds and prints peak RSS.
 
 ## Pages and data sources (all read-only)
@@ -25,9 +26,13 @@ State: **LANDED**. Headless `--check` PASS, real-window render PASS (screenshots
 | Poller / services | the same 8 rows and PASS/WARN/FAIL rule as the dashboard (poller, relay, BLE, globe, cam, weather, ollama, tunnel) + MainPID, log age, recent log formatted with `poller-watch.format_line` | `/proc/*/cmdline`, `systemctl [--user] show -p Id,ActiveState,MainPID` (2 calls), log tail | 5 s while visible |
 | Cameras | latest on-disk still per enabled camera (ch1–ch4) | directory listing + at most one JPEG per camera from `2 - RootRecord-Database/Media/Images/` | **OFF by default**; when on, every 10 s **only while the page is visible** |
 | Controls | safe actions; risky actions (disabled, need sign-off); gated `RR_*` flags list | `Automations/scripts/jobs.py` (text scan only) | 5 s while visible |
-| Settings | every setting + Known URLs + camera toggles | `settings.json` | on Save |
+| Running | poller + child jobs (ports), RootRecord processes (masked cmdlines), listeners, tunnels, Ollama/FLM, systemd user + system units, timers, cron — read-only, each row links to its Settings page | `/proc`, `/proc/net/tcp*`, `systemctl list-units/list-timers`, `crontab -l` (cached 15 s), Ollama `GET /api/version|ps` on 127.0.0.1 | 5 s while visible |
+| Network | per-interface rx/tx rates, totals since boot; Starlink state/uptime/latency/throughput/obstruction | `/proc/net/dev`, sysfs; `Starlink/starlink_status.py` (own venv process) | 5 s while visible; Starlink every ≥ 10 s, helper exists only while visible |
+| SSH | `rr-aws`, `rr-aws-ip` (alias, user@host:port, ProxyCommand/identity present — keys never read); Open terminal; Status = `timeout 5 ssh -o BatchMode=yes rr-aws uptime`; Mainland placeholder | `~/.ssh/config` | on click only |
+| Not migrated | 23 G2/G1 placeholders with WO + state + "not migrated" | `Lib/rr_migration.json` | no timer |
+| Settings | 10 sub-pages (Network, Messaging, Environment, Flags, Services/Poller, Weather, Voice, AI/NPU, Cameras, Panel) — 1,590 settings from 27 files; secrets masked; Replace/Clear/Edit with masked diff + confirm | `Lib/rr_registry.py`, `Lib/rr_config_io.py`; Panel = `settings.json` | built on visit, released on leave |
 
-Cameras are discovered from `Security/Cameras/grab_all.sh` (`for ch in 1 2 3 4`). `Security/Cameras/store/CONNECTION.json` is **never** read (strace-checked). Missing or flapping stills (for example during camera hardware work) are shown as "no still on disk" and are expected. If a camera has no still at all, one local still is fetched from `http://127.0.0.1:8791/current_chN.jpg`, and only while the page is visible (`camera_live_fallback`).
+Cameras are discovered from `Security/Cameras/grab_all.sh` (`for ch in 1 2 3 4`). The Cameras page never reads `Security/Cameras/store/CONNECTION.json` (strace-checked); only the Settings → Cameras registry parses it in code and shows every value masked. Missing or flapping stills (for example during camera hardware work) are shown as "no still on disk" and are expected. If a camera has no still at all, one local still is fetched from `http://127.0.0.1:8791/current_chN.jpg`, and only while the page is visible (`camera_live_fallback`).
 
 ## Settings — one file: `settings.json`
 
@@ -49,6 +54,8 @@ The keys and their defaults:
 - `risky_actions_enabled` **false**
 - `risky_actions` [...]
 - `known_urls` [...]
+- `starlink_enabled` true, `starlink_poll_sec` 10 (minimum 10)
+- `ssh_mainland_alias` "" (empty = Mainland placeholder)
 
 Camera toggles only change what the **panel** shows. They never touch collectors, grab jobs or the poller.
 
@@ -67,9 +74,10 @@ Camera toggles only change what the **panel** shows. They never touch collectors
 
 | Mode | Peak RSS | CPU |
 | --- | --- | --- |
-| `--check`, camera viewer off (default) | 73.8 MB (time -v 76.7 MB) — **PASS < 80 MB** | 0.40 s |
-| `--check`, camera viewer on (4 stills decoded to ≤640×360) | 87.8 MB (time -v 89.9 MB) — over 80 MB; opt-in only | 0.50 s |
-| real window 30 s, viewer off, cairo renderer | 85.0 MB — over 80 MB (an empty GTK4/Adw window alone is 66–68 MB here) | 0.58 s incl. startup |
+| `--check`, viewer off (13 pages + all sub-pages built once) — 13:08 HST | **84.5 MB — over the 80 MB target** (was 73.8 MB before Running/Network/SSH/Settings) | 1.2 s |
+| `--check`, viewer on | 98.9 MB — opt-in | 1.4 s |
+| real window 25 s, Energy page, cairo | 85.7 MB (an empty GTK4/Adw window alone is 66–68 MB here) | 0.59 s incl. startup |
+| Starlink helper (separate process, only while Network is visible) | 55.7 MB | 0.43 s per poll incl. start |
 | real window, default GL renderer (not used) | ~180 MB (gl 275 MB) | — |
 
 ## Conky readout — `Conky/rootrecord.conkyrc`
@@ -83,15 +91,18 @@ The readout shows:
 
 The values come from `Conky/conky_readout.py` (the same read-only readers, every 15–30 s, nice 10; it never runs `npu-status.sh`).
 
-Conky is **not installed** on the desk. `sudo apt install conky-all` is a sign-off item. After that, run `bash Packaging/install-launcher.sh`, which copies the config to `~/.config/conky/`. Start it manually with `conky -c ~/.config/conky/rootrecord.conkyrc`.
+`conky-all` 1.22.2 is installed on the desk (dpkg 12:35 HST 2026-09-29, not by this app). `Packaging/install-launcher.sh` copied the config to `~/.config/conky/rootrecord.conkyrc`; it was **not started**. Start it with `conky -c ~/.config/conky/rootrecord.conkyrc` (sign-off; autostart is a separate decision).
 
 ## Packaging
 
-- `Packaging/rootrecord-control-panel.desktop` is installed by `Packaging/install-launcher.sh` (user level, no sudo).
+- `Packaging/rootrecord-control-panel.desktop` (Name "Root Monitor") and `Packaging/poller-dashboard-terminal.desktop` (Name "Poller Dashboard (terminal)") are installed by `Packaging/install-launcher.sh` (user level, no sudo).
+- `Packaging/swap-default-viewer.sh` + `Packaging/root-monitor-autostart.desktop`: reversible default-viewer swap — **not applied** (sign-off).
 - `Packaging/rootrecord-control-panel.service` is a systemd **--user** unit. It is written here only and is **NOT installed or enabled** (sign-off item). The enable commands are in the file header.
 
 ## Files
 
-`rr_control_panel.py` · `Lib/rr_sources.py` · `Lib/rr_settings.py` · `settings.json` · `Conky/` · `Packaging/` · `Tests/run-check.sh`
+`rr_control_panel.py` · `rr_pages.py` · `rr_ui.py` · `Lib/rr_sources.py` · `Lib/rr_settings.py` · `Lib/rr_registry.py` · `Lib/rr_config_io.py` · `Lib/rr_running.py` · `Lib/rr_netstat.py` · `Lib/rr_ssh.py` · `Lib/rr_migration.json` · `Starlink/starlink_status.py` (+ gitignored `Starlink/.venv`, py3.12 + `starlink-grpc-core`) · `settings.json` · `Conky/` · `Packaging/` · `Tests/run-check.sh` · `Tests/test_settings_io.py`
 
-Docs: Library `Documentation/00-architecture/Control-Panel-GTK.md` · test record `Documentation/07-testing/2026-09-29-control-panel-gtk.md`.
+Settings saves back up to `/home/rootrecord/Database/GITHUB/control-panel-settings-backups/` (0600 for secret files). Secrets are never displayed, logged or screenshotted (the `--screenshot` mode checks every PNG first).
+
+Docs: Library `Documentation/00-architecture/Control-Panel-GTK.md` · test records `Documentation/07-testing/2026-09-29-control-panel-gtk.md`, `Documentation/07-testing/2026-09-29-root-monitor-settings-running-network-ssh.md`.
