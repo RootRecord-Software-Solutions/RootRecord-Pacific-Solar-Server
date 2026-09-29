@@ -1,0 +1,5 @@
+{
+  "_comment": "Known WiZ bulbs (IP/MAC are not secrets; tracked). Fill after `wiz.py discover --sweep 192.168.1` finds them. Empty = none found yet (2026-09-29 13:30 HST: 0 replies on UDP 38899).",
+  "sweep_subnet": "192.168.1",
+  "bulbs": {}
+}

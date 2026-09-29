@@ -308,6 +308,20 @@ EVERY_SECONDS = [
         "env": {},
     },
     {
+        # Energy smart devices (2026-09-29, smart-devices): WiZ bulbs (UDP 38899) + Tuya BSD01 plugs, read-only status.
+        # OFF unless RR_SMART_DEVICES=1 is in the poller's environment at poller start. LAN only, never switches, no BLE.
+        "id": "smart_devices_collect",
+        "enabled": os.environ.get("RR_SMART_DEVICES", "0") == "1",
+        "description": "WiZ bulb + Tuya plug state -> Database Energy/Smart-Devices/{wiz,plugs,collector}-last.json.",
+        "interval_sec": 300,
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Energy/Smart-Devices/scripts/smart_devices_collect.py"',
+        "timeout_sec": 45,
+        "needs_internet": False,
+        "cwd": f"{PACIFIC}/Energy/Smart-Devices",
+        "env": {},
+    },
+    {
         # Uptime log (2026-09-29, migration-geology pass): G1 uptime-log port. OFF unless RR_UPTIME_LOG=1 at poller start.
         "id": "system_uptime_log",
         "enabled": os.environ.get("RR_UPTIME_LOG", "0") == "1",

@@ -4,15 +4,29 @@
 
 ---
 
-## Status (2026-09-28 ~17:00 HST)
+## Status (2026-09-29 ~13:30 HST — migration-geology pass)
 
 | Item | State |
 | --- | --- |
 | Domain folder | **`Geology/` only** (no parallel `geology` / `kilauea` / `earthquakes` runtime folders on Pacific) |
 | Ownership | Desk-side observation, polling, ingest, and operator tooling |
-| `jobs.py` | None yet — wire jobs here when scripts are imported |
-| Data (off-git) | Prefer `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/` under a Geology-aligned tree (e.g. `GEOLOGY/`, `KILAUEA/`, `EARTHQUAKES/`) when introduced |
+| Scripts | `scripts/geology_collect.py`, `scripts/kilauea_cams.py`, `scripts/earthquakes_backfill.py` — **LANDED**, one manual run each **PASS** (nice 10) |
+| `jobs.py` | `geology_collect` (300 s, `RR_GEOLOGY=1`), `geology_kilauea_cams` (600 s, `RR_KILAUEA_CAMS=1`) — **gated OFF**; take effect only at the next poller start with the flag set (after Alexander signs off) |
+| Data | Database `2 - RootRecord-Database/Geology/{Earthquakes,Volcanoes}/` — layout in Database `Geology/README.md` |
+| Voice | `Media/Voice/scripts/voice_reports.py earthquake_report` reads the Earthquakes last files (job `voice_earthquake_report`, `RR_VOICE_QUAKE=1`, no delivery) |
 | Public products | Alert apps / websites may live in product repos; **this domain owns desk runtime** for the same capability |
+
+### Scripts
+
+| Script | Ported from | Sources (public, no key) | Writes |
+| --- | --- | --- | --- |
+| `scripts/geology_collect.py [all\|quakes\|volcanoes] [--dry-run]` | G1 `earthquakes/earthquake-hourly` (fetch + M≥2 detection), G1 `kilauea/rr-kilauea` (alert level, headline, erupting, multiplier, ≤150 km count), G0 `operations/…/every-5-minutes/quakes.py` | USGS FDSN query (Hawaiʻi bbox, M≥1, 24 h), USGS summary `2.5_day.geojson`, HANS `getMonitoredVolcanoes`, HANS `getNewestOrRecent` | `Earthquakes/{hawaii,global}-last.json`, `Earthquakes/Daily/*.jsonl`, `Volcanoes/{hvo,kilauea,mauna-loa}-last.json`, `Volcanoes/Daily/hvo-notices-*.jsonl`, `collector-last.json` |
+| `scripts/kilauea_cams.py [--keep-dated]` | G1 `kilauea/kilauea-cams` (DEFAULT_CAMS + USGS still fallback) | USGS HVO V1/V2/V3 `M.jpg` (conditional GET) | `Volcanoes/Cams/cams-last.json`, `Volcanoes/Cams/v{1,2,3}cam-last.jpg` |
+| `scripts/earthquakes_backfill.py [--days N]` | G0 `old/operations/backfillquakes.py` | USGS FDSN `count` + `query` | `Earthquakes/quakes.db` (git-ignored) — on demand only |
+
+Light by design: stdlib only, every HTTP call ≤ 10 s (`RR_GEOLOGY_TIMEOUT`), no retries, one failed source never overwrites its last good file.
+
+**Not ported (need Alexander's sign-off):** G1 Discord/Telegram posts (`earthquake-hourly` Discord, `council-quake` Telegram per-quake posts, `rr-kilauea` public draft queue), Grok report generation (cloud spend), speaker playback, OBS cam push (no OBS in G3), YouTube live-id scraping. G1/G0 sources stay **KEPT** (not retired).
 
 ### Ecosystem path
 
@@ -73,7 +87,7 @@ Geology/
 | G2 skills | Any live skill paths still under ollama for volcano/quake |
 | Product repos | Copy **desk** scripts only; keep secrets out of git |
 
-Deploy path after import: rewire `jobs.py` → quoted Pacific `Geology/…` paths → reload poller.
+Deploy path after import: `jobs.py` entries landed gated (2026-09-29); enabling = set the flag in the poller environment at the next poller start (no reload by agents).
 
 ---
 
@@ -85,4 +99,4 @@ Deploy path after import: rewire `jobs.py` → quoted Pacific `Geology/…` path
 
 ---
 
-*Ownership declared 2026-09-28 HST.*
+*Ownership declared 2026-09-28 HST. Scripts landed 2026-09-29 (migration-geology; Library `Documentation/00-architecture/Old-Repo-Migration-Matrix.md`).*

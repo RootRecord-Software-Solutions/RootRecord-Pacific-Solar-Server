@@ -11,6 +11,7 @@ Host operating-system integration, system sampling, and desk host services.
 | Domain folder | **`System/` only** |
 | jobs.py | `sys_stats_cycle` → `System/scripts/sys-sample.sh` |
 | Sample writes | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/System/` |
+| Uptime log | `scripts/uptime_log.py tick\|facts\|recent` (G1 `uptime-log` port, stdlib) → Database `System/uptime/` (events JSONL, KEEP 400; GAP 180 s; boot_id). Job `system_uptime_log` (60 s) **gated OFF** (`RR_UPTIME_LOG=1`). LANDED · PASS one tick 2026-09-29 13:26 HST |
 | Worklog | **Reports/** (WO-RPT-001) — no longer System residual |
 | Ollama | **Active system service** — `ollama.service`, running as the `ollama` user |
 | Ollama model store | **Service-owned**; not `/home/rootrecord/.ollama/models` |

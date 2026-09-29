@@ -155,7 +155,7 @@ def main(argv: list[str]) -> int:
         else:
             res = {"ok": False, "error": f"unknown command {cmd}"}
     except Exception as e:  # noqa: BLE001
-        res = {"ok": False, "state": "BLOCKED" if isinstance(e, KeyError) else "FAIL", "error": str(e)}
+        res = {"ok": False, "state": "BLOCKED" if isinstance(e, KeyError) else "FAIL", "error": (e.args[0] if isinstance(e, KeyError) and e.args else str(e))}
     print(json.dumps(res, indent=2))
     return 0 if res.get("ok", True) else 1
 
