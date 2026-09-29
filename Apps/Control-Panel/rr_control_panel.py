@@ -912,7 +912,7 @@ def run_check(args, settings) -> int:
     print(f"peak RSS (app: build every page + load all data once): {ru_app.ru_maxrss / 1024:.1f} MB")
     print(f"peak RSS incl. leak-test harness: {ru.ru_maxrss / 1024:.1f} MB · CPU user {ru.ru_utime:.2f}s sys {ru.ru_stime:.2f}s "
           f"(process CPU {time.process_time() - t0:.2f}s, wall {time.time() - w0:.2f}s) · children peak RSS "
-          f"{ruc.ru_maxrss / 1024:.1f} MB (git ls-files / systemctl / Starlink helper)")
+          f"{ruc.ru_maxrss / 1024:.1f} MB (largest child incl. pages inherited at fork: git / systemctl / Starlink helper)")
     print("RESULT:", "PASS" if not p.errors else "FAIL")
     return 0 if not p.errors else 1
 

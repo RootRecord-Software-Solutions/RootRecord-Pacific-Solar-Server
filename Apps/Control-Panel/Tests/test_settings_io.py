@@ -110,7 +110,7 @@ def main():
                         # stale-plan refusal
                         plan3 = cio.plan_edit(cp, spec.fmt, s.key, new, s.kind, secret_keys=secret_keys, whole_file_secret=spec.secret_file,
                                               restart_note="", columns=spec.columns)
-                        cp.write_bytes(orig + (b"\n" if not orig.endswith(b"\n\n") else b""))
+                        cp.write_bytes(orig + b" ")  # someone else changed the file after the diff was shown
                         try:
                             cio.commit(plan3, bak_root)
                             rec(f"stale-plan refused {spec.id}", False)
@@ -119,7 +119,7 @@ def main():
                         cp.write_bytes(orig)
                 # secret replace / clear on the copy
                 sec = [s for s in sets if s.secret and spec.fmt in ("env", "ini", "yaml", "tsv", "json") and s.kind != "complex"
-                       and isinstance(s._value, (str, int, float))]
+                       and isinstance(s._value, str) and not isinstance(s._value, bool)]
                 if sec:
                     s = sec[0]
                     dummy = "RMTESTVALUE_" + "q" * 20

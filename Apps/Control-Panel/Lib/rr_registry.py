@@ -133,7 +133,8 @@ FILES: list[FileSpec] = [
              R_EACH, read_only="Python constants (KEEP_*_DAYS) — code change + review of a dry run"),
     # ---- AI / NPU
     FileSpec("specialist-routes", PAC / "System/config/specialist-routes.json", "json", "ai", "route-specialist.py / run-infer.sh",
-             R_EACH, kinds=((r"^(threshold|saturation)$", "float"), (r"\.keywords\.", "int"), (r"^version$", "int"))),
+             R_EACH, kinds=((r"^(threshold|saturation)$", "float"), (r"\.keywords\.", "int"), (r"^version$", "int")),
+             not_secret=(r"\.keywords\.",)),   # routing keyword weights such as "token*" / "password*" — not credentials
     FileSpec("kokoro-config", DBR / "AI/Kokoro/Kokoro-82M/config.json", "json", "voice", "voice_generate.py (Kokoro-82M)",
              "model config", read_only="model file config — not a setting (never edited; no model is loaded)"),
     # ---- Cameras
@@ -270,6 +271,11 @@ class Registry:
                 if not secret and disp and any(v in str(e.value) for v in self.secret_values()):
                     disp = "masked (value matches a secret held in another file)"
                     ro = ro or "value matches a secret held in another file — edit offline"
+                    if tracked:
+                        item = {"file": str(p), "key": e.key,
+                                "assessment": "value equals an entry of a secret file (e.g. master-key.env) — in a git-tracked file"}
+                        if item not in self.security_items:
+                            self.security_items.append(item)
                 out.append(Setting(page, spec.id, str(p), e.key, "secret" if secret else kind, secret, spec.service, spec.restart,
                                    not ro and os.access(p, os.W_OK), ro or ("" if os.access(p, os.W_OK) else "no write permission"),
                                    disp, e.dup, e.value))
@@ -492,6 +498,7 @@ class Registry:
                     vals.append(sv)
         res = sorted(set(vals), key=len, reverse=True)
         self._sv = (stamp, res)
+        io.KNOWN_SECRETS[:] = res
         return res
 
 

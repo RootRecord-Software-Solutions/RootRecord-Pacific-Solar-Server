@@ -265,10 +265,50 @@ def edit_json(text: str, key: str, new_raw: str, kind: str) -> str:
         val = new_raw
     else:
         raise ValueError(f"{key}: lists/objects are edited in the file, not here")
-    cur[last] = val
-    ind = _json_indent(text)
-    out = json.dumps(data, indent=ind if ind is not None else None, ensure_ascii=False)
-    return out + ("\n" if text.endswith("\n") else "")
+    # surgical edit: replace only the value token in the original text (keeps formatting, key order, spacing)
+    spans = _json_spans(text)
+    full = ".".join(parts[:i] + [last]) if i else last
+    if full not in spans:
+        raise ValueError(f"{key}: value position not found")
+    s, e = spans[full]
+    return text[:s] + json.dumps(val, ensure_ascii=False) + text[e:]
+
+
+_JWS = re.compile(r"\s*")
+
+
+def _json_spans(text: str) -> dict:
+    """path -> (start, end) of every leaf value (same paths as parse_json)."""
+    dec = json.JSONDecoder()
+    spans: dict = {}
+
+    def ws(i):
+        return _JWS.match(text, i).end()
+
+    def obj(i, pre):
+        i = ws(i + 1)
+        if text[i] == "}":
+            return i + 1
+        while True:
+            k, i = json.decoder.scanstring(text, i + 1)
+            i = ws(i)
+            i = ws(i + 1)  # skip ':'
+            path = f"{pre}.{k}" if pre else k
+            v, end = dec.raw_decode(text, i)
+            if isinstance(v, dict) and v:
+                end = obj(i, path)
+            else:
+                spans[path] = (i, end)
+            i = ws(end)
+            if text[i] == ",":
+                i = ws(i + 1)
+                continue
+            return i + 1
+
+    i = ws(0)
+    if text[i:i + 1] == "{":
+        obj(i, "")
+    return spans
 
 
 _Y_RX = re.compile(r"^(?P<ind>\s*)(?P<key>[A-Za-z0-9_.\-/]+|\"[^\"]+\"|'[^']+')\s*:(?P<sp>\s*)(?P<val>[^#\n]*?)(?P<cmt>\s+#.*)?\s*$")
@@ -395,7 +435,11 @@ def apply_edit(fmt: str, text: str, key: str, new: str, kind: str = "str", colum
 
 # ------------------------------------------------------------------ masking + diff
 def masked_text(fmt: str, text: str, secret_keys: set[str], whole_file_secret: bool, columns=None) -> str:
-    """Render text with every secret value replaced by <secret len N>. Used for diffs only."""
+    """Render text with every secret value replaced by <secret len N> (incl. values that are secrets in OTHER files)."""
+    return _mask_known(_masked_text(fmt, text, secret_keys, whole_file_secret, columns))
+
+
+def _masked_text(fmt: str, text: str, secret_keys: set[str], whole_file_secret: bool, columns=None) -> str:
     if whole_file_secret and fmt == "raw":
         return f"<secret {describe(text.rstrip(chr(10)))}>\n"
     lines = text.splitlines(keepends=True)
@@ -447,6 +491,16 @@ def masked_text(fmt: str, text: str, secret_keys: set[str], whole_file_secret: b
             body = tag
         lines[e.line] = body + nl
     return "".join(lines)
+
+
+KNOWN_SECRETS: list[str] = []   # filled by rr_registry.secret_values(): secret values held in OTHER files (never printed)
+
+
+def _mask_known(s: str) -> str:
+    for v in KNOWN_SECRETS:
+        if v and v in s:
+            s = s.replace(v, f"<secret len {len(v)}>")
+    return s
 
 
 def masked_diff(fmt, old, new, secret_keys, whole_file_secret, name="file", columns=None) -> str:
