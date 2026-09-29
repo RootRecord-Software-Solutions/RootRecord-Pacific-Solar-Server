@@ -279,6 +279,20 @@ EVERY_SECONDS = [
         "cwd": f"{PACIFIC}/Automations/scripts",
         "env": {},
     },
+    {
+        # Geology collector (2026-09-29, migration-geology): G1 earthquake-hourly / rr-kilauea fetch + G0 quakes.py port.
+        # OFF unless RR_GEOLOGY=1 is in the poller's environment at poller start. Stdlib, 10 s per HTTP call, no delivery.
+        "id": "geology_collect",
+        "enabled": os.environ.get("RR_GEOLOGY", "0") == "1",
+        "description": "USGS Hawaii (FDSN bbox M1+) + global M2.5+ quakes and HVO Kilauea/Mauna Loa status -> Database Geology/{Earthquakes,Volcanoes}/*-last.json + Daily/*.jsonl.",
+        "interval_sec": 300,
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Geology/scripts/geology_collect.py" all',
+        "timeout_sec": 60,
+        "needs_internet": True,
+        "cwd": f"{PACIFIC}/Geology",
+        "env": {},
+    },
 ]
 
 EVERY_MINUTE = [
@@ -338,6 +352,19 @@ EVERY_MINUTE = [
         "only_at_minutes": [32],
         "builtin": "",
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" remaining_tasks',
+        "timeout_sec": 300,
+        "cwd": f"{PACIFIC}/Media/Voice/scripts",
+        "env": {},
+    },
+    {
+        # Earthquake voice report (2026-09-29, migration-geology): G1 earthquake-hourly spoken script, Carly. OFF unless
+        # RR_VOICE_QUAKE=1 at poller start. Reads Database Geology/Earthquakes/*-last.json (needs geology_collect). No delivery.
+        "id": "voice_earthquake_report",
+        "enabled": os.environ.get("RR_VOICE_QUAKE", "0") == "1",
+        "description": "Carly USGS earthquake report at :08 (Hawaii first, then global) from Database Geology/. No delivery.",
+        "only_at_minutes": [8],
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" earthquake_report',
         "timeout_sec": 300,
         "cwd": f"{PACIFIC}/Media/Voice/scripts",
         "env": {},

@@ -3,6 +3,7 @@
 
   python3 voice_reports.py <report> [--no-voice]
   reports: hourly_chime · nws_weather · energy_report · remaining_tasks · morning_report · midday_report · late_report
+           · earthquake_report
 
 Each run writes Database Media/Audio/Voice/Reports/<report>_current.md (old copy -> Reports/Archive/
 <report>_YYYYMMDDTHHMM.md) and a stitched WAV Media/Audio/Voice/<report>_current.wav via voice-render.sh
@@ -10,7 +11,9 @@ Each run writes Database Media/Audio/Voice/Reports/<report>_current.md (old copy
 (rc 75 recorded) and the text still lands. NO delivery (Telegram / radio / speakers).
 Only G3 data that exists is read: Database Energy/{soc,watts}/*-last.json (EcoFlow BLE), Database
 Weather/Hawai'i (NWS alerts + SFP state forecast, Pacific weather poller), Library Work-Order checkboxes,
-/proc. Earthquake reports are NOT ported: no USGS data is collected in G3 yet.
+/proc, and Database Geology/Earthquakes/{hawaii,global}-last.json (Pacific Geology/scripts/geology_collect.py,
+job geology_collect gated RR_GEOLOGY=1). earthquake_report = G1 earthquake-hourly spoken script (Carly), job gated
+RR_VOICE_QUAKE=1 (2026-09-29, migration-geology). G1 council_quake (Telegram per-quake posts) stays NOT ported.
 Roll-ups can append an LLM summary via run-infer.sh only when RR_VOICE_ROLLUP_LLM=1 (off by default).
 Scheduling: jobs.py, one env gate per report (read at poller start). Added 2026-09-29 (g3-voice-reports2).
 """
@@ -39,10 +42,14 @@ WX = DB / "Weather" / "Hawai'i"
 ALERTS = WX / "hfo" / "api.weather.gov" / "alerts" / "active" / "area=HI" / "area=HI_current.json"
 SFP = WX / "reports" / "0 Level Processing" / "sfp_state_forecast_current.md"
 ENERGY = DB / "Energy"
+QUAKES = DB / "Geology" / "Earthquakes"
+QUAKE_STATE = REPORTS / "earthquake_report_seen.json"  # G1 earthquake-hourly.json seen_ids (new since last report)
+QUAKE_STALE_MIN = 20
+_MAX_HI, _MAX_GLOBAL = 6, 8  # G1 spoken caps
 DEVICES = (("delta2", "Delta 2"), ("river2pro", "River 2 Pro"))
 STALE_MIN = 30
 KIND = {"hourly_chime": "chime", "nws_weather": "nws", "energy_report": "energy", "remaining_tasks": "remaining",
-        "morning_report": "morning", "midday_report": "midday", "late_report": "late"}
+        "morning_report": "morning", "midday_report": "midday", "late_report": "late", "earthquake_report": "earthquake"}
 
 
 def now() -> datetime:
@@ -129,6 +136,33 @@ def host() -> dict:
     return {"cpu": round(100 * (1 - (i2 - i1) / max(1, t2 - t1))), "mem": round(100 * (1 - m["MemAvailable"] / m["MemTotal"]))}
 
 
+def quake_facts(t: datetime) -> dict:
+    """Database Geology/Earthquakes last files (written by Pacific Geology/scripts/geology_collect.py)."""
+    out = {}
+    for key in ("hawaii", "global"):
+        d = jload(QUAKES / f"{key}-last.json")
+        if not isinstance(d, dict) or not isinstance(d.get("events"), list):
+            out[key] = None
+            continue
+        try:
+            age = int((t - datetime.fromisoformat(d["at"])).total_seconds() // 60)
+        except (KeyError, TypeError, ValueError):
+            age = None
+        out[key] = dict(d, age_min=age)
+    return out
+
+
+def _m25(events: list[dict]) -> list[dict]:
+    out = []
+    for e in events:
+        try:
+            if float(e.get("mag") or 0) >= 2.5:
+                out.append(e)
+        except (TypeError, ValueError):
+            continue
+    return out
+
+
 # ------------------------------------------------------------------ builders: (markdown, spoken sentences)
 def b_hourly_chime(t: datetime):
     h, mi = t.hour, (0 if t.minute < 15 else 30 if t.minute < 45 else 0)
@@ -180,6 +214,61 @@ def b_energy_report(t: datetime):
         if f["age_min"] is not None and f["age_min"] > STALE_MIN:
             sp.append(f"That {f['name']} reading is {f['age_min']} minutes old.")
     md += ["", "_Source: Database Energy/soc + Energy/watts (*-last.json, EcoFlow BLE). Vision caption not used._", ""]
+    return "\n".join(md), sp
+
+
+def b_earthquake_report(t: datetime):
+    """G1 earthquake-hourly build_spoken + report lines, fed from Database Geology/ instead of a live USGS call."""
+    q = quake_facts(t)
+    hi, gl = q.get("hawaii"), q.get("global")
+    md = [f"# Earthquake report — {t.isoformat()}", ""]
+    if not hi and not gl:
+        md += ["_No USGS data on file (Database Geology/Earthquakes/*-last.json missing). Run geology_collect.py._", ""]
+        return "\n".join(md), ["Earthquake data is not on file."]
+    prev = jload(QUAKE_STATE) or {}
+    seen = set(prev.get("seen_ids") or [])
+    hi_ev, gl_ev = list((hi or {}).get("events") or []), list((gl or {}).get("events") or [])
+    fresh_hi = [e for e in hi_ev if e.get("id") and e["id"] not in seen]
+    fresh_gl = [e for e in gl_ev if e.get("id") and e["id"] not in seen]
+    sp = [f"USGS earthquake report at {clock(t)} Hawaiian Standard Time.".replace("..", ".")]
+    if hi is None:
+        sp.append("Hawaii earthquake data is not on file.")
+    elif fresh_hi:
+        sp.append(f"{len(fresh_hi)} new Hawaii earthquake{'s' if len(fresh_hi) != 1 else ''}.")
+        sp += [f"Magnitude {e.get('mag')} {e.get('place')}." for e in fresh_hi[:_MAX_HI]]
+    else:
+        sp.append("No new Hawaii earthquakes since the last report.")
+    if hi is not None:
+        sp.append(f"Hawaii last twenty four hours: {len(_m25(hi_ev))} magnitude 2.5 or greater.")
+    if gl is None:
+        sp.append("Global earthquake data is not on file.")
+    elif fresh_gl:
+        sp.append(f"{len(fresh_gl)} new global earthquake{'s' if len(fresh_gl) != 1 else ''}.")
+        sp += [f"Magnitude {e.get('mag')} {e.get('place')}." for e in fresh_gl[:_MAX_GLOBAL]]
+    else:
+        sp.append("No new global earthquakes since the last report.")
+    if gl is not None:
+        sp.append(f"Global last twenty four hours: {len(_m25(gl_ev))} magnitude 2.5 or greater.")
+    for label, d in (("Hawaii", hi), ("global", gl)):
+        if d and d.get("age_min") is not None and d["age_min"] > QUAKE_STALE_MIN:
+            sp.append(f"The {label} USGS data is {d['age_min']} minutes old.")
+    for label, d, fresh in (("Hawaii", hi, fresh_hi), ("Global", gl, fresh_gl)):
+        md += [f"## {label} Changes Since Last Report"]
+        md += [f"- M{e.get('mag')} {e.get('place')} ({e.get('time_hst')})" for e in fresh[:12]] or ["- No new earthquakes."]
+        if len(fresh) > 12:
+            md.append(f"- ...and {len(fresh) - 12} more new earthquakes.")
+        ev = list((d or {}).get("events") or [])
+        big = max((float(e["mag"]) for e in _m25(ev)), default=None)
+        md += ["", f"## {label} 24-Hour M2.5+ Summary",
+               f"- {len(_m25(ev))} earthquakes" + (f"; largest M{big:g}." if big is not None else "."),
+               f"- Source: `{(d or {}).get('source', 'n/a')}` (collected {(d or {}).get('at', 'n/a')})", ""]
+    if not os.environ.get("RR_VOICE_QUAKE_DRY"):
+        ids = [e["id"] for e in hi_ev + gl_ev if e.get("id")]
+        state = {"seen_ids": (list(seen) + [i for i in ids if i not in seen])[-400:], "updated_at": t.isoformat()}
+        QUAKE_STATE.parent.mkdir(parents=True, exist_ok=True)
+        tmp = QUAKE_STATE.with_suffix(".tmp")
+        tmp.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
+        os.replace(tmp, QUAKE_STATE)
     return "\n".join(md), sp
 
 
@@ -261,7 +350,8 @@ def llm_summary(lines: list[str]) -> str | None:
 
 BUILD = {"hourly_chime": b_hourly_chime, "nws_weather": b_nws_weather, "energy_report": b_energy_report,
          "remaining_tasks": b_remaining_tasks, "morning_report": lambda t: _rollup(t, "morning"),
-         "midday_report": lambda t: _rollup(t, "midday"), "late_report": lambda t: _rollup(t, "late")}
+         "midday_report": lambda t: _rollup(t, "midday"), "late_report": lambda t: _rollup(t, "late"),
+         "earthquake_report": b_earthquake_report}
 
 
 def write_md(report: str, md: str) -> Path:
