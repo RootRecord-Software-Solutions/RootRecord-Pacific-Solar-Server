@@ -20,7 +20,7 @@ CONN_PATH = SKILL / "store" / "CONNECTION.json"
 MASTER_KEY = Path("/home/rootrecord/master/master-key.env")
 DB_FRAMES = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Media/Images")
 
-FRAMES_LOCK_PATH = Path("/tmp/a-eyes-frames.lock")
+FRAMES_LOCK_PATH = Path("/tmp/security-camera-frames.lock")
 
 # Extra pixels cut off the RIGHT edge on top of crop_right_pct (Night Owl watermark).
 # ~20px more than the percentage crop alone.
