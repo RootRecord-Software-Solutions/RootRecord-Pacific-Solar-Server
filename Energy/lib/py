@@ -3,8 +3,8 @@
 # Energy/lib/py — Energy domain Python launcher (Pacific)
 # ------------------------------------------------------------------------------
 # Prefer ENERGY_PYTHON, else domain .venv, else system python3.
-# PYTHONPATH: eflib vendor + Pacific root (package name "energy" via symlink
-#   Pacific/energy -> Energy/ so "import energy.db.ingest" resolves).
+# PYTHONPATH: eflib vendor + Pacific root so "import Energy…" resolves to Energy/.
+# No lowercase energy/ symlink required.
 # ==============================================================================
 set -euo pipefail
 
