@@ -210,6 +210,11 @@ def build(snap, remaining: int, width: int, height: int) -> list[str]:
         s = snap["sum_" + key]
         if s:
             L.append(f"     {DIM}{s}{RST}")
+    lap = snap.get("laptop")
+    if lap:
+        pct, st, ac = lap
+        src = f"{GREEN}AC{RST}" if ac else f"{YELLOW}on battery{RST}"
+        L.append(f"  {WHITE}{BOLD}B3{RST} {DIM}{'laptop':<9}{RST} {bar(pct)}  {DIM}System (laptop) · {st}{RST} · {src}")
     if snap["system"]:
         L.append(f"  {WHITE}{BOLD}SYS{RST} {DIM}{snap['system']}{RST}")
     if snap["solar"]:
@@ -226,6 +231,20 @@ def build(snap, remaining: int, width: int, height: int) -> list[str]:
     return [fit(x, width) for x in L[:height]]
 
 
+def laptop_battery():
+    """System (laptop) battery from sysfs, read-only: (pct, status, on_ac) or None. 2026-09-29."""
+    try:
+        ps = Path("/sys/class/power_supply")
+        bat = next((b for b in sorted(ps.glob("BAT*")) if (b / "capacity").exists()), None)
+        if bat is None:
+            return None
+        ac = any((m / "online").read_text().strip() == "1" for m in ps.iterdir()
+                 if (m / "type").exists() and (m / "type").read_text().strip() == "Mains" and (m / "online").exists())
+        return (float((bat / "capacity").read_text().strip()), (bat / "status").read_text().strip(), ac)
+    except Exception:
+        return None
+
+
 def snapshot() -> dict:
     snap = {"error": ""}
     try:
@@ -236,6 +255,7 @@ def snapshot() -> dict:
     b2 = read_json(ENERGY / "soc/delta2-last.json") or {}
     snap["b1"] = (b1.get("soc"), b1.get("at"))
     snap["b2"] = (b2.get("soc"), b2.get("at"))
+    snap["laptop"] = laptop_battery()
     lines = tail_lines(LOG)
     try:
         m = LOG.stat().st_mtime

@@ -215,7 +215,24 @@ def _energy_log_line() -> str:
     b3 = snap.get("b3")
     if isinstance(b3, dict):
         parts.insert(3, f"B3={b3.get('soc')}")
+    lap = _laptop_battery()  # read-only sysfs, 2026-09-29
+    if lap:
+        parts.append(f"LAP={lap}")
     return "ENERGY  " + "  ".join(parts)
+
+
+def _laptop_battery() -> str:
+    """'100%/Full/AC' from /sys/class/power_supply (read-only); '' if no battery."""
+    try:
+        ps = Path("/sys/class/power_supply")
+        bat = next((b for b in sorted(ps.glob("BAT*")) if (b / "capacity").exists()), None)
+        if bat is None:
+            return ""
+        ac = any((m / "online").read_text().strip() == "1" for m in ps.iterdir()
+                 if (m / "type").exists() and (m / "type").read_text().strip() == "Mains" and (m / "online").exists())
+        return f"{(bat / 'capacity').read_text().strip()}%/{(bat / 'status').read_text().strip()}/{'AC' if ac else 'batt'}"
+    except Exception:
+        return ""
 
 
 class Handler(BaseHTTPRequestHandler):
