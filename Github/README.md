@@ -4,7 +4,7 @@ GitHub repository catalog and automated push/pull for the Pacific desk.
 
 ---
 
-## Status (2026-09-28 ~17:11 HST) — Phase 1 LIVE
+## Status (2026-09-29 HST) — Phase 1 LIVE
 
 | Item | State |
 | --- | --- |
@@ -12,7 +12,7 @@ GitHub repository catalog and automated push/pull for the Pacific desk.
 | Scripts | `Github/scripts/` (from G2 github skill) |
 | Catalog | `Github/scripts/repos.conf` (tab-separated) |
 | jobs.py | `github_setup_remotes` + `github_sync_all` → Pacific paths |
-| Evidence | Poller 17:11 — fetch pacific, database, library, skills (no website/mainland retries) |
+| Evidence | Poller syncs pacific, database, library, and skills; website/mainland remain disabled |
 | Logs / bak | `/home/rootrecord/Database/GITHUB/` |
 | Token | `/home/rootrecord/master/master-key.env` (`GITHUB_TOKEN`) — never commit |
 
@@ -23,7 +23,7 @@ GitHub repository catalog and automated push/pull for the Pacific desk.
 | pacific | 1 | inplace | Ecosystem Pacific → org `RootRecord-Pacific-Solar-Server` |
 | database | 1 | inplace | Ecosystem Database → org `RootRecord-Database` |
 | library | 1 | inplace | Ecosystem Library → org `RootRecord-Library` |
-| skills | 1 | inplace | `~/.ollama/skills` → legacy Solar-Pacific remote |
+| skills | 1 | inplace | `~/.ollama/skills` → legacy Solar-Pacific remote; restore commit `1dcee66` verified intact |
 | website | 0 | mirror | enable when worktree under `Database/GITHUB/worktrees/website` exists |
 | mainland | 0 | inplace | enable when path is a real git clone |
 
@@ -33,4 +33,4 @@ Same automation as G2; home is **`Github/`**. No parallel `github/` folder. Quot
 
 ---
 
-*Phase 1 LIVE 2026-09-28 HST.*
+*Updated 2026-09-29 HST — skills restore state and current sync boundaries documented.*
