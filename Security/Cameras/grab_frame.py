@@ -15,7 +15,7 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
-SKILL = Path(__file__).resolve().parents[1]
+SKILL = Path(__file__).resolve().parent
 CONN_PATH = SKILL / "store" / "CONNECTION.json"
 MASTER_KEY = Path("/home/rootrecord/master/master-key.env")
 DB_FRAMES = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Media/Images")
