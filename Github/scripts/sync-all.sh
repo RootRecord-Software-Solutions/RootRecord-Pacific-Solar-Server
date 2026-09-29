@@ -2,8 +2,8 @@
 # ==============================================================================
 # sync-all.sh — iterate enabled repos.conf → push-repo-once.sh
 # ------------------------------------------------------------------------------
-# Called by jobs.py github_sync_all (~300s).
-# After Pacific (or legacy skills) code is pulled, schedules full poller stack reload.
+# Called by jobs.py github_sync_all (interval_sec=5).
+# Post-pull stack reload is handled per repo by push-repo-once.sh (mark_code_pulled).
 # ==============================================================================
 set -euo pipefail
 
@@ -12,8 +12,6 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$HERE/common.sh"
 ensure_bak_root
 mkdir -p "$BAK_ROOT/flags"
-
-RELOAD_SCRIPT="/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Automations/scripts/stack/schedule-stack-reload.sh"
 
 while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do
   [[ "$id" =~ ^#.*$ || -z "${id:-}" ]] && continue
