@@ -11,16 +11,17 @@
 | Domain folder | **`Geology/` only** (no parallel `geology` / `kilauea` / `earthquakes` runtime folders on Pacific) |
 | Ownership | Desk-side observation, polling, ingest, and operator tooling |
 | Scripts | `scripts/geology_collect.py`, `scripts/kilauea_cams.py`, `scripts/earthquakes_backfill.py` — **LANDED**, one manual run each **PASS** (nice 10) |
-| `jobs.py` | `geology_collect` (300 s, `RR_GEOLOGY=1`), `geology_kilauea_cams` (600 s, `RR_KILAUEA_CAMS=1`) — **gated OFF**; take effect only at the next poller start with the flag set (after Alexander signs off) |
+| `jobs.py` | `geology_collect` (300 s, `RR_GEOLOGY=1`), `geology_kilauea_cams` (600 s, `RR_KILAUEA_CAMS=1`) — **gated OFF**; take effect only at the next poller start with the flag set. Keeping these jobs.py registrations is a **sign-off item** (standing rule: jobs.py only on Alexander's request or a WO; exact blocks in Database `Logs/Migration/migration-jobs-py-additions-20260929.md`) |
 | Data | Database `2 - RootRecord-Database/Geology/{Earthquakes,Volcanoes}/` — layout in Database `Geology/README.md` |
-| Voice | `Media/Voice/scripts/voice_reports.py earthquake_report` reads the Earthquakes last files (job `voice_earthquake_report`, `RR_VOICE_QUAKE=1`, no delivery) |
+| Voice | `Media/Voice/scripts/voice_reports.py earthquake_report` (job `voice_earthquake_report`, `RR_VOICE_QUAKE=1`) and `kilauea_report` (job `voice_kilauea_report`, `RR_VOICE_KILAUEA=1`) read the Geology last files; no delivery |
+| Config | `config/global-locations.json` — verbatim copy of G0 `old/config/locations/global-locations.json` (306 public places: country capitals, US state capitals, staged Hawaiʻi locations; sha256 `5defe5c7…b49a`). Used by `geology_collect.py` for the G0 nearest-location tag (≤ 250 km) on every event (`nearest`: location_id, name, country_code, admin1_code, km) — added 2026-09-29 13:49 HST, PASS |
 | Public products | Alert apps / websites may live in product repos; **this domain owns desk runtime** for the same capability |
 
 ### Scripts
 
 | Script | Ported from | Sources (public, no key) | Writes |
 | --- | --- | --- | --- |
-| `scripts/geology_collect.py [all\|quakes\|volcanoes] [--dry-run]` | G1 `earthquakes/earthquake-hourly` (fetch + M≥2 detection), G1 `kilauea/rr-kilauea` (alert level, headline, erupting, multiplier, ≤150 km count), G0 `operations/…/every-5-minutes/quakes.py` | USGS FDSN query (Hawaiʻi bbox, M≥1, 24 h), USGS summary `2.5_day.geojson`, HANS `getMonitoredVolcanoes`, HANS `getNewestOrRecent` | `Earthquakes/{hawaii,global}-last.json`, `Earthquakes/Daily/*.jsonl`, `Volcanoes/{hvo,kilauea,mauna-loa}-last.json`, `Volcanoes/Daily/hvo-notices-*.jsonl`, `collector-last.json` |
+| `scripts/geology_collect.py [all\|quakes\|volcanoes] [--dry-run]` | G1 `earthquakes/earthquake-hourly` (fetch + M≥2 detection), G1 `kilauea/rr-kilauea` (alert level, headline, erupting, multiplier, ≤150 km count), G0 `operations/…/every-5-minutes/quakes.py`, G0 `operations/earthquakes/global/poller.py` (nearest-location tag) | USGS FDSN query (Hawaiʻi bbox, M≥1, 24 h), USGS summary `2.5_day.geojson`, HANS `getMonitoredVolcanoes`, HANS `getNewestOrRecent` | `Earthquakes/{hawaii,global}-last.json`, `Earthquakes/Daily/*.jsonl`, `Volcanoes/{hvo,kilauea,mauna-loa}-last.json`, `Volcanoes/Daily/hvo-notices-*.jsonl`, `collector-last.json` |
 | `scripts/kilauea_cams.py [--keep-dated]` | G1 `kilauea/kilauea-cams` (DEFAULT_CAMS + USGS still fallback) | USGS HVO V1/V2/V3 `M.jpg` (conditional GET) | `Volcanoes/Cams/cams-last.json`, `Volcanoes/Cams/v{1,2,3}cam-last.jpg` |
 | `scripts/earthquakes_backfill.py [--days N]` | G0 `old/operations/backfillquakes.py` | USGS FDSN `count` + `query` | `Earthquakes/quakes.db` (git-ignored) — on demand only |
 
@@ -72,7 +73,7 @@ Geology/
       local/
       global/
   lib/
-  config/
+  config/      # present: global-locations.json
 ```
 
 - Python package name, if used: **`Geology`** (matches folder). Rewrite any G2 `import kilauea` / `import earthquakes` package roots accordingly, or use submodules under `Geology/`.

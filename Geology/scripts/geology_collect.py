@@ -51,6 +51,9 @@ HANS_NEWEST = "https://volcanoes.usgs.gov/hans-public/api/notice/getNewestOrRece
 HAWAII_BBOX = {"minlatitude": 18.5, "maxlatitude": 22.5, "minlongitude": -160.5, "maxlongitude": -154.5}  # G1
 HAWAII_M_MIN, LOCAL_M2 = 1.0, 2.0          # G1 _fetch minmagnitude / _LOCAL_M_MIN
 KILAUEA_LATLON, KILAUEA_RADIUS_KM = (19.421, -155.287), 150  # G1 rr-kilauea USGS_QUAKE_URL
+LOCATIONS_FILE = Path(__file__).resolve().parents[1] / "config" / "global-locations.json"  # G0 old/config/locations (copy)
+NEAREST_MAX_KM = 250  # G0 operations/earthquakes/global/poller.py nearest(): no tag beyond 250 km
+_LOCATIONS: list[dict] | None = None
 VOLCANOES = {"332010": "kilauea", "332020": "mauna-loa"}      # vnum -> last-file stem
 MULTIPLIERS = {"normal": 1.0, "advisory": 2.0, "watch": 2.5, "eruption": 3.0}  # G1 rr-kilauea
 MAX_EVENTS_LAST = 100
@@ -121,13 +124,38 @@ def haversine_km(a: tuple[float, float], b: tuple[float, float]) -> float:
     return 6371.0 * 2 * math.asin(min(1.0, math.sqrt(h)))
 
 
+def nearest_location(lat, lon) -> dict | None:
+    """G0 global poller nearest(): closest registry location (country capitals, US state capitals, staged Hawaii
+    places) within 250 km, else None. Adds country_code / admin1_code / location_id like the G0 SQLite columns."""
+    global _LOCATIONS
+    if lat is None or lon is None:
+        return None
+    if _LOCATIONS is None:
+        try:
+            _LOCATIONS = json.loads(LOCATIONS_FILE.read_text(encoding="utf-8")).get("locations") or []
+        except (OSError, ValueError):
+            _LOCATIONS = []
+    best, best_km = None, float("inf")
+    for x in _LOCATIONS:
+        if x.get("lat") is None or x.get("lon") is None:
+            continue
+        d = haversine_km((float(lat), float(lon)), (float(x["lat"]), float(x["lon"])))
+        if d < best_km:
+            best, best_km = x, d
+    if best is None or best_km > NEAREST_MAX_KM:
+        return None
+    return {"location_id": best.get("id"), "name": best.get("name"), "country_code": best.get("country_code"),
+            "admin1_code": best.get("admin1_code") or None, "km": round(best_km, 1)}
+
+
 # ------------------------------------------------------------------ earthquakes
 def norm_event(f: dict) -> dict:
     p, c = f.get("properties") or {}, (f.get("geometry") or {}).get("coordinates") or [None, None, None]
     return {"id": f.get("id"), "mag": p.get("mag"), "mag_type": p.get("magType"), "place": p.get("place") or "",
             "time_utc": _ms_iso(p.get("time")), "time_hst": _ms_iso(p.get("time"), HST),
             "lon": c[0], "lat": c[1], "depth_km": c[2] if len(c) > 2 else None,
-            "status": p.get("status"), "tsunami": p.get("tsunami"), "type": p.get("type"), "url": p.get("url")}
+            "status": p.get("status"), "tsunami": p.get("tsunami"), "type": p.get("type"), "url": p.get("url"),
+            "nearest": nearest_location(c[1], c[0])}
 
 
 def _mag(e: dict) -> float | None:
