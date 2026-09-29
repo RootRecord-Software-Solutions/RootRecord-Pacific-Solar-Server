@@ -19,8 +19,8 @@
 #   Local jobs (BLE, Ollama, FLM, heartbeat, worklog) always run.
 #
 # File layout (standing): keep SECTION banners + TEMPLATE blocks.
-# Energy + System LIVE. Github Phase 1: scripts under Github/scripts.
-# Residual skill paths: a-eyes, plumbing, telegram, reports/worklog, energy actions.
+# Energy + System LIVE. Reports Phase B (WO-RPT-001): worklog on Pacific Reports/.
+# Residual skill paths: a-eyes, plumbing, telegram, energy actions.
 # Live runtime: /home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server
 # Paths with spaces MUST be double-quoted in every bash command string.
 # ==============================================================================
@@ -248,12 +248,12 @@ EVERY_SECONDS = [
     {
         "id": "worklog_scan",
         "enabled": True,
-        "description": "Offline work auto-doc scan into Database/WORKLOG.",
+        "description": "Offline work auto-doc scan into Database/WORKLOG (Pacific Reports — WO-RPT-001).",
         "interval_sec": 90,
         "builtin": "",
-        "command": "bash /home/rootrecord/.ollama/skills/reports/scripts/worklog_once.sh",
+        "command": f'bash "{PACIFIC}/Reports/scripts/worklog_once.sh"',
         "timeout_sec": 180,
-        "cwd": "/home/rootrecord/.ollama/skills/reports/scripts",
+        "cwd": f"{PACIFIC}/Reports/scripts",
         "env": {},
     },
     {
