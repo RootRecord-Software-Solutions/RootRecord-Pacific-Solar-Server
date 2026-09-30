@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T16:24:51-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T16:32:51-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -2873,7 +2873,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-29T16:18:08.908036-10:00 HST |
+| **Collected** | 2026-09-29T16:26:06.092921-10:00 HST |
 
 ```text
 256
@@ -3147,7 +3147,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T16:18:11.161765-10:00 HST |
+| **Collected** | 2026-09-29T16:26:09.159528-10:00 HST |
 
 ```text
                         
@@ -3946,7 +3946,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_atlc_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=7 |
-| **Collected** | 2026-09-29T13:50:29.900379-10:00 HST |
+| **Collected** | 2026-09-29T16:31:50.595480-10:00 HST |
 
 ```text
 223 ACCA62 KNHC 292307TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada al este delas Bermudas, y ha emitido la advertencia final sobre el CiclónPos-Tropical Fay, ubicado sobre el Atlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Reinhart*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -4016,7 +4016,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-29T16:15:50.708790-10:00 HST |
+| **Collected** | 2026-09-29T16:32:50.683997-10:00 HST |
 
 ```text
 Home
@@ -4140,17 +4140,13 @@ Search
 Top News of the Day...
 view past news
 
-Last update Wed, 30 Sep 2026 02:09:39 UTC
+Last update Wed, 30 Sep 2026 02:32:40 UTC
 
 NHC issuing advisories for the Atlantic on
 
 TS Hanna
 
 NHC issuing advisories for the Eastern Pacific on
-
-TS Polo
-
-and
 
 TS Rachel
 
@@ -4165,9 +4161,12 @@ Hurricane Nolo
 Last advisory issued on
 Fay
 
+Last advisory issued on
+Polo
+
 Marine warnings are in effect for the Eastern Pacific
 
-Key messages regarding Tropical Storm Polo
+Key messages regarding Remnants of Polo
 
 (en Español: Mensajes Claves)
 
@@ -4253,57 +4252,56 @@ Tropical Weather Discussion
 
 2205 UTC Tue Sep 29 2026
 
-Tropical Storm Polo
+Remnants of Polo
 
 Satellite |
 Buoys |
 Grids |
 Storm Archive
 
-...POLO RAPIDLY WEAKENING OVER NORTHWESTERN MEXICO...
-...HEAVY RAINS CONTINUE...
+...POLO DISSIPATES OVER NORTHWESTERN MEXICO...
 
-5:00 PM MST Tue Sep 29
+8:00 PM MST Tue Sep 29
 
-Location: 30.0°N 108.5°W
+Location: 30.5°N 108.0°W
 
-Moving: NE at 21 mph
+Moving: NE at 23 mph
 
 Min pressure: 996 mb
 
-Max sustained: 45 mph
+Max sustained: 35 mph
 
 Public
 
 Advisory
 
-#37A
+#38
 
-500 PM MST
+800 PM MST
 
 Forecast
 
 Advisory
 
-#37
+#38
 
-2100 UTC
+0300 UTC
 
 Forecast
 
 Discussion
 
-#37
+#38
 
-200 PM MST
+800 PM MST
 
 Wind Speed
 
 Probabilities
 
-#37
+#38
 
-2100 UTC
+0300 UTC
 
 Productos en español:
 
@@ -4490,9 +4488,9 @@ Forecast
 
 Advisory
 
-#2
+#3
 
-2100 UTC
+0300 UTC
 
 Forecast
 
@@ -4592,9 +4590,9 @@ Forecast
 
 Advisory
 
-#37
+#38
 
-2100 UTC
+0300 UTC
 
 Forecast
 
@@ -4791,9 +4789,9 @@ Forecast
 
 Advisory
 
-#6
+#7
 
-2100 UTC
+0300 UTC
 
 Forecast
 
@@ -7925,7 +7923,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-29T16:17:53.555777-10:00 HST |
+| **Collected** | 2026-09-29T16:25:51.960819-10:00 HST |
 
 ```text
 National Weather Service
@@ -7974,9 +7972,9 @@ INFORMATION
 
 Wireless Emergency Alerts
 
-Weather-Ready Nation
-
 Brochures
+
+Weather-Ready Nation
 
 Cooperative Observers
 
