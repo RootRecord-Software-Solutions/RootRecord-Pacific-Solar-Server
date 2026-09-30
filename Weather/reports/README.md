@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-30T01:34:58-10:00 HST | 20 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-30T01:42:58-10:00 HST | 20 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -895,7 +895,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-30T01:28:18.578992-10:00 HST |
+| **Collected** | 2026-09-30T01:36:17.063383-10:00 HST |
 
 ```text
                         
@@ -1283,7 +1283,7 @@ National Weather Service Honolulu HI
 |---|---|
 | **Resource ID** | nhc_gtwo_atlc_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=2 |
-| **Collected** | 2026-09-30T00:43:11.322646-10:00 HST |
+| **Collected** | 2026-09-30T01:40:58.436382-10:00 HST |
 
 ```text
 277 ACCA62 KNHC 300549TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 AM EDT miércoles 30 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada sobre elAtlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Roberts*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -1297,10 +1297,549 @@ National Weather Service Honolulu HI
 |---|---|
 | **Resource ID** | nhc_gtwo_atlc_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=7 |
-| **Collected** | 2026-09-30T00:44:11.032875-10:00 HST |
+| **Collected** | 2026-09-30T01:41:58.223236-10:00 HST |
 
 ```text
-277 ACCA62 KNHC 300549TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 AM EDT miércoles 30 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada sobre elAtlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Roberts*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
+Graphical Tropical Weather Outlook
+
+Home
+
+Mobile Site
+
+Text Version
+
+RSS
+
+Local Forecast
+
+NATIONAL HURRICANE CENTER and
+CENTRAL PACIFIC HURRICANE CENTER
+
+National Oceanic and Atmospheric Administration
+
+Analysis & Forecasts
+
+Tropical Cyclone Products
+
+Tropical Weather Outlooks
+
+Marine Products
+
+Rip Currents Map
+
+RSS Feeds
+
+GIS Products
+
+Alternate Formats
+
+Tropical Cyclone Product Descriptions
+
+Tropical Cyclone Product Examples
+
+Marine Product Descriptions
+
+Data & Tools
+
+Satellite Imagery
+
+Radar Imagery
+
+Aircraft Reconnaissance
+
+Tropical Analysis Tools
+
+Experimental Products
+
+Lat/Lon Distance Calculator
+
+Blank Tracking Maps
+
+Educational Resources
+
+Be Prepared!
+NWS Hurricane Prep Week
+
+Outreach Documents
+
+TC Videos
+
+Rip Currents
+
+Storm Surge
+
+Watch/Warning Breakpoints
+
+Climatology
+
+Tropical Cyclone Names
+
+Wind Scale
+
+Records and Facts
+
+Historical Hurricane Summaries
+
+Forecast Models
+
+NHC Publications
+
+NHC Glossary
+
+Acronyms
+
+Frequent Questions
+
+Archives
+
+Tropical Cyclone Advisories
+
+Tropical Weather Outlooks
+
+Tropical Cyclone Reports and Season Summaries
+
+Tropical Cyclone Forecast Verification
+
+NHC News Archive
+
+Other Archives: HURDAT, Track Maps, Marine Products, and more
+
+About
+
+National Hurricane Center
+
+Central Pacific Hurricane Center
+
+Library
+
+Contact Us
+
+Search
+
+Search for
+
+Search
+
+Graphical Tropical Weather Outlook
+
+Archived Outlooks
+
+GIS Shapefiles
+
+Graphical Tropical Weather Outlook (Static Images)
+
+JavaScript is currently disabled in your browser or you are using an older browser that is incompatible with this map. To view the interactive map, please enable JavaScript or update your browser if possible. Direct links to the latest high-resolution forecast images are provided below:
+
+View Atlantic 2-Day Outlook
+
+View Atlantic 7-Day Outlook
+
+View Eastern Pacific 2-Day Outlook
+
+View Eastern Pacific 7-Day Outlook
+
+View Central Pacific 2-Day Outlook
+
+View Central Pacific 7-Day Outlook
+
+Central Pacific
+
+Pacific
+
+Atlantic
+
+2-Day Forecast
+
+7-Day Forecast
+
+Disturbances:
+
+None
+
+Disturbances:
+
+None
+
+Disturbances:
+
+None
+
+Disturbances:
+
+ALL
+
+1
+
+Disturbances:
+
+ALL
+
+1
+
+Disturbances:
+
+None
+
+Disturbances:
+
+None
+
+Close (X)
+
+View Storm Details
+
+Tropical Weather Outlook Text
+
+Central Pacific
+
+Pacific
+
+Atlantic
+
+Select Language
+
+English
+
+Español
+
+English
+
+Español
+
+English
+
+Español (Unavailable)
+
+ZCZC HFOTWOCP ALL
+TTAA00 PHFO DDHHMM
+
+Tropical Weather Outlook
+NWS Central Pacific Hurricane Center Honolulu HI
+Issued by NWS National Hurricane Center Miami FL
+800 PM HST Tue Sep 29 2026
+
+For the central North Pacific...between 140W and 180W:
+
+Active Systems:
+The National Hurricane Center is issuing advisories on Hurricane
+Nolo, located several hundred miles west of Lihue, Hawaii, on
+upgraded Hurricane Rachel, located a couple hundred miles
+south-southwest of Cabo Corrientes, Mexico, and on Tropical
+Depression Nineteen-E, located over the western East Pacific.
+
+Tropical cyclone formation is not expected during the next 7 days.
+
+Public Advisories on Tropical Depression Nineteen-E are issued under
+WMO header WTPZ34 KNHC and under AWIPS header MIATCPEP4.
+Forecast/Advisories on Tropical Depression Nineteen-E are issued
+under WMO header WTPZ24 KNHC and under AWIPS header MIATCMEP4.
+
+Forecaster Pierce/Roberts
+
+097
+
+ACPN51 PHFO 300555
+
+TWOSCP
+
+Perspectiva de tiempo tropical
+
+Centro de Huracanes del Pacífico Central del SNM Honolulu HI
+
+Emitido por el Centro Nacional de Huracanes del SNM Miami FL
+
+800 PM HST martes 29 de septiembre de 2026
+
+Para el Pacífico Norte central…entre 140 y 180 longitud oeste
+
+Sistemas activos: El Centro Nacional de Huracanes está emitiendo
+
+advertencias sobre el Huracán Nolo, ubicado a varios cientos de
+
+millas al oeste de Lihue, Hawai, sobre el Huracán Rachel mejorado,
+
+ubicado a un par de cientos de millas al suroeste de Cabo
+
+Corrientes, México, y sobre la Depresión Tropical Nineteen-E,
+
+ubicada sobre el Pacífico Este occidental.
+
+No se espera la formación de ciclones tropicales durante los
+
+próximos 7 días.
+
+&&
+
+Las Avisos Públicas sobre la Depresión Tropical Diecinueve-E se
+
+emiten bajo el encabezado de la OMM WTPZ34 KNHC y bajo el encabezado
+
+de AWIPS MIATCPEP4. Pronósticos/Advertencias sobre la Depresión
+
+Tropical Diecinueve-E se emiten bajo el encabezado de la OMM WTPZ24
+
+KNHC y bajo el encabezado de AWIPS MIATCMEP4.
+
+$$
+
+Pronosticador Pierce/Roberts
+
+*** Este producto ha sido procesado automáticamente utilizando un
+
+programa de traducción y puede contener omisiones y errores. El
+
+Servicio Nacional de Meteorología no puede garantizar la precisión
+
+del texto convertido. De haber alguna duda, el texto en inglés es
+
+siempre la versión autorizada. ***
+
+ZCZC MIATWOEP ALL
+TTAA00 KNHC DDHHMM
+
+Tropical Weather Outlook
+NWS National Hurricane Center Miami FL
+1100 PM PDT Tue Sep 29 2026
+
+For the eastern and central North Pacific east of 180 longitude:
+
+Active Systems:
+The National Hurricane Center is issuing advisories on Hurricane
+Nolo, located several hundred miles west of Lihue, Hawaii, on
+upgraded Hurricane Rachel, located a couple hundred miles
+south-southwest of Cabo Corrientes, Mexico, and on Tropical
+Depression Nineteen-E, located over the western East Pacific.
+
+1. South of Southern Mexico:
+An area of low pressure could form late this weekend or early next
+week south of the southern coast of Mexico. Thereafter,
+environmental conditions appear favorable for gradual development
+while the system moves slowly west-northwestward to northwestward.
+* Formation chance through 48 hours...low...near 0 percent.
+* Formation chance through 7 days...low...30 percent.
+
+Public Advisories on Tropical Depression Nineteen-E are issued under
+WMO header WTPZ34 KNHC and under AWIPS header MIATCPEP4.
+Forecast/Advisories on Tropical Depression Nineteen-E are issued
+under WMO header WTPZ24 KNHC and under AWIPS header MIATCMEP4.
+
+Forecaster Pierce/Roberts
+
+Tropical Weather Discussion
+
+407
+
+ABPZ21 KNHC 300555
+
+TWOSEP
+
+Perspectiva de tiempo tropical
+
+Centro Nacional de Huracanes del SNM Miami FL
+
+1100 PM PDT martes 29 de septiembre de 2026
+
+Para el Pacífico Norte oriental y central al este de 180 longitud
+
+Sistemas activos: El Centro Nacional de Huracanes está emitiendo
+
+advertencias sobre el Huracán Nolo, ubicado a varios cientos de
+
+millas al oeste de Lihue, Hawai, sobre el Huracán Rachel mejorado,
+
+ubicado a un par de cientos de millas al suroeste de Cabo
+
+Corrientes, México, y sobre la Depresión Tropical Nineteen-E,
+
+ubicada sobre el Pacífico Este occidental.
+
+Sur del Sur de México: Un área de baja presión podría formarse a
+
+última hora de este fin de semana o a principios de la próxima
+
+semana al sur de la costa sur de México. A partir de entonces, las
+
+condiciones ambientales parecen favorables para un desarrollo
+
+gradual a medida que el sistema se mueve lentamente hacia el
+
+oeste-noroeste a noroeste.
+
+* Probabilidad de formación hasta 48 horas...baja...cerca del 0 por
+
+ciento.
+
+* Probabilidad de formación hasta 7 días...baja...30 por ciento.
+
+&&
+
+Las Avisos Públicas sobre la Depresión Tropical Diecinueve-E se
+
+emiten bajo el encabezado de la OMM WTPZ34 KNHC y bajo el encabezado
+
+de AWIPS MIATCPEP4. Pronósticos/Advertencias sobre la Depresión
+
+Tropical Diecinueve-E se emiten bajo el encabezado de la OMM WTPZ24
+
+KNHC y bajo el encabezado de AWIPS MIATCMEP4.
+
+$$
+
+Pronosticador Pierce/Roberts
+
+*** Este producto ha sido procesado automáticamente utilizando un
+
+programa de traducción y puede contener omisiones y errores. El
+
+Servicio Nacional de Meteorología no puede garantizar la precisión
+
+del texto convertido. De haber alguna duda, el texto en inglés es
+
+siempre la versión autorizada. ***
+
+Tropical Weather Discussion
+
+ZCZC MIATWOAT ALL
+TTAA00 KNHC DDHHMM
+
+Tropical Weather Outlook
+NWS National Hurricane Center Miami FL
+800 AM EDT Wed Sep 30 2026
+
+For the North Atlantic...Caribbean Sea and the Gulf of America:
+
+Active Systems:
+The National Hurricane Center is issuing advisories on Tropical
+Storm Hanna, located over the central subtropical Atlantic.
+
+Tropical cyclone formation is not expected over the next 7 days.
+
+$$
+Forecaster Adams
+NNNN
+
+Tropical Weather Discussion
+
+Tropical Weather Discussion
+
+Quick Links and Additional Resources
+
+Tropical Cyclone Forecasts
+
+Tropical Cyclone Advisories
+
+Tropical Weather Outlook
+
+Audio/Podcasts
+
+About Advisories
+
+Marine Forecasts
+
+Offshore Waters Forecasts
+
+Gridded Forecasts
+
+Graphicast
+
+About Marine
+
+Social Media
+
+NHC on Facebook
+
+NHC on X
+
+NHC on YouTube
+
+NHC Blog:
+"Inside the Eye"
+
+Hurricane Preparedness
+
+Preparedness Guide
+
+Hurricane Hazards
+
+Watches and Warnings
+
+Marine Safety
+
+Ready.gov Hurricanes
+
+Weather-Ready Nation
+
+Emergency Management Offices
+
+Research and Development
+
+NOAA Hurricane Research Division
+
+Hurricane and Ocean Testbed
+
+Hurricane Forecast Improvement Program
+
+Other Resources
+
+Q & A with NHC
+
+NHC/AOML Library Branch
+
+NOAA: Hurricane FAQs
+
+National Hurricane Operations Plan
+
+WX4NHC Amateur Radio
+
+NWS Forecast Offices
+
+Weather Prediction Center
+
+Storm Prediction Center
+
+Ocean Prediction Center
+
+Local Forecast Offices
+
+Worldwide Tropical Cyclone Centers
+
+Canadian Hurricane Centre
+
+Joint Typhoon Warning Center
+
+Other Tropical Cyclone Centers
+
+WMO Severe Weather Info Centre
+
+US Dept of Commerce
+
+National Oceanic and Atmospheric Administration
+
+National Hurricane Center
+
+11691 SW 17th Street
+
+Miami, FL, 33165
+
+nhcwebmaster@noaa.gov
+
+Central Pacific Hurricane Center
+
+2525 Correa Rd
+
+Suite 250
+
+Honolulu, HI 96822
+
+W-HFO.webmaster@noaa.gov
+
+Disclaimer
+
+Information Quality
+
+Help
+
+Glossary
 ```
 
 ---
@@ -1311,7 +1850,7 @@ National Weather Service Honolulu HI
 |---|---|
 | **Resource ID** | nhc_gtwo_cpac_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=2 |
-| **Collected** | 2026-09-30T00:47:11.404375-10:00 HST |
+| **Collected** | 2026-09-30T01:36:58.395474-10:00 HST |
 
 ```text
 277 ACCA62 KNHC 300549TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 AM EDT miércoles 30 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada sobre elAtlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Roberts*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -1325,7 +1864,7 @@ National Weather Service Honolulu HI
 |---|---|
 | **Resource ID** | nhc_gtwo_cpac_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=7 |
-| **Collected** | 2026-09-30T00:48:11.273195-10:00 HST |
+| **Collected** | 2026-09-30T01:37:58.511032-10:00 HST |
 
 ```text
 277 ACCA62 KNHC 300549TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 AM EDT miércoles 30 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada sobre elAtlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Roberts*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -1339,7 +1878,7 @@ National Weather Service Honolulu HI
 |---|---|
 | **Resource ID** | nhc_gtwo_epac_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=epac&fdays=2 |
-| **Collected** | 2026-09-30T00:41:11.461348-10:00 HST |
+| **Collected** | 2026-09-30T01:38:58.413618-10:00 HST |
 
 ```text
 277 ACCA62 KNHC 300549TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 AM EDT miércoles 30 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada sobre elAtlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Roberts*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -1353,7 +1892,7 @@ National Weather Service Honolulu HI
 |---|---|
 | **Resource ID** | nhc_gtwo_epac_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=epac&fdays=7 |
-| **Collected** | 2026-09-30T00:42:11.349070-10:00 HST |
+| **Collected** | 2026-09-30T01:39:58.415724-10:00 HST |
 
 ```text
 277 ACCA62 KNHC 300549TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 AM EDT miércoles 30 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada sobre elAtlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Roberts*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -1367,7 +1906,7 @@ National Weather Service Honolulu HI
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-30T01:34:58.182903-10:00 HST |
+| **Collected** | 2026-09-30T01:42:58.237113-10:00 HST |
 
 ```text
 Home
@@ -1491,7 +2030,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Wed, 30 Sep 2026 11:30:18 UTC
+Last update Wed, 30 Sep 2026 11:42:01 UTC
 
 NHC issuing advisories for the Atlantic on
 
@@ -1588,9 +2127,7 @@ Eastern North Pacific
 
 Tropical Weather Outlook
 
-(en Español*)
-
-1100 PM PDT Tue Sep 29 2026
+500 AM PDT Wed Sep 30 2026
 
 Tropical Weather Discussion
 
@@ -1671,12 +2208,12 @@ Buoys |
 Grids |
 Storm Archive
 
-...RACHEL IS STRENGTHENING...
+...RACHEL CONTINUES MOVING NORTHWESTWARD...
 ...COULD BECOME A MAJOR HURRICANE IN A DAY OR SO...
 
-2:00 AM MST Wed Sep 30
+5:00 AM MST Wed Sep 30
 
-Location: 17.6°N 107.2°W
+Location: 17.8°N 107.6°W
 
 Moving: NW at 10 mph
 
@@ -1688,9 +2225,9 @@ Public
 
 Advisory
 
-#13
+#13A
 
-200 AM MST
+500 AM MST
 
 Forecast
 
@@ -1865,9 +2402,7 @@ Central North Pacific
 
 Tropical Weather Outlook
 
-(en Español*)
-
-800 PM HST Tue Sep 29 2026
+200 AM HST Wed Sep 30 2026
 
 Tropical Storm Nolo
 
@@ -1967,9 +2502,7 @@ Atlantic - Caribbean Sea - Gulf of America
 
 Tropical Weather Outlook
 
-(en Español*)
-
-200 AM EDT Wed Sep 30 2026
+800 AM EDT Wed Sep 30 2026
 
 Tropical Weather Discussion
 
@@ -2391,7 +2924,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-30T01:18:58.994669-10:00 HST |
+| **Collected** | 2026-09-30T01:35:59.520996-10:00 HST |
 
 ```text
 National Weather Service
@@ -2440,9 +2973,9 @@ INFORMATION
 
 Wireless Emergency Alerts
 
-Weather-Ready Nation
-
 Brochures
+
+Weather-Ready Nation
 
 Cooperative Observers
 
