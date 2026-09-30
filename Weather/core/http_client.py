@@ -89,6 +89,13 @@ class FetchResult:
     not_modified: bool
 
 
+def _is_waf_challenge(content: bytes | None) -> bool:
+    if not content:
+        return False
+    head = content[:6000].lower()
+    return b"gokuprops" in head or b"awswafcookiedomainlist" in head
+
+
 def _headers_for(host: str, accept: str | None,
                   etag: str | None, last_modified: str | None) -> dict[str, str]:
     settings = _host_settings(host)
@@ -124,9 +131,12 @@ def get(url: str, *, etag: str | None = None, last_modified: str | None = None,
     for attempt in range(extra_tries + 1):
         with httpx.Client(timeout=timeout, follow_redirects=True) as client:
             resp = client.get(url, headers=headers)
-        if resp.status_code in {502, 503, 504} and attempt < extra_tries:
+        waf = host == "www.noaa.gov" and _is_waf_challenge(resp.content)
+        if (resp.status_code in {502, 503, 504} or waf) and attempt < extra_tries:
             time.sleep(min(backoff, 5.0))
             continue
+        if waf:
+            raise RuntimeError("NOAA homepage returned a bot-check page instead of the site")
         break
 
     if resp is None:

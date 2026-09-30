@@ -40,9 +40,12 @@ def extract_pre_text(html_bytes: bytes) -> str:
     match = _PRE_BLOCK_RE.search(html)
     if not match:
         raise ValueError("no <pre> block found -- page shape may have changed or returned an error page")
-    # Minimal unescape -- product.php text is plain enough that the common
-    # HTML entities are the only ones likely to appear.
-    return _unescape_product_text(match.group(1))
+    # Some HFO pages (the marine matrix) put the product in <pre> but still
+    # separate lines with <br>. Turn those into newlines and drop the tags.
+    text = match.group(1)
+    text = re.sub(r"<br\s*/?>", "\n", text, flags=re.IGNORECASE)
+    text = _TAG_RE.sub("", text)
+    return _unescape_product_text(text)
 
 
 _ITEM_RE = re.compile(r"<item\b[^>]*>(.*?)</item>", re.DOTALL | re.IGNORECASE)
