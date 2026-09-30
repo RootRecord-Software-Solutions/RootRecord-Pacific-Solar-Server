@@ -43,7 +43,9 @@ class AwsFallbackPage:
         bar.append(self.awf_status_lbl)
         box.append(bar)
         self.awf_budget_lbl = lbl("", "rr-mono", wrap=True)
-        o, i = section("Budget (estimates from the catalog; floors: RAM ≥ 512 MB free, disk ≥ 1.5 GB free)")
+        bud = self.awf_cat.get("budget", {})
+        o, i = section(f"Budget (catalog estimates; floors: RAM ≥ {bud.get('ram_floor_mb', 512)} MB free, "
+                       f"disk ≥ {bud.get('disk_floor_mb', 1536) / 1024:.1f} GB free) · profile {self.awf_cat.get('profile', '-')}")
         i.append(self.awf_budget_lbl)
         box.append(o)
         self.awf_rows, self.awf_switches = {}, {}
@@ -90,18 +92,19 @@ class AwsFallbackPage:
     def awf_budget_refresh(self):
         lines = []
         rem = self.awf_remote or {}
-        totals = [("t3.micro now", 908), ("2 GB (planned)", 2048)]
+        inst = self.awf_cat.get("budget", {}).get("instance_now", {})
+        totals = [(f"{inst.get('type', 't3.micro')} est.", int(inst.get("ram_mb", 908)))]
         if rem.get("mem_total_mb"):
             totals.insert(0, ("AWS measured", rem["mem_total_mb"]))
         for name, tot in totals:
             b = awf.budget(self.awf_cat, self.awf_state, tot)
             lines.append(f"{name:<16} total {tot:>5} MB − OS ~{b['baseline_mb']} − enabled {b['functions_ram_mb']:>4} MB "
-                         f"= ~{b['ram_free_est_mb']:>5} MB free  {'OK' if b['ram_ok'] else 'BELOW 512 MB FLOOR'}")
+                         f"= ~{b['ram_free_est_mb']:>5} MB free  {'OK' if b['ram_ok'] else 'BELOW ' + str(b['ram_floor_mb']) + ' MB FLOOR'}")
         b = awf.budget(self.awf_cat, self.awf_state, 908)
         lines.append(f"disk caps of enabled functions: {b['functions_disk_mb']} MB (+ OS ~3.3 GB) on 6.7 GB root")
         if rem:
             lines.append(f"AWS now: MemAvailable {rem.get('mem_avail_mb', '?')} MB · disk free {rem.get('disk_free_mb', '?')} MB · "
-                         f"runtime {'deployed' if rem.get('deployed') else 'NOT deployed'} · mode {rem.get('mode', '-')}")
+                         f"runtime {'deployed' if rem.get('deployed') else 'NOT deployed'} · release {rem.get('release', '-')} · mode {rem.get('mode', '-')}")
         self.awf_budget_lbl.set_text("\n".join(lines))
 
     def awf_status(self):

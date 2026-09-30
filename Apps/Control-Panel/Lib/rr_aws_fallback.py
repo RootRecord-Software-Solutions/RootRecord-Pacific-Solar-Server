@@ -3,7 +3,8 @@
 INFO — MUST HAVE (future agents):
 - Catalog = Lib/rr_aws_fallback.json (function id, default, RAM/disk/net estimates). Design: Library
   08-ideas/2026-09-29-aws-fallback-rebuild.md. The desk is canonical; AWS only holds per-function flag files.
-- DEFAULT MODE IS "dry-run" (settings.json "aws_fallback_mode"). In dry-run nothing is sent to AWS except the
+- DEFAULT MODE IS "dry-run" (settings.json "aws_fallback_mode"); the desk settings.json is set to "write" since
+  2026-09-29 16:05 HST (Phase 2 runtime deployed, Alexander approved AWS changes). In dry-run nothing is sent to AWS except the
   read-only Status button. "write" mode is a sign-off item AND needs the AWS runtime (remote flags/ dir) to exist;
   the remote write script refuses (exit 3) until then.
 - A write = one SSH call: validate id -> dated backup of flags/ on AWS -> atomic write of flags/<id> ("1"/"0").
@@ -52,7 +53,8 @@ def status_argv(alias: str, remote_root: str) -> list[str]:
     """Read-only: flag files, mode, MemAvailable, disk free. Output is key=value lines."""
     script = (f'D={remote_root}; if [ -d "$D/flags" ]; then echo deployed=1; for f in "$D"/flags/*; do '
               '[ -f "$f" ] && echo "flag.$(basename "$f")=$(head -c 8 "$f")"; done; '
-              '[ -f "$D/state/mode" ] && echo "mode=$(head -c 20 "$D/state/mode")"; else echo deployed=0; fi; '
+              '[ -f "$D/state/mode" ] && echo "mode=$(head -c 20 "$D/state/mode")"; '
+              'echo "release=$(basename "$(dirname "$(readlink "$D/app")")")"; else echo deployed=0; fi; '
               "awk '/MemTotal/{print \"mem_total_mb=\" int($2/1024)} /MemAvailable/{print \"mem_avail_mb=\" int($2/1024)}' /proc/meminfo; "
               "df -Pm / | awk 'NR==2{print \"disk_free_mb=\" $4}'")
     return ["timeout", "10", "ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=6", alias, script]
@@ -72,8 +74,8 @@ def parse_status(out: str) -> dict:
                 st[k] = int(v)
             except ValueError:
                 pass
-        elif k == "mode":
-            st["mode"] = v
+        elif k in ("mode", "release"):
+            st[k] = v
     return st
 
 

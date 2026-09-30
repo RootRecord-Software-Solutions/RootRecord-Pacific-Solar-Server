@@ -96,5 +96,6 @@
       "name": "FLM / NPU models (local, on demand)",
       "url": "http://127.0.0.1:52625/v1/models"
     }
-  ]
+  ],
+  "aws_fallback_mode": "write"
 }
