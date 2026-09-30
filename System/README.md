@@ -9,6 +9,7 @@ Host operating-system integration, system sampling, and desk host services.
 | Item | State |
 | --- | --- |
 | Domain folder | **`System/` only** |
+| State contract | [CONTRACT.md](CONTRACT.md). Live snapshot is Database `System/status/`, not committed |
 | jobs.py | `sys_stats_cycle` → `System/scripts/sys-sample.sh` |
 | Sample writes | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/System/` |
 | Uptime log | `scripts/uptime_log.py tick\|facts\|recent` (G1 `uptime-log` port, stdlib) → Database `System/uptime/` (events JSONL, KEEP 400; GAP 180 s; boot_id). Job `system_uptime_log` (60 s) **gated OFF** (`RR_UPTIME_LOG=1`). LANDED · PASS one tick 2026-09-29 13:26 HST |

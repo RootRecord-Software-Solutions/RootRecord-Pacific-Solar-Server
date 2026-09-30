@@ -12,6 +12,7 @@ Telegram communication integration, alerts, and council-relay services.
 | Live relay today | Poller boot job `council_relay` runs `Communications/telegram/scripts/ensure-relay.sh`. Live council replies stay off (`RR_RELAY_REPLIES=0`) |
 | Sandbox | `SANDBOX_CHAT_ID=-1004406495175` ([t.me/c/4406495175/2](https://t.me/c/4406495175/2)). `SANDBOX_REPLIES=1` answers that chat only. Reports and statuses use it when `RR_TELEGRAM_DEST=sandbox` |
 | Standing rule | **One** getUpdates owner (council-relay) |
+| Contract | [CONTRACT.md](CONTRACT.md) |
 
 ---
 
