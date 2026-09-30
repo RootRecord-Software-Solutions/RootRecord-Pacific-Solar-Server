@@ -12,7 +12,8 @@ Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messagin
 | `network/scripts/ensure-network-globe-hawaii.sh` | **Live.** Job cwd is Pacific `Communications/network`. Collector is `network/local-data-globe/collector.js`. |
 | telegram | **Live and quiet.** `council_relay` runs `Communications/telegram/scripts/ensure-relay.sh`. `RR_RELAY_REPLIES` stays `0` (poll and log only; no infer, no post). |
 | discord | Poller at `Communications/Discord/` (WO-MIG-21). Job `discord_poller` is off. No token, no post. **WO-COM-002** before LIVE |
-| slack / email | Shells only. Not a second live relay. |
+| slack | Poller at `Communications/Slack/` (WO-MIG-22). Job `communications_slack` stays off unless `RR_SLACK=1`. No token, no post. Not a second live relay. |
+| email | Shell only. Not a second live relay. |
 | Notify policy | Still the unsealed draft under Library `Documentation/00-architecture/Communications-Notify-Policy-Draft-2026-09-28.md`. Do not add notify jobs from this page. |
 | `web-facts/` | G1 `websites/web-facts` port (allowlisted HTTPS GET), on demand only — LANDED, smoke PASS 2026-09-29 13:58 HST; not wired to the council relay |
 | `live-wx/` | G1 `weather/live-wx` port (NWS point forecast + HI alert names + nearest hurricane, for chat), on demand only (`--offline` = no HTTP) — LANDED, smoke PASS 2026-09-29 14:09 HST; not wired to the council relay |
@@ -27,6 +28,7 @@ Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messagin
 | `cloudflare_tunnel` | Pacific `bin/cloudflared`. ON_BOOT builtin `tunnel_start`. |
 | `network_globe_hawaii` | Pacific `network/scripts/ensure-network-globe-hawaii.sh` |
 | `council_relay` | Pacific `telegram/scripts/ensure-relay.sh`. Replies stay off. |
+| `communications_slack` | Pacific `Slack/scripts/poll.py`. Off unless `RR_SLACK=1` at poller start. No HTTP and no post. |
 
 Token: `/home/rootrecord/.cloudflared/rootserver.token` (local only).
 
@@ -52,7 +54,7 @@ Communications/
   network/cloudflare/{bin,config}/
   network/scripts/
   Cloudflare-Workers/{scripts,config}/
-  telegram/ Discord/ email/ slack/
+  telegram/ Discord/ email/ Slack/
   github/{api,messaging,notifications,webhooks}/
 ```
 
