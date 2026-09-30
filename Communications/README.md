@@ -17,7 +17,7 @@ Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messagin
 | Notify policy | Still the unsealed draft under Library `Documentation/00-architecture/Communications-Notify-Policy-Draft-2026-09-28.md`. Do not add notify jobs from this page. |
 | `web-facts/` | G1 `websites/web-facts` port (allowlisted HTTPS GET), on demand only — LANDED, smoke PASS 2026-09-29 13:58 HST; not wired to the council relay |
 | `live-wx/` | G1 `weather/live-wx` port (NWS point forecast + HI alert names + nearest hurricane, for chat), on demand only (`--offline` = no HTTP) — LANDED, smoke PASS 2026-09-29 14:09 HST; not wired to the council relay |
-| `website/` | Pointer only. The RootRecord-Cloud checkout is `3 - RootRecord-Website/` @ `84dec4a` (WO-MIG-07). The leftover `website/RootRecord-Cloud/` tree was removed 2026-09-30. No deploy, no auto-sync. See `website/README.md` |
+| `website/` | Pointer only. Desk folder `3 - RootRecord-Website/` was removed 2026-09-30. There is no desk checkout. Do not start it again. The public Vercel app is remote only. `https://rootserver.rootrecord.cloud/` is the poller on `127.0.0.1:8799`, not a site. The leftover `website/RootRecord-Cloud/` tree was removed 2026-09-30. No deploy, no auto-sync. See `website/README.md` |
 | `CouncilHealth/` | WO-MIG-27. Job `council_health` off unless `RR_COUNCIL_HEALTH=1`. Report only. No send, no model probe. |
 
 ---

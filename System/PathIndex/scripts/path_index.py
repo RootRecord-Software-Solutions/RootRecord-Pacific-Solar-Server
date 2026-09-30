@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Scoped path index (WO-MIG-42).
 
-Lists path and kind for four Ecosystem source trees. Does not read file bytes,
+Lists path and kind for three Ecosystem source trees. Does not read file bytes,
 hash files, or store symlink targets. A root outside the allowlist exits
 before any index file is replaced.
 """
@@ -23,7 +23,6 @@ LOG_DIR = DB / "Logs" / "System" / "PathIndex"
 
 ALLOW = (
     ECOSYSTEM / "1 - Servers" / "1 - RootRecord-Pacific-Solar-Server",
-    ECOSYSTEM / "3 - RootRecord-Website",
     ECOSYSTEM / "5 - RootRecord-Library",
     ECOSYSTEM / "6 - Android Development",
 )
