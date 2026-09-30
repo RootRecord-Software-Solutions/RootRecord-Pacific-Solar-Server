@@ -12,6 +12,8 @@ The WAV is `2 - RootRecord-Database/Media/Audio/Voice/boot_brief_current.wav`, w
 
 `RR_MORNING_BOOT_REPLAY` is the proposed job gate (default `0`). It is not registered in `jobs.py`. Speaker playback still needs Alexander's sign-off on the player (`RR_PLAYBACK` and `--play`).
 
+`run` arms itself when today's state is not already disarmed and the morning WAV is on disk. A same-day `disarm` stays off until the next morning.
+
 ```text
 python3 scripts/replay.py arm
 python3 scripts/replay.py run --dry-run

@@ -148,6 +148,8 @@ def arm() -> dict:
         "current": str(path),
         "armed_at": now.isoformat(),
     })
+    st.pop("stopped_at", None)
+    st.pop("stop_reason", None)
     _save(st)
     result = {"ok": True, "armed": True, "day": today, "until": st["until"], "wav": str(path)}
     _log(result)
@@ -182,9 +184,15 @@ def run(dry_run: bool = True) -> dict:
     today = now.strftime("%Y-%m-%d")
     st = _load()
     if not st.get("enabled"):
-        result = {"ok": True, "skipped": True, "reason": "disabled"}
-        _log(result)
-        return result
+        # A disarm for today stays off. A new morning WAV may arm once.
+        if str(st.get("day") or "") == today or midday_done(today):
+            result = {"ok": True, "skipped": True, "reason": "disabled"}
+            _log(result)
+            return result
+        armed = arm()
+        if not armed.get("armed"):
+            return armed
+        st = _load()
 
     until_raw = str(st.get("until") or "").strip()
     try:

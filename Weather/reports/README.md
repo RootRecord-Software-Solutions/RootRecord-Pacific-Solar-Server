@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-30T00:19:11-10:00 HST | 19 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-30T00:28:11-10:00 HST | 20 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -623,7 +623,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-29T23:59:39.456736-10:00 HST |
+| **Collected** | 2026-09-30T00:21:28.832307-10:00 HST |
 
 ```text
 678
@@ -895,7 +895,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-30T00:12:29.576365-10:00 HST |
+| **Collected** | 2026-09-30T00:21:31.160982-10:00 HST |
 
 ```text
                         
@@ -983,7 +983,91 @@ $$
 
 ---
 
-### 9. Hourly Wind/Precip Observations
+### 9. High Seas Forecast N. Pacific
+
+| Field | Value |
+|---|---|
+| **Resource ID** | hsf_high_seas_npac |
+| **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=HSF&issuedby=NP |
+| **Collected** | 2026-09-30T00:19:58.824087-10:00 HST |
+
+```text
+581
+FZPN40 PHFO 301018
+HSFNP
+
+HIGH SEAS FORECAST
+NATIONAL WEATHER SERVICE HONOLULU HI
+1100 UTC WED SEP 30 2026
+
+SUPERSEDED BY NEXT ISSUANCE IN 6 HOURS
+
+SEAS GIVEN AS SIGNIFICANT WAVE HEIGHT...WHICH IS THE AVERAGE HEIGHT
+OF THE HIGHEST 1/3 OF THE WAVES. INDIVIDUAL WAVES MAY BE MORE THAN
+TWICE THE SIGNIFICANT WAVE HEIGHT.
+
+THIS HIGH SEAS FORECAST USES 1-MINUTE AVERAGE WINDS WHICH MAY BE
+HIGHER THAN 10-MINUTE AVERAGE WINDS.
+
+SECURITE
+
+NORTH PACIFIC EQUATOR TO 30N BETWEEN 140W AND 180W
+
+SYNOPSIS VALID 0600 UTC SEP 30 2026.
+24 HOUR FORECAST VALID 0600 UTC OCT 01 2026.
+48 HOUR FORECAST VALID 0600 UTC OCT 02 2026.
+
+.WARNINGS.
+
+...TROPICAL STORM WARNING...
+.TROPICAL STORM NOLO NEAR 22.4N 164.6W 987 MB AT 0900 UTC SEP 30
+MOVING WNW OR 290 DEG AT 5 KT. MAXIMUM SUSTAINED WINDS 60 KT
+GUSTS 75 KT. TROPICAL STORM FORCE WINDS WITHIN 120 NM NE
+QUADRANT...90 NM SE QUADRANT...80 NM SW QUADRANT...AND 110 NM NW
+QUADRANT. SEAS 4 M OR GREATER WITHIN 150 NM E SEMICIRCLE AND
+240 NM W SEMICIRCLE WITH SEAS TO 10 M. SEAS 2.5 TO 3.5 M ELSEWHERE
+FROM 16N TO 27N BETWEEN 159W AND 180W. WINDS 20 TO 30 KT ELSEWHERE
+FROM 20N TO 26N BETWEEN 158W AND 169W. ISOLATED MODERATE TSTMS
+WITHIN 90 NM OF CENTER.
+.24 HOUR FORECAST TROPICAL STORM NOLO NEAR 22.7N 165.0W. MAXIMUM
+SUSTAINED WINDS 50 KT GUSTS 60 KT. TROPICAL STORM FORCE WINDS
+WITHIN 100 NM N SEMICIRCLE AND 70 NM S SEMICIRCLE. SEAS 4 M OR
+GREATER FROM 20N TO 25N BETWEEN 163W AND 169W WITH SEAS TO 8 M.
+SEAS 2.5 TO 3.5 M ELSEWHERE FROM 17N TO 30N BETWEEN 161W AND 178W.
+WINDS 20 TO 30 KT ELSEWHERE FROM 20N TO 27N BETWEEN 161W AND 171W.
+.48 HOUR FORECAST TROPICAL STORM NOLO NEAR 22.8N 166.5W. MAXIMUM
+SUSTAINED WINDS 55 KT GUSTS 65 KT. TROPICAL STORM FORCE WINDS
+WITHIN 100 NM NE QUADRANT...80 NM SE QUADRANT...70 NM SW
+QUADRANT...AND 90 NM NW QUADRANT. SEAS 4 M OR GREATER FROM 21N TO
+25N BETWEEN 163W AND 170W WITH SEAS TO 7 M. SEAS 2.5 TO 3.5 M
+ELSEWHERE FROM 17N TO 29N BETWEEN 161W AND 176W. WINDS 20 TO 30 KT
+ELSEWHERE FROM 20N TO 27N BETWEEN 161W AND 173W.
+
+FORECAST WINDS IN AND NEAR ACTIVE TROPICAL CYCLONES SHOULD BE
+USED WITH CAUTION DUE TO UNCERTAINTY IN FORECAST TRACK...SIZE
+AND INTENSITY.
+
+.SYNOPSIS AND FORECAST.
+
+.FRONT 30N165W 28N169W 29N174W MOVING SE 15 KT.
+.24 HOUR FORECAST 30N156W 28N160W THENCE TROUGH 28N162W.
+.48 HOUR FORECAST FRONT 30N149W 29N150W 29N155W. TROUGH 30N165W
+26N166W.
+
+.WINDS 20 KT OR LESS OVER REMAINDER OF FORECAST AREA.
+
+.SEAS 2.5 M OR LOWER OVER REMAINDER OF FORECAST AREA.
+
+.MONSOON TROUGH 11N140W 09N146W 12N162W 09N180W. SCATTERED MODERATE
+TSTMS S OF TROUGH W OF 155W. ISOLATED MODERATE TSTMS S OF
+TROUGH E OF 155W.
+
+.FORECASTER TSAMOUS. HONOLULU HI.
+```
+
+---
+
+### 10. Hourly Wind/Precip Observations
 
 | Field | Value |
 |---|---|
@@ -1193,7 +1277,7 @@ National Weather Service Honolulu HI
 
 ---
 
-### 10. NHC Atlantic Tropical Weather Outlook — 2 day
+### 11. NHC Atlantic Tropical Weather Outlook — 2 day
 
 | Field | Value |
 |---|---|
@@ -1207,7 +1291,7 @@ National Weather Service Honolulu HI
 
 ---
 
-### 11. NHC Atlantic Tropical Weather Outlook — 7 day
+### 12. NHC Atlantic Tropical Weather Outlook — 7 day
 
 | Field | Value |
 |---|---|
@@ -1221,7 +1305,7 @@ National Weather Service Honolulu HI
 
 ---
 
-### 12. NHC Central Pacific Tropical Weather Outlook — 2 day
+### 13. NHC Central Pacific Tropical Weather Outlook — 2 day
 
 | Field | Value |
 |---|---|
@@ -1235,7 +1319,7 @@ National Weather Service Honolulu HI
 
 ---
 
-### 13. NHC Central Pacific Tropical Weather Outlook — 7 day
+### 14. NHC Central Pacific Tropical Weather Outlook — 7 day
 
 | Field | Value |
 |---|---|
@@ -1249,7 +1333,7 @@ National Weather Service Honolulu HI
 
 ---
 
-### 14. NHC Eastern Pacific Tropical Weather Outlook — 2 day
+### 15. NHC Eastern Pacific Tropical Weather Outlook — 2 day
 
 | Field | Value |
 |---|---|
@@ -1263,7 +1347,7 @@ National Weather Service Honolulu HI
 
 ---
 
-### 15. NHC Eastern Pacific Tropical Weather Outlook — 7 day
+### 16. NHC Eastern Pacific Tropical Weather Outlook — 7 day
 
 | Field | Value |
 |---|---|
@@ -1277,13 +1361,13 @@ National Weather Service Honolulu HI
 
 ---
 
-### 16. NHC source index
+### 17. NHC source index
 
 | Field | Value |
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-30T00:19:11.371521-10:00 HST |
+| **Collected** | 2026-09-30T00:28:11.169579-10:00 HST |
 
 ```text
 Home
@@ -1407,7 +1491,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Wed, 30 Sep 2026 10:18:07 UTC
+Last update Wed, 30 Sep 2026 10:20:07 UTC
 
 NHC issuing advisories for the Atlantic on
 
@@ -2164,7 +2248,7 @@ Glossary
 
 ---
 
-### 17. Offshore Forecast (40-240nm)
+### 18. Offshore Forecast (40-240nm)
 
 | Field | Value |
 |---|---|
@@ -2235,7 +2319,7 @@ far W waters. Isolated thunderstorms far W waters.
 
 ---
 
-### 18. Statewide Surf Observations
+### 19. Statewide Surf Observations
 
 | Field | Value |
 |---|---|
@@ -2329,13 +2413,13 @@ $$
 
 ---
 
-### 19. Tsunami Bulletin product type reference
+### 20. Tsunami Bulletin product type reference
 
 | Field | Value |
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-29T23:59:24.544309-10:00 HST |
+| **Collected** | 2026-09-30T00:21:13.570450-10:00 HST |
 
 ```text
 National Weather Service
@@ -2384,9 +2468,9 @@ INFORMATION
 
 Wireless Emergency Alerts
 
-Brochures
-
 Weather-Ready Nation
+
+Brochures
 
 Cooperative Observers
 
