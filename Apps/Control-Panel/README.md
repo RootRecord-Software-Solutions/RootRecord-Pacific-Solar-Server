@@ -63,7 +63,7 @@ The keys and their defaults:
 
 Camera toggles only change what the **panel** shows. They never touch collectors, grab jobs or the poller.
 
-**On/off controls are buttons (2026-09-29 16:15 HST).** There are no switches. Each on/off setting is a labelled toggle button, for example `Camera viewer: Off` (red outline) or `Camera viewer: On` (green), from `rr_ui.state_toggle`. The **camera viewer button** is the first row of the **Cameras** page and the first row of **Settings → Panel** (Cameras group first). The two stay in sync. It is Off by default. A click changes the running panel only; **Save settings** keeps it. Risky actions still need the confirm dialog. AWS Fallback rows (`AWS: On/Off`) keep confirm, dry-run revert and failed-write revert. Test: `Tests/test_toggle_buttons.py` (30 checks, AWS ssh stubbed) · record: `/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library/Documentation/07-testing/2026-09-29-root-monitor-toggle-buttons.md`.
+**On/off controls are buttons.** There are no switches. Panel, camera, Starlink, and AWS rows use `rr_ui.state_toggle` (`Name: On` / `Name: Off`). As of 2026-09-30 02:33 HST, every editable `bool01` registry row is the same kind of button: 55 `RR_*` flags, plus relay, voices, repos, and device on/off lines. A click confirms, then writes. Flag saves go to `~/.config/systemd/user/rr-rootserver-poller.service.d/rr-flags.conf`, created on the first confirmed save. The poller is not restarted. Flags that default to on in code show On before that file exists. The camera viewer button is the first row of the Cameras page and of Settings → Panel. It only changes what the panel shows. Risky actions still need the confirm dialog. Test: `Tests/test_toggle_buttons.py` (30/30 PASS 2026-09-30 02:33 HST, AWS ssh stubbed).
 
 **Known URLs** hold a name and a URL only. You can add, edit and remove them. Clicking one opens it with `xdg-open`. URLs carrying `user:pass@` or token/key/password query parameters are refused. The seed list came from read-only discovery in `poller-watch.py`, `rootserver_poller.py`, `cam_server.py`, `ollama-warmup.sh` and `run-infer.sh`: poller `/`, `/energy` and `/system-status.json` on :8799, the public rootserver and `/aeyes`, local A-EYES :8791, Ollama :11434 and FLM :52625. It contains **no secrets**.
 
@@ -80,6 +80,7 @@ Camera toggles only change what the **panel** shows. They never touch collectors
 
 | Mode | Peak RSS | CPU |
 | --- | --- | --- |
+| `--check`, viewer off, every settings row shown — 2026-09-30 02:33 HST | **89.8 MB** (0 secret leaks, 0 errors) | 0.85 s user |
 | `--check`, viewer off, 14 pages incl. AWS Fallback — 15:04 HST | **85.3 MB** (A/B same run without the page: 80.9 MB → +4.4 MB when every page is built; in the window the page is released on leave) | 1.0 s |
 | `--check`, viewer off (13 pages + all sub-pages built once) — 13:08 HST | **84.5 MB — over the 80 MB target** (was 73.8 MB before Running/Network/SSH/Settings) | 1.2 s |
 | `--check`, viewer on | 98.9 MB — opt-in | 1.4 s |
@@ -103,7 +104,7 @@ The values come from `Conky/conky_readout.py` (the same read-only readers, every
 ## Packaging
 
 - `Packaging/rootrecord-control-panel.desktop` (Name "Root Monitor") and `Packaging/poller-dashboard-terminal.desktop` (Name "Poller Dashboard (terminal)") are installed by `Packaging/install-launcher.sh` (user level, no sudo).
-- `Packaging/swap-default-viewer.sh` + `Packaging/root-monitor-autostart.desktop`: reversible default-viewer swap — **not applied** (sign-off).
+- `Packaging/swap-default-viewer.sh` + `Packaging/root-monitor-autostart.desktop`: **applied** 2026-09-30 02:33 HST. Revert with the same script. `Packaging/open-root-monitor.sh` is what a stack reload opens.
 - `Packaging/rootrecord-control-panel.service` is a systemd **--user** unit. It is written here only and is **NOT installed or enabled** (sign-off item). The enable commands are in the file header.
 
 ## Files
