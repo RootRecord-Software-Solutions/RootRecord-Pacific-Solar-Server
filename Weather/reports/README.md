@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T18:31:51-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T18:40:51-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -2876,7 +2876,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-29T18:25:06.644595-10:00 HST |
+| **Collected** | 2026-09-29T18:34:08.152468-10:00 HST |
 
 ```text
 752
@@ -3148,7 +3148,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T18:25:09.409680-10:00 HST |
+| **Collected** | 2026-09-29T18:34:10.896360-10:00 HST |
 
 ```text
                         
@@ -3931,7 +3931,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_atlc_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=2 |
-| **Collected** | 2026-09-29T16:39:50.815309-10:00 HST |
+| **Collected** | 2026-09-29T18:38:50.867853-10:00 HST |
 
 ```text
 223 ACCA62 KNHC 292307TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada al este delas Bermudas, y ha emitido la advertencia final sobre el CiclónPos-Tropical Fay, ubicado sobre el Atlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Reinhart*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3945,7 +3945,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_atlc_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=7 |
-| **Collected** | 2026-09-29T16:40:50.682846-10:00 HST |
+| **Collected** | 2026-09-29T18:39:50.658949-10:00 HST |
 
 ```text
 223 ACCA62 KNHC 292307TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada al este delas Bermudas, y ha emitido la advertencia final sobre el CiclónPos-Tropical Fay, ubicado sobre el Atlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Reinhart*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -4001,7 +4001,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_epac_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=epac&fdays=7 |
-| **Collected** | 2026-09-29T16:38:51.014385-10:00 HST |
+| **Collected** | 2026-09-29T18:37:50.630818-10:00 HST |
 
 ```text
 223 ACCA62 KNHC 292307TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada al este delas Bermudas, y ha emitido la advertencia final sobre el CiclónPos-Tropical Fay, ubicado sobre el Atlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Reinhart*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -4015,7 +4015,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-29T18:31:50.812247-10:00 HST |
+| **Collected** | 2026-09-29T18:40:50.719608-10:00 HST |
 
 ```text
 Home
@@ -4139,7 +4139,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Wed, 30 Sep 2026 04:27:15 UTC
+Last update Wed, 30 Sep 2026 04:37:04 UTC
 
 NHC issuing advisories for the Atlantic on
 
@@ -4156,9 +4156,6 @@ TD Nineteen-E
 NHC issuing advisories for the Central Pacific on
 
 Hurricane Nolo
-
-Last advisory issued on
-Fay
 
 Last advisory issued on
 Polo
@@ -4662,100 +4659,6 @@ Tropical Weather Outlook
 Tropical Weather Discussion
 
 0015 UTC Wed Sep 30 2026
-
-Post-Tropical Cyclone Fay
-
-Satellite |
-Buoys |
-Grids |
-Storm Archive
-
-...FAY BECOMES A POST-TROPICAL CYCLONE...
-...THIS IS THE LAST NHC ADVISORY ON THIS SYSTEM...
-
-5:00 PM AST Tue Sep 29
-
-Location: 23.7°N 48.2°W
-
-Moving: WSW at 12 mph
-
-Min pressure: 1011 mb
-
-Max sustained: 30 mph
-
-Public
-
-Advisory
-
-#39
-
-500 PM AST
-
-Forecast
-
-Advisory
-
-#39
-
-2100 UTC
-
-Forecast
-
-Discussion
-
-#39
-
-500 PM AST
-
-Wind Speed
-
-Probabilities
-
-#39
-
-2100 UTC
-
-Productos en español:
-
-(más información)
-
-Aviso
-
-Publico
-
-Pronóstico
-
-Discusión
-
-Wind Speed
-Probabilities
-
-Arrival Time
-of Winds
-
-Wind
-History
-
-Interactive
-Cone
-
-Warnings/Cone
-Static Images
-
-Warnings/Cone
-Interactive Map
-
-Experimental Cone
-Static Images
-
-Experimental Cone
-Interactive Map
-
-Warnings and
-Surface Wind
-
-Rip
-Currents
 
 Tropical Storm Hanna
 
