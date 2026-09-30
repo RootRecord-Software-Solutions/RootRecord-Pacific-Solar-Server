@@ -173,6 +173,18 @@ def mentioned_voice(text, voices):  # info: def mentioned_voice
     return None  # info: return None
 
 # ====================================================
+# SECTION: function addresses_group
+# What it does: True when the room is being spoken to and no single voice was named.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def addresses_group(text, voices):  # info: def addresses_group
+    if group_hello(text):  # info: if group_hello ( text ) :
+        return True  # info: return True
+    if mentioned_voice(text, voices):  # info: if mentioned_voice ( text , voices ) :
+        return False  # info: return False
+    return bool(re.search(r"\b(you guys|guys|everyone|you all|all of you)\b", text, re.I))  # info: return bool ( re . search
+
+# ====================================================
 # SECTION: function clean_reply
 # What it does: clean reply.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -437,18 +449,6 @@ def main():  # info: def main
                     post_as(poll_voice, voices, ch, reply, max_text, allow=True)  # info: call post_as
                 continue  # info: continue
 
-            if group_hello(text):  # info: if group_hello ( text ) :
-                hellos = [hop for hop in ("ava", "bruce", "carly") if hop in voices]  # info: set hellos
-                for hop in hellos:  # info: for hop in hellos :
-                    mark_seen(hop, voices, ch, mid)  # info: call mark_seen
-                for hop in hellos:  # info: for hop in hellos :
-                    reply = run_infer(cfg, hop, "Greet the room in one or two sentences. User said: " + text)  # info: set reply
-                    if reply:  # info: if reply :
-                        mark_typing(hop, voices, ch)  # info: call mark_typing
-                        post_as(hop, voices, ch, reply, max_text, allow=True)  # info: call post_as
-                    time.sleep(0.4)  # info: time . sleep ( 0.4 )
-                continue  # info: continue
-
             if wants_pipeline(text, triggers):  # info: if wants_pipeline ( text , triggers ) :
                 prior = ""  # info: set prior
                 for hop in PIPELINE_ORDER:  # info: for hop in PIPELINE_ORDER :
@@ -460,6 +460,22 @@ def main():  # info: def main
                         mark_typing(hop, voices, ch)  # info: call mark_typing
                         post_as(hop, voices, ch, reply, max_text, allow=True)  # info: call post_as
                         prior += f"\n[{hop}]: {reply}\n"  # info: set prior
+                    time.sleep(0.4)  # info: time . sleep ( 0.4 )
+                continue  # info: continue
+
+            if addresses_group(text, voices):  # info: if addresses_group ( text , voices ) :
+                room = [hop for hop in ("ava", "bruce", "carly") if hop in voices]  # info: set room
+                if group_hello(text):  # info: if group_hello ( text ) :
+                    ask = "Greet the room in one or two sentences. User said: " + text  # info: set ask
+                else:  # info: else :
+                    ask = "Answer the person. This is not a power or desk reading. No data line unless they asked for watts, SOC, or host numbers.\nUser: " + text  # info: set ask
+                for hop in room:  # info: for hop in room :
+                    mark_seen(hop, voices, ch, mid)  # info: call mark_seen
+                for hop in room:  # info: for hop in room :
+                    reply = run_infer(cfg, hop, ask)  # info: set reply
+                    if reply:  # info: if reply :
+                        mark_typing(hop, voices, ch)  # info: call mark_typing
+                        post_as(hop, voices, ch, reply, max_text, allow=True)  # info: call post_as
                     time.sleep(0.4)  # info: time . sleep ( 0.4 )
                 continue  # info: continue
 
