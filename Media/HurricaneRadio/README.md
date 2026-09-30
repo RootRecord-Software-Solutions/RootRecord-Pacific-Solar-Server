@@ -12,7 +12,7 @@ The WAV is `2 - RootRecord-Database/Media/Audio/Voice/hurricane_desk_current.wav
 
 Night sleep is read from `System/NightSleep`. A sleeping desk skips with `night_sleep`. A missing player skips with `player_missing`. A missing WAV is `audio_missing`. A busy player is the overlap skip.
 
-`RR_HURRICANE_RADIO` is the proposed job gate (default `0`) at 06:35, 13:12, and 17:02. `jobs.py` was already being edited, so the block is in `proposed-job-block.txt` and is not registered. Speaker playback still needs Alexander's sign-off on the player (`RR_PLAYBACK` and `--play`). AWS radio is not restored.
+`RR_HURRICANE_RADIO` gates job `media_hurricane_radio` in `jobs.py` (default `0`) at 06:35, 13:12, and 17:02. The same block is copied in `proposed-job-block.txt`. Do not paste it again. Speaker playback still needs Alexander's sign-off on the player (`RR_PLAYBACK` and `--play`). AWS radio is not restored.
 
 ```text
 python3 scripts/radio.py run

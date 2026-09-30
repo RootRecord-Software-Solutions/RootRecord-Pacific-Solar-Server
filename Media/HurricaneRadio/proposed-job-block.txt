@@ -1,5 +1,5 @@
-# Staged because Automations/scripts/jobs.py was already being edited.
-# Paste inside the at_times list, after voice_hurricane_desk. Do not enable.
+# Inserted into Automations/scripts/jobs.py after voice_hurricane_desk.
+# Do not paste this block again. It stays OFF unless RR_HURRICANE_RADIO=1.
 # Speaker playback stays off. This command never passes --play.
 {
     # Hurricane radio (2026-09-30, WO-MIG-19). OFF unless RR_HURRICANE_RADIO=1 at poller start.
