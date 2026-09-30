@@ -86,14 +86,6 @@ def default_wav() -> Path:
     return (VOICE / WAV_NAME).resolve()
 
 
-def wav_from_state(st: dict) -> Path:
-    for key in ("wav", "current", "mp3"):
-        raw = str(st.get(key) or "").strip()
-        if raw:
-            return Path(raw).resolve()
-    return default_wav()
-
-
 def morning_wav(path: Path, today: str) -> str | None:
     """Return a refusal reason, or None when the file is today's morning boot WAV."""
     voice = VOICE.resolve()

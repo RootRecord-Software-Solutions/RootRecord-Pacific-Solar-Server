@@ -10,7 +10,7 @@ Local route manifest for the one Vercel site. On demand only. No job.
 
 `www.rootrecord.cloud` stays on the globe (`http://127.0.0.1:8090`). `ssh.rootrecord.cloud` stays. The Vercel home URL is recorded as `https://rootrecord.cloud/home` and is not routed here.
 
-Old avaivy.cloud skins are copied unchanged under Library `Archive/Website-Themes/avaivy.cloud/` and are not applied to the Vercel app. `3 - RootRecord-Website` was empty at build (Public website checkout). This folder does not check that site out and does not edit it.
+Old avaivy.cloud skins are copied unchanged under Library `Archive/Website-Themes/avaivy.cloud/` and are not applied to the Vercel app. The 24 thumbnail images are imported at `3 - RootRecord-Website/media/thumbnails/`. They are not a theme. This folder does not push the site.
 
 ```bash
 nice -n 10 python3 scripts/site_check.py
