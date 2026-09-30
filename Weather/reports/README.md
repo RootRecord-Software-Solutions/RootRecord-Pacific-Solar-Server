@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T17:40:51-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T17:49:51-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -1790,32 +1790,35 @@ cloudy. Lows 42 to 52. West winds up to 10 mph.
 |---|---|
 | **Resource ID** | wa0_airmets |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=WA0&issuedby=HI |
-| **Collected** | 2026-09-29T11:45:18.739535-10:00 HST |
+| **Collected** | 2026-09-29T17:42:23.773757-10:00 HST |
 
 ```text
-548
-WAHW31 PHFO 292133
+469
+WAHW31 PHFO 300334
 WA0HI
 
-HNLS WA 292200
-AIRMET SIERRA UPDATE 3 FOR IFR VALID UNTIL 300400
+HNLS WA 300400
+AIRMET SIERRA FOR IFR VALID UNTIL 301000
 .
-NO SIGNIFICANT IFR EXP.
+AIRMET MTN OBSC...KAUAI AND OAHU
+N THROUGH E SECTIONS.
+TEMPO MTN OBSC ABV 020 EXP DUE TO CLD AND SHRA.
+COND CONT BEYOND 1000Z.
 
-=HNLT WA 292200
-AIRMET TANGO UPDATE 3 FOR TURB VALID UNTIL 300400
+=HNLT WA 300400
+AIRMET TANGO FOR TURB VALID UNTIL 301000
 .
 AIRMET TURB...HI
 OVER AND IMT S THRU W OF MTN.
-TEMPO MOD TURB BLW 090.
-COND CONT BEYOND 0400Z.
+TEMPO MOD TURB BLW 070.
+COND CONT BEYOND 1000Z.
 
-=HNLZ WA 292200
-AIRMET ZULU UPDATE 3 FOR ICE AND FZLVL VALID UNTIL 300400
+=HNLZ WA 300400
+AIRMET ZULU FOR ICE AND FZLVL VALID UNTIL 301000
 .
 NO SIGNIFICANT ICE EXP.
 .
-FZLVL...153 PHLI SLOPING TO 169 PHTO.
+FZLVL...153 PHLI SLOPING TO 166 PHTO.
 ```
 
 ---
@@ -3145,7 +3148,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T17:34:28.945081-10:00 HST |
+| **Collected** | 2026-09-29T17:43:11.300329-10:00 HST |
 
 ```text
                         
@@ -4012,7 +4015,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-29T17:40:50.542801-10:00 HST |
+| **Collected** | 2026-09-29T17:49:50.954316-10:00 HST |
 
 ```text
 Home
@@ -4136,7 +4139,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Wed, 30 Sep 2026 03:37:06 UTC
+Last update Wed, 30 Sep 2026 03:47:12 UTC
 
 NHC issuing advisories for the Atlantic on
 
@@ -7922,7 +7925,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-29T17:25:53.873561-10:00 HST |
+| **Collected** | 2026-09-29T17:42:53.474687-10:00 HST |
 
 ```text
 National Weather Service
