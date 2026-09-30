@@ -7,35 +7,45 @@
 # on pgrep/bash that merely mention the name.
 # Runtime log: /home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Communications/
 # ==============================================================================
-set -euo pipefail
-HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOG="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Communications/council-relay.log"
-mkdir -p "$(dirname "$LOG")"
+set -euo pipefail  # info: set
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  # info: set HERE
+LOG="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Communications/council-relay.log"  # info: set LOG
+mkdir -p "$(dirname "$LOG")"  # info: mkdir
 
-relay_up() {
-  pgrep -f '^python3 .+/council-relay\.py' >/dev/null 2>&1
-}
+# ====================================================
+# SECTION: function relay_up
+# What it does: relay up.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+relay_up() {  # info: relay_up
+  pgrep -f '^python3 .+/council-relay\.py' >/dev/null 2>&1  # info: pgrep
+}  # info: command
 
-legacy_up() {
-  pgrep -f '^python3 .+apps\.council' >/dev/null 2>&1
-}
+# ====================================================
+# SECTION: function legacy_up
+# What it does: legacy up.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+legacy_up() {  # info: legacy_up
+  pgrep -f '^python3 .+apps\.council' >/dev/null 2>&1  # info: pgrep
+}  # info: command
 
-if relay_up; then
-  echo "[ok] council-relay already running"
-  exit 0
-fi
-if legacy_up; then
-  echo "[warn] legacy apps.council running — not starting relay (409 risk)"
-  exit 0
-fi
+if relay_up; then  # info: if
+  echo "[ok] council-relay already running"  # info: echo
+  exit 0  # info: exit
+fi  # info: fi
+if legacy_up; then  # info: if
+  echo "[warn] legacy apps.council running — not starting relay (409 risk)"  # info: echo
+  exit 0  # info: exit
+fi  # info: fi
 # Replies are opt-in: RR_RELAY_REPLIES=1 lets the relay infer+post; default 0 = quiet (poll/login only). 2026-09-29.
-export RR_RELAY_REPLIES="${RR_RELAY_REPLIES:-0}"
+export RR_RELAY_REPLIES="${RR_RELAY_REPLIES:-0}"  # info: export
 # PYTHONUNBUFFERED: log lines appear immediately (2026-09-29; argv unchanged so the pgrep matches still work).
-PYTHONUNBUFFERED=1 nohup python3 "$HERE/council-relay.py" >>"$LOG" 2>&1 &
-pid=$!
-sleep 3
-if ! kill -0 "$pid" 2>/dev/null; then
-  echo "[FAIL] council-relay pid=$pid exited within 3s — last log: $(tail -n 1 "$LOG" 2>/dev/null | sed -E 's/[0-9]{6,}:[A-Za-z0-9_-]{25,}/[REDACTED]/g')"
-  exit 1
-fi
-echo "[ok] council-relay started pid=$pid → $LOG"
+PYTHONUNBUFFERED=1 nohup python3 "$HERE/council-relay.py" >>"$LOG" 2>&1 &  # info: set PYTHONUNBUFFERED
+pid=$!  # info: set pid
+sleep 3  # info: sleep
+if ! kill -0 "$pid" 2>/dev/null; then  # info: if
+  echo "[FAIL] council-relay pid=$pid exited within 3s — last log: $(tail -n 1 "$LOG" 2>/dev/null | sed -E 's/[0-9]{6,}:[A-Za-z0-9_-]{25,}/[REDACTED]/g')"  # info: echo
+  exit 1  # info: exit
+fi  # info: fi
+echo "[ok] council-relay started pid=$pid → $LOG"  # info: echo

@@ -8,10 +8,10 @@
 # Called by the gated ai_processing_report job (RR_AI_REPORT=1) before the report.
 # Safe to run any time; stdlib only; never touches line content. Added 2026-09-29.
 # ==============================================================================
-set -u
-DB="${RR_DATABASE_ROOT:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database}"
-CUR="${RR_INFER_LOG_FILE:-$DB/Logs/AI/Inference/inference_current.jsonl}"
-exec nice -n 10 python3 - "$CUR" <<'PY'
+set -u  # info: set
+DB="${RR_DATABASE_ROOT:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database}"  # info: set DB
+CUR="${RR_INFER_LOG_FILE:-$DB/Logs/AI/Inference/inference_current.jsonl}"  # info: set CUR
+exec nice -n 10 python3 - "$CUR" <<'PY'  # info: exec
 import fcntl, os, sys
 from datetime import datetime
 cur = sys.argv[1]

@@ -7,7 +7,7 @@
 # RULE: Never invent watts/SOC. BLE down → non-zero / WAITING.
 # Phase 1: ROOT = Pacific Energy/ (relative from this script)
 # ============================================================================
-set -euo pipefail
+set -euo pipefail  # info: set
 
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-exec "$ROOT/lib/py" "$ROOT/lib/read_runner.py" --device "delta2"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"  # info: set ROOT
+exec "$ROOT/lib/py" "$ROOT/lib/read_runner.py" --device "delta2"  # info: exec

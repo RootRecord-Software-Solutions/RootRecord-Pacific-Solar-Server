@@ -1,3 +1,12 @@
+# ==============================================================================
+# FILE: Media/Voice/scripts/system_perf.py
+# What this file is: first-party Pacific source. Read the SECTION banner above
+# the function or list you need. Every code line ends with an # info: note.
+# How to edit: change the code, then change the # info: note on that same line
+# so it still says what the line does. Add a new function with the SECTION
+# banner from 5 - RootRecord-Library/prompts/How-To-Read-And-Edit-Code.md.
+# Kind: python
+# ==============================================================================
 #!/usr/bin/env python3
 """G3 system_perf voice report (Bruce, template only, no LLM) — first ported G1 voice report.
 
@@ -13,134 +22,169 @@ Scheduled by jobs.py id voice_system_perf (EVERY_MINUTE only_at_minutes=[6]) —
 RR_VOICE_SYSTEM_PERF=1 in the poller environment at poller start. --no-voice = text only.
 Added 2026-09-29 (g3-voice-ailog).
 """
-from __future__ import annotations
+from __future__ import annotations  # info: from __future__ import annotations
 
-import json
-import os
-import re
-import shutil
-import subprocess
-import sys
-import tempfile
-import time
-from datetime import datetime
-from pathlib import Path
+import json  # info: import json
+import os  # info: import os
+import re  # info: import re
+import shutil  # info: import shutil
+import subprocess  # info: import subprocess
+import sys  # info: import sys
+import tempfile  # info: import tempfile
+import time  # info: import time
+from datetime import datetime  # info: from datetime import datetime
+from pathlib import Path  # info: from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE))
+HERE = Path(__file__).resolve().parent  # info: set HERE
+sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 ,
 from speakable import spoken_clock  # noqa: E402
 from speakers import retire_current  # noqa: E402
 
-DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))
-REPORT = "system_perf"
-MD = Path(os.environ.get("RR_VOICE_REPORT_OUT", str(DB.parent / "test-reports" / "Voice"))) / f"{REPORT}_current.md"
+DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB
+REPORT = "system_perf"  # info: set REPORT
+MD = Path(os.environ.get("RR_VOICE_REPORT_OUT", str(DB.parent / "test-reports" / "Voice"))) / f"{REPORT}_current.md"  # info: set MD
 
 
-def cpu_pct(interval: float = 0.5) -> float:
-    def snap():
-        v = [int(x) for x in open("/proc/stat").readline().split()[1:]]
-        idle = v[3] + (v[4] if len(v) > 4 else 0)
-        return sum(v), idle
-    t1, i1 = snap(); time.sleep(interval); t2, i2 = snap()
-    return round(100.0 * (1 - (i2 - i1) / max(1, t2 - t1)), 1)
+# ====================================================
+# SECTION: function cpu_pct
+# What it does: cpu pct.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def cpu_pct(interval: float = 0.5) -> float:  # info: def cpu_pct
+    def snap():  # info: def snap
+        v = [int(x) for x in open("/proc/stat").readline().split()[1:]]  # info: set v
+        idle = v[3] + (v[4] if len(v) > 4 else 0)  # info: set idle
+        return sum(v), idle  # info: return sum ( v ) , idle
+    t1, i1 = snap(); time.sleep(interval); t2, i2 = snap()  # info: t1 , i1 = snap ( ) ;
+    return round(100.0 * (1 - (i2 - i1) / max(1, t2 - t1)), 1)  # info: return round ( 100.0 * ( 1 -
 
 
-def meminfo() -> dict:
-    out = {}
-    for ln in open("/proc/meminfo"):
-        k, v = ln.split(":", 1)
-        out[k] = int(v.split()[0])
-    return out
+# ====================================================
+# SECTION: function meminfo
+# What it does: meminfo.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def meminfo() -> dict:  # info: def meminfo
+    out = {}  # info: set out
+    for ln in open("/proc/meminfo"):  # info: for ln in open ( "/proc/meminfo" ) :
+        k, v = ln.split(":", 1)  # info: k , v = ln . split (
+        out[k] = int(v.split()[0])  # info: out [ k ] = int ( v
+    return out  # info: return out
 
 
-def read(path: str) -> str | None:
-    try:
-        return Path(path).read_text().strip()
-    except OSError:
-        return None
+# ====================================================
+# SECTION: function read
+# What it does: read.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def read(path: str) -> str | None:  # info: def read
+    try:  # info: try :
+        return Path(path).read_text().strip()  # info: return Path ( path ) . read_text (
+    except OSError:  # info: except OSError :
+        return None  # info: return None
 
 
-def sample() -> dict:
-    m = meminfo()
-    total, avail = m["MemTotal"] / 1048576, m["MemAvailable"] / 1048576
-    du = shutil.disk_usage("/")
-    bat = next(iter(sorted(Path("/sys/class/power_supply").glob("BAT*"))), None)
-    ac = next((p for p in Path("/sys/class/power_supply").iterdir() if read(f"{p}/type") == "Mains"), None) if Path("/sys/class/power_supply").is_dir() else None
-    up = float(open("/proc/uptime").read().split()[0])
-    return {
-        "cpu_pct": cpu_pct(),
-        "load": open("/proc/loadavg").read().split()[:3],
-        "mem_pct": round(100 * (1 - avail / total), 1), "mem_used_gb": round(total - avail, 1), "mem_total_gb": round(total, 1),
-        "swap_used_gb": round((m.get("SwapTotal", 0) - m.get("SwapFree", 0)) / 1048576, 1),
-        "disk_pct": round(100 * du.used / du.total, 1), "disk_used_gb": round(du.used / 1e9), "disk_total_gb": round(du.total / 1e9),
-        "battery_pct": int(read(f"{bat}/capacity")) if bat and read(f"{bat}/capacity") else None,
-        "battery_status": read(f"{bat}/status") if bat else None,
-        "on_ac": (read(f"{ac}/online") == "1") if ac else None,
-        "uptime_s": int(up),
-    }
+# ====================================================
+# SECTION: function sample
+# What it does: sample.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def sample() -> dict:  # info: def sample
+    m = meminfo()  # info: set m
+    total, avail = m["MemTotal"] / 1048576, m["MemAvailable"] / 1048576  # info: total , avail = m [ "MemTotal" ]
+    du = shutil.disk_usage("/")  # info: set du
+    bat = next(iter(sorted(Path("/sys/class/power_supply").glob("BAT*"))), None)  # info: set bat
+    ac = next((p for p in Path("/sys/class/power_supply").iterdir() if read(f"{p}/type") == "Mains"), None) if Path("/sys/class/power_supply").is_dir() else None  # info: set ac
+    up = float(open("/proc/uptime").read().split()[0])  # info: set up
+    return {  # info: return {
+        "cpu_pct": cpu_pct(),  # info: "cpu_pct" : cpu_pct ( ) ,
+        "load": open("/proc/loadavg").read().split()[:3],  # info: "load" : open ( "/proc/loadavg" ) . read
+        "mem_pct": round(100 * (1 - avail / total), 1), "mem_used_gb": round(total - avail, 1), "mem_total_gb": round(total, 1),  # info: "mem_pct" : round ( 100 * ( 1
+        "swap_used_gb": round((m.get("SwapTotal", 0) - m.get("SwapFree", 0)) / 1048576, 1),  # info: "swap_used_gb" : round ( ( m . get
+        "disk_pct": round(100 * du.used / du.total, 1), "disk_used_gb": round(du.used / 1e9), "disk_total_gb": round(du.total / 1e9),  # info: "disk_pct" : round ( 100 * du .
+        "battery_pct": int(read(f"{bat}/capacity")) if bat and read(f"{bat}/capacity") else None,  # info: "battery_pct" : int ( read ( f" {
+        "battery_status": read(f"{bat}/status") if bat else None,  # info: "battery_status" : read ( f" { bat }
+        "on_ac": (read(f"{ac}/online") == "1") if ac else None,  # info: call "on_ac"
+        "uptime_s": int(up),  # info: "uptime_s" : int ( up ) ,
+    }  # info: }
 
 
-def texts(s: dict, now: datetime) -> tuple[str, str]:
-    ts = now.isoformat(timespec="seconds")
-    batt = "not sampled" if s["battery_pct"] is None else f"{s['battery_pct']}% ({s['battery_status']}{', on AC' if s['on_ac'] else ', on battery' if s['on_ac'] is False else ''})"
-    up_h, up_m = s["uptime_s"] // 3600, (s["uptime_s"] % 3600) // 60
-    md = (
+# ====================================================
+# SECTION: function texts
+# What it does: texts.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def texts(s: dict, now: datetime) -> tuple[str, str]:  # info: def texts
+    ts = now.isoformat(timespec="seconds")  # info: set ts
+    batt = "not sampled" if s["battery_pct"] is None else f"{s['battery_pct']}% ({s['battery_status']}{', on AC' if s['on_ac'] else ', on battery' if s['on_ac'] is False else ''})"  # info: set batt
+    up_h, up_m = s["uptime_s"] // 3600, (s["uptime_s"] % 3600) // 60  # info: up_h , up_m = s [ "uptime_s" ]
+    md = (  # info: set md
         f"# System Performance — {ts}\n\n"
-        f"Host: HI Pacific Solar Root Server\n\n"
-        f"| Metric | Value |\n|---|---|\n"
-        f"| CPU | {s['cpu_pct']}% (load {' / '.join(s['load'])}) |\n"
-        f"| RAM | {s['mem_pct']}% used ({s['mem_used_gb']} / {s['mem_total_gb']} GB); swap used {s['swap_used_gb']} GB |\n"
-        f"| Disk / | {s['disk_pct']}% used ({s['disk_used_gb']} / {s['disk_total_gb']} GB) |\n"
-        f"| Host battery | {batt} |\n"
-        f"| Uptime | {up_h}h {up_m}m |\n\n"
-        f"_Template report (no LLM). Measured on the desk at {ts}. Delivery OFF._\n"
-    )
-    spoken = [
-        "System performance report.",
-        f"Host desk at {spoken_clock(now.hour, now.minute)} Hawaiian Standard Time.",
-        f"CPU {round(s['cpu_pct'])}%.",
-        f"Memory {round(s['mem_pct'])}% used, {s['mem_used_gb']} of {s['mem_total_gb']} gigabytes.",
-        f"Disk {round(s['disk_pct'])}% used.",
-    ]
-    if s["battery_pct"] is not None:
-        spoken.append(f"Host battery {s['battery_pct']}%, {'on AC' if s['on_ac'] else 'on battery'}.")
-    spoken.append(f"Uptime {up_h} hour{'s' if up_h != 1 else ''} {up_m} minute{'s' if up_m != 1 else ''}.")
-    spoken.append("End of system report.")
-    return md, " ".join(spoken)
+        f"Host: HI Pacific Solar Root Server\n\n"  # info: f" Host: HI Pacific Solar Root Server\n\n "
+        f"| Metric | Value |\n|---|---|\n"  # info: f" | Metric | Value |\n|---|---|\n "
+        f"| CPU | {s['cpu_pct']}% (load {' / '.join(s['load'])}) |\n"  # info: f" | CPU | { s [ 'cpu_pct' ] }
+        f"| RAM | {s['mem_pct']}% used ({s['mem_used_gb']} / {s['mem_total_gb']} GB); swap used {s['swap_used_gb']} GB |\n"  # info: f" | RAM | { s [ 'mem_pct' ] }
+        f"| Disk / | {s['disk_pct']}% used ({s['disk_used_gb']} / {s['disk_total_gb']} GB) |\n"  # info: f" | Disk / | { s [ 'disk_pct' ] }
+        f"| Host battery | {batt} |\n"  # info: f" | Host battery | { batt } |\n "
+        f"| Uptime | {up_h}h {up_m}m |\n\n"  # info: f" | Uptime | { up_h } h { up_m
+        f"_Template report (no LLM). Measured on the desk at {ts}. Delivery OFF._\n"  # info: f" _Template report (no LLM). Measured on the desk at { ts } . Delivery OFF._\n "
+    )  # info: )
+    spoken = [  # info: set spoken
+        "System performance report.",  # info: "System performance report." ,
+        f"Host desk at {spoken_clock(now.hour, now.minute)} Hawaiian Standard Time.",  # info: f" Host desk at { spoken_clock ( now . hour
+        f"CPU {round(s['cpu_pct'])}%.",  # info: f" CPU { round ( s [ 'cpu_pct'
+        f"Memory {round(s['mem_pct'])}% used, {s['mem_used_gb']} of {s['mem_total_gb']} gigabytes.",  # info: f" Memory { round ( s [ 'mem_pct'
+        f"Disk {round(s['disk_pct'])}% used.",  # info: f" Disk { round ( s [ 'disk_pct'
+    ]  # info: ]
+    if s["battery_pct"] is not None:  # info: if s [ "battery_pct" ] is not None
+        spoken.append(f"Host battery {s['battery_pct']}%, {'on AC' if s['on_ac'] else 'on battery'}.")  # info: spoken . append ( f" Host battery { s
+    spoken.append(f"Uptime {up_h} hour{'s' if up_h != 1 else ''} {up_m} minute{'s' if up_m != 1 else ''}.")  # info: spoken . append ( f" Uptime { up_h
+    spoken.append("End of system report.")  # info: spoken . append ( "End of system report." )
+    return md, " ".join(spoken)  # info: return md , " " . join ( spoken
 
 
-def write_md(md: str) -> None:
-    MD.parent.mkdir(parents=True, exist_ok=True)
-    if MD.is_file():
-        retire_current(MD)
-    tmp = MD.with_suffix(".md.tmp")
-    tmp.write_text(md, encoding="utf-8")
-    os.replace(tmp, MD)
+# ====================================================
+# SECTION: function write_md
+# What it does: write md.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def write_md(md: str) -> None:  # info: def write_md
+    MD.parent.mkdir(parents=True, exist_ok=True)  # info: MD . parent . mkdir ( parents =
+    if MD.is_file():  # info: if MD . is_file ( ) :
+        retire_current(MD)  # info: call retire_current
+    tmp = MD.with_suffix(".md.tmp")  # info: set tmp
+    tmp.write_text(md, encoding="utf-8")  # info: tmp . write_text ( md , encoding =
+    os.replace(tmp, MD)  # info: os . replace ( tmp , MD )
 
 
-def main() -> int:
-    now = datetime.now().astimezone().replace(microsecond=0)
-    s = sample()
-    md, spoken = texts(s, now)
-    write_md(md)
-    res = {"ok": True, "report": REPORT, "md": str(MD), "cpu_pct": s["cpu_pct"], "mem_pct": s["mem_pct"]}
-    if "--no-voice" not in sys.argv:
-        with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:
-            f.write(spoken)
-        try:
-            p = subprocess.run(["bash", str(HERE / "voice-render.sh"), "stitch", "--report", REPORT, "--kind", "system",
-                                "--text-file", f.name], capture_output=True, text=True, timeout=240)
-            last = (p.stdout.strip().splitlines() or ["{}"])[-1]
-            res["voice_rc"] = p.returncode
-            try:
-                res["voice"] = json.loads(last)
-            except ValueError:
-                res["voice"] = {"detail": "busy (single-flight)" if p.returncode == 75 else "no json"}
-        finally:
-            os.unlink(f.name)
-    print(json.dumps(res))
-    return 0
+# ====================================================
+# SECTION: function main
+# What it does: main.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def main() -> int:  # info: def main
+    now = datetime.now().astimezone().replace(microsecond=0)  # info: set now
+    s = sample()  # info: set s
+    md, spoken = texts(s, now)  # info: md , spoken = texts ( s ,
+    write_md(md)  # info: call write_md
+    res = {"ok": True, "report": REPORT, "md": str(MD), "cpu_pct": s["cpu_pct"], "mem_pct": s["mem_pct"]}  # info: set res
+    if "--no-voice" not in sys.argv:  # info: if "--no-voice" not in sys . argv :
+        with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:  # info: with tempfile . NamedTemporaryFile ( "w" , suffix
+            f.write(spoken)  # info: f . write ( spoken )
+        try:  # info: try :
+            p = subprocess.run(["bash", str(HERE / "voice-render.sh"), "stitch", "--report", REPORT, "--kind", "system",  # info: set p
+                                "--text-file", f.name], capture_output=True, text=True, timeout=240)  # info: "--text-file" , f . name ] , capture_output
+            last = (p.stdout.strip().splitlines() or ["{}"])[-1]  # info: set last
+            res["voice_rc"] = p.returncode  # info: res [ "voice_rc" ] = p . returncode
+            try:  # info: try :
+                res["voice"] = json.loads(last)  # info: res [ "voice" ] = json . loads
+            except ValueError:  # info: except ValueError :
+                res["voice"] = {"detail": "busy (single-flight)" if p.returncode == 75 else "no json"}  # info: res [ "voice" ] = { "detail" :
+        finally:  # info: finally :
+            os.unlink(f.name)  # info: os . unlink ( f . name )
+    print(json.dumps(res))  # info: call print
+    return 0  # info: return 0
 
 
-if __name__ == "__main__":
-    raise SystemExit(main())
+if __name__ == "__main__":  # info: if __name__ == "__main__" :
+    raise SystemExit(main())  # info: raise SystemExit ( main ( ) )

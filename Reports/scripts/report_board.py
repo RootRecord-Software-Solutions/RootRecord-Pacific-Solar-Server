@@ -1,3 +1,12 @@
+# ==============================================================================
+# FILE: Reports/scripts/report_board.py
+# What this file is: first-party Pacific source. Read the SECTION banner above
+# the function or list you need. Every code line ends with an # info: note.
+# How to edit: change the code, then change the # info: note on that same line
+# so it still says what the line does. Add a new function with the SECTION
+# banner from 5 - RootRecord-Library/prompts/How-To-Read-And-Edit-Code.md.
+# Kind: python
+# ==============================================================================
 #!/usr/bin/env python3
 """HST daily report due ledger + catch-up (G3 port of G1 reports/sort/daily-report-board + daily-reports-catchup, 2026-09-29).
 
@@ -13,151 +22,211 @@ history cap, oldest-first next_catchup_slot, late never caught up. Changed: G1 g
 G1's evening slot was already removed there. A slot counts as done when <slot>_report_current.md was written today
 after its scheduled time. State: Database Reports/board/daily-reports-due.json (small; rewritten in place).
 """
-from __future__ import annotations
+from __future__ import annotations  # info: from __future__ import annotations
 
-import json
-import os
-import subprocess
-import sys
-from copy import deepcopy
-from datetime import datetime
-from pathlib import Path
-from zoneinfo import ZoneInfo
+import json  # info: import json
+import os  # info: import os
+import subprocess  # info: import subprocess
+import sys  # info: import sys
+from copy import deepcopy  # info: from copy import deepcopy
+from datetime import datetime  # info: from datetime import datetime
+from pathlib import Path  # info: from pathlib import Path
+from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
-HST = ZoneInfo("Pacific/Honolulu")
-HERE = Path(__file__).resolve().parent
-PACIFIC = HERE.parents[1]
-DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))
-STATE = DB / "Reports" / "board" / "daily-reports-due.json"
-REPORTS = Path(os.environ.get("RR_VOICE_REPORT_OUT", str(DB.parent / "test-reports" / "Voice")))
-VOICE = PACIFIC / "Media" / "Voice" / "scripts" / "voice_reports.py"
-SLOTS = ("morning", "midday", "late")
-META = {"morning": {"hour": 9, "minute": 2, "mandatory": True, "catch_up_allowed": True},
-        "midday": {"hour": 12, "minute": 2, "mandatory": True, "catch_up_allowed": True},
-        "late": {"hour": 21, "minute": 2, "mandatory": False, "catch_up_allowed": False}}
-DONEISH = frozenset({"done", "missed", "skipped_optional"})
-RETRYABLE = frozenset({"due", "failed"})
-
-
-def now() -> datetime:
-    return datetime.now(HST).replace(microsecond=0)
+HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
+HERE = Path(__file__).resolve().parent  # info: set HERE
+PACIFIC = HERE.parents[1]  # info: set PACIFIC
+DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB
+STATE = DB / "Reports" / "board" / "daily-reports-due.json"  # info: set STATE
+REPORTS = Path(os.environ.get("RR_VOICE_REPORT_OUT", str(DB.parent / "test-reports" / "Voice")))  # info: set REPORTS
+VOICE = PACIFIC / "Media" / "Voice" / "scripts" / "voice_reports.py"  # info: set VOICE
+SLOTS = ("morning", "midday", "late")  # info: set SLOTS
+META = {"morning": {"hour": 9, "minute": 2, "mandatory": True, "catch_up_allowed": True},  # info: set META
+        "midday": {"hour": 12, "minute": 2, "mandatory": True, "catch_up_allowed": True},  # info: "midday" : { "hour" : 12 , "minute"
+        "late": {"hour": 21, "minute": 2, "mandatory": False, "catch_up_allowed": False}}  # info: "late" : { "hour" : 21 , "minute"
+DONEISH = frozenset({"done", "missed", "skipped_optional"})  # info: set DONEISH
+RETRYABLE = frozenset({"due", "failed"})  # info: set RETRYABLE
 
 
+# ====================================================
+# SECTION: function now
+# What it does: now.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def now() -> datetime:  # info: def now
+    return datetime.now(HST).replace(microsecond=0)  # info: return datetime . now ( HST ) .
+
+
+# ====================================================
+# SECTION: function catchup_window_open
+# What it does: catchup window open.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
 def catchup_window_open(kind: str, t: datetime) -> bool:  # G1 rule
-    return t.hour < 12 if kind == "morning" else t.hour < 17 if kind == "midday" else False
+    return t.hour < 12 if kind == "morning" else t.hour < 17 if kind == "midday" else False  # info: return t . hour < 12 if kind
 
 
-def _read() -> dict:
-    try:
-        d = json.loads(STATE.read_text(encoding="utf-8"))
-        return d if isinstance(d, dict) else {}
-    except (OSError, ValueError):
-        return {}
+# ====================================================
+# SECTION: function _read
+# What it does:  read.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _read() -> dict:  # info: def _read
+    try:  # info: try :
+        d = json.loads(STATE.read_text(encoding="utf-8"))  # info: set d
+        return d if isinstance(d, dict) else {}  # info: return d if isinstance ( d , dict
+    except (OSError, ValueError):  # info: except ( OSError , ValueError ) :
+        return {}  # info: return { }
 
 
-def _write(d: dict) -> dict:
-    STATE.parent.mkdir(parents=True, exist_ok=True)
-    d = dict(d, updated_at=now().isoformat())
-    tmp = STATE.with_suffix(".json.tmp")
-    tmp.write_text(json.dumps(d, indent=2) + "\n", encoding="utf-8")
-    os.replace(tmp, STATE)
-    return d
+# ====================================================
+# SECTION: function _write
+# What it does:  write.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _write(d: dict) -> dict:  # info: def _write
+    STATE.parent.mkdir(parents=True, exist_ok=True)  # info: STATE . parent . mkdir ( parents =
+    d = dict(d, updated_at=now().isoformat())  # info: set d
+    tmp = STATE.with_suffix(".json.tmp")  # info: set tmp
+    tmp.write_text(json.dumps(d, indent=2) + "\n", encoding="utf-8")  # info: tmp . write_text ( json . dumps (
+    os.replace(tmp, STATE)  # info: os . replace ( tmp , STATE )
+    return d  # info: return d
 
 
-def _seed(kind: str, day: str) -> dict:
-    m = META[kind]
-    return {"status": "pending", "scheduled_at": f"{day}T{m['hour']:02d}:{m['minute']:02d}:00", **m,
-            "completed_at": None, "error": None, "started_at": None}
+# ====================================================
+# SECTION: function _seed
+# What it does:  seed.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _seed(kind: str, day: str) -> dict:  # info: def _seed
+    m = META[kind]  # info: set m
+    return {"status": "pending", "scheduled_at": f"{day}T{m['hour']:02d}:{m['minute']:02d}:00", **m,  # info: return { "status" : "pending" , "scheduled_at" :
+            "completed_at": None, "error": None, "started_at": None}  # info: "completed_at" : None , "error" : None ,
 
 
+# ====================================================
+# SECTION: function _expire
+# What it does:  expire.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
 def _expire(prior: dict) -> dict:  # G1 _expire_prior_day
-    for kind, row in (prior.get("slots") or {}).items():
-        if not isinstance(row, dict) or row.get("status") in DONEISH:
-            continue
-        if row.get("mandatory"):
-            row.update(status="missed", error=row.get("error") or "unfinished_after_midnight", completed_at=now().isoformat())
-        else:
-            row.update(status="skipped_optional", completed_at=now().isoformat())
-    return prior
+    for kind, row in (prior.get("slots") or {}).items():  # info: for kind , row in ( prior .
+        if not isinstance(row, dict) or row.get("status") in DONEISH:  # info: if not isinstance ( row , dict )
+            continue  # info: continue
+        if row.get("mandatory"):  # info: if row . get ( "mandatory" ) :
+            row.update(status="missed", error=row.get("error") or "unfinished_after_midnight", completed_at=now().isoformat())  # info: row . update ( status = "missed" ,
+        else:  # info: else :
+            row.update(status="skipped_optional", completed_at=now().isoformat())  # info: row . update ( status = "skipped_optional" ,
+    return prior  # info: return prior
 
 
-def _written_today(kind: str, t: datetime) -> str | None:
-    f = REPORTS / f"{kind}_report_current.md"
-    if not f.is_file():
-        return None
-    mt = datetime.fromtimestamp(f.stat().st_mtime, HST)
-    due = t.replace(hour=META[kind]["hour"], minute=META[kind]["minute"], second=0)
-    return mt.isoformat(timespec="seconds") if mt.date() == t.date() and mt >= due else None
+# ====================================================
+# SECTION: function _written_today
+# What it does:  written today.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _written_today(kind: str, t: datetime) -> str | None:  # info: def _written_today
+    f = REPORTS / f"{kind}_report_current.md"  # info: set f
+    if not f.is_file():  # info: if not f . is_file ( ) :
+        return None  # info: return None
+    mt = datetime.fromtimestamp(f.stat().st_mtime, HST)  # info: set mt
+    due = t.replace(hour=META[kind]["hour"], minute=META[kind]["minute"], second=0)  # info: set due
+    return mt.isoformat(timespec="seconds") if mt.date() == t.date() and mt >= due else None  # info: return mt . isoformat ( timespec = "seconds"
 
 
-def ensure_today(t: datetime) -> dict:
-    day = t.strftime("%Y-%m-%d")
-    d = _read()
-    if d.get("day") and d["day"] != day:
-        hist = d.get("history") if isinstance(d.get("history"), dict) else {}
-        hist[d["day"]] = {"day": d["day"], "slots": _expire(deepcopy(d)).get("slots") or {}}
-        for old in sorted(hist)[:-14]:
-            hist.pop(old, None)
-        d = {"day": day, "slots": {}, "history": hist}
-    d.setdefault("day", day)
-    d.setdefault("history", {})
-    slots = d.setdefault("slots", {})
-    for kind in SLOTS:
-        if not isinstance(slots.get(kind), dict):
-            slots[kind] = _seed(kind, day)
-    return d
+# ====================================================
+# SECTION: function ensure_today
+# What it does: ensure today.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def ensure_today(t: datetime) -> dict:  # info: def ensure_today
+    day = t.strftime("%Y-%m-%d")  # info: set day
+    d = _read()  # info: set d
+    if d.get("day") and d["day"] != day:  # info: if d . get ( "day" ) and
+        hist = d.get("history") if isinstance(d.get("history"), dict) else {}  # info: set hist
+        hist[d["day"]] = {"day": d["day"], "slots": _expire(deepcopy(d)).get("slots") or {}}  # info: hist [ d [ "day" ] ] =
+        for old in sorted(hist)[:-14]:  # info: for old in sorted ( hist ) [
+            hist.pop(old, None)  # info: hist . pop ( old , None )
+        d = {"day": day, "slots": {}, "history": hist}  # info: set d
+    d.setdefault("day", day)  # info: d . setdefault ( "day" , day )
+    d.setdefault("history", {})  # info: d . setdefault ( "history" , { }
+    slots = d.setdefault("slots", {})  # info: set slots
+    for kind in SLOTS:  # info: for kind in SLOTS :
+        if not isinstance(slots.get(kind), dict):  # info: if not isinstance ( slots . get (
+            slots[kind] = _seed(kind, day)  # info: slots [ kind ] = _seed ( kind
+    return d  # info: return d
 
 
-def mark_due(t: datetime) -> dict:
-    d = ensure_today(t)
-    for kind in SLOTS:
-        row = d["slots"][kind]
-        seen = _written_today(kind, t)
-        if seen and row["status"] != "done":
-            row.update(status="done", completed_at=seen, error=None)
-            continue
-        if row["status"] == "pending" and t >= t.replace(hour=row["hour"], minute=row["minute"], second=0):
-            row.update(status="due", marked_due_at=t.isoformat())
-    return _write(d)
+# ====================================================
+# SECTION: function mark_due
+# What it does: mark due.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def mark_due(t: datetime) -> dict:  # info: def mark_due
+    d = ensure_today(t)  # info: set d
+    for kind in SLOTS:  # info: for kind in SLOTS :
+        row = d["slots"][kind]  # info: set row
+        seen = _written_today(kind, t)  # info: set seen
+        if seen and row["status"] != "done":  # info: if seen and row [ "status" ] !=
+            row.update(status="done", completed_at=seen, error=None)  # info: row . update ( status = "done" ,
+            continue  # info: continue
+        if row["status"] == "pending" and t >= t.replace(hour=row["hour"], minute=row["minute"], second=0):  # info: if row [ "status" ] == "pending" and
+            row.update(status="due", marked_due_at=t.isoformat())  # info: row . update ( status = "due" ,
+    return _write(d)  # info: return _write ( d )
 
 
-def next_catchup_slot(d: dict, t: datetime) -> str | None:
-    c = [(r["scheduled_at"], k) for k, r in d["slots"].items() if r.get("mandatory") and r.get("catch_up_allowed")
-         and catchup_window_open(k, t) and r.get("status") in RETRYABLE]
-    return sorted(c)[0][1] if c else None
+# ====================================================
+# SECTION: function next_catchup_slot
+# What it does: next catchup slot.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def next_catchup_slot(d: dict, t: datetime) -> str | None:  # info: def next_catchup_slot
+    c = [(r["scheduled_at"], k) for k, r in d["slots"].items() if r.get("mandatory") and r.get("catch_up_allowed")  # info: set c
+         and catchup_window_open(k, t) and r.get("status") in RETRYABLE]  # info: call and
+    return sorted(c)[0][1] if c else None  # info: return sorted ( c ) [ 0 ]
 
 
-def run_due(t: datetime, voice: bool) -> dict:
-    d = mark_due(t)
-    kind = next_catchup_slot(d, t)
-    if not kind:
-        return {"ok": True, "skipped": True, "detail": "nothing_due", "slots": {k: r["status"] for k, r in d["slots"].items()}}
-    d["slots"][kind].update(status="running", started_at=now().isoformat())
-    _write(d)
-    cmd = ["nice", "-n", "10", sys.executable, str(VOICE), f"{kind}_report"] + ([] if voice else ["--no-voice"])
-    p = subprocess.run(cmd, capture_output=True, text=True, timeout=900)
-    ok = p.returncode == 0
-    d["slots"][kind].update(status="done" if ok else "failed", completed_at=now().isoformat() if ok else None,
-                            error=None if ok else (p.stderr or p.stdout)[-400:], catch_up=True)
-    _write(d)
-    return {"ok": ok, "kind": kind, "rc": p.returncode, "voice": voice, "out": (p.stdout or "").strip()[-400:]}
+# ====================================================
+# SECTION: function run_due
+# What it does: run due.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def run_due(t: datetime, voice: bool) -> dict:  # info: def run_due
+    d = mark_due(t)  # info: set d
+    kind = next_catchup_slot(d, t)  # info: set kind
+    if not kind:  # info: if not kind :
+        return {"ok": True, "skipped": True, "detail": "nothing_due", "slots": {k: r["status"] for k, r in d["slots"].items()}}  # info: return { "ok" : True , "skipped" :
+    d["slots"][kind].update(status="running", started_at=now().isoformat())  # info: d [ "slots" ] [ kind ] .
+    _write(d)  # info: call _write
+    cmd = ["nice", "-n", "10", sys.executable, str(VOICE), f"{kind}_report"] + ([] if voice else ["--no-voice"])  # info: set cmd
+    p = subprocess.run(cmd, capture_output=True, text=True, timeout=900)  # info: set p
+    ok = p.returncode == 0  # info: set ok
+    d["slots"][kind].update(status="done" if ok else "failed", completed_at=now().isoformat() if ok else None,  # info: d [ "slots" ] [ kind ] .
+                            error=None if ok else (p.stderr or p.stdout)[-400:], catch_up=True)  # info: set error
+    _write(d)  # info: call _write
+    return {"ok": ok, "kind": kind, "rc": p.returncode, "voice": voice, "out": (p.stdout or "").strip()[-400:]}  # info: return { "ok" : ok , "kind" :
 
 
-def main() -> int:
-    if len(sys.argv) < 2 or sys.argv[1] not in ("status", "run-due"):
-        print(json.dumps({"ok": False, "detail": "usage: report_board.py status | run-due [--voice]"}))
-        return 2
-    t = now()
-    if sys.argv[1] == "status":
-        d = mark_due(t)
-        print(json.dumps({"ok": True, "day": d["day"], "path": str(STATE),
-                          "slots": {k: {"status": r["status"], "scheduled_at": r["scheduled_at"]} for k, r in d["slots"].items()},
-                          "next_catchup": next_catchup_slot(d, t)}))
-        return 0
-    res = run_due(t, "--voice" in sys.argv)
-    print(json.dumps(res, ensure_ascii=False))
-    return 0 if res.get("ok") else 1
+# ====================================================
+# SECTION: function main
+# What it does: main.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def main() -> int:  # info: def main
+    if len(sys.argv) < 2 or sys.argv[1] not in ("status", "run-due"):  # info: if len ( sys . argv ) <
+        print(json.dumps({"ok": False, "detail": "usage: report_board.py status | run-due [--voice]"}))  # info: call print
+        return 2  # info: return 2
+    t = now()  # info: set t
+    if sys.argv[1] == "status":  # info: if sys . argv [ 1 ] ==
+        d = mark_due(t)  # info: set d
+        print(json.dumps({"ok": True, "day": d["day"], "path": str(STATE),  # info: call print
+                          "slots": {k: {"status": r["status"], "scheduled_at": r["scheduled_at"]} for k, r in d["slots"].items()},  # info: "slots" : { k : { "status" :
+                          "next_catchup": next_catchup_slot(d, t)}))  # info: "next_catchup" : next_catchup_slot ( d , t )
+        return 0  # info: return 0
+    res = run_due(t, "--voice" in sys.argv)  # info: set res
+    print(json.dumps(res, ensure_ascii=False))  # info: call print
+    return 0 if res.get("ok") else 1  # info: return 0 if res . get ( "ok"
 
 
-if __name__ == "__main__":
-    raise SystemExit(main())
+if __name__ == "__main__":  # info: if __name__ == "__main__" :
+    raise SystemExit(main())  # info: raise SystemExit ( main ( ) )

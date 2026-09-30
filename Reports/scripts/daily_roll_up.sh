@@ -5,67 +5,77 @@
 # Summarize today's Database/WORKLOG activity into a Library session-style file.
 # Measured counts only — no invented narrative. Secrets never copied.
 # ============================================================================
-set -euo pipefail
+set -euo pipefail  # info: set
 
-WORKLOG_DIR="${WORKLOG_DIR:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Worklog}"
-LIBRARY_ROOT="${LIBRARY_ROOT:-/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library}"
-LOG_DIR="${LIBRARY_ROOT}/Documentation/01-operations/0 - Human Operator Work Logs"
-TODAY="$(TZ=Pacific/Honolulu date '+%Y-%m-%d')"
-NOW_HM="$(TZ=Pacific/Honolulu date '+%H:%M')"
-OUT="${LOG_DIR}/${TODAY} System Operator Worklog — Session auto.md"
+WORKLOG_DIR="${WORKLOG_DIR:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Worklog}"  # info: set WORKLOG_DIR
+LIBRARY_ROOT="${LIBRARY_ROOT:-/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library}"  # info: set LIBRARY_ROOT
+LOG_DIR="${LIBRARY_ROOT}/Documentation/01-operations/0 - Human Operator Work Logs"  # info: set LOG_DIR
+TODAY="$(TZ=Pacific/Honolulu date '+%Y-%m-%d')"  # info: set TODAY
+NOW_HM="$(TZ=Pacific/Honolulu date '+%H:%M')"  # info: set NOW_HM
+OUT="${LOG_DIR}/${TODAY} System Operator Worklog — Session auto.md"  # info: set OUT
 
-mkdir -p "$LOG_DIR"
+mkdir -p "$LOG_DIR"  # info: mkdir
 
 # Collect today's lines from current + rotated segments named with today's date prefix
-tmp=$(mktemp)
-{
-  [[ -f "${WORKLOG_DIR}/worklog_current.md" ]] && cat "${WORKLOG_DIR}/worklog_current.md"
+tmp=$(mktemp)  # info: set tmp
+{  # info: command
+  [[ -f "${WORKLOG_DIR}/worklog_current.md" ]] && cat "${WORKLOG_DIR}/worklog_current.md"  # info: command
   # rotated: *YYYYMMDD* or contain today's ISO in content headers
   find "$WORKLOG_DIR" -maxdepth 1 -type f -name '*.md' ! -name 'worklog_current.md' -print0 2>/dev/null \
-    | while IFS= read -r -d '' f; do
-        base=$(basename "$f")
-        case "$base" in
-          *"${TODAY//-/}"*|*"${TODAY}"*) cat "$f" ;;
-        esac
-      done
-} > "$tmp" 2>/dev/null || true
+    | while IFS= read -r -d '' f; do  # info: command
+        base=$(basename "$f")  # info: set base
+        case "$base" in  # info: case
+          *"${TODAY//-/}"*|*"${TODAY}"*) cat "$f" ;;  # info: command
+        esac  # info: esac
+      done  # info: done
+} > "$tmp" 2>/dev/null || true  # info: command
 
-count_kind() {
-  local k="$1"
-  grep -cE "^- ${k} " "$tmp" 2>/dev/null || echo 0
-}
+# ====================================================
+# SECTION: function count_kind
+# What it does: count kind.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+count_kind() {  # info: count_kind
+  local k="$1"  # info: local
+  grep -cE "^- ${k} " "$tmp" 2>/dev/null || echo 0  # info: grep
+}  # info: command
 
-count_domain() {
-  local d="$1"
-  grep -cE "domain=${d}" "$tmp" 2>/dev/null || echo 0
-}
+# ====================================================
+# SECTION: function count_domain
+# What it does: count domain.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+count_domain() {  # info: count_domain
+  local d="$1"  # info: local
+  grep -cE "domain=${d}" "$tmp" 2>/dev/null || echo 0  # info: grep
+}  # info: command
 
-NEW_F=$(count_kind NEW_FILE)
-MOD_F=$(count_kind MOD_FILE)
-NEW_D=$(count_kind NEW_DIR)
-DEL=$(count_kind DELETED)
+NEW_F=$(count_kind NEW_FILE)  # info: set NEW_F
+MOD_F=$(count_kind MOD_FILE)  # info: set MOD_F
+NEW_D=$(count_kind NEW_DIR)  # info: set NEW_D
+DEL=$(count_kind DELETED)  # info: set DEL
 # normalize newlines from echo 0
-NEW_F=${NEW_F//$'\n'/}; MOD_F=${MOD_F//$'\n'/}; NEW_D=${NEW_D//$'\n'/}; DEL=${DEL//$'\n'/}
+NEW_F=${NEW_F//$'\n'/}; MOD_F=${MOD_F//$'\n'/}; NEW_D=${NEW_D//$'\n'/}; DEL=${DEL//$'\n'/}  # info: set NEW_F
 
-DOM_LINES=""
-for d in Automations Energy System Reports Communications Github Weather Geology Security Library Database; do
-  c=$(count_domain "$d")
-  c=${c//$'\n'/}
-  [[ "$c" -gt 0 ]] 2>/dev/null && DOM_LINES+="| ${d} | ${c} |"$'\n'
-done
-[[ -z "$DOM_LINES" ]] && DOM_LINES="| (none tagged) | 0 |"$'\n'
+DOM_LINES=""  # info: set DOM_LINES
+for d in Automations Energy System Reports Communications Github Weather Geology Security Library Database; do  # info: for
+  c=$(count_domain "$d")  # info: set c
+  c=${c//$'\n'/}  # info: set c
+  [[ "$c" -gt 0 ]] 2>/dev/null && DOM_LINES+="| ${d} | ${c} |"$'\n'  # info: command
+done  # info: done
+[[ -z "$DOM_LINES" ]] && DOM_LINES="| (none tagged) | 0 |"$'\n'  # info: command
 
 # Migration progress stub (static known LIVE domains — measured from Pacific tree presence)
-MIG=""
-PACIFIC="${PACIFIC:-/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server}"
-for pair in "Energy:Energy" "System:System" "Reports:Reports" "Automations:Automations"; do
+MIG=""  # info: set MIG
+PACIFIC="${PACIFIC:-/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server}"  # info: set PACIFIC
+for pair in "Energy:Energy" "System:System" "Reports:Reports" "Automations:Automations"; do  # info: for
   name="${pair%%:*}"; path="${pair##*:}"
-  if [[ -d "${PACIFIC}/${path}" ]]; then
-    MIG+="- **${name}:** domain folder present on Pacific"$'\n'
-  fi
-done
+  if [[ -d "${PACIFIC}/${path}" ]]; then  # info: if
+    MIG+="- **${name}:** domain folder present on Pacific"$'\n'  # info: MIG
+  fi  # info: fi
+done  # info: done
 
-cat > "$OUT" <<EOF
+cat > "$OUT" <<EOF  # info: cat
 # System Operator Worklog — Session auto
 
 **Date:** ${TODAY}  
@@ -135,6 +145,6 @@ Weekly archive (logs): move closed sessions older than the current week into
 Documentation/01-operations/archive/YYYY-Www/ without rewriting content.
 EOF
 
-chmod 600 "$OUT" 2>/dev/null || true
-rm -f "$tmp"
-echo "OK wrote ${OUT}"
+chmod 600 "$OUT" 2>/dev/null || true  # info: chmod
+rm -f "$tmp"  # info: rm
+echo "OK wrote ${OUT}"  # info: echo

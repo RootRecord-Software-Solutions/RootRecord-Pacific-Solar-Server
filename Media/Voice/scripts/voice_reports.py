@@ -1,3 +1,12 @@
+# ==============================================================================
+# FILE: Media/Voice/scripts/voice_reports.py
+# What this file is: first-party Pacific source. Read the SECTION banner above
+# the function or list you need. Every code line ends with an # info: note.
+# How to edit: change the code, then change the # info: note on that same line
+# so it still says what the line does. Add a new function with the SECTION
+# banner from 5 - RootRecord-Library/prompts/How-To-Read-And-Edit-Code.md.
+# Kind: python
+# ==============================================================================
 #!/usr/bin/env python3
 """G3 voice reports (template-first ports of G1 desks). Stdlib only; run with system python3.
 
@@ -29,798 +38,1008 @@ Database Weather/Hawai'i/official/) or HWO / AFD (weather poller text products).
 Roll-ups can append an LLM summary via run-infer.sh only when RR_VOICE_ROLLUP_LLM=1 (off by default).
 Scheduling: jobs.py, one env gate per report (read at poller start). Added 2026-09-29 (g3-voice-reports2).
 """
-from __future__ import annotations
+from __future__ import annotations  # info: from __future__ import annotations
 
-import json
-import os
-import re
-import subprocess
-import sys
-import tempfile
-import time
-from datetime import datetime
-from pathlib import Path
+import json  # info: import json
+import os  # info: import os
+import re  # info: import re
+import subprocess  # info: import subprocess
+import sys  # info: import sys
+import tempfile  # info: import tempfile
+import time  # info: import time
+from datetime import datetime  # info: from datetime import datetime
+from pathlib import Path  # info: from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE))
+HERE = Path(__file__).resolve().parent  # info: set HERE
+sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 ,
 from speakable import spoken_clock  # noqa: E402
 from speakers import retire_current  # noqa: E402
 
-DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))
-LIB = Path(os.environ.get("RR_LIBRARY_ROOT", "/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library"))
-PACIFIC = HERE.parents[2]
-REPORTS = Path(os.environ.get("RR_VOICE_REPORT_OUT", str(DB.parent / "test-reports" / "Voice")))
-WX = DB / "Weather" / "Hawai'i"
-ALERTS = WX / "hfo" / "api.weather.gov" / "alerts" / "active" / "area=HI" / "area=HI_current.json"
-SFP = WX / "reports" / "0 Level Processing" / "sfp_state_forecast_current.md"
-ENERGY = DB / "Energy"
-QUAKES = DB / "Geology" / "Earthquakes"
+DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB
+LIB = Path(os.environ.get("RR_LIBRARY_ROOT", "/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library"))  # info: set LIB
+PACIFIC = HERE.parents[2]  # info: set PACIFIC
+REPORTS = Path(os.environ.get("RR_VOICE_REPORT_OUT", str(DB.parent / "test-reports" / "Voice")))  # info: set REPORTS
+WX = DB / "Weather" / "Hawai'i"  # info: set WX
+ALERTS = WX / "hfo" / "api.weather.gov" / "alerts" / "active" / "area=HI" / "area=HI_current.json"  # info: set ALERTS
+SFP = WX / "reports" / "0 Level Processing" / "sfp_state_forecast_current.md"  # info: set SFP
+ENERGY = DB / "Energy"  # info: set ENERGY
+QUAKES = DB / "Geology" / "Earthquakes"  # info: set QUAKES
 QUAKE_STATE = REPORTS / "earthquake_report_seen.json"  # G1 earthquake-hourly.json seen_ids (new since last report)
-QUAKE_STALE_MIN = 20
-VOLCANOES = DB / "Geology" / "Volcanoes"
-HVO_STALE_MIN = 30
+QUAKE_STALE_MIN = 20  # info: set QUAKE_STALE_MIN
+VOLCANOES = DB / "Geology" / "Volcanoes"  # info: set VOLCANOES
+HVO_STALE_MIN = 30  # info: set HVO_STALE_MIN
 _MAX_HI, _MAX_GLOBAL = 6, 8  # G1 spoken caps
 HURRICANES = WX / "hurricanes" / "tracking"  # <Storm>_<first-seen>/track.json (Pacific Weather/hurricanes/scripts/sources.py)
 HUR_ACTIVE_H = 6  # a track polled within this many hours counts as on the board
 HAWAII_THREAT_NM = 800  # G1 hurricane_desk
-HAWAII_POS = {"Honolulu": (21.3069, -157.8583), "Hilo": (19.7297, -155.0900), "Līhuʻe": (21.9811, -159.3711),
+HAWAII_POS = {"Honolulu": (21.3069, -157.8583), "Hilo": (19.7297, -155.0900), "Līhuʻe": (21.9811, -159.3711),  # info: set HAWAII_POS
               "Kona": (19.6390, -155.9969)}  # G1 hurricane_desk HAWAII_POS
-TROPICAL_EVENTS = ("hurricane", "tropical storm", "tropical depression", "typhoon", "cyclone", "storm surge")
-COMPASS = ("north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest")
-STORM_CLASS = {"HU": "Hurricane", "TS": "Tropical Storm", "TD": "Tropical Depression", "STS": "Subtropical Storm",
-               "SS": "Subtropical Storm", "SD": "Subtropical Depression", "PTC": "Post-tropical Cyclone",
+TROPICAL_EVENTS = ("hurricane", "tropical storm", "tropical depression", "typhoon", "cyclone", "storm surge")  # info: set TROPICAL_EVENTS
+COMPASS = ("north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest")  # info: set COMPASS
+STORM_CLASS = {"HU": "Hurricane", "TS": "Tropical Storm", "TD": "Tropical Depression", "STS": "Subtropical Storm",  # info: set STORM_CLASS
+               "SS": "Subtropical Storm", "SD": "Subtropical Depression", "PTC": "Post-tropical Cyclone",  # info: "SS" : "Subtropical Storm" , "SD" : "Subtropical Depression" ,
                "PC": "Post-tropical Cyclone", "TY": "Typhoon", "STY": "Super Typhoon"}  # NHC classification codes
-DEVICES = (("delta2", "Delta 2"), ("river2pro", "River 2 Pro"))
-STALE_MIN = 30
-KIND = {"hourly_chime": "chime", "nws_weather": "nws", "energy_report": "energy", "remaining_tasks": "remaining",
-        "morning_report": "morning", "midday_report": "midday", "late_report": "late", "earthquake_report": "earthquake",
-        "hurricane_desk": "hurricane", "kilauea_report": "kilauea",
-        "solar_desk": "solar", "security_desk": "security", "bandwidth_desk": "bandwidth",
-        "official_weather": "official", "boot_brief": "boot"}
+DEVICES = (("delta2", "Delta 2"), ("river2pro", "River 2 Pro"))  # info: set DEVICES
+STALE_MIN = 30  # info: set STALE_MIN
+# ====================================================
+# SECTION: KIND
+# What it does: Set KIND.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+KIND = {"hourly_chime": "chime", "nws_weather": "nws", "energy_report": "energy", "remaining_tasks": "remaining",  # info: set KIND
+        "morning_report": "morning", "midday_report": "midday", "late_report": "late", "earthquake_report": "earthquake",  # info: "morning_report" : "morning" , "midday_report" : "midday" ,
+        "hurricane_desk": "hurricane", "kilauea_report": "kilauea",  # info: "hurricane_desk" : "hurricane" , "kilauea_report" : "kilauea" ,
+        "solar_desk": "solar", "security_desk": "security", "bandwidth_desk": "bandwidth",  # info: "solar_desk" : "solar" , "security_desk" : "security" ,
+        "official_weather": "official", "boot_brief": "boot"}  # info: "official_weather" : "official" , "boot_brief" : "boot" }
 
 
-def now() -> datetime:
-    return datetime.now().astimezone().replace(microsecond=0)
+# ====================================================
+# SECTION: function now
+# What it does: now.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def now() -> datetime:  # info: def now
+    return datetime.now().astimezone().replace(microsecond=0)  # info: return datetime . now ( ) . astimezone
 
 
-def clock(t: datetime) -> str:
-    return spoken_clock(t.hour, t.minute)
+# ====================================================
+# SECTION: function clock
+# What it does: clock.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def clock(t: datetime) -> str:  # info: def clock
+    return spoken_clock(t.hour, t.minute)  # info: return spoken_clock ( t . hour , t
 
 
-def jload(p: Path):
-    try:
-        return json.loads(p.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return None
+# ====================================================
+# SECTION: function jload
+# What it does: jload.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def jload(p: Path):  # info: def jload
+    try:  # info: try :
+        return json.loads(p.read_text(encoding="utf-8"))  # info: return json . loads ( p . read_text
+    except (OSError, ValueError):  # info: except ( OSError , ValueError ) :
+        return None  # info: return None
 
 
 # ------------------------------------------------------------------ data readers (existing G3 sources only)
-def energy_facts(t: datetime) -> list[dict]:
-    out = []
-    for key, name in DEVICES:
-        soc, watts = jload(ENERGY / "soc" / f"{key}-last.json"), jload(ENERGY / "watts" / f"{key}-last.json") or {}
-        if not soc or "soc" not in soc:
-            out.append({"name": name, "ok": False})
-            continue
-        try:
-            age = int((t - datetime.fromisoformat(soc["at"])).total_seconds() // 60)
-        except (KeyError, ValueError):
-            age = None
-        out.append({"name": name, "ok": True, "soc": round(float(soc["soc"])), "at": soc.get("at"), "age_min": age,
-                    "solar_w": watts.get("solar_input_power"), "ac_out_w": watts.get("ac_output_power"),
-                    "usbc_out_w": watts.get("usbc_output_power"), "ac_in_w": watts.get("ac_input_power"),
-                    "charge": watts.get("charge_source")})
-    return out
+# ====================================================
+# SECTION: function energy_facts
+# What it does: energy facts.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def energy_facts(t: datetime) -> list[dict]:  # info: def energy_facts
+    out = []  # info: set out
+    for key, name in DEVICES:  # info: for key , name in DEVICES :
+        soc, watts = jload(ENERGY / "soc" / f"{key}-last.json"), jload(ENERGY / "watts" / f"{key}-last.json") or {}  # info: soc , watts = jload ( ENERGY /
+        if not soc or "soc" not in soc:  # info: if not soc or "soc" not in soc
+            out.append({"name": name, "ok": False})  # info: out . append ( { "name" : name
+            continue  # info: continue
+        try:  # info: try :
+            age = int((t - datetime.fromisoformat(soc["at"])).total_seconds() // 60)  # info: set age
+        except (KeyError, ValueError):  # info: except ( KeyError , ValueError ) :
+            age = None  # info: set age
+        out.append({"name": name, "ok": True, "soc": round(float(soc["soc"])), "at": soc.get("at"), "age_min": age,  # info: out . append ( { "name" : name
+                    "solar_w": watts.get("solar_input_power"), "ac_out_w": watts.get("ac_output_power"),  # info: "solar_w" : watts . get ( "solar_input_power" )
+                    "usbc_out_w": watts.get("usbc_output_power"), "ac_in_w": watts.get("ac_input_power"),  # info: "usbc_out_w" : watts . get ( "usbc_output_power" )
+                    "charge": watts.get("charge_source")})  # info: "charge" : watts . get ( "charge_source" )
+    return out  # info: return out
 
 
-def alerts() -> tuple[list[dict], str | None]:
-    d = jload(ALERTS)
-    if not isinstance(d, dict):
-        return [], None
-    rows = []
-    for f in d.get("features") or []:
-        p = f.get("properties") or {}
-        rows.append({"event": p.get("event") or "Alert", "area": (p.get("areaDesc") or "").replace(";", ","),
-                     "expires": p.get("expires") or p.get("ends")})
-    return rows, d.get("updated")
+# ====================================================
+# SECTION: function alerts
+# What it does: alerts.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def alerts() -> tuple[list[dict], str | None]:  # info: def alerts
+    d = jload(ALERTS)  # info: set d
+    if not isinstance(d, dict):  # info: if not isinstance ( d , dict )
+        return [], None  # info: return [ ] , None
+    rows = []  # info: set rows
+    for f in d.get("features") or []:  # info: for f in d . get ( "features"
+        p = f.get("properties") or {}  # info: set p
+        rows.append({"event": p.get("event") or "Alert", "area": (p.get("areaDesc") or "").replace(";", ","),  # info: rows . append ( { "event" : p
+                     "expires": p.get("expires") or p.get("ends")})  # info: "expires" : p . get ( "expires" )
+    return rows, d.get("updated")  # info: return rows , d . get ( "updated"
 
 
-def sfp_today() -> tuple[str | None, str | None]:
-    """First forecast period of the NWS HFO State Forecast (SFP) for Kauai–Oahu–Maui–Molokai–Lanai."""
-    try:
-        txt = SFP.read_text(encoding="utf-8")
-    except OSError:
-        return None, None
-    issued = re.search(r"^\d{3,4} [AP]M HST .+ \d{4}$", txt, re.M)
-    m = re.search(r"^\.([A-Z][A-Z ]+)\.\.\.(.+?)(?=^\.[A-Z]|```|\Z)", txt, re.M | re.S)
-    if not m:
-        return None, issued.group(0) if issued else None
-    body = " ".join(m.group(2).split())
-    return f"{m.group(1).title()}: {body}", issued.group(0) if issued else None
+# ====================================================
+# SECTION: function sfp_today
+# What it does: First forecast period of the NWS HFO State Forecast (SFP) for Kauai–Oahu–Maui–Molokai–Lanai.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def sfp_today() -> tuple[str | None, str | None]:  # info: def sfp_today
+    """First forecast period of the NWS HFO State Forecast (SFP) for Kauai–Oahu–Maui–Molokai–Lanai."""  # info: """First forecast period of the NWS HFO State Forecast (SFP) for Kauai–Oahu–Maui–Molokai–Lanai."""
+    try:  # info: try :
+        txt = SFP.read_text(encoding="utf-8")  # info: set txt
+    except OSError:  # info: except OSError :
+        return None, None  # info: return None , None
+    issued = re.search(r"^\d{3,4} [AP]M HST .+ \d{4}$", txt, re.M)  # info: set issued
+    m = re.search(r"^\.([A-Z][A-Z ]+)\.\.\.(.+?)(?=^\.[A-Z]|```|\Z)", txt, re.M | re.S)  # info: set m
+    if not m:  # info: if not m :
+        return None, issued.group(0) if issued else None  # info: return None , issued . group ( 0
+    body = " ".join(m.group(2).split())  # info: set body
+    return f"{m.group(1).title()}: {body}", issued.group(0) if issued else None  # info: return f" { m . group ( 1
 
 
-def open_tasks() -> tuple[int, list[tuple[int, str]]]:
-    wo = LIB / "Documentation" / "06-development" / "Work-Orders"
-    per = []
-    for f in sorted(wo.glob("*.md")):
-        try:
-            n = len(re.findall(r"^\s*- \[ \]", f.read_text(encoding="utf-8"), re.M))
-        except OSError:
-            continue
-        if n:
-            code = re.search(r"(WO-[A-Z0-9-]+?)(?:-\d{4}-\d{2}-\d{2})?(?:\.md|-Action)", f.name)
-            per.append((n, code.group(1) if code else f.stem))
-    per.sort(key=lambda x: (-x[0], x[1]))
-    return sum(n for n, _ in per), per
+# ====================================================
+# SECTION: function open_tasks
+# What it does: open tasks.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def open_tasks() -> tuple[int, list[tuple[int, str]]]:  # info: def open_tasks
+    wo = LIB / "Documentation" / "06-development" / "Work-Orders"  # info: set wo
+    per = []  # info: set per
+    for f in sorted(wo.glob("*.md")):  # info: for f in sorted ( wo . glob
+        try:  # info: try :
+            n = len(re.findall(r"^\s*- \[ \]", f.read_text(encoding="utf-8"), re.M))  # info: set n
+        except OSError:  # info: except OSError :
+            continue  # info: continue
+        if n:  # info: if n :
+            code = re.search(r"(WO-[A-Z0-9-]+?)(?:-\d{4}-\d{2}-\d{2})?(?:\.md|-Action)", f.name)  # info: set code
+            per.append((n, code.group(1) if code else f.stem))  # info: per . append ( ( n , code
+    per.sort(key=lambda x: (-x[0], x[1]))  # info: per . sort ( key = lambda x
+    return sum(n for n, _ in per), per  # info: return sum ( n for n , _
 
 
-def host() -> dict:
-    def snap():
-        v = [int(x) for x in open("/proc/stat").readline().split()[1:]]
-        return sum(v), v[3] + (v[4] if len(v) > 4 else 0)
-    t1, i1 = snap(); time.sleep(0.5); t2, i2 = snap()
-    m = {ln.split(":")[0]: int(ln.split()[1]) for ln in open("/proc/meminfo")}
-    return {"cpu": round(100 * (1 - (i2 - i1) / max(1, t2 - t1))), "mem": round(100 * (1 - m["MemAvailable"] / m["MemTotal"]))}
+# ====================================================
+# SECTION: function host
+# What it does: host.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def host() -> dict:  # info: def host
+    def snap():  # info: def snap
+        v = [int(x) for x in open("/proc/stat").readline().split()[1:]]  # info: set v
+        return sum(v), v[3] + (v[4] if len(v) > 4 else 0)  # info: return sum ( v ) , v [
+    t1, i1 = snap(); time.sleep(0.5); t2, i2 = snap()  # info: t1 , i1 = snap ( ) ;
+    m = {ln.split(":")[0]: int(ln.split()[1]) for ln in open("/proc/meminfo")}  # info: set m
+    return {"cpu": round(100 * (1 - (i2 - i1) / max(1, t2 - t1))), "mem": round(100 * (1 - m["MemAvailable"] / m["MemTotal"]))}  # info: return { "cpu" : round ( 100 *
 
 
-def quake_facts(t: datetime) -> dict:
-    """Database Geology/Earthquakes last files (written by Pacific Geology/scripts/geology_collect.py)."""
-    out = {}
-    for key in ("hawaii", "global"):
-        d = jload(QUAKES / f"{key}-last.json")
-        if not isinstance(d, dict) or not isinstance(d.get("events"), list):
-            out[key] = None
-            continue
-        try:
-            age = int((t - datetime.fromisoformat(d["at"])).total_seconds() // 60)
-        except (KeyError, TypeError, ValueError):
-            age = None
-        out[key] = dict(d, age_min=age)
-    return out
+# ====================================================
+# SECTION: function quake_facts
+# What it does: Database Geology/Earthquakes last files (written by Pacific Geology/scripts/geology_collect.py).
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def quake_facts(t: datetime) -> dict:  # info: def quake_facts
+    """Database Geology/Earthquakes last files (written by Pacific Geology/scripts/geology_collect.py)."""  # info: """Database Geology/Earthquakes last files (written by Pacific Geology/scripts/geology_collect.py)."""
+    out = {}  # info: set out
+    for key in ("hawaii", "global"):  # info: for key in ( "hawaii" , "global" )
+        d = jload(QUAKES / f"{key}-last.json")  # info: set d
+        if not isinstance(d, dict) or not isinstance(d.get("events"), list):  # info: if not isinstance ( d , dict )
+            out[key] = None  # info: out [ key ] = None
+            continue  # info: continue
+        try:  # info: try :
+            age = int((t - datetime.fromisoformat(d["at"])).total_seconds() // 60)  # info: set age
+        except (KeyError, TypeError, ValueError):  # info: except ( KeyError , TypeError , ValueError )
+            age = None  # info: set age
+        out[key] = dict(d, age_min=age)  # info: out [ key ] = dict ( d
+    return out  # info: return out
 
 
-def _m25(events: list[dict]) -> list[dict]:
-    out = []
-    for e in events:
-        try:
-            if float(e.get("mag") or 0) >= 2.5:
-                out.append(e)
-        except (TypeError, ValueError):
-            continue
-    return out
+# ====================================================
+# SECTION: function _m25
+# What it does:  m25.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _m25(events: list[dict]) -> list[dict]:  # info: def _m25
+    out = []  # info: set out
+    for e in events:  # info: for e in events :
+        try:  # info: try :
+            if float(e.get("mag") or 0) >= 2.5:  # info: if float ( e . get ( "mag"
+                out.append(e)  # info: out . append ( e )
+        except (TypeError, ValueError):  # info: except ( TypeError , ValueError ) :
+            continue  # info: continue
+    return out  # info: return out
 
 
 # ------------------------------------------------------------------ builders: (markdown, spoken sentences)
-def b_hourly_chime(t: datetime):
-    h, mi = t.hour, (0 if t.minute < 15 else 30 if t.minute < 45 else 0)
-    if t.minute >= 45:
-        h = (h + 1) % 24
-    line = f"It's {spoken_clock(h, mi)}.".replace("..", ".")
+# ====================================================
+# SECTION: function b_hourly_chime
+# What it does: b hourly chime.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def b_hourly_chime(t: datetime):  # info: def b_hourly_chime
+    h, mi = t.hour, (0 if t.minute < 15 else 30 if t.minute < 45 else 0)  # info: h , mi = t . hour ,
+    if t.minute >= 45:  # info: if t . minute >= 45 :
+        h = (h + 1) % 24  # info: set h
+    line = f"It's {spoken_clock(h, mi)}.".replace("..", ".")  # info: set line
     return f"# Hourly chime — {t.isoformat()}\n\n{line}\n", [line]
 
 
-def b_nws_weather(t: datetime):
-    rows, upd = alerts()
-    today, issued = sfp_today()
-    sp = ["NWS Hawaii Report."]
+# ====================================================
+# SECTION: function b_nws_weather
+# What it does: b nws weather.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def b_nws_weather(t: datetime):  # info: def b_nws_weather
+    rows, upd = alerts()  # info: rows , upd = alerts ( )
+    today, issued = sfp_today()  # info: today , issued = sfp_today ( )
+    sp = ["NWS Hawaii Report."]  # info: set sp
     md = [f"# NWS Hawaii — {t.isoformat()}", "", f"- Alerts source: `api.weather.gov/alerts/active?area=HI` (updated {upd or 'n/a'})",
           f"- Forecast source: NWS HFO State Forecast (SFP), issued {issued or 'n/a'}", "", "## Active alerts", ""]
-    if rows:
-        sp.append(f"{len(rows)} active alert{'s' if len(rows) != 1 else ''} for Hawaii.")
-        for r in rows[:3]:
-            sp.append(f"{r['event']} for {r['area']}.")
-        md += [f"- **{r['event']}** — {r['area']} (expires {r['expires']})" for r in rows]
-    else:
-        sp.append("No active HI alerts from the API sample.")
-        md.append("- none")
+    if rows:  # info: if rows :
+        sp.append(f"{len(rows)} active alert{'s' if len(rows) != 1 else ''} for Hawaii.")  # info: sp . append ( f" { len (
+        for r in rows[:3]:  # info: for r in rows [ : 3 ]
+            sp.append(f"{r['event']} for {r['area']}.")  # info: sp . append ( f" { r [
+        md += [f"- **{r['event']}** — {r['area']} (expires {r['expires']})" for r in rows]  # info: set md
+    else:  # info: else :
+        sp.append("No active HI alerts from the API sample.")  # info: sp . append ( "No active HI alerts from the API sample." )
+        md.append("- none")  # info: md . append ( "- none" )
     md += ["", "## State forecast (first period)", "", today or "_not on file_", ""]
-    if today:
-        sp.append(f"State forecast for {today.split(':', 1)[0].lower()}.")
-        sp.append(today.split(":", 1)[1].strip().rstrip(".") + ".")
-    return "\n".join(md), sp
+    if today:  # info: if today :
+        sp.append(f"State forecast for {today.split(':', 1)[0].lower()}.")  # info: sp . append ( f" State forecast for { today
+        sp.append(today.split(":", 1)[1].strip().rstrip(".") + ".")  # info: sp . append ( today . split (
+    return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
-def b_energy_report(t: datetime):
-    facts = energy_facts(t)
-    sp = ["Energy desk report."]
+# ====================================================
+# SECTION: function b_energy_report
+# What it does: b energy report.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def b_energy_report(t: datetime):  # info: def b_energy_report
+    facts = energy_facts(t)  # info: set facts
+    sp = ["Energy desk report."]  # info: set sp
     md = [f"# Energy desk — {t.isoformat()}", "", "| Device | SOC | Solar in | AC out | USB-C out | Reading at | Age |", "|---|---|---|---|---|---|---|"]
-    if not any(f["ok"] for f in facts):
-        sp.append("EcoFlow is offline.")
-    for f in facts:
-        if not f["ok"]:
-            md.append(f"| {f['name']} | no reading | | | | | |")
-            continue
-        md.append(f"| {f['name']} | {f['soc']}% | {f['solar_w']} W | {f['ac_out_w']} W | {f['usbc_out_w']} W | {f['at']} | {f['age_min']} min |")
-        s = f"{f['name']} battery {f['soc']}%"
-        if f["solar_w"] is not None:
-            s += f", solar input {spoken_watts(f['solar_w'])}"
-        out = sum(x for x in (f["ac_out_w"], f["usbc_out_w"]) if isinstance(x, (int, float)))
-        if f["ac_out_w"] is not None or f["usbc_out_w"] is not None:
-            s += f", output {spoken_watts(out)}"
-        sp.append(s + ".")
-        if f["age_min"] is not None and f["age_min"] > STALE_MIN:
-            sp.append(f"That {f['name']} reading is {f['age_min']} minutes old.")
-    md += ["", "_Source: Database Energy/soc + Energy/watts (*-last.json, EcoFlow BLE). Vision caption not used._", ""]
-    return "\n".join(md), sp
+    if not any(f["ok"] for f in facts):  # info: if not any ( f [ "ok" ]
+        sp.append("EcoFlow is offline.")  # info: sp . append ( "EcoFlow is offline." )
+    for f in facts:  # info: for f in facts :
+        if not f["ok"]:  # info: if not f [ "ok" ] :
+            md.append(f"| {f['name']} | no reading | | | | | |")  # info: md . append ( f" | { f
+            continue  # info: continue
+        md.append(f"| {f['name']} | {f['soc']}% | {f['solar_w']} W | {f['ac_out_w']} W | {f['usbc_out_w']} W | {f['at']} | {f['age_min']} min |")  # info: md . append ( f" | { f
+        s = f"{f['name']} battery {f['soc']}%"  # info: set s
+        if f["solar_w"] is not None:  # info: if f [ "solar_w" ] is not None
+            s += f", solar input {spoken_watts(f['solar_w'])}"  # info: set s
+        out = sum(x for x in (f["ac_out_w"], f["usbc_out_w"]) if isinstance(x, (int, float)))  # info: set out
+        if f["ac_out_w"] is not None or f["usbc_out_w"] is not None:  # info: if f [ "ac_out_w" ] is not None
+            s += f", output {spoken_watts(out)}"  # info: set s
+        sp.append(s + ".")  # info: sp . append ( s + "." )
+        if f["age_min"] is not None and f["age_min"] > STALE_MIN:  # info: if f [ "age_min" ] is not None
+            sp.append(f"That {f['name']} reading is {f['age_min']} minutes old.")  # info: sp . append ( f" That { f
+    md += ["", "_Source: Database Energy/soc + Energy/watts (*-last.json, EcoFlow BLE). Vision caption not used._", ""]  # info: set md
+    return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
-def b_earthquake_report(t: datetime):
-    """G1 earthquake-hourly build_spoken + report lines, fed from Database Geology/ instead of a live USGS call."""
-    q = quake_facts(t)
-    hi, gl = q.get("hawaii"), q.get("global")
+# ====================================================
+# SECTION: function b_earthquake_report
+# What it does: G1 earthquake-hourly build_spoken + report lines, fed from Database Geology/ instead of a live USGS call.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def b_earthquake_report(t: datetime):  # info: def b_earthquake_report
+    """G1 earthquake-hourly build_spoken + report lines, fed from Database Geology/ instead of a live USGS call."""  # info: """G1 earthquake-hourly build_spoken + report lines, fed from Database Geology/ instead of a live USGS call.""
+    q = quake_facts(t)  # info: set q
+    hi, gl = q.get("hawaii"), q.get("global")  # info: hi , gl = q . get (
     md = [f"# Earthquake report — {t.isoformat()}", ""]
-    if not hi and not gl:
-        md += ["_No USGS data on file (Database Geology/Earthquakes/*-last.json missing). Run geology_collect.py._", ""]
-        return "\n".join(md), ["Earthquake data is not on file."]
-    prev = jload(QUAKE_STATE) or {}
-    seen = set(prev.get("seen_ids") or [])
-    hi_ev, gl_ev = list((hi or {}).get("events") or []), list((gl or {}).get("events") or [])
-    fresh_hi = [e for e in hi_ev if e.get("id") and e["id"] not in seen]
-    fresh_gl = [e for e in gl_ev if e.get("id") and e["id"] not in seen]
-    sp = [f"USGS earthquake report at {clock(t)} Hawaiian Standard Time.".replace("..", ".")]
-    if hi is None:
-        sp.append("Hawaii earthquake data is not on file.")
-    elif fresh_hi:
-        sp.append(f"{len(fresh_hi)} new Hawaii earthquake{'s' if len(fresh_hi) != 1 else ''}.")
-        sp += [f"Magnitude {e.get('mag')} {e.get('place')}." for e in fresh_hi[:_MAX_HI]]
-    else:
-        sp.append("No new Hawaii earthquakes since the last report.")
-    if hi is not None:
-        sp.append(f"Hawaii last twenty four hours: {len(_m25(hi_ev))} magnitude 2.5 or greater.")
-    if gl is None:
-        sp.append("Global earthquake data is not on file.")
-    elif fresh_gl:
-        sp.append(f"{len(fresh_gl)} new global earthquake{'s' if len(fresh_gl) != 1 else ''}.")
-        sp += [f"Magnitude {e.get('mag')} {e.get('place')}." for e in fresh_gl[:_MAX_GLOBAL]]
-    else:
-        sp.append("No new global earthquakes since the last report.")
-    if gl is not None:
-        sp.append(f"Global last twenty four hours: {len(_m25(gl_ev))} magnitude 2.5 or greater.")
-    for label, d in (("Hawaii", hi), ("global", gl)):
-        if d and d.get("age_min") is not None and d["age_min"] > QUAKE_STALE_MIN:
-            sp.append(f"The {label} USGS data is {d['age_min']} minutes old.")
-    for label, d, fresh in (("Hawaii", hi, fresh_hi), ("Global", gl, fresh_gl)):
+    if not hi and not gl:  # info: if not hi and not gl :
+        md += ["_No USGS data on file (Database Geology/Earthquakes/*-last.json missing). Run geology_collect.py._", ""]  # info: set md
+        return "\n".join(md), ["Earthquake data is not on file."]  # info: return "\n" . join ( md ) ,
+    prev = jload(QUAKE_STATE) or {}  # info: set prev
+    seen = set(prev.get("seen_ids") or [])  # info: set seen
+    hi_ev, gl_ev = list((hi or {}).get("events") or []), list((gl or {}).get("events") or [])  # info: hi_ev , gl_ev = list ( ( hi
+    fresh_hi = [e for e in hi_ev if e.get("id") and e["id"] not in seen]  # info: set fresh_hi
+    fresh_gl = [e for e in gl_ev if e.get("id") and e["id"] not in seen]  # info: set fresh_gl
+    sp = [f"USGS earthquake report at {clock(t)} Hawaiian Standard Time.".replace("..", ".")]  # info: set sp
+    if hi is None:  # info: if hi is None :
+        sp.append("Hawaii earthquake data is not on file.")  # info: sp . append ( "Hawaii earthquake data is not on file." )
+    elif fresh_hi:  # info: elif fresh_hi :
+        sp.append(f"{len(fresh_hi)} new Hawaii earthquake{'s' if len(fresh_hi) != 1 else ''}.")  # info: sp . append ( f" { len (
+        sp += [f"Magnitude {e.get('mag')} {e.get('place')}." for e in fresh_hi[:_MAX_HI]]  # info: set sp
+    else:  # info: else :
+        sp.append("No new Hawaii earthquakes since the last report.")  # info: sp . append ( "No new Hawaii earthquakes since the last report." )
+    if hi is not None:  # info: if hi is not None :
+        sp.append(f"Hawaii last twenty four hours: {len(_m25(hi_ev))} magnitude 2.5 or greater.")  # info: sp . append ( f" Hawaii last twenty four hours: { len
+    if gl is None:  # info: if gl is None :
+        sp.append("Global earthquake data is not on file.")  # info: sp . append ( "Global earthquake data is not on file." )
+    elif fresh_gl:  # info: elif fresh_gl :
+        sp.append(f"{len(fresh_gl)} new global earthquake{'s' if len(fresh_gl) != 1 else ''}.")  # info: sp . append ( f" { len (
+        sp += [f"Magnitude {e.get('mag')} {e.get('place')}." for e in fresh_gl[:_MAX_GLOBAL]]  # info: set sp
+    else:  # info: else :
+        sp.append("No new global earthquakes since the last report.")  # info: sp . append ( "No new global earthquakes since the last report." )
+    if gl is not None:  # info: if gl is not None :
+        sp.append(f"Global last twenty four hours: {len(_m25(gl_ev))} magnitude 2.5 or greater.")  # info: sp . append ( f" Global last twenty four hours: { len
+    for label, d in (("Hawaii", hi), ("global", gl)):  # info: for label , d in ( ( "Hawaii"
+        if d and d.get("age_min") is not None and d["age_min"] > QUAKE_STALE_MIN:  # info: if d and d . get ( "age_min"
+            sp.append(f"The {label} USGS data is {d['age_min']} minutes old.")  # info: sp . append ( f" The { label
+    for label, d, fresh in (("Hawaii", hi, fresh_hi), ("Global", gl, fresh_gl)):  # info: for label , d , fresh in (
         md += [f"## {label} Changes Since Last Report"]
-        md += [f"- M{e.get('mag')} {e.get('place')} ({e.get('time_hst')})" for e in fresh[:12]] or ["- No new earthquakes."]
-        if len(fresh) > 12:
-            md.append(f"- ...and {len(fresh) - 12} more new earthquakes.")
-        ev = list((d or {}).get("events") or [])
-        big = max((float(e["mag"]) for e in _m25(ev)), default=None)
+        md += [f"- M{e.get('mag')} {e.get('place')} ({e.get('time_hst')})" for e in fresh[:12]] or ["- No new earthquakes."]  # info: set md
+        if len(fresh) > 12:  # info: if len ( fresh ) > 12 :
+            md.append(f"- ...and {len(fresh) - 12} more new earthquakes.")  # info: md . append ( f" - ...and { len
+        ev = list((d or {}).get("events") or [])  # info: set ev
+        big = max((float(e["mag"]) for e in _m25(ev)), default=None)  # info: set big
         md += ["", f"## {label} 24-Hour M2.5+ Summary",
-               f"- {len(_m25(ev))} earthquakes" + (f"; largest M{big:g}." if big is not None else "."),
-               f"- Source: `{(d or {}).get('source', 'n/a')}` (collected {(d or {}).get('at', 'n/a')})", ""]
-    if not os.environ.get("RR_VOICE_QUAKE_DRY"):
-        ids = [e["id"] for e in hi_ev + gl_ev if e.get("id")]
-        state = {"seen_ids": (list(seen) + [i for i in ids if i not in seen])[-400:], "updated_at": t.isoformat()}
-        QUAKE_STATE.parent.mkdir(parents=True, exist_ok=True)
-        tmp = QUAKE_STATE.with_suffix(".tmp")
-        tmp.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
-        os.replace(tmp, QUAKE_STATE)
-    return "\n".join(md), sp
+               f"- {len(_m25(ev))} earthquakes" + (f"; largest M{big:g}." if big is not None else "."),  # info: f" - { len ( _m25 ( ev
+               f"- Source: `{(d or {}).get('source', 'n/a')}` (collected {(d or {}).get('at', 'n/a')})", ""]  # info: f" - Source: ` { ( d or { }
+    if not os.environ.get("RR_VOICE_QUAKE_DRY"):  # info: if not os . environ . get (
+        ids = [e["id"] for e in hi_ev + gl_ev if e.get("id")]  # info: set ids
+        state = {"seen_ids": (list(seen) + [i for i in ids if i not in seen])[-400:], "updated_at": t.isoformat()}  # info: set state
+        QUAKE_STATE.parent.mkdir(parents=True, exist_ok=True)  # info: QUAKE_STATE . parent . mkdir ( parents =
+        tmp = QUAKE_STATE.with_suffix(".tmp")  # info: set tmp
+        tmp.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")  # info: tmp . write_text ( json . dumps (
+        os.replace(tmp, QUAKE_STATE)  # info: os . replace ( tmp , QUAKE_STATE )
+    return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
-def _gc_nm(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-    import math
-    p1, p2 = math.radians(lat1), math.radians(lat2)
-    a = math.sin((p2 - p1) / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(math.radians(lon2 - lon1) / 2) ** 2
-    return 2 * 3440.065 * math.asin(min(1.0, math.sqrt(a)))
+# ====================================================
+# SECTION: function _gc_nm
+# What it does:  gc nm.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _gc_nm(lat1: float, lon1: float, lat2: float, lon2: float) -> float:  # info: def _gc_nm
+    import math  # info: import math
+    p1, p2 = math.radians(lat1), math.radians(lat2)  # info: p1 , p2 = math . radians (
+    a = math.sin((p2 - p1) / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(math.radians(lon2 - lon1) / 2) ** 2  # info: set a
+    return 2 * 3440.065 * math.asin(min(1.0, math.sqrt(a)))  # info: return 2 * 3440.065 * math . asin
 
 
-def _bearing(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+# ====================================================
+# SECTION: function _bearing
+# What it does:  bearing.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _bearing(lat1: float, lon1: float, lat2: float, lon2: float) -> float:  # info: def _bearing
     import math  # G1 hurricane_desk._bearing
-    p1, p2, dl = math.radians(lat1), math.radians(lat2), math.radians(lon2 - lon1)
-    y = math.sin(dl) * math.cos(p2)
-    x = math.cos(p1) * math.sin(p2) - math.sin(p1) * math.cos(p2) * math.cos(dl)
-    return (math.degrees(math.atan2(y, x)) + 360.0) % 360.0
+    p1, p2, dl = math.radians(lat1), math.radians(lat2), math.radians(lon2 - lon1)  # info: p1 , p2 , dl = math .
+    y = math.sin(dl) * math.cos(p2)  # info: set y
+    x = math.cos(p1) * math.sin(p2) - math.sin(p1) * math.cos(p2) * math.cos(dl)  # info: set x
+    return (math.degrees(math.atan2(y, x)) + 360.0) % 360.0  # info: return ( math . degrees ( math .
 
 
-def _compass(deg: float) -> str:
-    return COMPASS[int((deg + 22.5) // 45) % 8]
+# ====================================================
+# SECTION: function _compass
+# What it does:  compass.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _compass(deg: float) -> str:  # info: def _compass
+    return COMPASS[int((deg + 22.5) // 45) % 8]  # info: return COMPASS [ int ( ( deg +
 
 
-def _nearest_island(lat: float, lon: float) -> tuple[str, float]:
-    return min(((k, _gc_nm(v[0], v[1], lat, lon)) for k, v in HAWAII_POS.items()), key=lambda kv: kv[1])
+# ====================================================
+# SECTION: function _nearest_island
+# What it does:  nearest island.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _nearest_island(lat: float, lon: float) -> tuple[str, float]:  # info: def _nearest_island
+    return min(((k, _gc_nm(v[0], v[1], lat, lon)) for k, v in HAWAII_POS.items()), key=lambda kv: kv[1])  # info: return min ( ( ( k , _gc_nm
 
 
-def hurricane_facts(t: datetime) -> list[dict]:
-    """Storms from the G3 weather poller's track.json files (latest position, movement from the last two distinct fixes)."""
-    out = []
-    for tr in sorted(HURRICANES.glob("*/track.json")) if HURRICANES.is_dir() else []:
-        d = jload(tr) or {}
-        pos = [p for p in d.get("positions") or [] if p.get("lat") is not None and p.get("lon") is not None]
-        if not pos:
-            continue
-        last = pos[-1]
-        try:
-            lat, lon = float(last["lat"]), float(last["lon"])
-            age_h = (t - datetime.fromisoformat(last["polled_at_hst"])).total_seconds() / 3600
-        except (KeyError, TypeError, ValueError):
-            continue
+# ====================================================
+# SECTION: function hurricane_facts
+# What it does: Storms from the G3 weather poller's track.json files (latest position, movement from the last two distinct fixes).
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def hurricane_facts(t: datetime) -> list[dict]:  # info: def hurricane_facts
+    """Storms from the G3 weather poller's track.json files (latest position, movement from the last two distinct fixes)."""  # info: """Storms from the G3 weather poller's track.json files (latest position, movement from the last two distinct 
+    out = []  # info: set out
+    for tr in sorted(HURRICANES.glob("*/track.json")) if HURRICANES.is_dir() else []:  # info: for tr in sorted ( HURRICANES . glob
+        d = jload(tr) or {}  # info: set d
+        pos = [p for p in d.get("positions") or [] if p.get("lat") is not None and p.get("lon") is not None]  # info: set pos
+        if not pos:  # info: if not pos :
+            continue  # info: continue
+        last = pos[-1]  # info: set last
+        try:  # info: try :
+            lat, lon = float(last["lat"]), float(last["lon"])  # info: lat , lon = float ( last [
+            age_h = (t - datetime.fromisoformat(last["polled_at_hst"])).total_seconds() / 3600  # info: set age_h
+        except (KeyError, TypeError, ValueError):  # info: except ( KeyError , TypeError , ValueError )
+            continue  # info: continue
         fixes = []  # first poll time of each distinct position
-        for p in pos:
-            key = (float(p["lat"]), float(p["lon"]))
-            if not fixes or fixes[-1][0] != key:
-                fixes.append((key, p.get("polled_at_hst")))
-        island, nm = _nearest_island(lat, lon)
-        move_c = move_kt = approach = None
-        if len(fixes) >= 2:
-            (a, ta), (b, tb) = fixes[-2], fixes[-1]
-            move_c = _compass(_bearing(a[0], a[1], b[0], b[1]))
-            try:
-                hrs = (datetime.fromisoformat(tb) - datetime.fromisoformat(ta)).total_seconds() / 3600
-                move_kt = round(_gc_nm(a[0], a[1], b[0], b[1]) / hrs) if hrs > 0.5 else None
-            except (TypeError, ValueError):
-                move_kt = None
-            prev_nm = _nearest_island(a[0], a[1])[1]
-            approach = "toward" if nm < prev_nm - 5 else "away" if nm > prev_nm + 5 else "steady"
-        try:
-            kt = int(round(float(last.get("intensity")))) if last.get("intensity") not in (None, "") else None
-        except (TypeError, ValueError):
-            kt = None
-        code = str(last.get("classification") or "").upper()
-        out.append({"name": str(d.get("storm_name") or tr.parent.name.split("_")[0]).replace("_", " "),
-                    "label": STORM_CLASS.get(code, "Tropical system"), "code": code, "lat": lat, "lon": lon,
-                    "knots": kt, "island": island, "nm": int(round(nm)),
-                    "bearing": _compass(_bearing(HAWAII_POS[island][0], HAWAII_POS[island][1], lat, lon)),
-                    "movement_compass": move_c, "movement_kt": move_kt, "approach": approach, "fixes": len(fixes),
-                    "polled_at": last.get("polled_at_hst"), "age_h": round(age_h, 1), "active": age_h <= HUR_ACTIVE_H,
-                    "path": str(tr.relative_to(DB))})
-    return sorted(out, key=lambda s: s["nm"])
+        for p in pos:  # info: for p in pos :
+            key = (float(p["lat"]), float(p["lon"]))  # info: set key
+            if not fixes or fixes[-1][0] != key:  # info: if not fixes or fixes [ - 1
+                fixes.append((key, p.get("polled_at_hst")))  # info: fixes . append ( ( key , p
+        island, nm = _nearest_island(lat, lon)  # info: island , nm = _nearest_island ( lat ,
+        move_c = move_kt = approach = None  # info: set move_c
+        if len(fixes) >= 2:  # info: if len ( fixes ) >= 2 :
+            (a, ta), (b, tb) = fixes[-2], fixes[-1]  # info: call (
+            move_c = _compass(_bearing(a[0], a[1], b[0], b[1]))  # info: set move_c
+            try:  # info: try :
+                hrs = (datetime.fromisoformat(tb) - datetime.fromisoformat(ta)).total_seconds() / 3600  # info: set hrs
+                move_kt = round(_gc_nm(a[0], a[1], b[0], b[1]) / hrs) if hrs > 0.5 else None  # info: set move_kt
+            except (TypeError, ValueError):  # info: except ( TypeError , ValueError ) :
+                move_kt = None  # info: set move_kt
+            prev_nm = _nearest_island(a[0], a[1])[1]  # info: set prev_nm
+            approach = "toward" if nm < prev_nm - 5 else "away" if nm > prev_nm + 5 else "steady"  # info: set approach
+        try:  # info: try :
+            kt = int(round(float(last.get("intensity")))) if last.get("intensity") not in (None, "") else None  # info: set kt
+        except (TypeError, ValueError):  # info: except ( TypeError , ValueError ) :
+            kt = None  # info: set kt
+        code = str(last.get("classification") or "").upper()  # info: set code
+        out.append({"name": str(d.get("storm_name") or tr.parent.name.split("_")[0]).replace("_", " "),  # info: out . append ( { "name" : str
+                    "label": STORM_CLASS.get(code, "Tropical system"), "code": code, "lat": lat, "lon": lon,  # info: "label" : STORM_CLASS . get ( code ,
+                    "knots": kt, "island": island, "nm": int(round(nm)),  # info: "knots" : kt , "island" : island ,
+                    "bearing": _compass(_bearing(HAWAII_POS[island][0], HAWAII_POS[island][1], lat, lon)),  # info: "bearing" : _compass ( _bearing ( HAWAII_POS [
+                    "movement_compass": move_c, "movement_kt": move_kt, "approach": approach, "fixes": len(fixes),  # info: "movement_compass" : move_c , "movement_kt" : move_kt ,
+                    "polled_at": last.get("polled_at_hst"), "age_h": round(age_h, 1), "active": age_h <= HUR_ACTIVE_H,  # info: "polled_at" : last . get ( "polled_at_hst" )
+                    "path": str(tr.relative_to(DB))})  # info: "path" : str ( tr . relative_to (
+    return sorted(out, key=lambda s: s["nm"])  # info: return sorted ( out , key = lambda
 
 
-def b_hurricane_desk(t: datetime):
-    """G1 hurricane_desk.hawaii_block + build spoken text, from G3 track.json + NWS HI alerts (never invents storms)."""
-    storms = hurricane_facts(t)
-    active = [s for s in storms if s["active"]]
-    rows, updated = alerts()
-    trop = [r for r in rows if any(k in str(r["event"]).lower() for k in TROPICAL_EVENTS)]
-    sp = ["Hurricane global desk, Pacific Root Server."]
-    if trop:
-        watch = " NWS Honolulu: " + "; ".join(f"{r['event']} for {r['area'] or 'Hawaii'}" for r in trop) + "."
-    elif updated is None:
-        watch = " NWS Hawaii alert data is not on file."
-    else:
-        watch = " No tropical watches or warnings for Hawaii in the last NWS pull."
-    if not active:
-        sp.append("Nearest Hurricane from a Hawaiian island. No tropical system with a mapped position is on the board."
-                  + watch)
-    else:
-        n = active[0]
-        local = bool(trop) or n["nm"] < HAWAII_THREAT_NM
-        title = "Nearest Hurricane from a Hawaiian island" if local else "Pacific basin cyclone, not a Hawaii threat"
-        ns, ew = ("north" if n["lat"] >= 0 else "south"), ("east" if n["lon"] >= 0 else "west")
-        move = ""
-        if n["movement_kt"] == 0:
-            move = " Nearly stationary."
-        elif n["movement_compass"]:
-            vs = {"toward": "toward Hawaii", "away": "away from Hawaii",
-                  "steady": "holding roughly steady relative to Hawaii"}.get(n["approach"] or "", "")
-            kt_s = f" at about {n['movement_kt']} knots" if n["movement_kt"] else ""
-            move = f" Moving {n['movement_compass']}{kt_s}" + (f", {vs}." if vs else ".")
-        wind = f" Maximum sustained winds {n['knots']} knots." if n["knots"] else ""
-        hint = ""
-        if not local:
-            hint = " Do not treat this as a Hawaii local storm."
-            if n["bearing"] == "west":
-                hint = " West of Kauai is toward Asia and Japan, not toward the islands." + hint
-        sp.append(f"{title}. {n['label']} {n['name']} is about {n['nm']} nautical miles from {n['island']}."
-                  f" Center {abs(n['lat']):.1f} {ns}, {abs(n['lon']):.1f} {ew}. It bears {n['bearing']} of {n['island']}."
-                  f"{hint}{move}{wind}{watch}")
-        if len(active) > 1:
-            others = "; ".join(f"{s['label']} {s['name']}, about {s['nm']} nautical miles from {s['island']}" for s in active[1:4])
-            sp.append(f"{len(active)} tropical systems are on the Hawaii tracking board. Also tracked: {others}.")
-    sp.append("Stay with NWS Honolulu for watches and warnings.")
+# ====================================================
+# SECTION: function b_hurricane_desk
+# What it does: G1 hurricane_desk.hawaii_block + build spoken text, from G3 track.json + NWS HI alerts (never invents storms).
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def b_hurricane_desk(t: datetime):  # info: def b_hurricane_desk
+    """G1 hurricane_desk.hawaii_block + build spoken text, from G3 track.json + NWS HI alerts (never invents storms)."""  # info: """G1 hurricane_desk.hawaii_block + build spoken text, from G3 track.json + NWS HI alerts (never invents storm
+    storms = hurricane_facts(t)  # info: set storms
+    active = [s for s in storms if s["active"]]  # info: set active
+    rows, updated = alerts()  # info: rows , updated = alerts ( )
+    trop = [r for r in rows if any(k in str(r["event"]).lower() for k in TROPICAL_EVENTS)]  # info: set trop
+    sp = ["Hurricane global desk, Pacific Root Server."]  # info: set sp
+    if trop:  # info: if trop :
+        watch = " NWS Honolulu: " + "; ".join(f"{r['event']} for {r['area'] or 'Hawaii'}" for r in trop) + "."  # info: set watch
+    elif updated is None:  # info: elif updated is None :
+        watch = " NWS Hawaii alert data is not on file."  # info: set watch
+    else:  # info: else :
+        watch = " No tropical watches or warnings for Hawaii in the last NWS pull."  # info: set watch
+    if not active:  # info: if not active :
+        sp.append("Nearest Hurricane from a Hawaiian island. No tropical system with a mapped position is on the board."  # info: sp . append ( "Nearest Hurricane from a Hawaiian island. No tropical system with a mapped position is on the b
+                  + watch)  # info: + watch )
+    else:  # info: else :
+        n = active[0]  # info: set n
+        local = bool(trop) or n["nm"] < HAWAII_THREAT_NM  # info: set local
+        title = "Nearest Hurricane from a Hawaiian island" if local else "Pacific basin cyclone, not a Hawaii threat"  # info: set title
+        ns, ew = ("north" if n["lat"] >= 0 else "south"), ("east" if n["lon"] >= 0 else "west")  # info: ns , ew = ( "north" if n
+        move = ""  # info: set move
+        if n["movement_kt"] == 0:  # info: if n [ "movement_kt" ] == 0 :
+            move = " Nearly stationary."  # info: set move
+        elif n["movement_compass"]:  # info: elif n [ "movement_compass" ] :
+            vs = {"toward": "toward Hawaii", "away": "away from Hawaii",  # info: set vs
+                  "steady": "holding roughly steady relative to Hawaii"}.get(n["approach"] or "", "")  # info: "steady" : "holding roughly steady relative to Hawaii" } . get ( n
+            kt_s = f" at about {n['movement_kt']} knots" if n["movement_kt"] else ""  # info: set kt_s
+            move = f" Moving {n['movement_compass']}{kt_s}" + (f", {vs}." if vs else ".")  # info: set move
+        wind = f" Maximum sustained winds {n['knots']} knots." if n["knots"] else ""  # info: set wind
+        hint = ""  # info: set hint
+        if not local:  # info: if not local :
+            hint = " Do not treat this as a Hawaii local storm."  # info: set hint
+            if n["bearing"] == "west":  # info: if n [ "bearing" ] == "west" :
+                hint = " West of Kauai is toward Asia and Japan, not toward the islands." + hint  # info: set hint
+        sp.append(f"{title}. {n['label']} {n['name']} is about {n['nm']} nautical miles from {n['island']}."  # info: sp . append ( f" { title }
+                  f" Center {abs(n['lat']):.1f} {ns}, {abs(n['lon']):.1f} {ew}. It bears {n['bearing']} of {n['island']}."  # info: f" Center { abs ( n [ 'lat'
+                  f"{hint}{move}{wind}{watch}")  # info: f" { hint } { move } {
+        if len(active) > 1:  # info: if len ( active ) > 1 :
+            others = "; ".join(f"{s['label']} {s['name']}, about {s['nm']} nautical miles from {s['island']}" for s in active[1:4])  # info: set others
+            sp.append(f"{len(active)} tropical systems are on the Hawaii tracking board. Also tracked: {others}.")  # info: sp . append ( f" { len (
+    sp.append("Stay with NWS Honolulu for watches and warnings.")  # info: sp . append ( "Stay with NWS Honolulu for watches and warnings." )
     md = [f"# Hurricane desk — {t.isoformat()}", "", " ".join(sp), "", "## Tracked systems (G3 weather poller)", ""]
-    md += ["| Storm | Class | Knots | Position | Nearest island | nm | Bearing | Movement | Last poll (HST) | On board |",
-           "|---|---|---|---|---|---|---|---|---|---|"]
-    md += [f"| {s['name']} | {s['label']} ({s['code'] or '?'}) | {s['knots'] if s['knots'] is not None else 'n/a'} | "
-           f"{s['lat']:.1f}, {s['lon']:.1f} | {s['island']} | {s['nm']} | {s['bearing']} | "
-           f"{(s['movement_compass'] or 'n/a')} {('~' + str(s['movement_kt']) + ' kt') if s['movement_kt'] else ''} {s['approach'] or ''} | "
-           f"{s['polled_at']} ({s['age_h']} h ago) | {'yes' if s['active'] else 'stale'} |" for s in storms] or ["| none on file | | | | | | | | | |"]
-    md += ["", f"NWS HI alerts (updated {updated or 'n/a'}): " + (", ".join(r["event"] for r in rows) or "none") +
-           f"; tropical: {len(trop)}.", "",
-           "_Sources: Database `Weather/Hawai'i/hurricanes/tracking/*/track.json` (NHC CurrentStorms, Hawaiʻi-relevant "
-           "storms only: 800 nm or CPHC) and the NWS HI alerts file. Movement is estimated from the last two distinct "
-           "tracked fixes. G1's global JTWC/RAMMB board is not collected in G3, so there is no global count._", ""]
-    return "\n".join(md), sp
+    md += ["| Storm | Class | Knots | Position | Nearest island | nm | Bearing | Movement | Last poll (HST) | On board |",  # info: set md
+           "|---|---|---|---|---|---|---|---|---|---|"]  # info: "|---|---|---|---|---|---|---|---|---|---|" ]
+    md += [f"| {s['name']} | {s['label']} ({s['code'] or '?'}) | {s['knots'] if s['knots'] is not None else 'n/a'} | "  # info: set md
+           f"{s['lat']:.1f}, {s['lon']:.1f} | {s['island']} | {s['nm']} | {s['bearing']} | "  # info: f" { s [ 'lat' ] : .1f
+           f"{(s['movement_compass'] or 'n/a')} {('~' + str(s['movement_kt']) + ' kt') if s['movement_kt'] else ''} {s['approach'] or ''} | "  # info: call f"
+           f"{s['polled_at']} ({s['age_h']} h ago) | {'yes' if s['active'] else 'stale'} |" for s in storms] or ["| none on file | | | | | | | | | |"]  # info: f" { s [ 'polled_at' ] } (
+    md += ["", f"NWS HI alerts (updated {updated or 'n/a'}): " + (", ".join(r["event"] for r in rows) or "none") +  # info: set md
+           f"; tropical: {len(trop)}.", "",  # info: f" ; tropical: { len ( trop ) }
+           "_Sources: Database `Weather/Hawai'i/hurricanes/tracking/*/track.json` (NHC CurrentStorms, Hawaiʻi-relevant "  # info: "_Sources: Database `Weather/Hawai'i/hurricanes/tracking/*/track.json` (NHC CurrentStorms, Hawaiʻi-relevant "
+           "storms only: 800 nm or CPHC) and the NWS HI alerts file. Movement is estimated from the last two distinct "  # info: "storms only: 800 nm or CPHC) and the NWS HI alerts file. Movement is estimated from the last two distinct "
+           "tracked fixes. G1's global JTWC/RAMMB board is not collected in G3, so there is no global count._", ""]  # info: "tracked fixes. G1's global JTWC/RAMMB board is not collected in G3, so there is no global count._" , "" ]
+    return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
-def _first_sentences(text: str, n: int = 2, cap: int = 420) -> str:
-    parts = re.split(r"(?<=[.!?])\s+", " ".join((text or "").split()))
-    return " ".join(parts[:n])[:cap].strip()
+# ====================================================
+# SECTION: function _first_sentences
+# What it does:  first sentences.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _first_sentences(text: str, n: int = 2, cap: int = 420) -> str:  # info: def _first_sentences
+    parts = re.split(r"(?<=[.!?])\s+", " ".join((text or "").split()))  # info: set parts
+    return " ".join(parts[:n])[:cap].strip()  # info: return " " . join ( parts [ :
 
 
-def b_kilauea_report(t: datetime):
-    """G1 hourly Kīlauea desk (persona._kilauea_line wording) + HVO notice excerpt, from Database Geology/Volcanoes/."""
-    k, ml = jload(VOLCANOES / "kilauea-last.json"), jload(VOLCANOES / "mauna-loa-last.json")
-    hi = jload(QUAKES / "hawaii-last.json") or {}
+# ====================================================
+# SECTION: function b_kilauea_report
+# What it does: G1 hourly Kīlauea desk (persona._kilauea_line wording) + HVO notice excerpt, from Database Geology/Volcanoes/.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def b_kilauea_report(t: datetime):  # info: def b_kilauea_report
+    """G1 hourly Kīlauea desk (persona._kilauea_line wording) + HVO notice excerpt, from Database Geology/Volcanoes/."""  # info: """G1 hourly Kīlauea desk (persona._kilauea_line wording) + HVO notice excerpt, from Database Geology/Volcanoe
+    k, ml = jload(VOLCANOES / "kilauea-last.json"), jload(VOLCANOES / "mauna-loa-last.json")  # info: k , ml = jload ( VOLCANOES /
+    hi = jload(QUAKES / "hawaii-last.json") or {}  # info: set hi
     md = [f"# Kilauea report — {t.isoformat()}", ""]
-    if not isinstance(k, dict) or not k.get("alert_level"):
-        md += ["_No HVO data on file (Database Geology/Volcanoes/kilauea-last.json missing). Run geology_collect.py._", ""]
-        return "\n".join(md), ["Kilauea: DOWN."]
-    level = str(k.get("alert_level") or "unknown").strip().lower()
-    erupting = k.get("erupting")
-    if erupting:
-        state = "is erupting"
-    elif level in {"advisory", "watch", "warning", "normal"} and erupting is False:
-        state = "not erupting"
-    else:
-        state = "eruption state unknown"
-    color = str(k.get("color_code") or "").lower()
-    sp = ["Kilauea Report.", f"It's {clock(t)} Hawaiian Standard Time.".replace("..", "."),
-          f"Kilauea volcano alert level: {level}" + (f", aviation color code {color}." if color else ".") +
-          f" Kilauea {state}."]
-    note = k.get("latest_activity_notice") if erupting and k.get("latest_activity_notice") else k.get("latest_notice")
-    note = note if isinstance(note, dict) else {}
-    excerpt = _first_sentences(note.get("synopsis") or "")
-    if excerpt:
-        sp += ["Here is the latest Hawaiian Volcano Observatory notice, unedited for honesty.", excerpt]
-    else:
-        sp.append("No HVO headline in this sample.")
-    if hi.get("kilauea_150km_count") is not None:
-        n = int(hi["kilauea_150km_count"])
-        sp.append(f"USGS: {n} earthquake{'s' if n != 1 else ''} magnitude 1 or greater within 150 kilometers of Kilauea in the last "
-                  f"{hi.get('window_h', 24)} hours.")
-    if isinstance(ml, dict) and ml.get("alert_level"):
-        sp.append(f"Mauna Loa alert level: {str(ml['alert_level']).lower()}.")
-    try:
-        age = int((t - datetime.fromisoformat(k["at"])).total_seconds() // 60)
-    except (KeyError, TypeError, ValueError):
-        age = None
-    if age is not None and age > HVO_STALE_MIN:
-        sp.append(f"That HVO status is {age} minutes old.")
-    md += [f"- **Kīlauea:** {k.get('alert_level')} / {k.get('color_code')} — erupting `{erupting}` — {k.get('headline')}",
-           f"- **Latest notice used:** {note.get('type', 'n/a')} ({note.get('sent_utc', 'n/a')} UTC) {note.get('url', '')}",
-           f"- **Mauna Loa:** {(ml or {}).get('alert_level', 'n/a')} / {(ml or {}).get('color_code', 'n/a')}",
-           f"- **Quakes ≤150 km of Kīlauea (M≥1, {hi.get('window_h', 24)} h):** {hi.get('kilauea_150km_count', 'n/a')}",
+    if not isinstance(k, dict) or not k.get("alert_level"):  # info: if not isinstance ( k , dict )
+        md += ["_No HVO data on file (Database Geology/Volcanoes/kilauea-last.json missing). Run geology_collect.py._", ""]  # info: set md
+        return "\n".join(md), ["Kilauea: DOWN."]  # info: return "\n" . join ( md ) ,
+    level = str(k.get("alert_level") or "unknown").strip().lower()  # info: set level
+    erupting = k.get("erupting")  # info: set erupting
+    if erupting:  # info: if erupting :
+        state = "is erupting"  # info: set state
+    elif level in {"advisory", "watch", "warning", "normal"} and erupting is False:  # info: elif level in { "advisory" , "watch" ,
+        state = "not erupting"  # info: set state
+    else:  # info: else :
+        state = "eruption state unknown"  # info: set state
+    color = str(k.get("color_code") or "").lower()  # info: set color
+    sp = ["Kilauea Report.", f"It's {clock(t)} Hawaiian Standard Time.".replace("..", "."),  # info: set sp
+          f"Kilauea volcano alert level: {level}" + (f", aviation color code {color}." if color else ".") +  # info: f" Kilauea volcano alert level: { level } " + (
+          f" Kilauea {state}."]  # info: f" Kilauea { state } . " ]
+    note = k.get("latest_activity_notice") if erupting and k.get("latest_activity_notice") else k.get("latest_notice")  # info: set note
+    note = note if isinstance(note, dict) else {}  # info: set note
+    excerpt = _first_sentences(note.get("synopsis") or "")  # info: set excerpt
+    if excerpt:  # info: if excerpt :
+        sp += ["Here is the latest Hawaiian Volcano Observatory notice, unedited for honesty.", excerpt]  # info: set sp
+    else:  # info: else :
+        sp.append("No HVO headline in this sample.")  # info: sp . append ( "No HVO headline in this sample." )
+    if hi.get("kilauea_150km_count") is not None:  # info: if hi . get ( "kilauea_150km_count" ) is
+        n = int(hi["kilauea_150km_count"])  # info: set n
+        sp.append(f"USGS: {n} earthquake{'s' if n != 1 else ''} magnitude 1 or greater within 150 kilometers of Kilauea in the last "  # info: sp . append ( f" USGS: { n
+                  f"{hi.get('window_h', 24)} hours.")  # info: f" { hi . get ( 'window_h' ,
+    if isinstance(ml, dict) and ml.get("alert_level"):  # info: if isinstance ( ml , dict ) and
+        sp.append(f"Mauna Loa alert level: {str(ml['alert_level']).lower()}.")  # info: sp . append ( f" Mauna Loa alert level: { str
+    try:  # info: try :
+        age = int((t - datetime.fromisoformat(k["at"])).total_seconds() // 60)  # info: set age
+    except (KeyError, TypeError, ValueError):  # info: except ( KeyError , TypeError , ValueError )
+        age = None  # info: set age
+    if age is not None and age > HVO_STALE_MIN:  # info: if age is not None and age >
+        sp.append(f"That HVO status is {age} minutes old.")  # info: sp . append ( f" That HVO status is { age
+    md += [f"- **Kīlauea:** {k.get('alert_level')} / {k.get('color_code')} — erupting `{erupting}` — {k.get('headline')}",  # info: set md
+           f"- **Latest notice used:** {note.get('type', 'n/a')} ({note.get('sent_utc', 'n/a')} UTC) {note.get('url', '')}",  # info: f" - **Latest notice used:** { note . get ( 'type'
+           f"- **Mauna Loa:** {(ml or {}).get('alert_level', 'n/a')} / {(ml or {}).get('color_code', 'n/a')}",  # info: f" - **Mauna Loa:** { ( ml or { }
+           f"- **Quakes ≤150 km of Kīlauea (M≥1, {hi.get('window_h', 24)} h):** {hi.get('kilauea_150km_count', 'n/a')}",  # info: f" - **Quakes ≤150 km of Kīlauea (M≥1, { hi . get ( 'window_h'
            f"- **Collected:** {k.get('at')} (USGS HANS)", "", "## Spoken", "", " ".join(sp), ""]
-    return "\n".join(md), sp
+    return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
-def _host_desks():
-    sys.path.insert(0, str(PACIFIC / "System" / "scripts"))
+# ====================================================
+# SECTION: function _host_desks
+# What it does:  host desks.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _host_desks():  # info: def _host_desks
+    sys.path.insert(0, str(PACIFIC / "System" / "scripts"))  # info: sys . path . insert ( 0 ,
     import host_desks  # noqa: E402  (Pacific System/scripts/host_desks.py, G1 host_metrics port)
-    return host_desks
+    return host_desks  # info: return host_desks
 
 
-def spoken_watts(v) -> str:
-    """Spoken power: whole watts; 0 (or 0.0 from the cloud read) -> "zero watts" (2026-09-29 text fix)."""
-    w = int(round(float(v)))
-    return "zero watts" if w == 0 else ("one watt" if w == 1 else f"{w} watts")
+# ====================================================
+# SECTION: function spoken_watts
+# What it does: Spoken power: whole watts; 0 (or 0.0 from the cloud read) -> "zero watts" (2026-09-29 text fix).
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def spoken_watts(v) -> str:  # info: def spoken_watts
+    """Spoken power: whole watts; 0 (or 0.0 from the cloud read) -> "zero watts" (2026-09-29 text fix)."""  # info: """Spoken power: whole watts; 0 (or 0.0 from the cloud read) -> "zero watts" (2026-09-29 text fix)."""
+    w = int(round(float(v)))  # info: set w
+    return "zero watts" if w == 0 else ("one watt" if w == 1 else f"{w} watts")  # info: return "zero watts" if w == 0 else (
 
 
-def spoken_hhmm(hhmm) -> str:
-    """"06:11" -> "six eleven a.m." (sun times spoken as words; 2026-09-29 text fix). Non-HH:MM passes through."""
-    try:
-        h, m = (int(x) for x in str(hhmm).split(":")[:2])
-    except (TypeError, ValueError):
-        return str(hhmm)
-    return spoken_clock(h, m)
+# ====================================================
+# SECTION: function spoken_hhmm
+# What it does: "06:11" -> "six eleven a.m." (sun times spoken as words; 2026-09-29 text fix). Non-HH:MM passes through.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def spoken_hhmm(hhmm) -> str:  # info: def spoken_hhmm
+    """"06:11" -> "six eleven a.m." (sun times spoken as words; 2026-09-29 text fix). Non-HH:MM passes through."""  # info: """"06:11" -> "six eleven a.m." (sun times spoken as words; 2026-09-29 text fix). Non-HH:MM passes through."""
+    try:  # info: try :
+        h, m = (int(x) for x in str(hhmm).split(":")[:2])  # info: h , m = ( int ( x
+    except (TypeError, ValueError):  # info: except ( TypeError , ValueError ) :
+        return str(hhmm)  # info: return str ( hhmm )
+    return spoken_clock(h, m)  # info: return spoken_clock ( h , m )
 
 
-def b_solar_desk(t: datetime):
-    """G1 hourly-clip-reports solar_spoken ("Solar desk at <clock>. <EcoFlow line>") + G1 hourly-solar-weather sun times."""
-    facts = energy_facts(t)
-    sun = jload(ENERGY / "sun" / "sun-times-last.json") or {}
-    sp = [f"Solar desk at {clock(t)} Hawaiian Standard Time.".replace("..", ".")]
-    lines, spoken_lines = [], []
-    for f in facts:
-        if not f["ok"]:
-            lines.append(f"{f['name']}: offline")
-            spoken_lines.append(f"{f['name']}: offline")
-            continue
-        bits, sbits = [f"state of charge {f['soc']}%"], [f"state of charge {f['soc']}%"]
-        power = [(k, f.get(k)) for k in ("solar_w", "ac_out_w") if f.get(k) is not None]
-        for k, v in power:
-            bits.append(f"{'solar input' if k == 'solar_w' else 'AC out'} {v} W")
-        if power and all(int(round(float(v))) == 0 for _, v in power):
+# ====================================================
+# SECTION: function b_solar_desk
+# What it does: G1 hourly-clip-reports solar_spoken ("Solar desk at <clock>. <EcoFlow line>") + G1 hourly-solar-weather sun times.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def b_solar_desk(t: datetime):  # info: def b_solar_desk
+    """G1 hourly-clip-reports solar_spoken ("Solar desk at <clock>. <EcoFlow line>") + G1 hourly-solar-weather sun times."""  # info: """G1 hourly-clip-reports solar_spoken ("Solar desk at <clock>. <EcoFlow line>") + G1 hourly-solar-weather sun
+    facts = energy_facts(t)  # info: set facts
+    sun = jload(ENERGY / "sun" / "sun-times-last.json") or {}  # info: set sun
+    sp = [f"Solar desk at {clock(t)} Hawaiian Standard Time.".replace("..", ".")]  # info: set sp
+    lines, spoken_lines = [], []  # info: lines , spoken_lines = [ ] , [
+    for f in facts:  # info: for f in facts :
+        if not f["ok"]:  # info: if not f [ "ok" ] :
+            lines.append(f"{f['name']}: offline")  # info: lines . append ( f" { f [
+            spoken_lines.append(f"{f['name']}: offline")  # info: spoken_lines . append ( f" { f [
+            continue  # info: continue
+        bits, sbits = [f"state of charge {f['soc']}%"], [f"state of charge {f['soc']}%"]  # info: bits , sbits = [ f" state of charge {
+        power = [(k, f.get(k)) for k in ("solar_w", "ac_out_w") if f.get(k) is not None]  # info: set power
+        for k, v in power:  # info: for k , v in power :
+            bits.append(f"{'solar input' if k == 'solar_w' else 'AC out'} {v} W")  # info: bits . append ( f" { 'solar input' if
+        if power and all(int(round(float(v))) == 0 for _, v in power):  # info: if power and all ( int ( round
             sbits.append("idle")  # no solar in, no AC out
-        else:
-            sbits += [f"{'solar input' if k == 'solar_w' else 'AC out'} {spoken_watts(v)}" for k, v in power]
-        lines.append(f"{f['name']}: " + ", ".join(bits))
-        spoken_lines.append(f"{f['name']}: " + ", ".join(sbits))
-    if not any(f["ok"] for f in facts):
-        sp.append("EcoFlow is offline.")
-    else:
-        sp += [x + "." for x in spoken_lines]
-        for f in facts:
-            if f["ok"] and f.get("age_min") is not None and f["age_min"] > STALE_MIN:
-                sp.append(f"That {f['name']} reading is {f['age_min']} minutes old.")
-    if sun.get("date") == t.date().isoformat() and sun.get("sunset"):
-        if t.strftime("%H:%M") < sun["sunset"]:
-            sp.append(f"Sunrise was {spoken_hhmm(sun['sunrise'])}, sunset is {spoken_hhmm(sun['sunset'])}.".replace("..", "."))
-        elif sun.get("next_sunrise"):
-            sp.append(f"Sunset was {spoken_hhmm(sun['sunset'])}; next sunrise {spoken_hhmm(sun['next_sunrise'])}.".replace("..", "."))
-        else:
-            sp.append(f"Sunset was {spoken_hhmm(sun['sunset'])}.".replace("..", "."))
+        else:  # info: else :
+            sbits += [f"{'solar input' if k == 'solar_w' else 'AC out'} {spoken_watts(v)}" for k, v in power]  # info: set sbits
+        lines.append(f"{f['name']}: " + ", ".join(bits))  # info: lines . append ( f" { f [
+        spoken_lines.append(f"{f['name']}: " + ", ".join(sbits))  # info: spoken_lines . append ( f" { f [
+    if not any(f["ok"] for f in facts):  # info: if not any ( f [ "ok" ]
+        sp.append("EcoFlow is offline.")  # info: sp . append ( "EcoFlow is offline." )
+    else:  # info: else :
+        sp += [x + "." for x in spoken_lines]  # info: set sp
+        for f in facts:  # info: for f in facts :
+            if f["ok"] and f.get("age_min") is not None and f["age_min"] > STALE_MIN:  # info: if f [ "ok" ] and f .
+                sp.append(f"That {f['name']} reading is {f['age_min']} minutes old.")  # info: sp . append ( f" That { f
+    if sun.get("date") == t.date().isoformat() and sun.get("sunset"):  # info: if sun . get ( "date" ) ==
+        if t.strftime("%H:%M") < sun["sunset"]:  # info: if t . strftime ( "%H:%M" ) <
+            sp.append(f"Sunrise was {spoken_hhmm(sun['sunrise'])}, sunset is {spoken_hhmm(sun['sunset'])}.".replace("..", "."))  # info: sp . append ( f" Sunrise was { spoken_hhmm
+        elif sun.get("next_sunrise"):  # info: elif sun . get ( "next_sunrise" ) :
+            sp.append(f"Sunset was {spoken_hhmm(sun['sunset'])}; next sunrise {spoken_hhmm(sun['next_sunrise'])}.".replace("..", "."))  # info: sp . append ( f" Sunset was { spoken_hhmm
+        else:  # info: else :
+            sp.append(f"Sunset was {spoken_hhmm(sun['sunset'])}.".replace("..", "."))  # info: sp . append ( f" Sunset was { spoken_hhmm
     md = [f"# Solar desk — {t.isoformat()}", ""] + [f"- {x}" for x in lines] + [
-        f"- Sun: {sun.get('sunrise', 'n/a')} / {sun.get('sunset', 'n/a')} ({sun.get('date', 'n/a')}, Open-Meteo)", "",
+        f"- Sun: {sun.get('sunrise', 'n/a')} / {sun.get('sunset', 'n/a')} ({sun.get('date', 'n/a')}, Open-Meteo)", "",  # info: f" - Sun: { sun . get ( 'sunrise'
         "## Spoken", "", " ".join(sp), "",
-        "_Source: Database Energy/soc + Energy/watts (EcoFlow BLE) + Energy/sun/sun-times-last.json._", ""]
-    return "\n".join(md), sp
+        "_Source: Database Energy/soc + Energy/watts (EcoFlow BLE) + Energy/sun/sun-times-last.json._", ""]  # info: "_Source: Database Energy/soc + Energy/watts (EcoFlow BLE) + Energy/sun/sun-times-last.json._" , "" ]
+    return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
-def b_security_desk(t: datetime):
-    """G1 host_metrics.security_spoken, unchanged wording, from host_desks.security_snapshot() (counts only)."""
-    row = _host_desks().security_snapshot()
-    bits = [f"Security desk at {clock(t)} Hawaiian Standard Time.".replace("..", ".")]
-    ufw = row.get("ufw_boot")
-    if ufw is True:
-        bits.append("Uncomplicated Firewall is set to start on boot.")
-    elif ufw is False:
-        bits.append("Uncomplicated Firewall is not set to start on boot.")
-    ssh = row.get("ssh_active")
-    if ssh is True:
-        bits.append("OpenSSH service is active.")
-    elif ssh is False:
-        bits.append("OpenSSH service is not active.")
-    if row.get("listen_tcp") is not None:
-        bits.append(f"{row['listen_tcp']} TCP listeners.")
-    if row.get("established") is not None:
-        bits.append(f"{row['established']} established connections.")
-    if row.get("failed_1h") is not None:
-        bits.append(f"Failed sign-ins: {row['failed_1h']} in the last hour, {row['failed_24h']} in the last twenty four hours.")
-    else:
-        bits.append("The sign-in log is not readable.")
-    if row.get("fail2ban"):
-        bits.append("Fail2ban is running.")
+# ====================================================
+# SECTION: function b_security_desk
+# What it does: G1 host_metrics.security_spoken, unchanged wording, from host_desks.security_snapshot() (counts only).
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def b_security_desk(t: datetime):  # info: def b_security_desk
+    """G1 host_metrics.security_spoken, unchanged wording, from host_desks.security_snapshot() (counts only)."""  # info: """G1 host_metrics.security_spoken, unchanged wording, from host_desks.security_snapshot() (counts only)."""
+    row = _host_desks().security_snapshot()  # info: set row
+    bits = [f"Security desk at {clock(t)} Hawaiian Standard Time.".replace("..", ".")]  # info: set bits
+    ufw = row.get("ufw_boot")  # info: set ufw
+    if ufw is True:  # info: if ufw is True :
+        bits.append("Uncomplicated Firewall is set to start on boot.")  # info: bits . append ( "Uncomplicated Firewall is set to start on boot." )
+    elif ufw is False:  # info: elif ufw is False :
+        bits.append("Uncomplicated Firewall is not set to start on boot.")  # info: bits . append ( "Uncomplicated Firewall is not set to start on boot." )
+    ssh = row.get("ssh_active")  # info: set ssh
+    if ssh is True:  # info: if ssh is True :
+        bits.append("OpenSSH service is active.")  # info: bits . append ( "OpenSSH service is active." )
+    elif ssh is False:  # info: elif ssh is False :
+        bits.append("OpenSSH service is not active.")  # info: bits . append ( "OpenSSH service is not active." )
+    if row.get("listen_tcp") is not None:  # info: if row . get ( "listen_tcp" ) is
+        bits.append(f"{row['listen_tcp']} TCP listeners.")  # info: bits . append ( f" { row [
+    if row.get("established") is not None:  # info: if row . get ( "established" ) is
+        bits.append(f"{row['established']} established connections.")  # info: bits . append ( f" { row [
+    if row.get("failed_1h") is not None:  # info: if row . get ( "failed_1h" ) is
+        bits.append(f"Failed sign-ins: {row['failed_1h']} in the last hour, {row['failed_24h']} in the last twenty four hours.")  # info: bits . append ( f" Failed sign-ins: { row
+    else:  # info: else :
+        bits.append("The sign-in log is not readable.")  # info: bits . append ( "The sign-in log is not readable." )
+    if row.get("fail2ban"):  # info: if row . get ( "fail2ban" ) :
+        bits.append("Fail2ban is running.")  # info: bits . append ( "Fail2ban is running." )
     md = [f"# Security desk — {t.isoformat()}", "", "```json", json.dumps(row, indent=2), "```", "", "## Spoken", "", " ".join(bits), "",
-          "_Source: Pacific System/scripts/host_desks.py (ufw.conf, systemctl is-active, /proc/net/tcp, auth.log counts only)._", ""]
-    return "\n".join(md), bits
+          "_Source: Pacific System/scripts/host_desks.py (ufw.conf, systemctl is-active, /proc/net/tcp, auth.log counts only)._", ""]  # info: "_Source: Pacific System/scripts/host_desks.py (ufw.conf, systemctl is-active, /proc/net/tcp, auth.log counts 
+    return "\n".join(md), bits  # info: return "\n" . join ( md ) ,
 
 
-def b_bandwidth_desk(t: datetime):
-    """G1 host_metrics.bandwidth_spoken (records one sample, then last hour / 24 h deltas)."""
-    hd = _host_desks()
-    net = hd.net_counters()
-    if net and not os.environ.get("RR_VOICE_BANDWIDTH_DRY"):
-        hd.append_net_sample(net)
-    hour, day = hd.net_usage_window(3600, now=net), hd.net_usage_window(86400, now=net)
+# ====================================================
+# SECTION: function b_bandwidth_desk
+# What it does: G1 host_metrics.bandwidth_spoken (records one sample, then last hour / 24 h deltas).
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def b_bandwidth_desk(t: datetime):  # info: def b_bandwidth_desk
+    """G1 host_metrics.bandwidth_spoken (records one sample, then last hour / 24 h deltas)."""  # info: """G1 host_metrics.bandwidth_spoken (records one sample, then last hour / 24 h deltas)."""
+    hd = _host_desks()  # info: set hd
+    net = hd.net_counters()  # info: set net
+    if net and not os.environ.get("RR_VOICE_BANDWIDTH_DRY"):  # info: if net and not os . environ .
+        hd.append_net_sample(net)  # info: hd . append_net_sample ( net )
+    hour, day = hd.net_usage_window(3600, now=net), hd.net_usage_window(86400, now=net)  # info: hour , day = hd . net_usage_window (
     md = [f"# Bandwidth desk — {t.isoformat()}", "", f"- iface: {(net or {}).get('iface')} ({(net or {}).get('link')})",
-          f"- last hour: {hour}", f"- last 24 h: {day}", ""]
-    if hour is None and day is None:
-        md += ["_Not enough samples yet (needs samples covering 45 min; run `host_desks.py net-sample` every 5 min)._", ""]
-        return "\n".join(md), ["Bandwidth data is not on file yet."]
-    sb = hd.spoken_bytes
-    bits = [f"Bandwidth desk at {clock(t)} Hawaiian Standard Time.".replace("..", "."), f"This host is on {(net or {}).get('link') or 'network'}."]
-    bits.append(f"Last hour: {sb(hour['rx'])} down, {sb(hour['tx'])} up, {sb(hour['total'])} total." if hour else "Last hour is not on file yet.")
-    bits.append(f"Last twenty four hours: {sb(day['rx'])} down, {sb(day['tx'])} up, {sb(day['total'])} total." if day
-                else "Last twenty four hours is not on file yet.")
+          f"- last hour: {hour}", f"- last 24 h: {day}", ""]  # info: f" - last hour: { hour } " , f"
+    if hour is None and day is None:  # info: if hour is None and day is None
+        md += ["_Not enough samples yet (needs samples covering 45 min; run `host_desks.py net-sample` every 5 min)._", ""]  # info: set md
+        return "\n".join(md), ["Bandwidth data is not on file yet."]  # info: return "\n" . join ( md ) ,
+    sb = hd.spoken_bytes  # info: set sb
+    bits = [f"Bandwidth desk at {clock(t)} Hawaiian Standard Time.".replace("..", "."), f"This host is on {(net or {}).get('link') or 'network'}."]  # info: set bits
+    bits.append(f"Last hour: {sb(hour['rx'])} down, {sb(hour['tx'])} up, {sb(hour['total'])} total." if hour else "Last hour is not on file yet.")  # info: bits . append ( f" Last hour: { sb
+    bits.append(f"Last twenty four hours: {sb(day['rx'])} down, {sb(day['tx'])} up, {sb(day['total'])} total." if day  # info: bits . append ( f" Last twenty four hours: { sb
+                else "Last twenty four hours is not on file yet.")  # info: else "Last twenty four hours is not on file yet." )
     md += ["## Spoken", "", " ".join(bits), ""]
-    return "\n".join(md), bits
+    return "\n".join(md), bits  # info: return "\n" . join ( md ) ,
 
 
-def _say_code(code: str) -> str:
-    """WO-ECO -> 'E C O', WO-RPT-001 -> 'R P T 1' (short acronyms spelled out for Kokoro)."""
-    parts = []
-    for p in code.removeprefix("WO-").split("-"):
-        parts.append(" ".join(p) if p.isalpha() and len(p) <= 4 else str(int(p)) if p.isdigit() else p.title())
-    return " ".join(parts)
+# ====================================================
+# SECTION: function _say_code
+# What it does: WO-ECO -> 'E C O', WO-RPT-001 -> 'R P T 1' (short acronyms spelled out for Kokoro).
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _say_code(code: str) -> str:  # info: def _say_code
+    """WO-ECO -> 'E C O', WO-RPT-001 -> 'R P T 1' (short acronyms spelled out for Kokoro)."""  # info: """WO-ECO -> 'E C O', WO-RPT-001 -> 'R P T 1' (short acronyms spelled out for Kokoro)."""
+    parts = []  # info: set parts
+    for p in code.removeprefix("WO-").split("-"):  # info: for p in code . removeprefix ( "WO-"
+        parts.append(" ".join(p) if p.isalpha() and len(p) <= 4 else str(int(p)) if p.isdigit() else p.title())  # info: parts . append ( " " . join (
+    return " ".join(parts)  # info: return " " . join ( parts )
 
 
-def b_remaining_tasks(t: datetime):
-    total, per = open_tasks()
+# ====================================================
+# SECTION: function b_remaining_tasks
+# What it does: b remaining tasks.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def b_remaining_tasks(t: datetime):  # info: def b_remaining_tasks
+    total, per = open_tasks()  # info: total , per = open_tasks ( )
     md = [f"# Remaining tasks — {t.isoformat()}", "", f"Open checkboxes in Library `Documentation/06-development/Work-Orders/`: **{total}**", "",
-          "| Work order | Open |", "|---|---|"] + [f"| {c} | {n} |" for n, c in per] + [""]
-    sp = ["Remaining tasks."]
-    if total:
-        sp.append(f"{total} open items across {len(per)} work orders.")
-        top = ", ".join(f"{_say_code(c)} {n}" for n, c in per[:3])
-        sp.append(f"Most open: {top}.")
-    else:
-        sp.append("No open tasks on file.")
-    return "\n".join(md), sp
+          "| Work order | Open |", "|---|---|"] + [f"| {c} | {n} |" for n, c in per] + [""]  # info: "| Work order | Open |" , "|---|---|" ] + [ f" |
+    sp = ["Remaining tasks."]  # info: set sp
+    if total:  # info: if total :
+        sp.append(f"{total} open items across {len(per)} work orders.")  # info: sp . append ( f" { total }
+        top = ", ".join(f"{_say_code(c)} {n}" for n, c in per[:3])  # info: set top
+        sp.append(f"Most open: {top}.")  # info: sp . append ( f" Most open: { top
+    else:  # info: else :
+        sp.append("No open tasks on file.")  # info: sp . append ( "No open tasks on file." )
+    return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
-def _rollup(t: datetime, slot: str):
-    title = {"morning": "Morning report.", "midday": "Midday report.", "late": "Late report."}[slot]
-    facts, (rows, _), (today, _), h, (tasks, per) = energy_facts(t), alerts(), sfp_today(), host(), open_tasks()
-    sp = [title, f"It's {clock(t)} Hawaiian Standard Time.".replace("..", ".")]
-    lines = []
-    ok = [f for f in facts if f["ok"]]
-    if ok:
-        s = "Batteries: " + ", ".join(f"{f['name']} {f['soc']}%" for f in ok)
-        solar = sum(f["solar_w"] or 0 for f in ok)
+# ====================================================
+# SECTION: function _rollup
+# What it does:  rollup.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _rollup(t: datetime, slot: str):  # info: def _rollup
+    title = {"morning": "Morning report.", "midday": "Midday report.", "late": "Late report."}[slot]  # info: set title
+    facts, (rows, _), (today, _), h, (tasks, per) = energy_facts(t), alerts(), sfp_today(), host(), open_tasks()  # info: call facts
+    sp = [title, f"It's {clock(t)} Hawaiian Standard Time.".replace("..", ".")]  # info: set sp
+    lines = []  # info: set lines
+    ok = [f for f in facts if f["ok"]]  # info: set ok
+    if ok:  # info: if ok :
+        s = "Batteries: " + ", ".join(f"{f['name']} {f['soc']}%" for f in ok)  # info: set s
+        solar = sum(f["solar_w"] or 0 for f in ok)  # info: set solar
         # spoken form says "at": "Delta 2 36%" would hit the G1 clock rule ("two thirty six a.m.")
-        sp.append("Battery levels: " + ", ".join(f"{f['name']} at {f['soc']}%" for f in ok) + f". Solar input {spoken_watts(solar)}.")
-        lines.append(s + f"; solar input {solar} W")
-    else:
-        sp.append("EcoFlow is offline.")
-        lines.append("EcoFlow: no reading")
-    if rows:
-        sp.append(f"{len(rows)} active weather alert{'s' if len(rows) != 1 else ''}, including {rows[0]['event']}.")
-    else:
-        sp.append("No active HI alerts from the API sample.")
-    lines.append(f"NWS alerts active: {len(rows)}" + (f" ({', '.join(r['event'] for r in rows)})" if rows else ""))
-    if today:
-        first = re.split(r"(?<=\.)\s", today.split(":", 1)[1].strip())[0]
-        sp.append(f"Forecast for {today.split(':', 1)[0].lower()}: {first}")
-        lines.append(f"Forecast {today}")
-    sp.append(f"Host CPU {h['cpu']}%, memory {h['mem']}% used.")
-    lines.append(f"Host CPU {h['cpu']}%, memory {h['mem']}% used")
-    sp.append(f"{tasks} open work order items.")
-    lines.append(f"Open work-order items: {tasks}")
-    summary = llm_summary(lines) if os.environ.get("RR_VOICE_ROLLUP_LLM", "0") == "1" else None
-    if summary:
-        sp.append(summary)
-    sp.append("End of report.")
+        sp.append("Battery levels: " + ", ".join(f"{f['name']} at {f['soc']}%" for f in ok) + f". Solar input {spoken_watts(solar)}.")  # info: sp . append ( "Battery levels: " + ", " .
+        lines.append(s + f"; solar input {solar} W")  # info: lines . append ( s + f" ; solar input
+    else:  # info: else :
+        sp.append("EcoFlow is offline.")  # info: sp . append ( "EcoFlow is offline." )
+        lines.append("EcoFlow: no reading")  # info: lines . append ( "EcoFlow: no reading" )
+    if rows:  # info: if rows :
+        sp.append(f"{len(rows)} active weather alert{'s' if len(rows) != 1 else ''}, including {rows[0]['event']}.")  # info: sp . append ( f" { len (
+    else:  # info: else :
+        sp.append("No active HI alerts from the API sample.")  # info: sp . append ( "No active HI alerts from the API sample." )
+    lines.append(f"NWS alerts active: {len(rows)}" + (f" ({', '.join(r['event'] for r in rows)})" if rows else ""))  # info: lines . append ( f" NWS alerts active: { len
+    if today:  # info: if today :
+        first = re.split(r"(?<=\.)\s", today.split(":", 1)[1].strip())[0]  # info: set first
+        sp.append(f"Forecast for {today.split(':', 1)[0].lower()}: {first}")  # info: sp . append ( f" Forecast for { today
+        lines.append(f"Forecast {today}")  # info: lines . append ( f" Forecast { today
+    sp.append(f"Host CPU {h['cpu']}%, memory {h['mem']}% used.")  # info: sp . append ( f" Host CPU { h
+    lines.append(f"Host CPU {h['cpu']}%, memory {h['mem']}% used")  # info: lines . append ( f" Host CPU { h
+    sp.append(f"{tasks} open work order items.")  # info: sp . append ( f" { tasks }
+    lines.append(f"Open work-order items: {tasks}")  # info: lines . append ( f" Open work-order items: { tasks
+    summary = llm_summary(lines) if os.environ.get("RR_VOICE_ROLLUP_LLM", "0") == "1" else None  # info: set summary
+    if summary:  # info: if summary :
+        sp.append(summary)  # info: sp . append ( summary )
+    sp.append("End of report.")  # info: sp . append ( "End of report." )
     md = [f"# {title[:-1]} — {t.isoformat()}", "", "## Measured", ""] + [f"- {x}" for x in lines]
     md += ["", "## LLM summary", "", f"{summary} _(run-infer.sh, RR_VOICE_ROLLUP_LLM=1)_" if summary else "_off (RR_VOICE_ROLLUP_LLM != 1)_", ""]
-    return "\n".join(md), sp
+    return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
-def llm_summary(lines: list[str]) -> str | None:
-    """Optional, gated: 1–2 sentence summary via run-infer.sh (FLM on demand, single-flight). Metadata-only logging."""
-    with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:
-        f.write("\n".join(lines) + "\n")
-    try:
-        env = dict(os.environ, DESK_LIVE_FILE=f.name, RR_CALLER="voice_rollup")
-        p = subprocess.run(["bash", str(PACIFIC / "System" / "scripts" / "plumbing" / "run-infer.sh"), "ava",
-                            "Summarize the measured desk lines in one or two short spoken sentences. Use only those numbers."],
-                           capture_output=True, text=True, timeout=180, env=env)
-        out = " ".join(ln for ln in (p.stdout or "").splitlines() if not ln.startswith("[ok]")).strip()
-        return out[:400] if p.returncode == 0 and out and out != "No live desk data attached." else None
-    except (OSError, subprocess.TimeoutExpired):
-        return None
-    finally:
-        os.unlink(f.name)
+# ====================================================
+# SECTION: function llm_summary
+# What it does: Optional, gated: 1–2 sentence summary via run-infer.sh (FLM on demand, single-flight). Metadata-only logging.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def llm_summary(lines: list[str]) -> str | None:  # info: def llm_summary
+    """Optional, gated: 1–2 sentence summary via run-infer.sh (FLM on demand, single-flight). Metadata-only logging."""  # info: """Optional, gated: 1–2 sentence summary via run-infer.sh (FLM on demand, single-flight). Metadata-only loggin
+    with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:  # info: with tempfile . NamedTemporaryFile ( "w" , suffix
+        f.write("\n".join(lines) + "\n")  # info: f . write ( "\n" . join (
+    try:  # info: try :
+        env = dict(os.environ, DESK_LIVE_FILE=f.name, RR_CALLER="voice_rollup")  # info: set env
+        p = subprocess.run(["bash", str(PACIFIC / "System" / "scripts" / "plumbing" / "run-infer.sh"), "ava",  # info: set p
+                            "Summarize the measured desk lines in one or two short spoken sentences. Use only those numbers."],  # info: "Summarize the measured desk lines in one or two short spoken sentences. Use only those numbers." ] ,
+                           capture_output=True, text=True, timeout=180, env=env)  # info: set capture_output
+        out = " ".join(ln for ln in (p.stdout or "").splitlines() if not ln.startswith("[ok]")).strip()  # info: set out
+        return out[:400] if p.returncode == 0 and out and out != "No live desk data attached." else None  # info: return out [ : 400 ] if p
+    except (OSError, subprocess.TimeoutExpired):  # info: except ( OSError , subprocess . TimeoutExpired )
+        return None  # info: return None
+    finally:  # info: finally :
+        os.unlink(f.name)  # info: os . unlink ( f . name )
 
 
 OFFICIAL = WX / "official"  # Pacific Weather/scripts/official_statement.py (HLS)
 HFO_TEXT = WX / "hfo" / "api.weather.gov" / "products" / "types"  # weather poller: <TYPE>/locations/HFO/HFO_current.txt
 OFFICIAL_MAX_H = 24  # a statement older than this is not read as current (G1 read the newest product regardless)
-_WMO_HEAD = re.compile(r"^\s*0{3}\s+[A-Z]{4}\d{2}\s+[A-Z]{4}\s+\d{6}\s+[A-Z]{6}\s+")
-_UGC = re.compile(r"\b(?:[A-Z]{2}[ZC][0-9>\-]{3,}-)+\d{6}-\s*")
+_WMO_HEAD = re.compile(r"^\s*0{3}\s+[A-Z]{4}\d{2}\s+[A-Z]{4}\s+\d{6}\s+[A-Z]{6}\s+")  # info: set _WMO_HEAD
+_UGC = re.compile(r"\b(?:[A-Z]{2}[ZC][0-9>\-]{3,}-)+\d{6}-\s*")  # info: set _UGC
 
 
-def _speech_product(text: str) -> str:
-    """Flattened NWS product -> speakable: drop the WMO / AWIPS header and UGC zone strings, ** markers, dashes runs."""
-    t = _UGC.sub("", _WMO_HEAD.sub("", " ".join((text or "").split())))
-    t = re.sub(r"\*\*|-{3,}|\s\*\s", " ", t)
-    return " ".join(t.split())
+# ====================================================
+# SECTION: function _speech_product
+# What it does: Flattened NWS product -> speakable: drop the WMO / AWIPS header and UGC zone strings, ** markers, dashes runs.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _speech_product(text: str) -> str:  # info: def _speech_product
+    """Flattened NWS product -> speakable: drop the WMO / AWIPS header and UGC zone strings, ** markers, dashes runs."""  # info: """Flattened NWS product -> speakable: drop the WMO / AWIPS header and UGC zone strings, ** markers, dashes ru
+    t = _UGC.sub("", _WMO_HEAD.sub("", " ".join((text or "").split())))  # info: set t
+    t = re.sub(r"\*\*|-{3,}|\s\*\s", " ", t)  # info: set t
+    return " ".join(t.split())  # info: return " " . join ( t . split
 
 
-def official_products(t: datetime) -> list[dict]:
-    """[{type, text, issued, age_h}] newest-first candidates: HLS (official/), HWO, AFD (poller)."""
-    out = []
-    st = jload(OFFICIAL / "official-last.json") or {}
-    hls = OFFICIAL / "HLS_current.txt"
-    issued = ((st.get("hls") or {}).get("issued")) if isinstance(st, dict) else None
-    if hls.is_file():
-        try:
-            age = (t - datetime.fromisoformat(str(issued).replace("Z", "+00:00"))).total_seconds() / 3600 if issued else None
-        except ValueError:
-            age = None
-        out.append({"type": "HLS", "text": hls.read_text(encoding="utf-8", errors="replace"), "issued": issued,
-                    "age_h": round(age, 1) if age is not None else None})
-    for typ in ("HWO", "AFD"):
-        f = HFO_TEXT / typ / "locations" / "HFO" / "HFO_current.txt"
-        if f.is_file():
+# ====================================================
+# SECTION: function official_products
+# What it does: [{type, text, issued, age_h}] newest-first candidates: HLS (official/), HWO, AFD (poller).
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def official_products(t: datetime) -> list[dict]:  # info: def official_products
+    """[{type, text, issued, age_h}] newest-first candidates: HLS (official/), HWO, AFD (poller)."""  # info: """[{type, text, issued, age_h}] newest-first candidates: HLS (official/), HWO, AFD (poller)."""
+    out = []  # info: set out
+    st = jload(OFFICIAL / "official-last.json") or {}  # info: set st
+    hls = OFFICIAL / "HLS_current.txt"  # info: set hls
+    issued = ((st.get("hls") or {}).get("issued")) if isinstance(st, dict) else None  # info: set issued
+    if hls.is_file():  # info: if hls . is_file ( ) :
+        try:  # info: try :
+            age = (t - datetime.fromisoformat(str(issued).replace("Z", "+00:00"))).total_seconds() / 3600 if issued else None  # info: set age
+        except ValueError:  # info: except ValueError :
+            age = None  # info: set age
+        out.append({"type": "HLS", "text": hls.read_text(encoding="utf-8", errors="replace"), "issued": issued,  # info: out . append ( { "type" : "HLS"
+                    "age_h": round(age, 1) if age is not None else None})  # info: "age_h" : round ( age , 1 )
+    for typ in ("HWO", "AFD"):  # info: for typ in ( "HWO" , "AFD" )
+        f = HFO_TEXT / typ / "locations" / "HFO" / "HFO_current.txt"  # info: set f
+        if f.is_file():  # info: if f . is_file ( ) :
             age = (t.timestamp() - f.stat().st_mtime) / 3600  # poller rewrites on change; mtime ~ last fetch
-            out.append({"type": typ, "text": f.read_text(encoding="utf-8", errors="replace"),
-                        "issued": datetime.fromtimestamp(f.stat().st_mtime).astimezone().isoformat(timespec="minutes"),
-                        "age_h": round(age, 1)})
-    return out
+            out.append({"type": typ, "text": f.read_text(encoding="utf-8", errors="replace"),  # info: out . append ( { "type" : typ
+                        "issued": datetime.fromtimestamp(f.stat().st_mtime).astimezone().isoformat(timespec="minutes"),  # info: "issued" : datetime . fromtimestamp ( f .
+                        "age_h": round(age, 1)})  # info: "age_h" : round ( age , 1 )
+    return out  # info: return out
 
 
-def b_official_weather(t: datetime):
-    """G1 official_weather_media._official_statement spoken text: HLS, else HWO, else AFD; 4500-char cap (G1)."""
-    prods = official_products(t)
-    fresh = [p for p in prods if p["age_h"] is not None and p["age_h"] <= OFFICIAL_MAX_H and _speech_product(p["text"])]
+# ====================================================
+# SECTION: function b_official_weather
+# What it does: G1 official_weather_media._official_statement spoken text: HLS, else HWO, else AFD; 4500-char cap (G1).
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def b_official_weather(t: datetime):  # info: def b_official_weather
+    """G1 official_weather_media._official_statement spoken text: HLS, else HWO, else AFD; 4500-char cap (G1)."""  # info: """G1 official_weather_media._official_statement spoken text: HLS, else HWO, else AFD; 4500-char cap (G1)."""
+    prods = official_products(t)  # info: set prods
+    fresh = [p for p in prods if p["age_h"] is not None and p["age_h"] <= OFFICIAL_MAX_H and _speech_product(p["text"])]  # info: set fresh
     md = [f"# Official weather statement — {t.isoformat()}", "", "| Product | Issued / fetched | Age h | Used |",
-          "| --- | --- | --- | --- |"]
-    pick = fresh[0] if fresh else None
-    for p in prods:
-        md.append(f"| {p['type']} | {p['issued'] or 'n/a'} | {p['age_h'] if p['age_h'] is not None else 'n/a'} | "
-                  f"{'yes' if p is pick else ''} |")
-    if pick is None:
+          "| --- | --- | --- | --- |"]  # info: "| --- | --- | --- | --- |" ]
+    pick = fresh[0] if fresh else None  # info: set pick
+    for p in prods:  # info: for p in prods :
+        md.append(f"| {p['type']} | {p['issued'] or 'n/a'} | {p['age_h'] if p['age_h'] is not None else 'n/a'} | "  # info: md . append ( f" | { p
+                  f"{'yes' if p is pick else ''} |")  # info: f" { 'yes' if p is pick else
+    if pick is None:  # info: if pick is None :
         spoken = "Honolulu National Weather Service has no local hurricane statement in effect."  # G1 fallback wording
-    else:
-        spoken = _speech_product(pick["text"])
-        if len(spoken) > 4500:
-            spoken = spoken[:4500].rsplit(" ", 1)[0] + "."
-    sp = [f"Official NWS Honolulu statement. {spoken}"]
+    else:  # info: else :
+        spoken = _speech_product(pick["text"])  # info: set spoken
+        if len(spoken) > 4500:  # info: if len ( spoken ) > 4500 :
+            spoken = spoken[:4500].rsplit(" ", 1)[0] + "."  # info: set spoken
+    sp = [f"Official NWS Honolulu statement. {spoken}"]  # info: set sp
     md += ["", "## Spoken", "", sp[0], "",
-           "_Sources: Database `Weather/Hawai'i/official/HLS_current.txt` (official_statement.py) + "
-           "`Weather/Hawai'i/hfo/api.weather.gov/products/types/{HWO,AFD}/locations/HFO/HFO_current.txt` (weather poller)._", ""]
-    return "\n".join(md), sp
+           "_Sources: Database `Weather/Hawai'i/official/HLS_current.txt` (official_statement.py) + "  # info: "_Sources: Database `Weather/Hawai'i/official/HLS_current.txt` (official_statement.py) + "
+           "`Weather/Hawai'i/hfo/api.weather.gov/products/types/{HWO,AFD}/locations/HFO/HFO_current.txt` (weather poller)._", ""]  # info: "`Weather/Hawai'i/hfo/api.weather.gov/products/types/{HWO,AFD}/locations/HFO/HFO_current.txt` (weather poller)
+    return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
-def _uptime() -> tuple[str, int]:
-    up = float(open("/proc/uptime").read().split()[0])
-    boot = datetime.fromtimestamp(time.time() - up).astimezone()
-    return boot.isoformat(timespec="minutes"), int(up // 60)
+# ====================================================
+# SECTION: function _uptime
+# What it does:  uptime.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _uptime() -> tuple[str, int]:  # info: def _uptime
+    up = float(open("/proc/uptime").read().split()[0])  # info: set up
+    boot = datetime.fromtimestamp(time.time() - up).astimezone()  # info: set boot
+    return boot.isoformat(timespec="minutes"), int(up // 60)  # info: return boot . isoformat ( timespec = "minutes"
 
 
-def b_boot_brief(t: datetime):
-    """G1 boot-prelims Boot Report (morning before noon HST, midday after), file-only, template wording, no Grok."""
+# ====================================================
+# SECTION: function b_boot_brief
+# What it does: G1 boot-prelims Boot Report (morning before noon HST, midday after), file-only, template wording, no Grok.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def b_boot_brief(t: datetime):  # info: def b_boot_brief
+    """G1 boot-prelims Boot Report (morning before noon HST, midday after), file-only, template wording, no Grok."""  # info: """G1 boot-prelims Boot Report (morning before noon HST, midday after), file-only, template wording, no Grok."
     kind = "morning" if t.hour < 12 else "midday"  # G1 desk_report_kind
-    boot_at, up_min = _uptime()
-    facts, (rows, _), h = energy_facts(t), alerts(), host()
-    k = jload(VOLCANOES / "kilauea-last.json") or {}
-    storms = [x for x in hurricane_facts(t) if x.get("active")]
-    b = datetime.fromisoformat(boot_at)
-    sp = [f"Boot report, {kind} edition.", f"It's {clock(t)} Hawaiian Standard Time.".replace("..", "."),
-          (f"The Pacific desk came up at {spoken_clock(b.hour, b.minute)}, {up_min} minutes ago." if up_min < 120 else
-           f"The Pacific desk came up at {spoken_clock(b.hour, b.minute)}, about {round(up_min / 60)} hours ago.")
-          if up_min < 1440 else f"The Pacific desk has been up {up_min // 1440} days."]
-    lines = [f"Kind: {kind}", f"Boot: {boot_at} (up {up_min} min)", f"Host CPU {h['cpu']}%, memory {h['mem']}% used"]
-    ok = [f for f in facts if f["ok"]]
-    if ok:
-        sp.append("Battery levels: " + ", ".join(f"{f['name']} at {f['soc']}%" for f in ok) + ".")
-        lines.append("Batteries: " + ", ".join(f"{f['name']} {f['soc']}%" for f in ok))
-    else:
-        sp.append("EcoFlow is offline."); lines.append("Batteries: offline")
-    ev = sorted({r["event"] for r in rows})
-    sp.append(f"{len(rows)} active weather alert{'s' if len(rows) != 1 else ''}" + (f", including {', '.join(ev[:3])}." if ev else "."))
-    lines.append(f"NWS alerts: {len(rows)}" + (f" ({', '.join(ev)})" if ev else ""))
-    if k.get("alert_level"):
-        sp.append(f"Kilauea alert level {str(k['alert_level']).lower()}" + (", erupting." if k.get("erupting") else "."))
-        lines.append(f"Kilauea: {k['alert_level']} / {k.get('color_code')} erupting={k.get('erupting')}")
-    if storms:
-        s0 = storms[0]
-        sp.append(f"{s0['label']} {s0['name']} is about {s0['nm']} nautical miles from {s0['island']}.")
-        lines.append(f"Nearest storm: {s0['label']} {s0['name']} {s0['nm']} nm from {s0['island']}")
-    sp.append(f"CPU {h['cpu']}%, memory {h['mem']}% used. End of boot report.")
+    boot_at, up_min = _uptime()  # info: boot_at , up_min = _uptime ( )
+    facts, (rows, _), h = energy_facts(t), alerts(), host()  # info: call facts
+    k = jload(VOLCANOES / "kilauea-last.json") or {}  # info: set k
+    storms = [x for x in hurricane_facts(t) if x.get("active")]  # info: set storms
+    b = datetime.fromisoformat(boot_at)  # info: set b
+    sp = [f"Boot report, {kind} edition.", f"It's {clock(t)} Hawaiian Standard Time.".replace("..", "."),  # info: set sp
+          (f"The Pacific desk came up at {spoken_clock(b.hour, b.minute)}, {up_min} minutes ago." if up_min < 120 else  # info: call (
+           f"The Pacific desk came up at {spoken_clock(b.hour, b.minute)}, about {round(up_min / 60)} hours ago.")  # info: f" The Pacific desk came up at { spoken_clock ( b . hour
+          if up_min < 1440 else f"The Pacific desk has been up {up_min // 1440} days."]  # info: if up_min < 1440 else f" The Pacific desk has been up {
+    lines = [f"Kind: {kind}", f"Boot: {boot_at} (up {up_min} min)", f"Host CPU {h['cpu']}%, memory {h['mem']}% used"]  # info: set lines
+    ok = [f for f in facts if f["ok"]]  # info: set ok
+    if ok:  # info: if ok :
+        sp.append("Battery levels: " + ", ".join(f"{f['name']} at {f['soc']}%" for f in ok) + ".")  # info: sp . append ( "Battery levels: " + ", " .
+        lines.append("Batteries: " + ", ".join(f"{f['name']} {f['soc']}%" for f in ok))  # info: lines . append ( "Batteries: " + ", " .
+    else:  # info: else :
+        sp.append("EcoFlow is offline."); lines.append("Batteries: offline")  # info: sp . append ( "EcoFlow is offline." ) ; lines
+    ev = sorted({r["event"] for r in rows})  # info: set ev
+    sp.append(f"{len(rows)} active weather alert{'s' if len(rows) != 1 else ''}" + (f", including {', '.join(ev[:3])}." if ev else "."))  # info: sp . append ( f" { len (
+    lines.append(f"NWS alerts: {len(rows)}" + (f" ({', '.join(ev)})" if ev else ""))  # info: lines . append ( f" NWS alerts: { len
+    if k.get("alert_level"):  # info: if k . get ( "alert_level" ) :
+        sp.append(f"Kilauea alert level {str(k['alert_level']).lower()}" + (", erupting." if k.get("erupting") else "."))  # info: sp . append ( f" Kilauea alert level { str
+        lines.append(f"Kilauea: {k['alert_level']} / {k.get('color_code')} erupting={k.get('erupting')}")  # info: lines . append ( f" Kilauea: { k
+    if storms:  # info: if storms :
+        s0 = storms[0]  # info: set s0
+        sp.append(f"{s0['label']} {s0['name']} is about {s0['nm']} nautical miles from {s0['island']}.")  # info: sp . append ( f" { s0 [
+        lines.append(f"Nearest storm: {s0['label']} {s0['name']} {s0['nm']} nm from {s0['island']}")  # info: lines . append ( f" Nearest storm: { s0
+    sp.append(f"CPU {h['cpu']}%, memory {h['mem']}% used. End of boot report.")  # info: sp . append ( f" CPU { h
     md = [f"# Boot brief ({kind}) — {t.isoformat()}", ""] + [f"- {x}" for x in lines] + [
         "", "## Spoken", "", " ".join(sp), "",
-        "_Sources: /proc/uptime, Database Energy + Weather alerts + Geology/Volcanoes + hurricane track.json. "
-        "G1 prelims order (NOAA -> NWS -> Kilauea) = the proposed ON_BOOT job runs geology_collect first._", ""]
-    return "\n".join(md), sp
+        "_Sources: /proc/uptime, Database Energy + Weather alerts + Geology/Volcanoes + hurricane track.json. "  # info: "_Sources: /proc/uptime, Database Energy + Weather alerts + Geology/Volcanoes + hurricane track.json. "
+        "G1 prelims order (NOAA -> NWS -> Kilauea) = the proposed ON_BOOT job runs geology_collect first._", ""]  # info: "G1 prelims order (NOAA -> NWS -> Kilauea) = the proposed ON_BOOT job runs geology_collect first._" , "" ]
+    return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
-BUILD = {"hourly_chime": b_hourly_chime, "nws_weather": b_nws_weather, "energy_report": b_energy_report,
-         "remaining_tasks": b_remaining_tasks, "morning_report": lambda t: _rollup(t, "morning"),
-         "midday_report": lambda t: _rollup(t, "midday"), "late_report": lambda t: _rollup(t, "late"),
-         "earthquake_report": b_earthquake_report, "hurricane_desk": b_hurricane_desk,
-         "kilauea_report": b_kilauea_report, "solar_desk": b_solar_desk, "security_desk": b_security_desk,
-         "bandwidth_desk": b_bandwidth_desk, "official_weather": b_official_weather, "boot_brief": b_boot_brief}
+# ====================================================
+# SECTION: BUILD
+# What it does: Set BUILD.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+BUILD = {"hourly_chime": b_hourly_chime, "nws_weather": b_nws_weather, "energy_report": b_energy_report,  # info: set BUILD
+         "remaining_tasks": b_remaining_tasks, "morning_report": lambda t: _rollup(t, "morning"),  # info: "remaining_tasks" : b_remaining_tasks , "morning_report" : lambda t
+         "midday_report": lambda t: _rollup(t, "midday"), "late_report": lambda t: _rollup(t, "late"),  # info: "midday_report" : lambda t : _rollup ( t
+         "earthquake_report": b_earthquake_report, "hurricane_desk": b_hurricane_desk,  # info: "earthquake_report" : b_earthquake_report , "hurricane_desk" : b_hurricane_desk ,
+         "kilauea_report": b_kilauea_report, "solar_desk": b_solar_desk, "security_desk": b_security_desk,  # info: "kilauea_report" : b_kilauea_report , "solar_desk" : b_solar_desk ,
+         "bandwidth_desk": b_bandwidth_desk, "official_weather": b_official_weather, "boot_brief": b_boot_brief}  # info: "bandwidth_desk" : b_bandwidth_desk , "official_weather" : b_official_weather ,
 
 
-def write_md(report: str, md: str) -> Path:
-    path = REPORTS / f"{report}_current.md"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    if path.is_file():
-        retire_current(path)
-    tmp = path.with_suffix(".md.tmp")
-    tmp.write_text(md.rstrip() + "\n\n_Template report; measured values only. Delivery OFF._\n", encoding="utf-8")
-    os.replace(tmp, path)
-    return path
+# ====================================================
+# SECTION: function write_md
+# What it does: write md.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def write_md(report: str, md: str) -> Path:  # info: def write_md
+    path = REPORTS / f"{report}_current.md"  # info: set path
+    path.parent.mkdir(parents=True, exist_ok=True)  # info: path . parent . mkdir ( parents =
+    if path.is_file():  # info: if path . is_file ( ) :
+        retire_current(path)  # info: call retire_current
+    tmp = path.with_suffix(".md.tmp")  # info: set tmp
+    tmp.write_text(md.rstrip() + "\n\n_Template report; measured values only. Delivery OFF._\n", encoding="utf-8")  # info: tmp . write_text ( md . rstrip (
+    os.replace(tmp, path)  # info: os . replace ( tmp , path )
+    return path  # info: return path
 
 
-def voice(report: str, spoken: list[str]) -> dict:
-    with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:
-        f.write(" ".join(spoken))
-    cmd = ["bash", str(HERE / "voice-render.sh"), "stitch", "--report", report, "--kind", KIND[report], "--text-file", f.name]
-    if report == "hourly_chime":
+# ====================================================
+# SECTION: function voice
+# What it does: voice.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def voice(report: str, spoken: list[str]) -> dict:  # info: def voice
+    with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:  # info: with tempfile . NamedTemporaryFile ( "w" , suffix
+        f.write(" ".join(spoken))  # info: f . write ( " " . join (
+    cmd = ["bash", str(HERE / "voice-render.sh"), "stitch", "--report", report, "--kind", KIND[report], "--text-file", f.name]  # info: set cmd
+    if report == "hourly_chime":  # info: if report == "hourly_chime" :
         cmd.append("--no-gate")  # G1 chimes bypassed the live-facts gate (spelled-out times carry no digits)
-    try:
-        p = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-        last = (p.stdout.strip().splitlines() or ["{}"])[-1]
-        try:
-            res = json.loads(last)
-        except ValueError:
-            res = {}
-        res["rc"] = p.returncode
-        if p.returncode == 75:
-            res["detail"] = "busy (single-flight) — WAV skipped"
-        return res
-    finally:
-        os.unlink(f.name)
+    try:  # info: try :
+        p = subprocess.run(cmd, capture_output=True, text=True, timeout=300)  # info: set p
+        last = (p.stdout.strip().splitlines() or ["{}"])[-1]  # info: set last
+        try:  # info: try :
+            res = json.loads(last)  # info: set res
+        except ValueError:  # info: except ValueError :
+            res = {}  # info: set res
+        res["rc"] = p.returncode  # info: res [ "rc" ] = p . returncode
+        if p.returncode == 75:  # info: if p . returncode == 75 :
+            res["detail"] = "busy (single-flight) — WAV skipped"  # info: res [ "detail" ] = "busy (single-flight) — WAV skipped"
+        return res  # info: return res
+    finally:  # info: finally :
+        os.unlink(f.name)  # info: os . unlink ( f . name )
 
 
-def main() -> int:
-    if len(sys.argv) < 2 or sys.argv[1] not in BUILD:
-        print(json.dumps({"ok": False, "detail": f"usage: voice_reports.py {'|'.join(BUILD)} [--no-voice]"}))
-        return 2
-    report, t = sys.argv[1], now()
-    md, spoken = BUILD[report](t)
-    res = {"ok": True, "report": report, "md": str(write_md(report, md)), "sentences": len(spoken)}
-    if "--no-voice" not in sys.argv:
-        res["voice"] = voice(report, spoken)
-    print(json.dumps(res, ensure_ascii=False))
-    return 0
+# ====================================================
+# SECTION: function main
+# What it does: main.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def main() -> int:  # info: def main
+    if len(sys.argv) < 2 or sys.argv[1] not in BUILD:  # info: if len ( sys . argv ) <
+        print(json.dumps({"ok": False, "detail": f"usage: voice_reports.py {'|'.join(BUILD)} [--no-voice]"}))  # info: call print
+        return 2  # info: return 2
+    report, t = sys.argv[1], now()  # info: report , t = sys . argv [
+    md, spoken = BUILD[report](t)  # info: md , spoken = BUILD [ report ]
+    res = {"ok": True, "report": report, "md": str(write_md(report, md)), "sentences": len(spoken)}  # info: set res
+    if "--no-voice" not in sys.argv:  # info: if "--no-voice" not in sys . argv :
+        res["voice"] = voice(report, spoken)  # info: res [ "voice" ] = voice ( report
+    print(json.dumps(res, ensure_ascii=False))  # info: call print
+    return 0  # info: return 0
 
 
-if __name__ == "__main__":
-    raise SystemExit(main())
+if __name__ == "__main__":  # info: if __name__ == "__main__" :
+    raise SystemExit(main())  # info: raise SystemExit ( main ( ) )

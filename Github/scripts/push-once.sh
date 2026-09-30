@@ -5,6 +5,6 @@
 # WHAT: Calls push-repo-once.sh skills
 # Layout style (standing): keep this header.
 # ============================================================================
-set -euo pipefail
-HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-exec bash "$HERE/push-repo-once.sh" skills
+set -euo pipefail  # info: set
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  # info: set HERE
+exec bash "$HERE/push-repo-once.sh" skills  # info: exec

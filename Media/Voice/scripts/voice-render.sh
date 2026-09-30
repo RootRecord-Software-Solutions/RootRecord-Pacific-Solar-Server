@@ -7,11 +7,11 @@
 # process and is freed when it exits (non-resident). No delivery, no playback.
 # Added 2026-09-29 (g3-voice-ailog).
 # ==============================================================================
-set -u
-HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PACIFIC="$(cd "$HERE/../../.." && pwd)"
-SF="$PACIFIC/System/scripts/plumbing/single-flight.sh"
-PY="${RR_VOICE_PY:-$PACIFIC/Media/Voice/.venv/bin/python}"
-[[ -x "$PY" ]] || { echo '{"ok": false, "detail": "voice venv missing: Media/Voice/.venv"}'; exit 3; }
-MODE="${1:?render|stitch|clips}"
-exec "$SF" run "voice:$MODE:$(date +%Y%m%d-%H%M%S)" -- nice -n 10 "$PY" "$HERE/voice_generate.py" "$@"
+set -u  # info: set
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  # info: set HERE
+PACIFIC="$(cd "$HERE/../../.." && pwd)"  # info: set PACIFIC
+SF="$PACIFIC/System/scripts/plumbing/single-flight.sh"  # info: set SF
+PY="${RR_VOICE_PY:-$PACIFIC/Media/Voice/.venv/bin/python}"  # info: set PY
+[[ -x "$PY" ]] || { echo '{"ok": false, "detail": "voice venv missing: Media/Voice/.venv"}'; exit 3; }  # info: command
+MODE="${1:?render|stitch|clips}"  # info: set MODE
+exec "$SF" run "voice:$MODE:$(date +%Y%m%d-%H%M%S)" -- nice -n 10 "$PY" "$HERE/voice_generate.py" "$@"  # info: exec

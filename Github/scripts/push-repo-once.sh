@@ -9,245 +9,280 @@
 # schedule a deferred full poller stack reload via Pacific Automations.
 # Never reset --hard. Never force-push.
 # ==============================================================================
-set -euo pipefail
+set -euo pipefail  # info: set
 # shellcheck disable=SC1091
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
-ensure_bak_root
-mkdir -p "$BAK_ROOT/flags" "$BAK_ROOT/logs"
-load_token || true
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"  # info: source
+ensure_bak_root  # info: ensure_bak_root
+mkdir -p "$BAK_ROOT/flags" "$BAK_ROOT/logs"  # info: mkdir
+load_token || true  # info: load_token
 
-ID="${1:-}"
-[[ -n "$ID" ]] || { echo "usage: $0 <repo-id>"; exit 2; }
+ID="${1:-}"  # info: set ID
+[[ -n "$ID" ]] || { echo "usage: $0 <repo-id>"; exit 2; }  # info: command
 
-remote_url() { echo "git@github.com:${1}.git"; }
+# ====================================================
+# SECTION: function remote_url
+# What it does: remote url.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+remote_url() { echo "git@github.com:${1}.git"; }  # info: remote_url
 
 # Live runtime is Pacific — not G2 automations
-RELOAD_SCRIPT="/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Automations/scripts/stack/schedule-stack-reload.sh"
+RELOAD_SCRIPT="/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Automations/scripts/stack/schedule-stack-reload.sh"  # info: set RELOAD_SCRIPT
 
 # True when this repo hosts poller/jobs code that must reload after merge
-is_runtime_code_tree() {
-  local id="$1" local_path="$2"
+# ====================================================
+# SECTION: function is_runtime_code_tree
+# What it does: is runtime code tree.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+is_runtime_code_tree() {  # info: is_runtime_code_tree
+  local id="$1" local_path="$2"  # info: local
   # G2 (~/.ollama/skills) pulls are NOT runtime code: syncs must not restart the poller (2026-09-29).
-  [[ "$id" == "pacific" ]] && return 0
-  [[ "$local_path" == *"RootRecord-Pacific-Solar-Server"* ]] && return 0
-  return 1
-}
+  [[ "$id" == "pacific" ]] && return 0  # info: command
+  [[ "$local_path" == *"RootRecord-Pacific-Solar-Server"* ]] && return 0  # info: command
+  return 1  # info: return
+}  # info: command
 
 # Public umbrella contains the live Pacific tree plus high-churn database files.
 # Reload only when a pull changes Pacific runtime code. Database telemetry must not.
-ecosystem_pull_needs_reload() {
-  local old="$1" new="$2" f files
-  [[ -n "$old" && -n "$new" ]] || return 1
-  files="$(git -c core.quotePath=false diff --name-only "$old" "$new" 2>/dev/null)" || return 1
-  while IFS= read -r f; do
-    [[ -n "$f" ]] || continue
-    case "$f" in
-      "1 - Servers/1 - RootRecord-Pacific-Solar-Server/"*)
+# ====================================================
+# SECTION: function ecosystem_pull_needs_reload
+# What it does: ecosystem pull needs reload.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+ecosystem_pull_needs_reload() {  # info: ecosystem_pull_needs_reload
+  local old="$1" new="$2" f files  # info: local
+  [[ -n "$old" && -n "$new" ]] || return 1  # info: command
+  files="$(git -c core.quotePath=false diff --name-only "$old" "$new" 2>/dev/null)" || return 1  # info: set files
+  while IFS= read -r f; do  # info: while
+    [[ -n "$f" ]] || continue  # info: command
+    case "$f" in  # info: case
+      "1 - Servers/1 - RootRecord-Pacific-Solar-Server/"*)  # info: command
         case "${f##*/}" in
-          *.md|*.MD|*.markdown|README|README.*) ;;
-          *) return 0 ;;
-        esac
-        ;;
-    esac
-  done <<< "$files"
-  return 1
-}
+          *.md|*.MD|*.markdown|README|README.*) ;;  # info: command
+          *) return 0 ;;  # info: command
+        esac  # info: esac
+        ;;  # info: command
+    esac  # info: esac
+  done <<< "$files"  # info: done
+  return 1  # info: return
+}  # info: command
 
 # Drop live telemetry from the index after git add -A. Worktree files stay.
-unstage_ecosystem_runtime() {
-  local spec skip_file="$GITHUB_SCRIPTS/ecosystem-skip-autocommit.txt"
-  [[ -f "$skip_file" ]] || return 0
-  while IFS= read -r spec || [[ -n "${spec:-}" ]]; do
+# ====================================================
+# SECTION: function unstage_ecosystem_runtime
+# What it does: unstage ecosystem runtime.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+unstage_ecosystem_runtime() {  # info: unstage_ecosystem_runtime
+  local spec skip_file="$GITHUB_SCRIPTS/ecosystem-skip-autocommit.txt"  # info: local
+  [[ -f "$skip_file" ]] || return 0  # info: command
+  while IFS= read -r spec || [[ -n "${spec:-}" ]]; do  # info: while
     [[ -z "${spec:-}" || "$spec" =~ ^[[:space:]]*# ]] && continue
-    git reset -q -- "$spec" 2>/dev/null || true
-  done < "$skip_file"
-}
+    git reset -q -- "$spec" 2>/dev/null || true  # info: git
+  done < "$skip_file"  # info: done
+}  # info: command
 
 # True when every file changed old..new is documentation (*.md, *.markdown, README*).
 # Docs-only pulls must not restart the poller stack (Alexander 2026-09-29). Unknown/empty diff -> false (reload as before).
-pull_is_docs_only() {
-  local old="$1" new="$2" f files any=0
-  [[ -n "$old" && -n "$new" ]] || return 1
-  files="$(git -c core.quotePath=false diff --name-only "$old" "$new" 2>/dev/null)" || return 1
-  while IFS= read -r f; do
-    [[ -n "$f" ]] || continue
-    any=1
+# ====================================================
+# SECTION: function pull_is_docs_only
+# What it does: pull is docs only.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+pull_is_docs_only() {  # info: pull_is_docs_only
+  local old="$1" new="$2" f files any=0  # info: local
+  [[ -n "$old" && -n "$new" ]] || return 1  # info: command
+  files="$(git -c core.quotePath=false diff --name-only "$old" "$new" 2>/dev/null)" || return 1  # info: set files
+  while IFS= read -r f; do  # info: while
+    [[ -n "$f" ]] || continue  # info: command
+    any=1  # info: set any
     case "${f##*/}" in
-      *.md|*.MD|*.markdown|README|README.*) ;;
-      *) return 1 ;;
-    esac
-  done <<< "$files"
-  (( any ))
-}
+      *.md|*.MD|*.markdown|README|README.*) ;;  # info: command
+      *) return 1 ;;  # info: command
+    esac  # info: esac
+  done <<< "$files"  # info: done
+  (( any ))  # info: command
+}  # info: command
 
-mark_code_pulled() {
-  local id="$1"
-  local local_path="$2"
-  local remote_head="$3"
-  local old_head="${4:-}"
+# ====================================================
+# SECTION: function mark_code_pulled
+# What it does: mark code pulled.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+mark_code_pulled() {  # info: mark_code_pulled
+  local id="$1"  # info: local
+  local local_path="$2"  # info: local
+  local remote_head="$3"  # info: local
+  local old_head="${4:-}"  # info: local
   echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) id=$id head=$remote_head path=$local_path" \
-    >> "$BAK_ROOT/flags/code-pulled.log"
-  echo "$remote_head" > "$BAK_ROOT/flags/code-pulled.$id"
-  if [[ "$id" == "ecosystem" ]]; then
-    if ! ecosystem_pull_needs_reload "$old_head" "$remote_head"; then
-      echo "— [$id] pull did not change Pacific runtime code — no poller stack reload"
-      return 0
-    fi
-  elif is_runtime_code_tree "$id" "$local_path" && pull_is_docs_only "$old_head" "$remote_head"; then
-    echo "— [$id] docs-only pull (*.md/README) — no poller stack reload"
-    return 0
-  elif ! is_runtime_code_tree "$id" "$local_path"; then
-    return 0
-  fi
+    >> "$BAK_ROOT/flags/code-pulled.log"  # info: command
+  echo "$remote_head" > "$BAK_ROOT/flags/code-pulled.$id"  # info: echo
+  if [[ "$id" == "ecosystem" ]]; then  # info: if
+    if ! ecosystem_pull_needs_reload "$old_head" "$remote_head"; then  # info: if
+      echo "— [$id] pull did not change Pacific runtime code — no poller stack reload"  # info: echo
+      return 0  # info: return
+    fi  # info: fi
+  elif is_runtime_code_tree "$id" "$local_path" && pull_is_docs_only "$old_head" "$remote_head"; then  # info: elif
+    echo "— [$id] docs-only pull (*.md/README) — no poller stack reload"  # info: echo
+    return 0  # info: return
+  elif ! is_runtime_code_tree "$id" "$local_path"; then  # info: elif
+    return 0  # info: return
+  fi  # info: fi
   echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) runtime-code-pulled id=$id head=$remote_head" \
-    > "$BAK_ROOT/flags/reload-poller-stack"
-  echo "↻ [$id] CODE_PULLED — poller stack reload armed"
-  if [[ -f "$RELOAD_SCRIPT" ]]; then
-    bash "$RELOAD_SCRIPT" || echo "⚠ [$id] schedule-stack-reload failed"
-  else
-    echo "⚠ [$id] missing $RELOAD_SCRIPT — flag left for next sync-all"
-  fi
-}
+    > "$BAK_ROOT/flags/reload-poller-stack"  # info: command
+  echo "↻ [$id] CODE_PULLED — poller stack reload armed"  # info: echo
+  if [[ -f "$RELOAD_SCRIPT" ]]; then  # info: if
+    bash "$RELOAD_SCRIPT" || echo "⚠ [$id] schedule-stack-reload failed"  # info: bash
+  else  # info: else
+    echo "⚠ [$id] missing $RELOAD_SCRIPT — flag left for next sync-all"  # info: echo
+  fi  # info: fi
+}  # info: command
 
-found=0
-while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do
+found=0  # info: set found
+while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do  # info: while
   [[ "$id" =~ ^#.*$ || -z "${id:-}" ]] && continue
-  [[ "$id" == "$ID" ]] || continue
-  found=1
-  [[ "$enabled" == "1" ]] || { echo "[skip] $id disabled"; exit 0; }
+  [[ "$id" == "$ID" ]] || continue  # info: command
+  found=1  # info: set found
+  [[ "$enabled" == "1" ]] || { echo "[skip] $id disabled"; exit 0; }  # info: command
 
-  mirror_writeback() {
-    [[ "$mode" == "mirror" ]] || return 0
-    rsync -a --exclude '.git' "$root"/ "$local_path"/
-    echo "↓ [$id] merged GitHub copy written back to the live folder"
-  }
+# ====================================================
+# SECTION: function mirror_writeback
+# What it does: mirror writeback.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+  mirror_writeback() {  # info: mirror_writeback
+    [[ "$mode" == "mirror" ]] || return 0  # info: command
+    rsync -a --exclude '.git' "$root"/ "$local_path"/  # info: rsync
+    echo "↓ [$id] merged GitHub copy written back to the live folder"  # info: echo
+  }  # info: command
 
-  if [[ "$mode" == "inplace" ]]; then
-    root="$local_path"
-  else
-    root="$BAK_ROOT/worktrees/$id"
-    if [[ ! -d "$root/.git" ]]; then
-      bash "$GITHUB_SCRIPTS/setup-remote.sh" "$id" || exit 1
-    fi
-    [[ -d "$root/.git" ]] || { echo "ERROR: mirror worktree missing for $id" >&2; exit 1; }
+  if [[ "$mode" == "inplace" ]]; then  # info: if
+    root="$local_path"  # info: set root
+  else  # info: else
+    root="$BAK_ROOT/worktrees/$id"  # info: set root
+    if [[ ! -d "$root/.git" ]]; then  # info: if
+      bash "$GITHUB_SCRIPTS/setup-remote.sh" "$id" || exit 1  # info: bash
+    fi  # info: fi
+    [[ -d "$root/.git" ]] || { echo "ERROR: mirror worktree missing for $id" >&2; exit 1; }  # info: command
     rsync -a --delete \
       --exclude '.git' \
       --exclude '.venv' \
       --exclude 'node_modules' \
       --exclude '.next' \
       --exclude 'tsconfig.tsbuildinfo' \
-      "$local_path"/ "$root"/
-  fi
+      "$local_path"/ "$root"/  # info: command
+  fi  # info: fi
 
-  [[ -d "$root/.git" ]] || { echo "ERROR: not a git repo: $root" >&2; exit 1; }
-  cd "$root"
+  [[ -d "$root/.git" ]] || { echo "ERROR: not a git repo: $root" >&2; exit 1; }  # info: command
+  cd "$root"  # info: cd
   git remote set-url "$remote_name" "$(remote_url "$slug")" 2>/dev/null \
-    || git remote set-url origin "$(remote_url "$slug")"
+    || git remote set-url origin "$(remote_url "$slug")"  # info: command
 
-  oversized=0
-  while IFS= read -r -d '' f; do
-    sz=$(stat -c%s "$f" 2>/dev/null || echo 0)
-    if (( sz > MAX_FILE_MB * 1024 * 1024 )); then
-      echo "✗ skip oversized (${sz}B): $f"
-      oversized=1
-    fi
-  done < <(git ls-files -mo --exclude-standard -z 2>/dev/null || true)
-  if (( oversized )); then
-    echo "✗ $id aborted: file(s) over ${MAX_FILE_MB}MB"
-    exit 1
-  fi
+  oversized=0  # info: set oversized
+  while IFS= read -r -d '' f; do  # info: while
+    sz=$(stat -c%s "$f" 2>/dev/null || echo 0)  # info: set sz
+    if (( sz > MAX_FILE_MB * 1024 * 1024 )); then  # info: if
+      echo "✗ skip oversized (${sz}B): $f"  # info: echo
+      oversized=1  # info: set oversized
+    fi  # info: fi
+  done < <(git ls-files -mo --exclude-standard -z 2>/dev/null || true)  # info: done
+  if (( oversized )); then  # info: if
+    echo "✗ $id aborted: file(s) over ${MAX_FILE_MB}MB"  # info: echo
+    exit 1  # info: exit
+  fi  # info: fi
 
-  branch=$(git rev-parse --abbrev-ref HEAD)
+  branch=$(git rev-parse --abbrev-ref HEAD)  # info: set branch
 
-  if ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then
-    git add -A
-    if [[ "$id" == "ecosystem" ]]; then
-      unstage_ecosystem_runtime
-    fi
-    if git diff --cached --quiet; then
-      n=0
-      echo "— [$id] no committable local changes"
-    else
-      n=$(git diff --cached --name-only | wc -l | tr -d ' ')
-      msg="auto: $(date -u +%Y-%m-%dT%H:%MZ) desk sync ($n file(s))"
-      git commit -m "$msg" >/dev/null
-      echo "↑ [$id] committed $n local file(s)"
-    fi
-  else
-    n=0
-    echo "— [$id] no local changes"
-  fi
+  if ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then  # info: if
+    git add -A  # info: git
+    if [[ "$id" == "ecosystem" ]]; then  # info: if
+      unstage_ecosystem_runtime  # info: unstage_ecosystem_runtime
+    fi  # info: fi
+    if git diff --cached --quiet; then  # info: if
+      n=0  # info: set n
+      echo "— [$id] no committable local changes"  # info: echo
+    else  # info: else
+      n=$(git diff --cached --name-only | wc -l | tr -d ' ')  # info: set n
+      msg="auto: $(date -u +%Y-%m-%dT%H:%MZ) desk sync ($n file(s))"  # info: set msg
+      git commit -m "$msg" >/dev/null  # info: git
+      echo "↑ [$id] committed $n local file(s)"  # info: echo
+    fi  # info: fi
+  else  # info: else
+    n=0  # info: set n
+    echo "— [$id] no local changes"  # info: echo
+  fi  # info: fi
 
-  echo "↓ [$id] fetching $remote_name/$branch"
+  echo "↓ [$id] fetching $remote_name/$branch"  # info: echo
 
-  if ! git fetch "$remote_name" "$branch" 2>&1 | redact; then
-    echo "✗ [$id] fetch failed; local history preserved" >&2
-    exit 1
-  fi
+  if ! git fetch "$remote_name" "$branch" 2>&1 | redact; then  # info: if
+    echo "✗ [$id] fetch failed; local history preserved" >&2  # info: echo
+    exit 1  # info: exit
+  fi  # info: fi
 
-  remote_ref="$remote_name/$branch"
+  remote_ref="$remote_name/$branch"  # info: set remote_ref
 
-  if ! git rev-parse --verify "$remote_ref" >/dev/null 2>&1; then
-    echo "✗ [$id] remote branch unavailable after fetch: $remote_ref" >&2
-    exit 1
-  fi
+  if ! git rev-parse --verify "$remote_ref" >/dev/null 2>&1; then  # info: if
+    echo "✗ [$id] remote branch unavailable after fetch: $remote_ref" >&2  # info: echo
+    exit 1  # info: exit
+  fi  # info: fi
 
-  local_head="$(git rev-parse HEAD)"
-  remote_head="$(git rev-parse "$remote_ref")"
+  local_head="$(git rev-parse HEAD)"  # info: set local_head
+  remote_head="$(git rev-parse "$remote_ref")"  # info: set remote_head
 
-  if [[ "$local_head" == "$remote_head" ]]; then
-    echo "— [$id] local and GitHub already match"
-  elif git merge-base --is-ancestor "$remote_ref" HEAD; then
-    echo "↑ [$id] local is ahead of GitHub"
-  else
-    echo "↓ [$id] GitHub has changes; merging $remote_ref"
-    if ! git merge --no-edit "$remote_ref" 2>&1 | redact; then
-      echo "✗ [$id] merge conflict; aborting safely" >&2
-      git merge --abort >/dev/null 2>&1 || true
-      echo "✗ [$id] local history preserved; nothing was force-pushed" >&2
-      exit 1
-    fi
-    echo "✓ [$id] GitHub changes merged into local $branch"
-    mirror_writeback
-    mark_code_pulled "$id" "$local_path" "$(git rev-parse HEAD)" "$local_head"
-  fi
+  if [[ "$local_head" == "$remote_head" ]]; then  # info: if
+    echo "— [$id] local and GitHub already match"  # info: echo
+  elif git merge-base --is-ancestor "$remote_ref" HEAD; then  # info: elif
+    echo "↑ [$id] local is ahead of GitHub"  # info: echo
+  else  # info: else
+    echo "↓ [$id] GitHub has changes; merging $remote_ref"  # info: echo
+    if ! git merge --no-edit "$remote_ref" 2>&1 | redact; then  # info: if
+      echo "✗ [$id] merge conflict; aborting safely" >&2  # info: echo
+      git merge --abort >/dev/null 2>&1 || true  # info: git
+      echo "✗ [$id] local history preserved; nothing was force-pushed" >&2  # info: echo
+      exit 1  # info: exit
+    fi  # info: fi
+    echo "✓ [$id] GitHub changes merged into local $branch"  # info: echo
+    mirror_writeback  # info: mirror_writeback
+    mark_code_pulled "$id" "$local_path" "$(git rev-parse HEAD)" "$local_head"  # info: mark_code_pulled
+  fi  # info: fi
 
-  for attempt in 1 2; do
-    local_head="$(git rev-parse HEAD)"
-    git fetch "$remote_name" "$branch" >/dev/null 2>&1 || {
-      echo "✗ [$id] final fetch failed" >&2
-      exit 1
-    }
-    remote_ref="$remote_name/$branch"
-    remote_head="$(git rev-parse "$remote_ref")"
+  for attempt in 1 2; do  # info: for
+    local_head="$(git rev-parse HEAD)"  # info: set local_head
+    git fetch "$remote_name" "$branch" >/dev/null 2>&1 || {  # info: git
+      echo "✗ [$id] final fetch failed" >&2  # info: echo
+      exit 1  # info: exit
+    }  # info: command
+    remote_ref="$remote_name/$branch"  # info: set remote_ref
+    remote_head="$(git rev-parse "$remote_ref")"  # info: set remote_head
 
-    if [[ "$local_head" == "$remote_head" ]]; then
-      echo "— [$id] nothing to push"
-      exit 0
-    fi
+    if [[ "$local_head" == "$remote_head" ]]; then  # info: if
+      echo "— [$id] nothing to push"  # info: echo
+      exit 0  # info: exit
+    fi  # info: fi
 
-    if ! git merge-base --is-ancestor "$remote_ref" HEAD; then
-      echo "↓ [$id] remote changed during sync; merging before push (attempt $attempt)"
-      if ! git merge --no-edit "$remote_ref" 2>&1 | redact; then
-        git merge --abort >/dev/null 2>&1 || true
-        echo "✗ [$id] final merge conflict; local history preserved" >&2
-        exit 1
-      fi
-      mirror_writeback
-      mark_code_pulled "$id" "$local_path" "$(git rev-parse HEAD)" "$local_head"
-    fi
+    if ! git merge-base --is-ancestor "$remote_ref" HEAD; then  # info: if
+      echo "↓ [$id] remote changed during sync; merging before push (attempt $attempt)"  # info: echo
+      if ! git merge --no-edit "$remote_ref" 2>&1 | redact; then  # info: if
+        git merge --abort >/dev/null 2>&1 || true  # info: git
+        echo "✗ [$id] final merge conflict; local history preserved" >&2  # info: echo
+        exit 1  # info: exit
+      fi  # info: fi
+      mirror_writeback  # info: mirror_writeback
+      mark_code_pulled "$id" "$local_path" "$(git rev-parse HEAD)" "$local_head"  # info: mark_code_pulled
+    fi  # info: fi
 
-    if git push -u "$remote_name" "HEAD:refs/heads/$branch" 2>&1 | redact; then
-      echo "↑ [$id] $n files → $slug ($branch)"
-      echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [$id] pushed $branch ($n file(s)) → $slug" >> "$BAK_ROOT/logs/$id.log"
-      exit 0
-    fi
+    if git push -u "$remote_name" "HEAD:refs/heads/$branch" 2>&1 | redact; then  # info: if
+      echo "↑ [$id] $n files → $slug ($branch)"  # info: echo
+      echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [$id] pushed $branch ($n file(s)) → $slug" >> "$BAK_ROOT/logs/$id.log"  # info: echo
+      exit 0  # info: exit
+    fi  # info: fi
 
-    echo "↻ [$id] push raced with another writer; retrying" >&2
-  done
+    echo "↻ [$id] push raced with another writer; retrying" >&2  # info: echo
+  done  # info: done
 
-  echo "✗ [$id] push failed after race-safe retries; local history preserved" >&2
-  exit 1
+  echo "✗ [$id] push failed after race-safe retries; local history preserved" >&2  # info: echo
+  exit 1  # info: exit
 done < <(grep -v '^#' "$REPOS_CONF" | grep -v '^[[:space:]]*$')
 
-(( found )) || { echo "ERROR: id not in repos.conf: $ID" >&2; exit 1; }
+(( found )) || { echo "ERROR: id not in repos.conf: $ID" >&2; exit 1; }  # info: command
