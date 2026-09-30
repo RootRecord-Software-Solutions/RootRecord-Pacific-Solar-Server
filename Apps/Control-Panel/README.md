@@ -29,6 +29,7 @@ State: **LANDED**. Headless `--check` PASS, settings editor tests 103/103 PASS, 
 | Running | poller + child jobs (ports), RootRecord processes (masked cmdlines), listeners, tunnels, Ollama/FLM, systemd user + system units, timers, cron — read-only, each row links to its Settings page | `/proc`, `/proc/net/tcp*`, `systemctl list-units/list-timers`, `crontab -l` (cached 15 s), Ollama `GET /api/version|ps` on 127.0.0.1 | 5 s while visible |
 | Network | per-interface rx/tx rates, totals since boot; Starlink state/uptime/latency/throughput/obstruction | `/proc/net/dev`, sysfs; `Starlink/starlink_status.py` (own venv process) | 5 s while visible; Starlink every ≥ 10 s, helper exists only while visible |
 | SSH | `rr-aws`, `rr-aws-ip` (alias, user@host:port, ProxyCommand/identity present — keys never read); Open terminal; Status = `timeout 5 ssh -o BatchMode=yes rr-aws uptime`; Mainland placeholder | `~/.ssh/config` | on click only |
+| AWS Fallback | one row per AWS fallback function (18, from `Lib/rr_aws_fallback.json`): RAM / disk / net estimates, fits, default; a switch per toggleable function; budget vs the 512 MB RAM / 1.5 GB disk floors (t3.micro now vs 2 GB). **Dry-run by default** (`aws_fallback_mode`): a toggle opens a confirm with the exact AWS change, then writes nothing. `write` mode (sign-off) = one SSH call: dated backup of AWS `flags/` → atomic write of `flags/<id>`. **Status** = one read-only SSH (`rr-aws-ip`) for flags, MemAvailable, disk free | catalog JSON; SSH only on button press | built on visit, **released on leave**; no timer |
 | Not migrated | 23 G2/G1 placeholders with WO + state + "not migrated" | `Lib/rr_migration.json` | no timer |
 | Settings | 10 sub-pages (Network, Messaging, Environment, Flags, Services/Poller, Weather, Voice, AI/NPU, Cameras, Panel) — 1,590 settings from 27 files; secrets masked; Replace/Clear/Edit with masked diff + confirm | `Lib/rr_registry.py`, `Lib/rr_config_io.py`; Panel = `settings.json` | built on visit, released on leave |
 
@@ -56,6 +57,8 @@ The keys and their defaults:
 - `known_urls` [...]
 - `starlink_enabled` true, `starlink_poll_sec` 10 (minimum 10)
 - `ssh_mainland_alias` "" (empty = Mainland placeholder)
+- `aws_fallback_mode` **"dry-run"** (`write` is a sign-off item and also needs the AWS fallback runtime; the remote script refuses with exit 3 until `~/rootrecord/fallback/flags/` exists)
+- `aws_fallback_alias` "rr-aws-ip"
 
 Camera toggles only change what the **panel** shows. They never touch collectors, grab jobs or the poller.
 
@@ -74,6 +77,7 @@ Camera toggles only change what the **panel** shows. They never touch collectors
 
 | Mode | Peak RSS | CPU |
 | --- | --- | --- |
+| `--check`, viewer off, 14 pages incl. AWS Fallback — 15:04 HST | **85.3 MB** (A/B same run without the page: 80.9 MB → +4.4 MB when every page is built; in the window the page is released on leave) | 1.0 s |
 | `--check`, viewer off (13 pages + all sub-pages built once) — 13:08 HST | **84.5 MB — over the 80 MB target** (was 73.8 MB before Running/Network/SSH/Settings) | 1.2 s |
 | `--check`, viewer on | 98.9 MB — opt-in | 1.4 s |
 | real window 25 s, Energy page, cairo | 85.7 MB (an empty GTK4/Adw window alone is 66–68 MB here) | 0.59 s incl. startup |
@@ -101,7 +105,7 @@ The values come from `Conky/conky_readout.py` (the same read-only readers, every
 
 ## Files
 
-`rr_control_panel.py` · `rr_pages.py` · `rr_ui.py` · `Lib/rr_sources.py` · `Lib/rr_settings.py` · `Lib/rr_registry.py` · `Lib/rr_config_io.py` · `Lib/rr_running.py` · `Lib/rr_netstat.py` · `Lib/rr_ssh.py` · `Lib/rr_migration.json` · `Starlink/starlink_status.py` (+ gitignored `Starlink/.venv`, py3.12 + `starlink-grpc-core`) · `settings.json` · `Conky/` · `Packaging/` · `Tests/run-check.sh` · `Tests/test_settings_io.py`
+`rr_control_panel.py` · `rr_pages.py` · `rr_ui.py` · `Lib/rr_sources.py` · `Lib/rr_settings.py` · `Lib/rr_registry.py` · `Lib/rr_config_io.py` · `Lib/rr_running.py` · `Lib/rr_netstat.py` · `Lib/rr_ssh.py` · `Lib/rr_migration.json` · `rr_aws_page.py` · `Lib/rr_aws_fallback.py` · `Lib/rr_aws_fallback.json` · `Starlink/starlink_status.py` (+ gitignored `Starlink/.venv`, py3.12 + `starlink-grpc-core`) · `settings.json` · `Conky/` · `Packaging/` · `Tests/run-check.sh` · `Tests/test_settings_io.py`
 
 Settings saves back up to `/home/rootrecord/Database/GITHUB/control-panel-settings-backups/` (0600 for secret files). Secrets are never displayed, logged or screenshotted (the `--screenshot` mode checks every PNG first).
 
