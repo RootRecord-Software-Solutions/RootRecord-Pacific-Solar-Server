@@ -391,7 +391,8 @@ def hourly_stations(paths: Paths, zone: str) -> dict:
 def station_spot(st: dict, name: str) -> str:
     for r in st.get("rows") or []:
         if name.lower() in r["loc"].lower() and r["spd"] != "MSG":
-            return f"{r['loc']} {r['dir']}° {r['spd']} kt at {r['time']}"
+            direc = "—" if r["dir"] == "MSG" else f"{r['dir']}°"
+            return f"{r['loc']} {direc} {r['spd']} kt at {r['time']}"
     return ""
 
 
@@ -402,7 +403,8 @@ def format_stations(st: dict) -> str:
             lines.append(f"{r['loc']:<24}  no report")
         else:
             gust = "" if r["gust"] in ("MSG", "") else f"  gust {r['gust']} kt"
-            lines.append(f"{r['loc']:<24} {r['time'] or '—':>5}  {r['dir']:>3}°  {r['spd']:>3} kt{gust}")
+            direc = "  —" if r["dir"] == "MSG" else f"{r['dir']:>3}°"
+            lines.append(f"{r['loc']:<24} {r['time'] or '—':>5}  {direc}  {r['spd']:>3} kt{gust}")
     return "\n".join(lines)
 
 
@@ -411,9 +413,28 @@ def format_stations(st: dict) -> str:
 # What it does: weather.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
+def _zfp_blocks(blocks: list[str], zone: str) -> list[tuple[str, str]]:
+    label = island_label(zone)
+    needles = _ZFP_NEEDLES.get(label, (label.lower(),))
+    chosen = []
+    for b in blocks:
+        m = re.search(r"^(.+?)-\s*$", b, re.M)
+        if not m:
+            continue
+        title = m.group(1).strip()
+        if any(n in title.lower() for n in needles):
+            chosen.append((title, b))
+    if not chosen:
+        blk = next((b for b in blocks if re.search(rf"^{re.escape(zone)}-\s*$", b, re.M)), "")
+        if blk:
+            chosen = [(zone, blk)]
+    return chosen
+
+
 def weather(paths: Paths, zone: str, pw=None) -> dict:  # info: def weather
-    d = {"solar": None, "zone": zone, "today": "", "tonight": "", "advisories": [], "collected": "",  # info: set d
-         "state_generated": ""}  # info: "state_generated" : "" }
+    label = island_label(zone)
+    d = {"solar": None, "zone": label, "island": label, "today": "", "tonight": "", "advisories": [], "collected": "",  # info: set d
+         "state_generated": "", "stations": {}}  # info: "state_generated" : "" }
     if pw is not None:  # info: if pw is not None :
         try:  # info: try :
             d["solar"] = pw.aeyes_solar_state()  # info: d [ "solar" ] = pw . aeyes_solar_state
@@ -423,24 +444,36 @@ def weather(paths: Paths, zone: str, pw=None) -> dict:  # info: def weather
     try:  # info: try :
         mt = zfp.stat().st_mtime  # info: set mt
     except OSError:  # info: except OSError :
-        return d  # info: return d
-    key = (str(zfp), mt, zone)  # info: set key
-    if _zfp_cache.get("key") != key:  # info: if _zfp_cache . get ( "key" ) !=
-        text = zfp.read_text(encoding="utf-8", errors="replace")  # info: set text
-        m = re.search(r"\*\*Collected:\*\*\s*(\S+)", text)  # info: set m
-        res = {"collected": m.group(1) if m else ""}  # info: set res
-        blocks = re.split(r"\n(?=HIZ\d{3})", text)  # info: set blocks
-        blk = next((b for b in blocks if re.search(rf"^{re.escape(zone)}-\s*$", b, re.M)), "")  # info: set blk
-        res["advisories"] = sorted(set(re.findall(r"^\.\.\.(.+?)\.\.\.\s*$", blk, re.M)))  # info: res [ "advisories" ] = sorted ( set
+        mt = None  # info: set mt
+    if mt is not None:  # info: if mt is not None :
+        key = (str(zfp), mt, label)  # info: set key
+        if _zfp_cache.get("key") != key:  # info: if _zfp_cache . get ( "key" ) !=
+            text = zfp.read_text(encoding="utf-8", errors="replace")  # info: set text
+            m = re.search(r"\*\*Collected:\*\*\s*(\S+)", text)  # info: set m
+            res = {"collected": m.group(1) if m else ""}  # info: set res
+            blocks = re.split(r"\n(?=HIZ\d{3})", text)  # info: set blocks
+            chosen = _zfp_blocks(blocks, label)  # info: set chosen
 
-        def para(tag):  # info: def para
-            m2 = re.search(rf"^\.{tag}\.\.\.(.*?)(?=^\.[A-Z ]+\.\.\.|^\$\$|\Z)", blk, re.M | re.S)  # info: set m2
-            return re.sub(r"\s+", " ", m2.group(1)).strip() if m2 else ""  # info: return re . sub ( r"\s+" , " "
-        res["today"], res["tonight"] = para("TODAY") or para("THIS AFTERNOON") or para("REST OF TODAY"), para("TONIGHT")  # info: res [ "today" ] , res [ "tonight"
-        _zfp_cache.clear()  # info: _zfp_cache . clear ( )
-        _zfp_cache.update(key=key, res=res)  # info: _zfp_cache . update ( key = key ,
-        del text  # info: del text
-    d.update(_zfp_cache["res"])  # info: d . update ( _zfp_cache [ "res" ]
+            def para(blk, tag):  # info: def para
+                m2 = re.search(rf"^\.{tag}\.\.\.(.*?)(?=^\.[A-Z ]+\.\.\.|^\$\$|\Z)", blk, re.M | re.S)  # info: set m2
+                return re.sub(r"\s+", " ", m2.group(1)).strip() if m2 else ""  # info: return re . sub ( r"\s+" , " "
+
+            adv, todays, nights = [], [], []  # info: set adv , todays , nights
+            for title, blk in chosen:  # info: for title , blk in chosen :
+                adv.extend(re.findall(r"^\.\.\.(.+?)\.\.\.\s*$", blk, re.M))  # info: adv . extend (
+                today = para(blk, "TODAY") or para(blk, "THIS AFTERNOON") or para(blk, "REST OF TODAY")  # info: set today
+                tonight = para(blk, "TONIGHT")  # info: set tonight
+                prefix = f"{title}: " if len(chosen) > 1 else ""  # info: set prefix
+                if today:  # info: if today :
+                    todays.append(prefix + today)  # info: todays . append ( prefix + today )
+                if tonight:  # info: if tonight :
+                    nights.append(prefix + tonight)  # info: nights . append ( prefix + tonight )
+            res["advisories"] = sorted(set(adv))  # info: res [ "advisories" ] = sorted ( set
+            res["today"], res["tonight"] = "\n\n".join(todays), "\n\n".join(nights)  # info: res [ "today" ] , res [ "tonight"
+            _zfp_cache.clear()  # info: _zfp_cache . clear ( )
+            _zfp_cache.update(key=key, res=res)  # info: _zfp_cache . update ( key = key ,
+            del text  # info: del text
+        d.update(_zfp_cache["res"])  # info: d . update ( _zfp_cache [ "res" ]
     try:  # info: try :
         with (paths.weather_l0 / "Hawaii_State_Weather_Report_current.md").open("r", encoding="utf-8", errors="replace") as fh:  # info: with ( paths . weather_l0 / "Hawaii_State_Weather_Report_current.md" )
             head = fh.read(600)  # info: set head
@@ -448,6 +481,7 @@ def weather(paths: Paths, zone: str, pw=None) -> dict:  # info: def weather
         d["state_generated"] = m.group(1).strip() if m else ""  # info: d [ "state_generated" ] = m . group
     except OSError:  # info: except OSError :
         pass  # info: pass
+    d["stations"] = hourly_stations(paths, label)  # info: d [ "stations" ] = hourly_stations (
     return d  # info: return d
 
 
