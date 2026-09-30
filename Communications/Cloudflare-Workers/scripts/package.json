@@ -1,0 +1,14 @@
+{
+  "name": "cloudflare-workers",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "One Cloudflare Worker in front of the one Vercel site. No deploy from this package.",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "check": "node --experimental-strip-types src/check.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}

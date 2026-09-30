@@ -347,6 +347,20 @@ EVERY_SECONDS = [
         "cwd": f"{PACIFIC}/Weather/RadarZip",
         "env": {},
     },
+    {
+        # Country location pollers (WO-MIG-13). OFF. One script, allowlist of
+        # locations the one Vercel site routes. Empty allowlist does not call Open-Meteo.
+        "id": "country_location_pollers",
+        "enabled": False,
+        "description": "Open-Meteo current conditions for CountryLocations allowlist -> Database Weather/CountryLocations/. Gate RR_COUNTRY_LOCATIONS stays unset.",
+        "interval_sec": 900,
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Weather/CountryLocations/scripts/poll_locations.py"',
+        "timeout_sec": 60,
+        "needs_internet": True,
+        "cwd": f"{PACIFIC}/Weather/CountryLocations",
+        "env": {},
+    },
 ]
 
 EVERY_MINUTE = [

@@ -1,0 +1,13 @@
+# One worker in front of the one Vercel site.
+# No route is attached. Communications/Site is not on disk yet, and
+# www.rootrecord.cloud stays the globe until a DNS change is signed off.
+# Do not put an account id or a D1 id in this file.
+# Deploy waits for sign-off. Pass the account id from master-key.env at that time.
+
+name = "rootrecord-site"
+main = "../scripts/src/worker.ts"
+compatibility_date = "2026-09-29"
+workers_dev = false
+
+[vars]
+VERCEL_ORIGIN_URL = "https://root-record-cloud.vercel.app"

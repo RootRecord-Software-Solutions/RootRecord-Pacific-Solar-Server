@@ -1,0 +1,13 @@
+{
+  "sources": [
+    {
+      "name": "NWS State Awareness Calendar",
+      "url": "https://www.weather.gov/safety/events_calendar",
+      "kind": "preparedness_events",
+      "scope": "all_states",
+      "note": "Official awareness/preparedness events; not weather observations. Config only. This function does not fetch it."
+    }
+  ],
+  "checkpoint": "2026-03-31",
+  "weather_and_earthquakes_excluded": true
+}
