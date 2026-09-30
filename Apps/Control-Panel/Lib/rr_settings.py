@@ -31,7 +31,7 @@ DEFAULTS: dict = {  # info: set DEFAULTS
     "database_root": "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database",  # info: "database_root" : "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database" ,
     "pacific_root": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server",  # info: "pacific_root" : "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server" ,
     "stale_after_sec": 900,  # info: "stale_after_sec" : 900 ,
-    "weather_zone": "Honolulu Metro",  # info: "weather_zone" : "Honolulu Metro" ,
+    "weather_zone": "Big Island",  # info: "weather_zone" : "Big Island" ,
     "log_lines": 40,  # info: "log_lines" : 40 ,
     "flm_port": 52625,  # info: "flm_port" : 52625 ,
     "start_page": "energy",  # info: "start_page" : "energy" ,

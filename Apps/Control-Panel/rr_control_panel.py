@@ -78,9 +78,14 @@ CSS = b"""
 .rr-fail { color: #dc322f; font-weight: bold; }
 .rr-header { padding: 6px 12px; }
 .rr-card { padding: 10px 14px; border-radius: 10px; }
+/* Charge (batteries): low percent is red, full is green. */
 levelbar block.low { background-color: #dc322f; }
 levelbar block.high { background-color: #b58900; }
 levelbar block.full { background-color: #859900; }
+/* Use (CPU, RAM): a quiet bar is green. Red starts at the high offset (80%). */
+levelbar.rr-usage block.low { background-color: #859900; }
+levelbar.rr-usage block.high { background-color: #b58900; }
+levelbar.rr-usage block.full { background-color: #dc322f; }
 """
 
 
@@ -106,7 +111,7 @@ from rr_aws_page import AwsFallbackPage  # noqa: E402
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 class BarRow:  # info: class BarRow
-    def __init__(self, parent: Gtk.Box, name: str, sub: str):  # info: def __init__
+    def __init__(self, parent: Gtk.Box, name: str, sub: str, scale: str = "charge"):  # info: def __init__
         row = Gtk.Box(spacing=10)  # info: set row
         row.append(lbl(f"<b>{esc(name)}</b>", markup=True))  # info: row . append ( lbl ( f" <b>
         row.append(lbl(sub, "dim-label"))  # info: row . append ( lbl ( sub ,
@@ -114,9 +119,16 @@ class BarRow:  # info: class BarRow
         self.bar.set_size_request(220, 14)  # info: self . bar . set_size_request ( 220 ,
         for n in ("low", "high", "full"):  # info: for n in ( "low" , "high" ,
             self.bar.remove_offset_value(n)  # info: self . bar . remove_offset_value ( n )
-        self.bar.add_offset_value("low", 20)  # info: self . bar . add_offset_value ( "low" ,
-        self.bar.add_offset_value("high", 50)  # info: self . bar . add_offset_value ( "high" ,
-        self.bar.add_offset_value("full", 100)  # info: self . bar . add_offset_value ( "full" ,
+        if scale == "usage":
+            # Under 50% green, 50–80% amber, 80% and above red.
+            self.bar.add_css_class("rr-usage")
+            self.bar.add_offset_value("low", 50)
+            self.bar.add_offset_value("high", 80)
+            self.bar.add_offset_value("full", 100)
+        else:
+            self.bar.add_offset_value("low", 20)  # info: self . bar . add_offset_value ( "low" ,
+            self.bar.add_offset_value("high", 50)  # info: self . bar . add_offset_value ( "high" ,
+            self.bar.add_offset_value("full", 100)  # info: self . bar . add_offset_value ( "full" ,
         row.append(self.bar)  # info: row . append ( self . bar )
         self.val = lbl("n/a", "rr-big")  # info: self . val = lbl ( "n/a" ,
         self.val.set_width_chars(7)  # info: self . val . set_width_chars ( 7 )
@@ -329,8 +341,9 @@ class Panel(ExtraPages, AwsFallbackPage):  # info: class Panel
     # ----------------------------------------------------------- system
     def b_system(self, box):  # info: def b_system
         o, i = section("Host (System/last/host-last.json)")  # info: o , i = section ( "Host (System/last/host-last.json)" )
-        self.bar_cpu = BarRow(i, "CPU", "")  # info: self . bar_cpu = BarRow ( i ,
-        self.bar_mem = BarRow(i, "RAM", "")  # info: self . bar_mem = BarRow ( i ,
+        self.bar_cpu = BarRow(i, "CPU", "", scale="usage")  # info: self . bar_cpu = BarRow ( i ,
+        self.bar_mem = BarRow(i, "RAM", "", scale="usage")  # info: self . bar_mem = BarRow ( i ,
+        i.append(lbl("Green under 50% · amber from 50% · red at 80% and above.", "dim-label"))
         self.sys_extra = lbl("", wrap=True)  # info: self . sys_extra = lbl ( "" ,
         i.append(self.sys_extra)  # info: i . append ( self . sys_extra )
         box.append(o)  # info: box . append ( o )
@@ -680,7 +693,7 @@ class Panel(ExtraPages, AwsFallbackPage):  # info: class Panel
         self._spin(g, "refresh_sec", "Refresh interval (s)", 2, 60)  # info: self . _spin ( g , "refresh_sec" ,
         self._spin(g, "stale_after_sec", "Mark SOC stale after (s)", 60, 7200)  # info: self . _spin ( g , "stale_after_sec" ,
         self._spin(g, "log_lines", "Poller log lines shown", 10, 200)  # info: self . _spin ( g , "log_lines" ,
-        self._entry(g, "weather_zone", "Weather zone (ZFP name)")  # info: self . _entry ( g , "weather_zone" ,
+        self._entry(g, "weather_zone", "Weather island (Big Island, Maui, Oahu, Kauai)")  # info: self . _entry ( g , "weather_zone" ,
         self._entry(g, "start_page", "Start page (energy, weather, system, npu, ai, poller, running, network, ssh, controls, migration, settings)")  # info: self . _entry ( g , "start_page" ,
         self._entry(g, "gsk_renderer", "GTK renderer (cairo = lightest; applies on next start)")  # info: self . _entry ( g , "gsk_renderer" ,
         self._switch(g, "starlink_enabled", "Starlink status on the Network page", "helper runs only while that page is visible",  # info: self . _switch ( g , "starlink_enabled" ,
