@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-30T12:18:52-10:00 HST | 34 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-30T12:27:52-10:00 HST | 34 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -3054,7 +3054,7 @@ We apologize for the inconvenience and hope to have this issue resolved soon.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-30T12:04:07.604521-10:00 HST |
+| **Collected** | 2026-09-30T12:21:08.375352-10:00 HST |
 
 ```text
 383
@@ -3673,7 +3673,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-30T12:12:11.142436-10:00 HST |
+| **Collected** | 2026-09-30T12:21:10.984562-10:00 HST |
 
 ```text
                         
@@ -7138,7 +7138,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-30T12:18:52.396524-10:00 HST |
+| **Collected** | 2026-09-30T12:27:52.457395-10:00 HST |
 
 ```text
 Home
@@ -7262,7 +7262,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Wed, 30 Sep 2026 22:17:59 UTC
+Last update Wed, 30 Sep 2026 22:21:24 UTC
 
 NHC issuing advisories for the Eastern Pacific on
 
@@ -7924,7 +7924,7 @@ Glossary
 |---|---|
 | **Resource ID** | noaa_homepage |
 | **Official source** | https://www.noaa.gov/ |
-| **Collected** | 2026-09-30T12:10:52.907582-10:00 HST |
+| **Collected** | 2026-09-30T12:27:52.903766-10:00 HST |
 
 ```text
 National Oceanic and Atmospheric Administration Home
@@ -8601,7 +8601,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-30T12:03:53.310741-10:00 HST |
+| **Collected** | 2026-09-30T12:20:53.580429-10:00 HST |
 
 ```text
 National Weather Service

@@ -1,4 +1,7 @@
-"""rr_settings.py — single settings file for Root Monitor (was "RootRecord Control Panel"; Apps/Control-Panel/settings.json).
+"""rr_settings.py — single settings file for Root Monitor.
+
+The live file is Database System/control-panel/settings.json (gitignored).
+Apps/Control-Panel/settings.json is only the seed copied across when the live file is missing.
 
 INFO — MUST HAVE (future agents), added 2026-09-29:
 - ONE file holds every panel setting. Missing keys fall back to DEFAULTS; unknown keys are kept.
@@ -17,7 +20,12 @@ import tempfile  # info: import tempfile
 from pathlib import Path  # info: from pathlib import Path
 
 APP_DIR = Path(__file__).resolve().parent.parent  # info: set APP_DIR
-SETTINGS_FILE = Path(os.environ.get("RR_CONTROL_PANEL_SETTINGS", str(APP_DIR / "settings.json")))  # info: set SETTINGS_FILE
+DATABASE_ROOT = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database")  # info: set DATABASE_ROOT
+SEED_FILE = APP_DIR / "settings.json"  # info: set SEED_FILE
+SETTINGS_FILE = Path(os.environ.get(  # info: set SETTINGS_FILE
+    "RR_CONTROL_PANEL_SETTINGS",
+    str(DATABASE_ROOT / "System/control-panel/settings.json"),
+))
 
 # ====================================================
 # SECTION: DEFAULTS

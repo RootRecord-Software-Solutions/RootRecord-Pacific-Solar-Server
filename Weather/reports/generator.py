@@ -32,7 +32,7 @@ from reports.banner import OUTPUT_RELATIVE, generate_readme_banner  # info: from
 REPORTS_DIRNAME = "reports"  # info: set REPORTS_DIRNAME
 LEVEL0_DIRNAME = "0 Level Processing"  # info: set LEVEL0_DIRNAME
 ARCHIVE_DIRNAME = "archived"  # info: set ARCHIVE_DIRNAME
-REPORTING_README = Path(__file__).resolve().parent / "README.md"  # info: set REPORTING_README
+README_TEMPLATE = Path(__file__).resolve().parent / "README_TEMPLATE.md"  # info: set README_TEMPLATE
 DATABASE_README_TEMPLATE = Path(__file__).resolve().parent / "WEATHER_DATABASE_README_TEMPLATE.md"  # info: set DATABASE_README_TEMPLATE
 AGGREGATE_FILENAME = "Hawaii_State_Weather_Report_current.md"  # info: set AGGREGATE_FILENAME
 _EXCLUDED_PREFIXES = ("alerts_", "wwamap_", "nhc_current_storms", "ndfd_", "obhistory_")  # info: set _EXCLUDED_PREFIXES
@@ -721,7 +721,7 @@ def generate(base_dir: str) -> list[Path]:  # info: def generate
         "{{REPORT_SECTIONS}}": report_sections,  # info: "{{REPORT_SECTIONS}}" : report_sections ,
     }  # info: }
 
-    template_path = REPORTING_README.with_name("README_TEMPLATE.md")  # info: set template_path
+    template_path = README_TEMPLATE  # info: set template_path
     if template_path.is_file():  # info: if template_path . is_file ( ) :
         template = template_path.read_text(encoding="utf-8")  # info: set template
     else:  # info: else :
@@ -729,7 +729,7 @@ def generate(base_dir: str) -> list[Path]:  # info: def generate
             "# Hawai'i State Weather Database\n\n"
             "{{CURRENT_CONDITIONS}}\n\n{{REPORT_SECTIONS}}\n"  # info: "{{CURRENT_CONDITIONS}}\n\n{{REPORT_SECTIONS}}\n"
         )  # info: )
-    REPORTING_README.write_text(_render_readme(template, replacements), encoding="utf-8")  # info: REPORTING_README . write_text ( _render_readme ( template ,
+    # Generated text stays in the Database weather tree (gitignored). Do not write this folder's README.md.
 
     database_root = base.parent.parent  # info: set database_root
     database_readme = database_root / "README.md"  # info: set database_readme
