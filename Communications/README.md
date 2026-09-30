@@ -18,6 +18,7 @@ Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messagin
 | `web-facts/` | G1 `websites/web-facts` port (allowlisted HTTPS GET), on demand only — LANDED, smoke PASS 2026-09-29 13:58 HST; not wired to the council relay |
 | `live-wx/` | G1 `weather/live-wx` port (NWS point forecast + HI alert names + nearest hurricane, for chat), on demand only (`--offline` = no HTTP) — LANDED, smoke PASS 2026-09-29 14:09 HST; not wired to the council relay |
 | `website/` | Pointer only. The RootRecord-Cloud checkout is `3 - RootRecord-Website/` @ `84dec4a` (WO-MIG-07). The leftover `website/RootRecord-Cloud/` tree was removed 2026-09-30. No deploy, no auto-sync. See `website/README.md` |
+| `CouncilHealth/` | WO-MIG-27. Job `council_health` off unless `RR_COUNCIL_HEALTH=1`. Report only. No send, no model probe. |
 
 ---
 
@@ -28,6 +29,7 @@ Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messagin
 | `cloudflare_tunnel` | Pacific `bin/cloudflared`. ON_BOOT builtin `tunnel_start`. |
 | `network_globe_hawaii` | Pacific `network/scripts/ensure-network-globe-hawaii.sh` |
 | `council_relay` | Pacific `telegram/scripts/ensure-relay.sh`. Replies stay off. |
+| `council_health` | Pacific `CouncilHealth/scripts/council_health.py --no-alert --no-probe`. Off unless `RR_COUNCIL_HEALTH=1`. |
 | `communications_slack` | Pacific `Slack/scripts/poll.py`. Off unless `RR_SLACK=1` at poller start. No HTTP and no post. |
 
 Token: `/home/rootrecord/.cloudflared/rootserver.token` (local only).
