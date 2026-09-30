@@ -30,7 +30,7 @@ Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messagin
 
 Token: `/home/rootrecord/.cloudflared/rootserver.token` (local only).
 
-Messaging bot tokens (Discord, Telegram, etc.): **local secrets only** — never from git history or inventory mirrors. Discord enablement: see `discord/README.md` and Library **WO-COM-002**.
+Messaging bot tokens (Discord, Telegram, etc.): **local secrets only** — never from git history or inventory mirrors. Discord enablement: see `Discord/README.md` and Library **WO-COM-002**.
 
 ---
 
