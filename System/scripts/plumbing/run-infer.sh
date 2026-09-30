@@ -135,7 +135,7 @@ do_ollama() {  # info: do_ollama
 do_flm() {  # info: do_flm
   RR_PROMPT_CHARS="${#PROMPT}" "$SF" run "$JOB" -- env FLM_URL="$FLM_URL" FLM_MODEL="$FLM_MODEL" RR_VOICE="$TARGET" RR_PROMPT="$PROMPT" \
     RR_SPEC_SYS="$SPEC_SYS" RR_SPEC_TEMP="$SPEC_TEMP" RR_SPEC_MAXTOK="$SPEC_MAXTOK" RR_NPU_PERSONA_FILE="$NPU_PERSONA_FILE" python3 -c '  # info: set RR_SPEC_SYS
-import json, os, urllib.request  # info: import
+import json, os, re, urllib.request  # info: import json , os , re , urllib . request
 base = os.environ["FLM_URL"].rstrip("/")  # info: base
 model = os.environ["FLM_MODEL"]  # info: model
 voice = os.environ["RR_VOICE"]  # info: voice
@@ -160,12 +160,22 @@ persona_path = (os.environ.get("RR_NPU_PERSONA_FILE") or "").strip()  # info: se
 persona = json.loads(open(persona_path, encoding="utf-8").read()) if persona_path else None  # info: set persona
 if persona and not (persona.get("system") or "").strip():  # info: if
   raise SystemExit(2)  # info: raise
+list_desk = bool(re.search(r"\b(what (other |else )?data|what (else )?(do|can) you see|what readings|on (your|the) desk|list (the |your )?(data|readings|desk))\b", os.environ.get("RR_PROMPT") or "", re.I))  # info: set list_desk
 if desk_lines:  # info: if
   if persona:  # info: if
     user = "DESK_LIVE:\n" + desk_lines + "\nUser: " + user  # info: user
   else:  # info: else
     user = "[desk: measured — cite only these lines]\n" + desk_lines + "\nUser: " + user  # info: user
+  user += "\nThe DESK_LIVE lines above are measured and present. Summarize them when asked what you see. Say No data only for a number that is not listed."  # info: user
 system = (persona.get("system") if persona else None) or os.environ.get("RR_SPEC_SYS") or generic  # info: set system
+if desk_lines and list_desk:  # info: if desk_lines and list_desk
+  system = (  # info: set system
+    f"You are {voice}. The user message has a DESK_LIVE block. Those lines are the live readings. "  # info: f"You are { voice }
+    "Summarize every line in a short spoken reply: both packs and the host. "  # info: command
+    "SOC_percent is percent full. solar_input_w is watts in. ac_output_w and usbc_output_w are watts out. "  # info: command
+    "charge_source none means not charging. Do not mention a device or disk that is not listed. "  # info: command
+    "Do not answer No data. Do not invent numbers. Do not write the label DESK_LIVE. Do not repeat these instructions."  # info: command
+  )  # info: command
 temperature = float(persona["temperature"]) if persona and persona.get("temperature") is not None else float(os.environ.get("RR_SPEC_TEMP") or 0.3)  # info: set temperature
 max_tokens = int(persona["max_tokens"]) if persona and persona.get("max_tokens") is not None else int(os.environ.get("RR_SPEC_MAXTOK") or 180)  # info: set max_tokens
 url = base + "/v1/chat/completions"  # info: url
