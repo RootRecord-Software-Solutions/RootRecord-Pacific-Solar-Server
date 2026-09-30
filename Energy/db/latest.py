@@ -71,12 +71,12 @@ def latest_for_alias(alias: str, db_path: Path | str = DEFAULT_DB_PATH) -> Optio
         device_id, sn, model, dev_alias, obs_id, observed_at = row  # info: device_id , sn , model , dev_alias ,
 
         def measured(table: str, metric: str, extra_where: str = "", extra_args: tuple = ()) -> Any:  # info: def measured
-            q = f"""  # info: set q
+            q = f"""
                 SELECT value_num, value_text, value_bool, state
-                FROM {table}  # info: { table } WHERE observation_id=? AND metric_key=?
-                WHERE observation_id=? AND metric_key=? {extra_where}  # info: { extra_where } LIMIT 1
+                FROM {table}
+                WHERE observation_id=? AND metric_key=? {extra_where}
                 LIMIT 1
-            """  # info: """
+            """
             r = conn.execute(q, (obs_id, metric, *extra_args)).fetchone()  # info: set r
             if not r:  # info: if not r :
                 return None  # info: return None
