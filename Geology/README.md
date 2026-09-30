@@ -25,6 +25,7 @@
 | `scripts/kilauea_cams.py [--keep-dated]` | G1 `kilauea/kilauea-cams` (DEFAULT_CAMS + USGS still fallback) | USGS HVO V1/V2/V3 `M.jpg` (conditional GET) | `Volcanoes/Cams/cams-last.json`, `Volcanoes/Cams/v{1,2,3}cam-last.jpg` |
 | `scripts/earthquakes_backfill.py [--days N]` | G0 `old/operations/backfillquakes.py` | USGS FDSN `count` + `query` | `Earthquakes/quakes.db` (git-ignored) — on demand only |
 | `Earthquake-Discord/scripts/earthquake_discord_post.py` | G1 `earthquake-hourly` Discord post only | Database `Earthquakes/{hawaii,global}-last.json` (no USGS fetch) | Dry-run prints. `Earthquake-Discord/posted-last.json` only after a signed-off `--send` |
+| `PublicDraftQueue/scripts/queue_draft.py` | G1 `rr-kilauea` public draft queue only | Database `Volcanoes/kilauea-last.json` (no HTTP) | `PublicDraftQueue/queue/*-kilauea-cron.md` on a changed notice id or alert level |
 
 Light by design: stdlib only, every HTTP call ≤ 10 s (`RR_GEOLOGY_TIMEOUT`), no retries, one failed source never overwrites its last good file.
 

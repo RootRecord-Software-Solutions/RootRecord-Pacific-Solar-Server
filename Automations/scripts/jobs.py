@@ -841,6 +841,34 @@ ON_AT = [
         "cwd": f"{PACIFIC}/Communications/BruceStats",
         "env": {},
     },
+    {
+        # AdSense end-of-day (2026-09-30, WO-MIG-38). OFF unless RR_ADSENSE=1 at poller start.
+        # No key writes not_configured and does not call Google. No Discord.
+        "id": "adsense_eod",
+        "enabled": os.environ.get("RR_ADSENSE", "0") == "1",
+        "description": "AdSense 7-day snapshot -> Database Advertising/adsense-last.json. Gated off. No key does not call the API.",
+        "at_times": ["21:00"],
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Advertising/scripts/adsense_eod.py"',
+        "timeout_sec": 60,
+        "needs_internet": True,
+        "cwd": f"{PACIFIC}/Advertising",
+        "env": {},
+    },
+    {
+        # AdMob end-of-day (2026-09-30, WO-MIG-38). OFF unless RR_ADMOB=1 at poller start.
+        # No key writes not_configured and does not call Google. Refresh token does not fall back.
+        "id": "admob_eod",
+        "enabled": os.environ.get("RR_ADMOB", "0") == "1",
+        "description": "AdMob 7-day snapshot -> Database Advertising/admob-last.json. Gated off. No key does not call the API.",
+        "at_times": ["21:05"],
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Advertising/scripts/admob_eod.py"',
+        "timeout_sec": 90,
+        "needs_internet": True,
+        "cwd": f"{PACIFIC}/Advertising",
+        "env": {},
+    },
 ]
 
 ECOFLOW_ACTIONS = f"{PACIFIC}/Energy/scripts/actions"
