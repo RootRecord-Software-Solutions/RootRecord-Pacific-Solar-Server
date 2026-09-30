@@ -1,0 +1,30 @@
+/* Staged glass cards for the one Vercel app. Not deployed. Globe direction, not an old site skin. */
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  font-family: system-ui, sans-serif;
+  color: #e8eef8;
+  background: #05060c;
+}
+main {
+  max-width: 28rem;
+  margin-left: auto;
+  padding: 1rem;
+  display: grid;
+  gap: 0.75rem;
+}
+.card {
+  background: rgba(8, 10, 28, 0.46);
+  backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 1rem 1.05rem;
+}
+h1 {
+  font-size: 1rem;
+  font-weight: 650;
+  margin: 0 0 0.35rem;
+}
+p { margin: 0; color: #c5d0de; }
+.muted { margin-top: 0.45rem; font-size: 0.85rem; color: #9aa8ba; }

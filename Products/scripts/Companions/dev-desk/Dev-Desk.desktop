@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Dev-Desk
+Comment=RootRecord operator desk — talks to Ava-Core on this PC
+Exec=/home/rootrecord/RootRecord-Core-Ops/Dev-Desk/bin/start-dev-desk.sh
+Icon=/home/rootrecord/RootRecord-Core-Ops/Dev-Desk/assets/icon.png
+Terminal=false
+Categories=Network;Chat;Utility;
+StartupNotify=true
+StartupWMClass=dev-desk

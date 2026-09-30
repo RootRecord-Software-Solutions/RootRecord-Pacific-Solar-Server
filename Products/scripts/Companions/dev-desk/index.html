@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ava Ivy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Ava Ivy</h1>
+    <p class="sub">Manual post as Ava · Discord / Slack / Telegram</p>
+    <nav>
+      <button type="button" class="tab active" data-page="post">Post</button>
+      <button type="button" class="tab" data-page="discord">Discord</button>
+      <button type="button" class="tab" data-page="telegram">Telegram</button>
+      <button type="button" class="tab" data-page="settings">Settings</button>
+    </nav>
+  </header>
+  <main>
+    <section id="page-post" class="page active">
+      <div class="grid-2">
+        <label>Surface
+          <select id="post-surface">
+            <option value="discord">Discord</option>
+            <option value="slack">Slack</option>
+            <option value="telegram">Telegram</option>
+          </select>
+        </label>
+        <label>Preset
+          <select id="post-preset"></select>
+        </label>
+      </div>
+      <label>Channel / chat ID
+        <input id="post-channel" type="text" placeholder="alias or raw ID" />
+      </label>
+      <label>Reply / thread ref <span class="hint">(optional)</span>
+        <input id="post-ref" type="text" placeholder="message id or Slack thread_ts" />
+      </label>
+      <label>Message
+        <textarea id="post-draft" rows="8" placeholder="Type exactly what Ava should post…"></textarea>
+      </label>
+      <label class="check">
+        <input id="post-rewrite" type="checkbox" />
+        Run Ava rewrite before send (off = send your text as-is)
+      </label>
+      <div class="row">
+        <button type="button" id="post-clear">Clear</button>
+        <button type="button" id="post-send" class="primary">Post as Ava</button>
+      </div>
+      <pre id="post-status" class="status"></pre>
+    </section>
+
+    <section id="page-discord" class="page">
+      <label>Channel
+        <select id="discord-channel"></select>
+      </label>
+      <div id="discord-history" class="history"></div>
+      <textarea id="discord-draft" rows="4" placeholder="Type as Ava… (rewritten before send)"></textarea>
+      <div class="row">
+        <button type="button" id="discord-refresh">Refresh</button>
+        <button type="button" id="discord-send" class="primary">Rewrite &amp; send</button>
+      </div>
+      <pre id="discord-status" class="status"></pre>
+    </section>
+
+    <section id="page-telegram" class="page">
+      <label>Chat ID
+        <input id="telegram-chat" type="text" />
+      </label>
+      <div id="telegram-history" class="history"></div>
+      <textarea id="telegram-draft" rows="4" placeholder="Type as Ava… (rewritten before send)"></textarea>
+      <div class="row">
+        <button type="button" id="telegram-refresh">Refresh</button>
+        <button type="button" id="telegram-send" class="primary">Rewrite &amp; send</button>
+      </div>
+      <pre id="telegram-status" class="status"></pre>
+    </section>
+
+    <section id="page-settings" class="page">
+      <p>Post tab sends as Ava with bot tokens from RootMC <code>.env</code> (Discord / Slack / Telegram).</p>
+      <p>Chat panes still rewrite via local Ava <code>POST /api/rewrite</code> when the brain is up.</p>
+      <pre id="settings-status" class="status"></pre>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -4,7 +4,7 @@
 | --- | --- |
 | **Ported from** | G0 `rootrecordsoftwaresolutions/old` `operations/news/_collector.py` + `operations/news/hawaii/news.py` (scheduled by `operations/cronologicals/on-time/10:00/hawaii-news.py`). G0 files KEPT, unchanged |
 | **Date** | 2026-09-29 14:03 HST (old-repo migration, breadth pass) |
-| **State** | LANDED · seeded 2026-09-29 ~14:20 HST: **PASS, 278 posts** from 16 feeds (temp root) · job **PROPOSED, not registered** |
+| **State** | LANDED · Hawaiʻi seeded 2026-09-29 ~14:20 HST: **PASS, 278 posts** from 16 feeds (temp root) · job **PROPOSED, not registered**. WO-MIG-12 adds the other 49 states and the global index (jobs **PROPOSED, not in jobs.py**). Public page paused: folder 3 is empty (Public website checkout). |
 | **Secrets** | none (public official pages only) |
 
 ```text
@@ -12,6 +12,13 @@ scripts/_collector.py    shared official-source collector (G0, logic unchanged; 
                          crawl limits RR_NEWS_MAX_FEEDS/_PAGES/_SITEMAPS/_ARTICLES, defaults = G0 40/12/8/80)
 scripts/hawaii_news.py   Hawaiʻi wrapper (portal https://www.hawaii.gov/, checkpoint 2026-03-31, SEED_FEEDS: 16 feeds)
                          RR_NEWS_SEEDS_ONLY=1 = seeds only, skip portal discovery
+config/state_portals.json
+config/state_event_sources.json   config only (weather and earthquakes stay out; NWS calendar is not fetched)
+scripts/state_news.py    one wrapper for the other 49 slugs (`--state`). Refuses hawaii.
+scripts/build_state_news.py
+                         freshness orchestrator (55 min, empty DB = --backfill, 2 workers). Hawaiʻi via hawaii_news.py.
+scripts/build_global_news.py
+                         reads state DBs, writes Database Reports/News/global/global-news-last.json. locations is [].
 ```
 
 Writes Database `Reports/News/hawaii/hawaii_news.db` (SQLite: sources, posts, events, source_health; **git-ignored**) and `Reports/News/hawaii/hawaii-news-last.json` (counts, source health, 10 newest posts).
@@ -44,8 +51,43 @@ Standing rule: `Automations/scripts/jobs.py` is edited only on Alexander's reque
     },
 ```
 
+## State and global builders (WO-MIG-12)
+
+The other 49 states are one script plus `config/state_portals.json`, not 49 copies of `news.py`. `build_global_news.py` only aggregates databases that are already on disk. `locations` stays `[]` until the country location pollers exist. Runtime SQLite, `*-news-last.json` (except the Hawaiʻi summary), `global-news-last.json`, and `Logs/Reports/News/` stay out of git.
+
+Public page: paused. `3 - RootRecord-Website` is empty. That page belongs to Public website checkout (agent 07). When the Vercel shell exists, one news route should read `global-news-last.json` with the globe overlay glass card (dark glass, 16px radius, blur). Do not import `news.css` or the old geography news HTML. Do not deploy without a separate sign-off.
+
+Proposed jobs (not in `jobs.py` — shared file, left untouched). Both default off. Paste into `EVERY_HOUR` only when Alexander asks and the file is free:
+
+```python
+    {
+        "id": "reports_state_news",
+        "enabled": os.environ.get("RR_STATE_NEWS", "0") == "1",
+        "description": "49 state portals via state_news.py; Hawaiʻi via hawaii_news.py. Skip fresh DBs. Default off.",
+        "only_at_hours": [],
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Reports/News/scripts/build_state_news.py"',
+        "timeout_sec": 3600,
+        "needs_internet": True,
+        "cwd": f"{PACIFIC}/Reports/News/scripts",
+        "env": {},
+    },
+    {
+        "id": "reports_global_news",
+        "enabled": os.environ.get("RR_GLOBAL_NEWS", "0") == "1",
+        "description": "Aggregate Reports/News state DBs into global/global-news-last.json. Default off.",
+        "only_at_hours": [],
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Reports/News/scripts/build_global_news.py"',
+        "timeout_sec": 120,
+        "needs_internet": False,
+        "cwd": f"{PACIFIC}/Reports/News/scripts",
+        "env": {},
+    },
+```
+
 **Check later (Alexander):**
 1. Review the 16 seed feeds (`SEED_FEEDS` in `hawaii_news.py`): keep the County of Maui feed (not hawaii.gov, 134 items incl. 2013 archive)? Find working Honolulu / Hawaiʻi County / Kauaʻi feeds (403 / 404 / empty today). Keep `RR_NEWS_SEEDS_ONLY=1` or also run discovery?
-2. Target decision: G0 wrote a website dataset (avaivy.cloud `data/hawaii-news.json`); G3 keeps it in Database `Reports/News/`. Publishing to a site is out of scope here.
-3. Whether the other 49 state wrappers and `build_state_news.py` / `build_global_news.py` should also come across. They were not ported: they are website product data.
+2. The public news page waits on Public website checkout. Data stays in Database `Reports/News/`.
+3. The other 49 states and the global builder landed in WO-MIG-12 (one wrapper, not 49 scripts). Jobs `RR_STATE_NEWS` and `RR_GLOBAL_NEWS` stay proposed.
 4. Posts older than the checkpoint are kept on a normal run (only `--backfill` filters by checkpoint), so the first run stores the feeds' full history (oldest 2013-11-02, Maui).

@@ -361,6 +361,34 @@ EVERY_SECONDS = [
         "cwd": f"{PACIFIC}/Weather/CountryLocations",
         "env": {},
     },
+    {
+        # Stripe snapshot (2026-09-29, WO-MIG-10). OFF unless RR_STRIPE=1 at poller start.
+        # No key writes not_configured and does not call Stripe. No delivery.
+        "id": "stripe_poll",
+        "enabled": os.environ.get("RR_STRIPE", "0") == "1",
+        "description": "Stripe balance snapshot -> Database Website/stripe-snapshot.json. Gated off. No key does not call the API.",
+        "interval_sec": 1800,
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Website/scripts/stripe_poll.py"',
+        "timeout_sec": 60,
+        "needs_internet": True,
+        "cwd": f"{PACIFIC}/Website",
+        "env": {},
+    },
+    {
+        # Vercel failed builds (2026-09-29, WO-MIG-10). OFF unless RR_VERCEL_BUILDS=1 at poller start.
+        # Missing token writes nothing. Does not prune records and does not deploy.
+        "id": "vercel_builds",
+        "enabled": os.environ.get("RR_VERCEL_BUILDS", "0") == "1",
+        "description": "Redacted Vercel failed-build records -> Database Logs/Website/. Gated off. No token does not call the API.",
+        "interval_sec": 300,
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Website/scripts/vercel_builds.py"',
+        "timeout_sec": 90,
+        "needs_internet": True,
+        "cwd": f"{PACIFIC}/Website",
+        "env": {},
+    },
 ]
 
 EVERY_MINUTE = [

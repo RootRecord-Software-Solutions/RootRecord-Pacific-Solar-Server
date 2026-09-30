@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Ava Ivy
+Comment=Ava Ivy desktop client — Root Record control panel
+Exec=/bin/bash -lc '/home/ava-core/ava/ava-core-v2/apps/desktop/bin/start-ava-desktop.sh'
+Icon=/home/ava-core/ava/ava-core-v2/apps/desktop/assets/icon.png
+Terminal=false
+Categories=Network;Chat;Utility;
+StartupNotify=true
+StartupWMClass=ava-ivy

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Live data</title>
+  <link rel="stylesheet" href="cards.css">
+</head>
+<body>
+  <!-- Staged until 3 - RootRecord-Website has the checkout. Not part of a Vercel deploy. -->
+  <main>
+    <article class="card" id="power">
+      <h1>Power / solar</h1>
+      <p class="fact">No live snapshot mounted.</p>
+    </article>
+    <article class="card" id="weather">
+      <h1>Weather</h1>
+      <p class="fact">No live snapshot mounted.</p>
+    </article>
+    <article class="card" id="kilauea">
+      <h1>Kīlauea</h1>
+      <p class="fact">No live snapshot mounted.</p>
+    </article>
+  </main>
+  <script>
+    const fields = {
+      power: ["devices"],
+      weather: ["report"],
+      kilauea: ["status"]
+    };
+    async function fill(id) {
+      const card = document.getElementById(id);
+      const fact = card.querySelector(".fact");
+      try {
+        const res = await fetch(id + ".json");
+        if (!res.ok) return;
+        const data = await res.json();
+        const parts = [];
+        for (const key of fields[id]) {
+          if (data[key] != null) parts.push(key + " on file");
+        }
+        fact.textContent = parts.length ? parts.join(" · ") : "No live snapshot mounted.";
+      } catch (_err) {
+        fact.textContent = "No live snapshot mounted.";
+      }
+    }
+    for (const id of Object.keys(fields)) fill(id);
+  </script>
+</body>
+</html>

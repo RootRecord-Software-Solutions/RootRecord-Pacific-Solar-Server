@@ -83,7 +83,6 @@ def _get(path: str, params: dict[str, str], secret: str) -> dict[str, Any]:
         with urllib.request.urlopen(req, timeout=TIMEOUT_S) as resp:
             body = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")[:180]
         raise RuntimeError(f"stripe {path} {exc.code}") from None
     except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
         raise RuntimeError(f"stripe {path} failed") from None

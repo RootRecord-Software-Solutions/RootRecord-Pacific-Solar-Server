@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ava Ivy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="header-row">
+      <div>
+        <h1>Ava Ivy</h1>
+        <p class="sub">Terminal · Minecraft · stream · audio · core · weather GIFs · biz · finance · feedback · Slack · crons · reports · release · links · post as Ava</p>
+        <p id="desk-lifecycle-status" class="hint-inline" style="margin:0.15rem 0 0.5rem"></p>
+      </div>
+      <div class="header-actions">
+        <button type="button" id="header-git-pull" class="header-pull">Pull GitHub</button>
+        <button type="button" id="conn-pill" class="conn-pill" title="Connection settings">…</button>
+      </div>
+    </div>
+    <nav>
+      <button type="button" class="tab active" data-page="terminal">Terminal</button>
+      <button type="button" class="tab" data-page="minecraft">Minecraft</button>
+      <button type="button" class="tab" data-page="stream">Streaming Ops</button>
+      <button type="button" class="tab" data-page="audio">Radio</button>
+      <button type="button" class="tab" data-page="core">Core</button>
+      <button type="button" class="tab" data-page="discord">Discord</button>
+      <button type="button" class="tab" data-page="slack">Slack</button>
+      <button type="button" class="tab" data-page="telegram">Telegram</button>
+      <button type="button" class="tab" data-page="post">Post</button>
+      <button type="button" class="tab" data-page="feedback">Feedback</button>
+      <button type="button" class="tab" data-page="crons">Crons</button>
+      <button type="button" class="tab" data-page="desk">Desk</button>
+      <button type="button" class="tab" data-page="automation">Automation</button>
+      <button type="button" class="tab" data-page="sites">Sites</button>
+      <button type="button" class="tab" data-page="backgrounds">Backgrounds</button>
+      <button type="button" class="tab" data-page="reports">Reports</button>
+      <button type="button" class="tab" data-page="weather-gifs">Weather GIFs</button>
+      <button type="button" class="tab" data-page="biz">Biz</button>
+      <button type="button" class="tab" data-page="finance">Finance</button>
+      <button type="button" class="tab" data-page="release">Release</button>
+      <button type="button" class="tab" data-page="links">Links</button>
+      <button type="button" class="tab" data-page="settings">Settings</button>
+      <button type="button" class="tab tab-purge" data-page="clear">Clear desk</button>
+    </nav>
+  </header>
+  <main>
+    <section id="page-terminal" class="page active page-terminal">
+      <div class="term-live-head">
+        <div>
+          <h2 class="cron-title">Ava live</h2>
+          <p class="hint-inline">Ollama + Ava processes · scrolling log of what she’s doing</p>
+        </div>
+        <div class="row wrap">
+          <span id="terminal-run-label" class="terminal-run idle">idle</span>
+          <label class="mc-follow"><input type="checkbox" id="terminal-follow" checked /> Follow</label>
+          <button type="button" id="terminal-refresh">Refresh</button>
+          <button type="button" id="terminal-clear">Clear</button>
+          <button type="button" id="terminal-cancel">Cancel</button>
+        </div>
+      </div>
+      <div id="terminal-procs" class="term-procs" aria-live="polite"></div>
+      <div id="terminal-cpu" class="term-cpu" aria-label="CPU"></div>
+      <div class="terminal-shell term-log-shell">
+        <div class="terminal-toolbar">
+          <span class="terminal-title">Activity log</span>
+          <span id="terminal-log-meta" class="terminal-run idle"></span>
+        </div>
+        <pre id="terminal-out" class="terminal-out term-live-out" aria-live="polite"></pre>
+      </div>
+      <details class="terminal-commands-wrap" open>
+        <summary>Commands</summary>
+        <div class="terminal-filter-row">
+          <input id="terminal-filter" type="search" placeholder="Filter commands…" autocomplete="off" spellcheck="false" />
+        </div>
+        <div id="terminal-commands" class="terminal-commands"></div>
+      </details>
+    </section>
+
+    <section id="page-minecraft" class="page page-minecraft">
+      <div class="mc-head">
+        <div>
+          <h2 class="cron-title">Minecraft · Paper test</h2>
+          <p class="hint-inline">OptiPlex test server · boots with Ava Stage 3b · log + RCON console (not on the public board)</p>
+        </div>
+        <div class="row wrap">
+          <span id="mc-pill" class="mc-pill">…</span>
+          <button type="button" id="mc-start" class="ok-btn">Start</button>
+          <button type="button" id="mc-restart" class="warn-btn">Restart</button>
+          <button type="button" id="mc-stop" class="danger-inline">Stop</button>
+          <button type="button" id="mc-refresh">Refresh</button>
+          <label class="mc-follow"><input type="checkbox" id="mc-follow" checked /> Follow</label>
+        </div>
+      </div>
+      <div id="mc-kpis" class="mc-kpis"></div>
+      <p id="mc-msg" class="hint-inline"></p>
+      <div class="terminal-shell mc-console-shell">
+        <div class="terminal-toolbar">
+          <span class="terminal-title">Paper console</span>
+          <span id="mc-console-meta" class="terminal-run idle"></span>
+          <button type="button" id="mc-console-clear">Clear</button>
+        </div>
+        <pre id="mc-console" class="terminal-out mc-console-out" aria-live="polite"></pre>
+        <form id="mc-rcon-form" class="mc-rcon-form" autocomplete="off">
+          <input id="mc-rcon-cmd" type="text" placeholder="RCON — list, plugins, version Root-Economy…" spellcheck="false" />
+          <button type="submit" class="primary">Send</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="page-stream" class="page page-stream">
+      <div class="mc-head">
+        <div>
+          <h2 class="cron-title">Streaming Ops</h2>
+          <p class="hint-inline">OBS modes, current scene, program preview. Start/stop the stream in OBS — Ava does not press Go Live.</p>
+        </div>
+        <div class="row wrap">
+          <span id="stream-pill-mode" class="mc-pill">MODE ?</span>
+          <span id="stream-pill-scene" class="mc-pill">SCENE —</span>
+          <span id="stream-pill-live" class="mc-pill">STREAM ?</span>
+          <span id="stream-pill-watch" class="mc-pill">WATCH OFF</span>
+          <span id="stream-pill-kit" class="mc-pill">KIT ?</span>
+          <span id="stream-pill-eta" class="mc-pill">ETA quiet</span>
+          <button type="button" id="stream-refresh">Refresh</button>
+        </div>
+      </div>
+      <p id="stream-msg" class="hint-inline"></p>
+      <div class="stream-board">
+        <div class="stream-preview-wrap">
+          <img id="stream-preview" alt="OBS program" hidden />
+          <iframe id="stream-yt" title="YouTube live" allow="autoplay; encrypted-media" allowfullscreen hidden></iframe>
+          <div id="stream-preview-off">OBS preview loads here when the kit is connected</div>
+          <div class="stream-preview-cap" id="stream-preview-cap">Program</div>
+        </div>
+        <div class="stream-side">
+          <p class="stream-now-label">Current scene</p>
+          <p id="stream-scene-now" class="stream-now">—</p>
+          <p class="hint-inline" id="stream-watch-link"></p>
+          <div class="row wrap stream-modes">
+            <button type="button" id="stream-mode-daily">Daily</button>
+            <button type="button" id="stream-mode-all">All scenes</button>
+            <button type="button" id="stream-mode-weather">Weather / NHC</button>
+            <button type="button" id="stream-mode-kilauea" class="warn-btn">Kīlauea</button>
+            <button type="button" id="stream-mode-hurricane" class="warn-btn">Hurricane</button>
+          </div>
+          <p class="hint-inline" style="margin:0.6rem 0 0.25rem">Jump to scene</p>
+          <div class="row wrap stream-transport" id="stream-scene-btns">
+            <span class="hint-inline">Loading scenes…</span>
+          </div>
+          <p class="hint-inline" style="margin:0.6rem 0 0.25rem">Hide scenes from rotator</p>
+          <div class="row wrap stream-transport" style="margin-bottom:0.25rem">
+            <button type="button" id="stream-hide-all">Hide all</button>
+            <button type="button" id="stream-show-all">Show all</button>
+          </div>
+          <div id="stream-scene-hide" class="row wrap stream-transport"></div>
+          <p class="hint-inline" style="margin:0.6rem 0 0.25rem">Rotation dwell (seconds)</p>
+          <div class="stream-rotation" id="stream-rotation-config">
+            <div class="row wrap stream-transport" style="align-items:center;margin-bottom:0.35rem">
+              <label class="check"><input type="checkbox" id="stream-rotation-enabled" /> Auto scene switcher</label>
+              <label>Default interval <input id="stream-rotation-interval" type="number" min="5" max="3600" step="1" style="width:5.5rem" /> s</label>
+              <span id="stream-rotation-status" class="hint-inline" style="margin:0"></span>
+            </div>
+            <div class="row wrap stream-transport" id="stream-rotation-modes"></div>
+            <div class="row wrap stream-transport" id="stream-rotation-scenes"></div>
+          </div>
+        </div>
+      </div>
+      <p class="hint-inline" style="margin-top:0.35rem">Start/stop streaming in OBS — Ava does not launch OBS or control the stream transport.</p>
+      <div class="grid-2" style="margin-top:0.75rem">
+        <label>Title
+          <input id="stream-title" type="text" maxlength="100" placeholder="Stream title" />
+        </label>
+        <label>Description
+          <textarea id="stream-description" rows="4" placeholder="Stream description"></textarea>
+        </label>
+      </div>
+      <div class="row wrap" style="margin-top:0.5rem">
+        <button type="button" id="stream-meta-apply">Apply title</button>
+        <button type="button" id="stream-meta-restart" class="warn-btn">Apply title + scene</button>
+        <button type="button" id="stream-watch-enter" class="warn-btn">Enter Watch</button>
+        <button type="button" id="stream-watch-exit">Exit Watch</button>
+        <button type="button" id="stream-toast">Test toast</button>
+        <button type="button" id="stream-repair">Repair kit + overlays</button>
+      </div>
+      <div class="stream-reactions" style="margin-top:0.85rem">
+        <h3 class="cron-title" style="font-size:1rem;margin:0 0 0.35rem">Ava reactions</h3>
+        <p class="hint-inline" style="margin:0 0 0.45rem">Manual triggers · OBS browser source <code>/obs/reactions</code> on the scene · force-plays even if stream session is off</p>
+        <div id="stream-reaction-btns" class="row wrap">
+          <button type="button" data-stream-reaction="go_live">Wave / go-live</button>
+          <button type="button" data-stream-reaction="quake">Quake</button>
+          <button type="button" data-stream-reaction="quake_strong">Strong quake</button>
+          <button type="button" data-stream-reaction="hans">HANS</button>
+          <button type="button" data-stream-reaction="watch_enter">Volcano Watch</button>
+          <button type="button" data-stream-reaction="report_volcano">Volcano report</button>
+          <button type="button" data-stream-reaction="report_morning">Morning</button>
+          <button type="button" data-stream-reaction="report_merged">Merged / victory</button>
+          <button type="button" data-stream-reaction="generic_report">Report</button>
+          <button type="button" data-stream-reaction="report_solar">Solar</button>
+          <button type="button" data-stream-reaction="sunrise">Sunrise</button>
+          <button type="button" data-stream-reaction="sunset">Sunset</button>
+          <button type="button" data-stream-reaction="report_sysperf">Typing</button>
+          <button type="button" data-stream-reaction="claim_hour">Dig / claim</button>
+          <button type="button" data-stream-reaction="stream_end">BRB / end</button>
+          <button type="button" data-stream-reaction="shutdown">Shutdown</button>
+          <button type="button" data-stream-reaction="claims_health">Alert</button>
+          <button type="button" data-stream-reaction="early_login">Early login</button>
+          <button type="button" data-stream-reaction="pending">Pending</button>
+          <button type="button" data-stream-reaction="overnight">Overnight</button>
+        </div>
+      </div>
+      <pre id="stream-status" class="status" style="margin-top:0.75rem;min-height:10rem"></pre>
+      <p class="hint-inline">OBS overlays stay local browser sources (HUD / Quake / Reactions) · after kit repair: Scene Collection → Reload (don’t Save first)</p>
+    </section>
+
+    <section id="page-audio" class="page page-audio">
+      <div class="cron-head">
+        <div>
+          <h2 class="cron-title">Root Record Radio</h2>
+          <p id="audio-meta" class="hint-inline">Program bus · music + reports + chimes · not desktop audio</p>
+        </div>
+        <div class="row wrap">
+          <button type="button" id="audio-refresh">Refresh</button>
+          <button type="button" id="radio-save" class="primary">Save</button>
+          <button type="button" id="audio-chime-now">Chime now</button>
+          <a class="btn-link" id="audio-open-local" href="http://127.0.0.1:8787/radio" target="_blank" rel="noopener">Open wake page</a>
+        </div>
+      </div>
+
+      <div class="radio-toggles row wrap" style="gap:1rem;margin:0.35rem 0 0.75rem">
+        <label class="check"><input type="checkbox" id="radio-local" /> Local playback (hear bed on this PC)</label>
+        <label class="check"><input type="checkbox" id="radio-onair" /> On air (public /radio listen)</label>
+        <label class="check"><input type="checkbox" id="radio-hurricane" /> Hurricane desk on radio</label>
+        <label class="check"><input type="checkbox" id="radio-inserts" /> Voice inserts on live stream</label>
+        <label class="check"><input type="checkbox" id="radio-feedback" /> Listener feedback on listen page</label>
+        <label class="check"><input type="checkbox" id="radio-mic" /> Mic armed</label>
+        <label>Music volume <input id="radio-music-volume" type="range" min="0" max="100" value="50" step="1" /> <span id="radio-music-volume-value">50%</span></label>
+        <label>Music while Ava speaks <input id="radio-speech-volume" type="range" min="0" max="100" value="20" step="1" /> <span id="radio-speech-volume-value">20%</span></label>
+        <span id="radio-mic-live" class="audio-pill warn hidden">LIVE MIC</span>
+      </div>
+      <p id="radio-tools" class="hint-inline">Encoder tools…</p>
+      <p class="hint-inline">Save stores Local / On air / Mic. On air without Local keeps the bed going silently for the web stream.</p>
+      <div class="audio-board" style="margin-bottom:0.75rem">
+        <div class="stream-side">
+          <p class="stream-now-label">Desk listen (localhost)</p>
+          <audio id="radio-desk-player" controls preload="none" style="width:100%;max-width:28rem"></audio>
+          <p class="hint-inline" style="margin-top:0.4rem">HTML player on 127.0.0.1 — no Cloudflare hop. Turn Local playback on to receive program SSE here (and speaker bed).</p>
+        </div>
+      </div>
+
+      <div class="cron-head" style="margin-top:0.25rem">
+        <div>
+          <h3 class="cron-title" style="font-size:1rem">Bed / director</h3>
+        </div>
+        <div class="row wrap">
+          <button type="button" id="audio-music-pause">Pause bed</button>
+          <button type="button" id="audio-music-resume" class="primary">Resume bed</button>
+          <button type="button" id="audio-music-start">Start bed</button>
+        </div>
+      </div>
+      <div class="audio-board">
+        <div class="stream-side">
+          <p class="stream-now-label">Currently playing</p>
+          <div id="audio-now" class="audio-block">—</div>
+          <p class="stream-now-label" style="margin-top:0.85rem">Up next</p>
+          <div id="audio-next" class="audio-block">—</div>
+        </div>
+        <div class="stream-side">
+          <p class="stream-now-label">Music bed</p>
+          <div id="audio-bed" class="audio-block">—</div>
+          <p class="hint-inline" style="margin-top:0.55rem">One track at a time. Pause holds the bed for reports too.</p>
+        </div>
+      </div>
+      <h3 class="cron-title" style="margin-top:1rem">Pending / scheduled</h3>
+      <p id="audio-pending-meta" class="hint-inline">Armed chimes, hourly reports, morning-boot replay, remaining-tasks</p>
+      <div id="audio-pending" class="cron-table"></div>
+      <pre id="audio-status" class="status"></pre>
+    </section>
+
+    <section id="page-core" class="page page-core">
+      <div class="core-head">
+        <div>
+          <h2 class="cron-title">Core · Ollama 1:1</h2>
+          <p id="core-meta" class="hint-inline">Private 1:1 with Ava through origin (persona). Turns save under data/training/.</p>
+        </div>
+        <div class="row">
+          <button type="button" id="core-refresh-status">Refresh status</button>
+          <button type="button" id="core-cancel" disabled>Cancel</button>
+          <button type="button" id="core-clear">Clear chat</button>
+          <button type="button" id="core-new-session">New session</button>
+        </div>
+      </div>
+      <div id="core-history" class="history core-history" aria-live="polite"></div>
+      <label>Message
+        <textarea id="core-draft" class="draft-tall" rows="5" placeholder="Talk to Ava…"></textarea>
+      </label>
+      <div class="row wrap">
+        <button type="button" id="core-send" class="primary">Send to Ava</button>
+        <button type="button" id="core-mark-gold">Mark last turn gold</button>
+      </div>
+      <div class="rewrite-bar core-enhance-bar">
+        <span class="rewrite-label">Pass last Ava reply to</span>
+        <div id="core-providers" class="provider-row"></div>
+        <div class="row wrap">
+          <button type="button" id="core-enhance">Enhance</button>
+          <button type="button" id="core-enhance-apply">Use enhance as Ava</button>
+          <button type="button" id="core-enhance-gold">Gold enhance pair</button>
+        </div>
+      </div>
+      <pre id="core-enhance-out" class="compare-out"></pre>
+      <pre id="core-status" class="status"></pre>
+      <details class="response-log" open data-surface="core">
+        <summary>Past responses</summary>
+        <p class="response-log-meta" id="core-response-log-meta">Core turns and agent enhancements.</p>
+        <div id="core-response-log" class="response-log-body"></div>
+        <div class="response-log-actions">
+          <button type="button" data-log-clear="core">Clear log</button>
+        </div>
+      </details>
+    </section>
+
+    <section id="page-discord" class="page">
+      <div class="grid-2">
+        <label>Guild channel
+          <select id="discord-channel"></select>
+        </label>
+        <label>Private / DM
+          <select id="discord-private">
+            <option value="">(none — use guild)</option>
+          </select>
+        </label>
+      </div>
+      <p class="hint-inline">Private overrides guild. Click Ava’s message → draft loads for edit · Delete in the bar · others = reply target.</p>
+      <div id="discord-history" class="history"></div>
+      <div id="discord-reply-bar" class="reply-bar hidden">
+        <span>Selected <strong id="discord-reply-who">?</strong></span>
+        <button type="button" id="discord-edit-load" class="hidden" title="Load into draft to edit">Edit</button>
+        <button type="button" id="discord-delete" class="hidden danger-inline" title="Delete this message">Delete</button>
+        <button type="button" id="discord-reply-clear" title="Clear selection">×</button>
+      </div>
+      <textarea id="discord-draft" class="draft-tall" rows="8" placeholder="Type as Ava…"></textarea>
+      <div class="attach-bar" data-surface="discord">
+        <div class="row wrap">
+          <button type="button" data-attach-pick="discord">Attach image</button>
+          <button type="button" data-attach-library="discord">From media library</button>
+          <button type="button" data-attach-clear="discord">Clear attachments</button>
+          <button type="button" data-media-open>Open media folder</button>
+        </div>
+        <div id="discord-attachments" class="attach-chips"></div>
+      </div>
+      <div class="rewrite-bar" data-surface="discord">
+        <span class="rewrite-label">Rewrite as</span>
+        <div id="discord-providers" class="provider-row"></div>
+        <div class="row wrap">
+          <button type="button" id="discord-refresh">Refresh</button>
+          <button type="button" id="discord-preview">Preview rewrite</button>
+          <button type="button" id="discord-compare">Compare all</button>
+          <button type="button" id="discord-summarize">Summarize chat</button>
+          <button type="button" id="discord-send" class="primary">Send</button>
+          <button type="button" id="discord-save-edit" class="primary hidden">Save edit</button>
+          <button type="button" id="discord-cancel-edit" class="hidden">Cancel edit</button>
+        </div>
+      </div>
+      <pre id="discord-status" class="status"></pre>
+      <pre id="discord-compare" class="compare-out"></pre>
+      <details class="response-log" open data-surface="discord">
+        <summary>Past responses</summary>
+        <p class="response-log-meta" id="discord-response-log-meta">Rewrites, summaries, compares, and sends for this page.</p>
+        <div id="discord-response-log" class="response-log-body"></div>
+        <div class="response-log-actions">
+          <button type="button" data-log-clear="discord">Clear log</button>
+        </div>
+      </details>
+    </section>
+
+    <section id="page-slack" class="page">
+      <label>Channel (joined)
+        <select id="slack-channel"></select>
+      </label>
+      <p class="hint-inline">Includes private channels Ava is in. Click a message to thread-reply.</p>
+      <div id="slack-history" class="history"></div>
+      <div id="slack-reply-bar" class="reply-bar hidden">
+        <span>Thread <strong id="slack-reply-who">?</strong></span>
+        <button type="button" id="slack-reply-clear" title="Clear">×</button>
+      </div>
+      <textarea id="slack-draft" class="draft-tall" rows="8" placeholder="Type as Ava…"></textarea>
+      <div class="rewrite-bar" data-surface="slack">
+        <span class="rewrite-label">Rewrite as</span>
+        <div id="slack-providers" class="provider-row"></div>
+        <div class="row wrap">
+          <button type="button" id="slack-refresh">Refresh</button>
+          <button type="button" id="slack-preview">Preview rewrite</button>
+          <button type="button" id="slack-compare">Compare all</button>
+          <button type="button" id="slack-summarize">Summarize chat</button>
+          <button type="button" id="slack-send" class="primary">Send</button>
+        </div>
+      </div>
+      <pre id="slack-status" class="status"></pre>
+      <pre id="slack-compare" class="compare-out"></pre>
+      <details class="response-log" open data-surface="slack">
+        <summary>Past responses</summary>
+        <p class="response-log-meta" id="slack-response-log-meta">Rewrites, summaries, compares, and sends for this page.</p>
+        <div id="slack-response-log" class="response-log-body"></div>
+        <div class="response-log-actions">
+          <button type="button" data-log-clear="slack">Clear log</button>
+        </div>
+      </details>
+    </section>
+
+    <section id="page-telegram" class="page">
+      <label>Private / known chat
+        <select id="telegram-chat"></select>
+      </label>
+      <p class="hint-inline">History from Ava logs + local buffers (Telegram Bot API has no full history API).</p>
+      <div id="telegram-history" class="history"></div>
+      <div id="telegram-reply-bar" class="reply-bar hidden">
+        <span>Replying to <strong id="telegram-reply-who">?</strong></span>
+        <button type="button" id="telegram-reply-clear" title="Clear reply">×</button>
+      </div>
+      <textarea id="telegram-draft" class="draft-tall" rows="8" placeholder="Type as Ava…"></textarea>
+      <div class="rewrite-bar" data-surface="telegram">
+        <span class="rewrite-label">Rewrite as</span>
+        <div id="telegram-providers" class="provider-row"></div>
+        <div class="row wrap">
+          <button type="button" id="telegram-refresh">Refresh</button>
+          <button type="button" id="telegram-preview">Preview rewrite</button>
+          <button type="button" id="telegram-compare">Compare all</button>
+          <button type="button" id="telegram-summarize">Summarize chat</button>
+          <button type="button" id="telegram-send" class="primary">Send</button>
+        </div>
+      </div>
+      <pre id="telegram-status" class="status"></pre>
+      <pre id="telegram-compare" class="compare-out"></pre>
+      <details class="response-log" open data-surface="telegram">
+        <summary>Past responses</summary>
+        <p class="response-log-meta" id="telegram-response-log-meta">Rewrites, summaries, compares, and sends for this page.</p>
+        <div id="telegram-response-log" class="response-log-body"></div>
+        <div class="response-log-actions">
+          <button type="button" data-log-clear="telegram">Clear log</button>
+        </div>
+      </details>
+    </section>
+
+    <section id="page-post" class="page">
+      <div class="grid-2">
+        <label>Surface
+          <select id="post-surface">
+            <option value="discord">Discord</option>
+            <option value="slack">Slack</option>
+            <option value="telegram">Telegram</option>
+          </select>
+        </label>
+        <label>Preset
+          <select id="post-preset"></select>
+        </label>
+      </div>
+      <label>Channel / chat ID
+        <input id="post-channel" type="text" placeholder="alias or raw ID" />
+      </label>
+      <div class="row wrap" style="margin:0.35rem 0 0.5rem">
+        <button type="button" id="post-refresh-history">Load chat history</button>
+        <span id="post-history-meta" class="hint-inline"></span>
+      </div>
+      <div id="post-history" class="history"></div>
+      <label>Reply / thread ref <span class="hint">(optional)</span>
+        <input id="post-ref" type="text" placeholder="message id or Slack thread_ts" />
+      </label>
+      <label>Message
+        <textarea id="post-draft" class="draft-tall" rows="10" placeholder="Type exactly what Ava should post…"></textarea>
+      </label>
+      <div class="rewrite-bar" data-surface="post">
+        <span class="rewrite-label">Rewrite as</span>
+        <div id="post-providers" class="provider-row"></div>
+      </div>
+      <div class="row wrap">
+        <button type="button" id="post-clear">Clear</button>
+        <button type="button" id="post-preview">Preview rewrite</button>
+        <button type="button" id="post-compare">Compare all</button>
+        <button type="button" id="post-send" class="primary">Post as Ava</button>
+        <button type="button" id="post-all" class="danger-inline">Post to all pages</button>
+      </div>
+      <p id="post-all-meta" class="hint-inline">Every Discord channel + DM, Slack channel + DM, and Telegram chat Ava knows.</p>
+      <pre id="post-status" class="status"></pre>
+      <pre id="post-compare" class="compare-out"></pre>
+      <details class="response-log" open data-surface="post">
+        <summary>Past responses</summary>
+        <p class="response-log-meta" id="post-response-log-meta">Rewrites, compares, and posts for this page.</p>
+        <div id="post-response-log" class="response-log-body"></div>
+        <div class="response-log-actions">
+          <button type="button" data-log-clear="post">Clear log</button>
+        </div>
+      </details>
+    </section>
+
+    <section id="page-feedback" class="page page-feedback">
+      <div class="cron-head">
+        <div>
+          <h2 class="cron-title">Feedback</h2>
+          <p id="feedback-meta" class="hint-inline">In-game /feedback queue + dual post → Discord #development + Slack #feedback</p>
+        </div>
+        <div class="row wrap">
+          <button type="button" id="feedback-refresh-queue">Refresh queue</button>
+          <button type="button" id="feedback-process-next" class="primary">Process next</button>
+          <button type="button" id="feedback-process-drain">Drain queue (×5)</button>
+          <button type="button" id="feedback-refresh-channels">Refresh channels</button>
+          <button type="button" id="feedback-refresh-all">Refresh all</button>
+        </div>
+      </div>
+
+      <div class="feedback-toolbar">
+        <div class="row wrap">
+          <span class="rewrite-label">Queue</span>
+          <button type="button" id="feedback-load-selected">Load into draft</button>
+          <button type="button" id="feedback-draft-from-item">Draft staff reply</button>
+          <button type="button" id="feedback-ack-selected">Ack selected</button>
+          <button type="button" id="feedback-ack-all-queued">Ack all visible</button>
+          <button type="button" id="feedback-copy-item">Copy item</button>
+        </div>
+        <div class="row wrap">
+          <span class="rewrite-label">Delete</span>
+          <button type="button" id="feedback-delete-discord" class="danger-inline">Delete Discord sel</button>
+          <button type="button" id="feedback-delete-slack" class="danger-inline">Delete Slack sel</button>
+          <button type="button" id="feedback-clear-discord" class="danger-inline">Clear Discord Ava msgs</button>
+          <button type="button" id="feedback-clear-slack" class="danger-inline">Clear Slack Ava msgs</button>
+          <button type="button" id="feedback-clear-all" class="danger-inline primary">Clear all + stamp</button>
+        </div>
+        <div class="row wrap" style="align-items:center">
+          <label class="check"><input type="checkbox" id="feedback-clear-discord-opt" checked /> Clear Discord #development</label>
+          <label class="check"><input type="checkbox" id="feedback-clear-slack-opt" checked /> Clear Slack #feedback</label>
+          <label class="check"><input type="checkbox" id="feedback-also-devfeed" /> Also Slack #development-feed</label>
+        </div>
+      </div>
+
+      <div class="grid-2 feedback-grid">
+        <div>
+          <div class="row wrap" style="margin:0 0 0.45rem; align-items:end">
+            <label style="margin:0; flex:1">Queue status
+              <select id="feedback-status-filter">
+                <option value="queued">queued</option>
+                <option value="seen">seen</option>
+                <option value="acked">acked</option>
+                <option value="all">all</option>
+              </select>
+            </label>
+            <button type="button" id="feedback-select-first">Select first</button>
+            <button type="button" id="feedback-deselect">Deselect</button>
+          </div>
+          <div id="feedback-queue" class="feedback-queue"></div>
+        </div>
+        <div>
+          <h3 class="cron-title">Channel peek</h3>
+          <p class="hint-inline">Click a message to select · Ava msgs tagged (ava)</p>
+          <p id="feedback-sel-meta" class="hint-inline">No message selected</p>
+          <div class="row wrap" style="margin:0 0 0.35rem">
+            <button type="button" id="feedback-load-discord-sel">Load Discord → draft</button>
+            <button type="button" id="feedback-load-slack-sel">Load Slack → draft</button>
+            <button type="button" id="feedback-clear-sel">Clear selection</button>
+          </div>
+          <p class="hint-inline">Discord #development</p>
+          <div id="feedback-discord-hist" class="history feedback-hist"></div>
+          <p class="hint-inline">Slack #feedback</p>
+          <div id="feedback-slack-hist" class="history feedback-hist"></div>
+        </div>
+      </div>
+
+      <label>Templates
+        <select id="feedback-template"></select>
+      </label>
+      <div class="row wrap" id="feedback-quick-templates"></div>
+      <div class="row wrap" style="margin:0.35rem 0">
+        <span class="rewrite-label">Insert</span>
+        <button type="button" id="feedback-insert-stamp">Processed stamp</button>
+        <button type="button" id="feedback-insert-now">Now timestamp</button>
+        <button type="button" id="feedback-insert-triage">Triage header</button>
+        <button type="button" id="feedback-insert-digest">Digest header</button>
+        <button type="button" id="feedback-append-nl">↵ blank line</button>
+        <button type="button" id="feedback-uppercase">UPPER</button>
+        <button type="button" id="feedback-trim">Trim</button>
+        <button type="button" id="feedback-copy-draft">Copy draft</button>
+      </div>
+      <label>Compose (dual post)
+        <textarea id="feedback-draft" class="draft-tall" rows="8" placeholder="Staff note / triage / digest — posts to Discord #development + Slack #feedback…"></textarea>
+      </label>
+      <div class="rewrite-bar" data-surface="feedback">
+        <span class="rewrite-label">Rewrite as</span>
+        <div id="feedback-providers" class="provider-row"></div>
+      </div>
+      <div class="row wrap">
+        <button type="button" id="feedback-clear">Clear draft</button>
+        <button type="button" id="feedback-preview">Preview rewrite</button>
+        <button type="button" id="feedback-post-stamp">Post stamp only</button>
+        <button type="button" id="feedback-dual-post" class="primary">Post → Discord #development + Slack #feedback</button>
+      </div>
+      <pre id="feedback-status" class="status"></pre>
+      <details class="response-log" open data-surface="feedback">
+        <summary>Past responses</summary>
+        <p class="response-log-meta" id="feedback-response-log-meta">Dual posts, acks, deletes, and clear-all stamps.</p>
+        <div id="feedback-response-log" class="response-log-body"></div>
+        <div class="response-log-actions">
+          <button type="button" data-log-clear="feedback">Clear log</button>
+        </div>
+      </details>
+    </section>
+
+    <section id="page-crons" class="page">
+      <div class="cron-head">
+        <div>
+          <h2 class="cron-title">Crons</h2>
+          <p id="cron-meta" class="hint-inline">Loading…</p>
+        </div>
+        <div class="row">
+          <button type="button" id="cron-refresh">Refresh</button>
+          <button type="button" id="cron-catchup" class="primary">Force cron catchup</button>
+        </div>
+      </div>
+      <div id="cron-table" class="cron-table"></div>
+      <pre id="cron-status" class="status"></pre>
+    </section>
+
+    <section id="page-desk" class="page">
+      <div class="cron-head">
+        <div>
+          <h2 class="cron-title">This is the desk</h2>
+          <p class="hint-inline">Ava Desk is this window. Operator tools stay on this computer. They are not a public website.</p>
+        </div>
+      </div>
+      <p>Use the tabs: Terminal, Radio, Sites, Post, Crons, Reports, Settings. Closing this window does not stop origin.</p>
+    </section>
+
+    <section id="page-automation" class="page">
+      <div class="cron-head">
+        <div>
+          <h2 class="cron-title">Automation Drop Folder</h2>
+          <p class="hint-inline">Drop Python files into the folder and Ava auto-discovers, auto-starts in a terminal window, and watches restarts.</p>
+        </div>
+        <div class="row wrap">
+          <button type="button" id="auto-refresh">Refresh</button>
+          <button type="button" id="auto-rescan" class="primary">Rescan folder</button>
+        </div>
+      </div>
+      <p class="hint-inline" id="auto-dir">Folder: —</p>
+      <div id="auto-table" class="cron-table"></div>
+      <pre id="auto-status" class="status"></pre>
+    </section>
+
+    <section id="page-sites" class="page">
+      <div class="cron-head">
+        <div>
+          <h2 class="cron-title">Sites · avaivy · rootrecord · rootmc</h2>
+          <p class="hint-inline">Control posts across all three sites. Root Record / Goals posts use operator identity <code>root@rootrecord.info</code>.</p>
+        </div>
+        <button type="button" id="sites-refresh">Refresh</button>
+      </div>
+      <div id="sites-latest" class="mc-kpis"></div>
+      <div class="grid-2" style="margin-top:0.75rem">
+        <label>Site
+          <select id="sites-brand">
+            <option value="ava">avaivy.cloud</option>
+            <option value="rootrecord">rootrecord.online</option>
+            <option value="rootmc">rootmc.net</option>
+          </select>
+        </label>
+        <label>Fan-out
+          <select id="sites-fanout">
+            <option value="one">This site only</option>
+            <option value="all">All three sites</option>
+          </select>
+        </label>
+      </div>
+      <label>Title <input id="sites-title" type="text" /></label>
+      <label>Teaser <input id="sites-teaser" type="text" /></label>
+      <label>Body <textarea id="sites-body" class="draft-tall" rows="8"></textarea></label>
+      <div class="attach-bar" style="margin:0.4rem 0 0.6rem">
+        <div class="row wrap">
+          <button type="button" id="sites-add-image">Add image</button>
+          <button type="button" id="sites-add-sound">Add sound</button>
+          <button type="button" id="sites-clear-media">Clear media</button>
+        </div>
+        <p class="hint-inline">Images go into the post body. Sound is attached as playable audio on the published post.</p>
+        <div id="sites-media-chips" class="attach-chips"></div>
+        <input id="sites-file-image" type="file" accept="image/*,video/*" multiple hidden />
+        <input id="sites-file-sound" type="file" accept="audio/*" multiple hidden />
+      </div>
+      <div class="row wrap">
+        <button type="button" id="sites-save" class="primary">Save + sync blogs</button>
+        <button type="button" id="sites-publish-rootmc" class="warn-btn">Publish RootMC</button>
+      </div>
+      <h3 class="cron-title" style="margin-top:1.2rem">Goal drafts (from context)</h3>
+      <div class="row wrap">
+        <button type="button" id="sites-goals-generate">Generate drafts</button>
+        <button type="button" id="sites-goals-approve">Approve first draft</button>
+      </div>
+      <pre id="sites-goals-out" class="status"></pre>
+      <pre id="sites-status" class="status"></pre>
+    </section>
+
+    <section id="page-backgrounds" class="page">
+      <div class="cron-head">
+        <div>
+          <h2 class="cron-title">Site backgrounds</h2>
+          <p class="hint-inline">
+            Change the rotating full-bleed art on solar/status and other boards.
+            Files live in <code>media/images/character/</code>; config is
+            <code>site-backgrounds.json</code> in that folder.
+          </p>
+        </div>
+        <div class="row wrap">
+          <button type="button" id="bg-refresh">Refresh</button>
+          <button type="button" id="bg-open-folder" class="primary">Open character folder</button>
+        </div>
+      </div>
+      <div class="grid-2" style="margin-top:0.75rem">
+        <label>Page
+          <select id="bg-page"></select>
+        </label>
+        <label>New page key
+          <input id="bg-new-key" type="text" placeholder="e.g. live-home" />
+        </label>
+      </div>
+      <label>Label <input id="bg-label" type="text" /></label>
+      <label>Sites (comma-separated) <input id="bg-sites" type="text" placeholder="avaivy.cloud/solar, rootrecord.online/ava" /></label>
+      <label>Cycle seconds (0 = no rotate) <input id="bg-cycle" type="number" min="0" step="1" value="18" /></label>
+      <p class="hint-inline" id="bg-dir">Folder: —</p>
+      <h3 class="cron-title" style="margin-top:1rem">Rotation (click × to remove, drag order via Up/Down)</h3>
+      <div id="bg-selected" class="attach-chips"></div>
+      <h3 class="cron-title" style="margin-top:1rem">Character library — click to add</h3>
+      <div id="bg-library" class="bg-library"></div>
+      <div class="row wrap" style="margin-top:0.8rem">
+        <button type="button" id="bg-save" class="primary">Save page backgrounds</button>
+        <button type="button" id="bg-create">Create / select new page</button>
+      </div>
+      <pre id="bg-status" class="status"></pre>
+    </section>
+
+    <section id="page-reports" class="page">
+      <div class="cron-head">
+        <div>
+          <h2 class="cron-title">Reports</h2>
+          <p id="reports-meta" class="hint-inline">Loading…</p>
+        </div>
+        <div class="row">
+          <button type="button" id="reports-refresh">Refresh</button>
+          <button type="button" id="reports-readiness-run" class="ok-btn">Run readiness now</button>
+          <button type="button" id="reports-open-reports" class="primary">Open folder</button>
+          <button type="button" id="reports-open-days">Solar days</button>
+          <button type="button" id="reports-open-dumps">Dumps</button>
+          <button type="button" id="reports-open-data">Data</button>
+        </div>
+      </div>
+      <div class="reports-manual" style="margin-top:0.75rem">
+        <h3 class="cron-title">Report readiness</h3>
+        <p id="reports-readiness-meta" class="hint-inline">Loading report slots, freshness, and local audio…</p>
+        <div id="reports-overview" class="cron-table"></div>
+      </div>
+      <div class="reports-manual">
+        <h3 class="cron-title">Manual daily report</h3>
+        <p class="hint-inline">Same idea as Discord <code>/yt</code> — paste the written report when Grok and Cursor are both down. Updates <code>morning-report-current.md</code> and posts as-is (no model rewrite). Ara TTS / MP4 stays skipped until credits return.</p>
+        <p id="reports-current-meta" class="hint-inline">No current report yet.</p>
+        <pre id="reports-current-preview" class="status reports-current-preview"></pre>
+        <div class="grid-2" style="margin-top:0.5rem">
+          <label>Kind
+            <select id="reports-kind">
+              <option value="summary">Morning summary → #updates + DMs</option>
+              <option value="morning">Morning report → #automations + DMs</option>
+            </select>
+          </label>
+          <label class="check" style="align-self:end">
+            <input id="reports-post" type="checkbox" checked />
+            Post to Discord / subscribers
+          </label>
+        </div>
+        <label>Written report
+          <textarea id="reports-manual-draft" class="draft-tall" rows="10" placeholder="Paste today’s written daily report…"></textarea>
+        </label>
+        <div class="row wrap" style="margin-top:0.5rem">
+          <button type="button" id="reports-load-current">Load current</button>
+          <button type="button" id="reports-clear-draft">Clear draft</button>
+          <button type="button" id="reports-submit-manual" class="primary">Submit current report</button>
+        </div>
+      </div>
+      <div class="reports-manual" style="margin-top:1.25rem">
+        <h3 class="cron-title">Report path (Local / Cloud)</h3>
+        <p class="hint-inline">Per type: text engine and MP3 path. Labels are Local or Cloud only — never vendor names. NWS stays local.</p>
+        <div id="reports-gen-toggles" class="cron-table"></div>
+        <pre id="reports-gen-status" class="status"></pre>
+      </div>
+      <div class="reports-manual" style="margin-top:1.25rem">
+        <h3 class="cron-title">Audio fallback (manual MP3)</h3>
+        <p class="hint-inline">Generated local report audio plays automatically when present. These manual slots are only fallback files for a missing generated report audio file.</p>
+        <div id="reports-audio-manual" class="cron-table"></div>
+        <pre id="reports-audio-status" class="status"></pre>
+      </div>
+      <h3 class="cron-title">Due today</h3>
+      <div id="reports-due" class="cron-table"></div>
+      <h3 class="cron-title">Recurring</h3>
+      <div id="reports-recurring" class="cron-table"></div>
+      <h3 class="cron-title">Previously generated</h3>
+      <div id="reports-generated" class="cron-table"></div>
+      <pre id="reports-status" class="status"></pre>
+    </section>
+
+    <section id="page-weather-gifs" class="page">
+      <div class="cron-head">
+        <div>
+          <h2 class="cron-title">Weather GIFs</h2>
+          <p id="wg-meta" class="hint-inline">Collector · workstations/weather-gif-collector · Media public images/weather</p>
+        </div>
+        <div class="row wrap">
+          <button type="button" id="wg-refresh">Refresh leftover board</button>
+          <button type="button" id="wg-open-collector" class="primary">Open collector</button>
+          <button type="button" id="wg-open-board">Open leftover board</button>
+          <button type="button" id="wg-open-folder">Open leftover media</button>
+        </div>
+      </div>
+      <h3 class="cron-title">Collector</h3>
+      <div id="wg-updater" class="cron-table"></div>
+      <h3 class="cron-title">Leftover Ava-core directories</h3>
+      <div id="wg-dirs" class="cron-table"></div>
+      <pre id="wg-status" class="status"></pre>
+    </section>
+
+    <section id="page-biz" class="page page-biz">
+      <div class="cron-head">
+        <div>
+          <h2 class="cron-title">Business Manager</h2>
+          <p id="biz-meta" class="hint-inline">Time tracking · Ava uptime = dev online · per-process CPU · operator only</p>
+        </div>
+        <div class="row wrap">
+          <button type="button" id="biz-refresh">Refresh</button>
+          <button type="button" id="biz-clock-in" class="ok-btn">Clock in</button>
+          <button type="button" id="biz-clock-out" class="warn-btn">Clock out</button>
+        </div>
+      </div>
+      <div id="biz-kpis" class="mc-kpis"></div>
+      <form id="biz-clock-form" class="fin-form" autocomplete="off">
+        <select id="biz-project"></select>
+        <select id="biz-category"></select>
+        <input id="biz-note" type="text" placeholder="What are you working on?" />
+        <button type="submit" class="primary">Clock in with note</button>
+      </form>
+      <h3 class="cron-title">Hours · 7 day</h3>
+      <div id="biz-hours-chart" class="biz-chart" aria-label="Hours last 7 days"></div>
+      <h3 class="cron-title">CPU · Ava / Ollama / host</h3>
+      <div id="biz-cpu-chart" class="biz-chart" aria-label="CPU series"></div>
+      <h3 class="cron-title">Processes</h3>
+      <div id="biz-procs" class="term-procs"></div>
+      <h3 class="cron-title">Recent entries</h3>
+      <div id="biz-entries"></div>
+      <form id="biz-project-form" class="fin-form" autocomplete="off">
+        <input id="biz-new-project" type="text" placeholder="New project name" required />
+        <input id="biz-new-note" type="text" placeholder="Note (optional)" />
+        <button type="submit">Add project</button>
+      </form>
+      <pre id="biz-status" class="status"></pre>
+    </section>
+
+    <section id="page-finance" class="page page-finance">
+      <div class="cron-head">
+        <div>
+          <h2 class="cron-title">Finance</h2>
+          <p id="finance-meta" class="hint-inline">Stripe Pro + ops ledger · operator only · not player Gold</p>
+        </div>
+        <div class="row wrap">
+          <button type="button" id="finance-refresh">Refresh</button>
+          <button type="button" id="finance-stripe" class="primary">Refresh Stripe</button>
+          <button type="button" id="finance-review">Run review</button>
+          <button type="button" id="finance-notify" class="warn-btn">Telegram Alex</button>
+        </div>
+      </div>
+      <div id="finance-kpis" class="mc-kpis"></div>
+      <p id="finance-stripe-note" class="hint-inline"></p>
+      <h3 class="cron-title">Ava P&amp;L (Starlink external)</h3>
+      <p id="finance-full-note" class="hint-inline">Root Record Software Solutions · official from May 31. Surplus credits count as revenue.</p>
+      <div id="finance-full-kpis" class="mc-kpis"></div>
+      <div id="finance-stripe-spend"></div>
+      <div id="finance-income-txns"></div>
+      <div id="finance-cost-txns"></div>
+      <div id="finance-full-months"></div>
+      <h3 class="cron-title">Venmo / Root Record P&amp;L</h3>
+      <p id="finance-pnl-note" class="hint-inline">Root Record Software Solutions (Ava) official from May 31, 2026. Earlier txns kept as context. Coinbase = digital assets (income source). Surplus credits = revenue.</p>
+      <div id="finance-pnl-kpis" class="mc-kpis"></div>
+      <div id="finance-pnl-months"></div>
+      <div id="finance-pnl-txns"></div>
+      <h3 class="cron-title">Optimal monthly budget</h3>
+      <p id="finance-optimal-note" class="hint-inline">Target spend for development + resources — not invoices.</p>
+      <div id="finance-optimal"></div>
+      <form id="finance-optimal-form" class="fin-form" autocomplete="off">
+        <input id="fin-opt-label" type="text" placeholder="Budget line — Starlink, tools…" required />
+        <input id="fin-opt-amount" type="number" step="0.01" min="0" placeholder="USD" required />
+        <select id="fin-opt-period">
+          <option value="month">/month</option>
+          <option value="year">/year</option>
+          <option value="week">/week</option>
+        </select>
+        <select id="fin-opt-category">
+          <option value="hosting">hosting</option>
+          <option value="domains">domains</option>
+          <option value="internet">internet</option>
+          <option value="software">software</option>
+          <option value="development">development</option>
+          <option value="utilities">utilities</option>
+          <option value="digital-assets">digital-assets</option>
+          <option value="marketing">marketing</option>
+          <option value="ops">ops</option>
+        </select>
+        <input id="fin-opt-note" type="text" placeholder="Note (optional)" />
+        <button type="submit" class="primary">Add to optimal</button>
+      </form>
+      <h3 class="cron-title">Wishlists</h3>
+      <div id="finance-wishlists"></div>
+      <form id="finance-wishlist-form" class="fin-form" autocomplete="off">
+        <input id="fin-wl-name" type="text" placeholder="New wishlist name" required />
+        <input id="fin-wl-note" type="text" placeholder="Note (optional)" />
+        <button type="submit" class="primary">Add wishlist</button>
+      </form>
+      <h3 class="cron-title">Ops ledger</h3>
+      <div id="finance-projects"></div>
+      <form id="finance-add-form" class="fin-form" autocomplete="off">
+        <select id="fin-kind">
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
+          <option value="debt">Debt</option>
+        </select>
+        <input id="fin-label" type="text" placeholder="Label — Shockbyte, domains…" required />
+        <input id="fin-amount" type="number" step="0.01" min="0" placeholder="Amount USD" required />
+        <select id="fin-period">
+          <option value="month">/month</option>
+          <option value="year">/year</option>
+          <option value="week">/week</option>
+          <option value="once">once</option>
+        </select>
+        <select id="fin-category">
+          <option value="hosting">hosting</option>
+          <option value="domains">domains</option>
+          <option value="cloudflare">cloudflare</option>
+          <option value="internet">internet</option>
+          <option value="software">software</option>
+          <option value="development">development</option>
+          <option value="hardware">hardware</option>
+          <option value="utilities">utilities</option>
+          <option value="digital-assets">digital-assets</option>
+          <option value="marketing">marketing</option>
+          <option value="ops">ops</option>
+          <option value="personal">personal</option>
+          <option value="other">other</option>
+        </select>
+        <input id="fin-project" type="text" list="fin-project-list" placeholder="Project (rootmc-ops)" />
+        <datalist id="fin-project-list"></datalist>
+        <input id="fin-account" type="text" placeholder="Account (default)" />
+        <button type="submit" class="primary">Add line</button>
+      </form>
+      <form id="finance-acct-form" class="fin-form" autocomplete="off">
+        <input id="fin-acct-name" type="text" placeholder="New account name" required />
+        <select id="fin-acct-kind">
+          <option value="cash">cash</option>
+          <option value="bank">bank</option>
+          <option value="stripe">stripe</option>
+          <option value="debt">debt</option>
+          <option value="project">project</option>
+        </select>
+        <input id="fin-acct-balance" type="number" step="0.01" placeholder="Opening USD" />
+        <input id="fin-acct-project" type="text" list="fin-project-list" placeholder="Project (ava)" />
+        <button type="submit">Add account</button>
+      </form>
+      <h3 class="cron-title">Review suggestions</h3>
+      <div id="finance-review-list"></div>
+      <pre id="finance-status" class="status"></pre>
+    </section>
+
+    <section id="page-release" class="page">
+      <div class="cron-head">
+        <div>
+          <h2 class="cron-title">Release</h2>
+          <p class="hint-inline">Private · bump / build / release on this host. Downloads go to publicfiles.</p>
+        </div>
+        <div class="row">
+          <button type="button" id="release-kind-plugins" class="primary">Plugins</button>
+          <button type="button" id="release-kind-apps">Apps</button>
+          <button type="button" id="release-refresh">Refresh</button>
+        </div>
+      </div>
+      <div class="row release-actions">
+        <button type="button" id="release-bump" class="primary">Bump</button>
+        <button type="button" id="release-build">Build</button>
+        <button type="button" id="release-release" class="warn">Release → Telegram</button>
+        <a id="release-files-link" class="link-inline" href="https://ava.rootmc.net/publicfiles/" target="_blank" rel="noopener">publicfiles ↗</a>
+      </div>
+      <p id="release-meta" class="hint-inline">Loading…</p>
+      <div class="grid-2 release-grid">
+        <div>
+          <h3 class="cron-title">Targets <span class="hint-inline">(empty = all)</span></h3>
+          <div id="release-targets" class="release-targets"></div>
+        </div>
+        <div>
+          <h3 class="cron-title">Artifacts</h3>
+          <div id="release-arts" class="release-arts"></div>
+        </div>
+      </div>
+      <h3 class="cron-title">Job log</h3>
+      <pre id="release-log" class="status release-log">Idle.</pre>
+    </section>
+
+    <section id="page-links" class="page">
+      <div class="links-head">
+        <div>
+          <h2 class="cron-title">Links</h2>
+          <p class="hint-inline">All Ava surfaces and related Root Record / RootMC URLs. Click to open.</p>
+        </div>
+        <button type="button" id="links-refresh">Refresh</button>
+      </div>
+      <div id="links-catalog" class="links-catalog"></div>
+      <pre id="links-status" class="status"></pre>
+    </section>
+
+    <section id="page-settings" class="page">
+      <h2 class="cron-title">Desk features</h2>
+      <p class="hint-inline">Hurricane desk, radio inserts, listener feedback, and Delta 2 AC. Save writes origin state. Restart Ava Desk after a GitHub pull if the window itself changed.</p>
+      <label class="check"><input id="feat-hurricane-radio" type="checkbox" /> Hurricane desk on public radio (06:35 / 13:12 / 17:02 HST)</label>
+      <label class="check"><input id="feat-voice-inserts" type="checkbox" /> Reports and chimes on the public live stream</label>
+      <label class="check"><input id="feat-feedback-popup" type="checkbox" /> Radio “Share a thought” on the listen page</label>
+      <label class="check"><input id="feat-ecoflow-gate" type="checkbox" /> Delta 2 AC solar gate</label>
+      <label class="check"><input id="feat-ecoflow-soc" type="checkbox" /> Keep AC on when Delta SOC is over 80%</label>
+      <div class="row" style="gap:0.5rem;margin-top:0.5rem">
+        <button type="button" id="feat-save" class="primary">Save features</button>
+        <button type="button" id="feat-refresh">Refresh</button>
+      </div>
+      <pre id="feat-status" class="status"></pre>
+
+      <h2 class="cron-title">Desk startup</h2>
+      <label class="check"><input type="checkbox" id="start-ava-on-launch" /> Start AVA Core and voice when Desk opens</label>
+      <button type="button" id="start-ava-on-launch-save">Save startup preference</button>
+      <pre id="start-ava-on-launch-status" class="status"></pre>
+
+      <h2 class="cron-title">Projected start</h2>
+      <p class="hint-inline">Auto-fills from the rolling average of first daytime starts (after sunrise, before 2pm). Save to lock a manual time; Use average to follow the average again.</p>
+      <div class="grid-2">
+        <label>Start time (HST)
+          <input id="start-time" type="time" step="60" />
+        </label>
+        <label>Source
+          <input id="start-source" type="text" readonly placeholder="—" />
+        </label>
+      </div>
+      <div class="row" style="gap:0.5rem;margin-top:0.5rem">
+        <button type="button" id="start-save">Save start time</button>
+        <button type="button" id="start-use-avg">Use average</button>
+        <button type="button" id="start-refresh">Refresh</button>
+      </div>
+      <pre id="start-status" class="status"></pre>
+
+      <h2 class="cron-title">Projected shutdown</h2>
+      <p class="hint-inline">Nightly HST time: Ava posts a shutdown report to Discord + Slack, runs <code>/rootstop</code> on Minecraft, then powers herself off. Typical window ~10pm–1am.</p>
+      <div class="grid-2">
+        <label>Shutdown time (HST)
+          <input id="shutdown-time" type="time" step="60" />
+        </label>
+        <label>Countdown
+          <input id="shutdown-countdown" type="text" readonly placeholder="—" />
+        </label>
+      </div>
+      <div class="row" style="gap:0.5rem;margin-top:0.5rem">
+        <button type="button" id="shutdown-save">Save shutdown time</button>
+        <button type="button" id="shutdown-use-avg">Use average</button>
+        <button type="button" id="shutdown-refresh">Refresh</button>
+      </div>
+      <pre id="shutdown-status" class="status"></pre>
+
+      <h2 class="cron-title">Ops schedule banner</h2>
+      <p class="hint-inline">Shown on the local status board. Auto-shows when the site bank has about 3 hours left — Starlink goes dark; the Root Server can keep offline tasks on its own battery. Not painted on the cold holding page.</p>
+      <label class="check"><input id="ops-enabled" type="checkbox" /> Show projected start / shutdown on the status board</label>
+      <label class="check"><input id="ops-auto-low" type="checkbox" /> Auto-show when EcoFlow hours ≤ 3</label>
+      <label class="check"><input id="ops-show-start" type="checkbox" /> Include start time</label>
+      <label class="check"><input id="ops-show-stop" type="checkbox" /> Include shutdown time</label>
+      <div class="row" style="gap:0.5rem;margin-top:0.5rem">
+        <button type="button" id="ops-banner-save">Save banner</button>
+        <button type="button" id="ops-banner-refresh">Refresh</button>
+      </div>
+      <pre id="ops-banner-status" class="status"></pre>
+
+      <h2 class="cron-title">RootRecord governance</h2>
+      <p class="hint-inline">Same idea as the RootMC constitution: people speak, daily tally, majority can pass a proposal. Notes about people always save. These two switches turn the community program and the self-update / Cursor hook on or off. Self-update waits at least an hour after boot reports. Cursor stays queued unless remaining context is known and above the floor (default 25%). Unknown context never auto-runs.</p>
+      <label class="check"><input id="gov-community" type="checkbox" /> Community governance (daily consensus + proposal / conclusion pages)</label>
+      <label class="check"><input id="gov-self-update" type="checkbox" /> Self-update (queue Cursor after a majority pass)</label>
+      <div class="grid-2" style="margin-top:0.5rem">
+        <label>Need unused context above (%)
+          <input id="gov-min-free" type="number" min="1" max="90" step="1" />
+        </label>
+        <label>Known unused context now (%) — blank = unknown
+          <input id="gov-free-now" type="number" min="0" max="100" step="1" placeholder="unknown" />
+        </label>
+      </div>
+      <div class="row" style="gap:0.5rem;margin-top:0.5rem">
+        <button type="button" id="gov-save">Save governance</button>
+        <button type="button" id="gov-run">Run tally now</button>
+        <button type="button" id="gov-refresh">Refresh</button>
+      </div>
+      <pre id="gov-status" class="status"></pre>
+
+      <h2 class="cron-title">API prices and balances</h2>
+      <p class="hint-inline">Public list prices are pulled at boot and every morning (docs pages only — no tokens). Prepaid APIs stay unknown until you seed a starting dollar amount. Cursor is a monthly pool (percent). Spend master and every vendor stay off until you turn them on. Grok has its own plans — leave it off.</p>
+      <label class="check"><input id="ledger-capture" type="checkbox" /> Capture public prices (boot + daily)</label>
+      <label class="check"><input id="ledger-spend-master" type="checkbox" /> Spend master (allow any linked API to spend)</label>
+      <div class="grid-2" style="margin-top:0.5rem">
+        <label>Cursor used now (%)
+          <input id="ledger-cursor-used" type="number" min="0" max="100" step="1" placeholder="73" />
+        </label>
+        <label>Grok starting balance (USD)
+          <input id="ledger-xai-usd" type="number" min="0" step="0.01" placeholder="5.00" />
+        </label>
+      </div>
+      <div class="grid-2" style="margin-top:0.5rem">
+        <label>OpenAI starting balance (USD)
+          <input id="ledger-openai-usd" type="number" min="0" step="0.01" placeholder="unknown until seeded" />
+        </label>
+        <label>Gemini starting balance (USD)
+          <input id="ledger-gemini-usd" type="number" min="0" step="0.01" placeholder="unknown until seeded" />
+        </label>
+      </div>
+      <label class="check"><input id="ledger-cursor-spend" type="checkbox" /> Allow Cursor spend</label>
+      <label class="check"><input id="ledger-xai-spend" type="checkbox" /> Allow Grok spend</label>
+      <label class="check"><input id="ledger-openai-spend" type="checkbox" /> Allow OpenAI spend</label>
+      <label class="check"><input id="ledger-gemini-spend" type="checkbox" /> Allow Gemini spend</label>
+      <div class="row" style="gap:0.5rem;margin-top:0.5rem">
+        <button type="button" id="ledger-save">Save ledger</button>
+        <button type="button" id="ledger-refresh">Refresh prices now</button>
+      </div>
+      <pre id="ledger-status" class="status"></pre>
+      <pre id="ledger-prices" class="status"></pre>
+
+      <h2 class="cron-title">Service disruption</h2>
+      <p class="hint-inline">Optional banner on the public status / solar page. Shown only when enabled. Set a clears-on date (HST) for a live countdown — storms can be multi-day (next sunny morning, end of maintenance, etc.).</p>
+      <label class="check"><input id="disrupt-enabled" type="checkbox" /> Show disruption banner on status page</label>
+      <div class="grid-2" style="margin-top:0.5rem">
+        <label>Category
+          <select id="disrupt-category">
+            <option value="maintenance">Maintenance</option>
+            <option value="weather">Weather</option>
+            <option value="unexpected">Unexpected</option>
+          </select>
+        </label>
+        <label>Title
+          <input id="disrupt-title" type="text" maxlength="160" placeholder="Tropical storm — possible interruptions" />
+        </label>
+      </div>
+      <label style="display:block;margin-top:0.5rem">Details
+        <textarea id="disrupt-detail" class="textarea-short" rows="4" maxlength="1200" placeholder="What’s happening, who is affected, and when you expect it to clear."></textarea>
+      </label>
+      <div class="grid-2" style="margin-top:0.5rem">
+        <label>Clears on (HST date)
+          <input id="disrupt-until-date" type="date" />
+        </label>
+        <label>Time (HST)
+          <input id="disrupt-until-time" type="time" step="60" />
+        </label>
+      </div>
+      <div class="grid-2" style="margin-top:0.5rem">
+        <label>Countdown
+          <input id="disrupt-countdown" type="text" readonly placeholder="—" />
+        </label>
+        <label>Until
+          <input id="disrupt-until-label" type="text" readonly placeholder="—" />
+        </label>
+      </div>
+      <p class="hint-inline">Leave the date empty for no countdown. Time defaults to 10:00 HST (typical sunny start) if you only pick a day. GFS can fill the next sunny / calmer morning — you still save to publish.</p>
+      <div class="grid-2" style="margin-top:0.35rem">
+        <label>GFS next sunny
+          <input id="disrupt-gfs-label" type="text" readonly placeholder="Waiting for GFS…" />
+        </label>
+        <label>GFS note
+          <input id="disrupt-gfs-note" type="text" readonly placeholder="—" />
+        </label>
+      </div>
+      <div class="row" style="gap:0.5rem;margin-top:0.5rem">
+        <button type="button" id="disrupt-use-gfs">Use GFS date</button>
+        <button type="button" id="disrupt-gfs-refresh">Refresh GFS</button>
+      </div>
+      <div class="row" style="gap:0.5rem;margin-top:0.5rem">
+        <button type="button" id="disrupt-save">Save banner</button>
+        <button type="button" id="disrupt-refresh">Refresh</button>
+      </div>
+      <pre id="disrupt-status" class="status"></pre>
+
+      <h2 class="cron-title">Connection</h2>
+      <p class="hint-inline">Run this client on a Linux desktop while Ava-linux does the compute. Prefills are this server’s live endpoints + operator key from <code>.env</code>.</p>
+      <div class="conn-modes" role="radiogroup" aria-label="Connection mode">
+        <label class="conn-mode">
+          <input type="radio" name="conn-mode" id="conn-mode-local" value="local" />
+          <span>
+            <strong>Local</strong>
+            <em>Brain + Ollama on this machine (127.0.0.1)</em>
+          </span>
+        </label>
+        <label class="conn-mode">
+          <input type="radio" name="conn-mode" id="conn-mode-headless" value="headless" />
+          <span>
+            <strong>Headless server</strong>
+            <em>All work on Ava-linux OptiPlex</em>
+          </span>
+        </label>
+      </div>
+      <div class="conn-via" id="conn-via-row">
+        <label class="check"><input type="radio" name="conn-via" id="conn-via-lan" value="lan" /> LAN <code id="conn-lan-label">192.168.1.62</code></label>
+        <label class="check"><input type="radio" name="conn-via" id="conn-via-public" value="public" /> Public tunnel</label>
+        <label class="check"><input type="radio" name="conn-via" id="conn-via-loopback" value="loopback" /> Loopback</label>
+      </div>
+      <div class="grid-2">
+        <label>Brain URL
+          <input id="conn-brain" type="url" spellcheck="false" placeholder="http://192.168.1.62:8787" />
+        </label>
+        <label>Local API
+          <input id="conn-local-api" type="url" spellcheck="false" placeholder="http://192.168.1.62:8791" />
+        </label>
+        <label>Ollama URL
+          <input id="conn-ollama" type="url" spellcheck="false" placeholder="http://127.0.0.1:11434" />
+        </label>
+        <label>Public URL
+          <input id="conn-public" type="url" spellcheck="false" placeholder="https://ava.rootmc.net" />
+        </label>
+        <label>Operator key
+          <input id="conn-operator-key" type="password" spellcheck="false" autocomplete="off" />
+        </label>
+        <label>Workstation key
+          <input id="conn-workstation-key" type="password" spellcheck="false" autocomplete="off" />
+        </label>
+      </div>
+      <label class="check"><input type="checkbox" id="conn-show-keys" /> Show keys</label>
+      <div class="row wrap">
+        <button type="button" id="conn-reset">Reset to server defaults</button>
+        <button type="button" id="conn-test">Test connection</button>
+        <button type="button" id="conn-save" class="primary">Save &amp; apply</button>
+      </div>
+      <pre id="conn-test-out" class="status"></pre>
+      <p id="conn-note" class="hint-inline"></p>
+
+      <h2 class="cron-title">GitHub · live tree</h2>
+      <p class="hint-inline">
+        Auto-check fetches <code>origin</code> into the live tree (what GitHub deploys from).
+        When the working tree is clean and you are behind, auto-pull does a safe ff-only pull.
+        Use the manual button if auto-check stalls or the tree was dirty.
+      </p>
+      <label class="check"><input type="checkbox" id="git-auto-check" checked /> Auto-check every 10 minutes</label>
+      <label class="check"><input type="checkbox" id="git-auto-pull" checked /> Auto-pull when behind and clean</label>
+      <div class="row wrap" style="margin-top:0.5rem;gap:0.5rem">
+        <button type="button" id="git-check-btn">Check now</button>
+        <button type="button" id="git-pull-btn" class="primary">Pull GitHub → live /ava</button>
+        <button type="button" id="git-prefs-save">Save prefs</button>
+      </div>
+      <pre id="git-sync-status" class="status"></pre>
+      <p id="git-sync-hint" class="hint-inline"></p>
+
+      <h3 class="cron-title">Tokens / providers</h3>
+      <p class="hint-inline">Discord / Slack / Telegram tokens still come from <code>~/ava/.env</code> (or <code>AVA_ENV_FILE</code>). Rewrite, crons, reports, core, Minecraft, and HTTP ops use the brain above.</p>
+      <pre id="settings-status" class="status"></pre>
+      <h3 class="cron-title">Providers</h3>
+      <pre id="settings-providers" class="status"></pre>
+    </section>
+
+    <section id="page-clear" class="page page-clear">
+      <div class="purge-stage">
+        <p class="purge-eyebrow">RootRecord · Ava</p>
+        <h2 class="purge-title">Clear desk</h2>
+        <p class="purge-copy">
+          Stops origin, Cloudflare tunnel, Task Scheduler Ava jobs, background Pythons,
+          Ollama, music players, Discord, and this Desk. Nothing Ava-owned comes back
+          until you resume.
+        </p>
+        <button type="button" id="purge-big-red" class="purge-big-red" disabled>
+          End everything
+        </button>
+        <label class="purge-confirm-label">
+          <input type="checkbox" id="purge-confirm" />
+          I want the PC to myself — kill Ava / RootRecord and Discord
+        </label>
+        <p class="purge-resume hint-inline">
+          Opening Ava Desk again turns everything back on (tasks, origin, tunnel).
+          Discord stays off until you open it yourself.
+        </p>
+        <pre id="purge-status" class="status"></pre>
+      </div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

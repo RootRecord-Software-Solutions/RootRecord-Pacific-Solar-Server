@@ -23,6 +23,8 @@ export POLLER_LOG="${POLLER_LOG:-/home/rootrecord/RootRecord-Ecosystem/2 - RootR
 export POLLER_TUNNEL_MODE="${POLLER_TUNNEL_MODE:-token}"
 export CLOUDFLARED_BIN="${CLOUDFLARED_BIN:-$REPO/Communications/network/cloudflare/bin/cloudflared}"
 export CLOUDFLARED_TOKEN_FILE="${CLOUDFLARED_TOKEN_FILE:-$HOME/.cloudflared/rootserver.token}"
+# Armed 2026-09-30 after sign-off (WO-MIG-01). No night-mode.json still means not sleeping.
+export RR_NIGHT_SLEEP="${RR_NIGHT_SLEEP:-1}"
 
 # ====================================================
 # SECTION: EXEC
