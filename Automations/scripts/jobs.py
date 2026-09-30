@@ -361,6 +361,20 @@ EVERY_SECONDS = [
         "env": {},
     },
     {
+        # Python drop allowlist (WO-MIG-46). OFF unless RR_PYTHON_DROP=1 at poller start.
+        # Empty catalog.json runs nothing. No drop-folder scan.
+        "id": "system_python_drop",
+        "enabled": os.environ.get("RR_PYTHON_DROP", "0") == "1",
+        "description": "Allowlisted PythonDrop scripts only. Gate RR_PYTHON_DROP stays unset. Empty catalog spawns nothing.",
+        "interval_sec": 300,
+        "builtin": "",
+        "command": f'python3 "{PACIFIC}/System/PythonDrop/scripts/python_drop.py" tick',
+        "timeout_sec": 70,
+        "needs_internet": False,
+        "cwd": f"{PACIFIC}/System/PythonDrop",
+        "env": {},
+    },
+    {
         # All-time radar zip (WO-MIG-05). Reads frames the weather poller already saved.
         # OFF unless RR_RADAR_ZIP=1 is in the poller's environment at poller start. No fetch, no delete.
         "id": "weather_radar_zip",
@@ -772,6 +786,20 @@ ON_AT = [
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" hurricane_desk',
         "timeout_sec": 300,
         "cwd": f"{PACIFIC}/Media/Voice/scripts",
+        "env": {},
+    },
+    {
+        # Bruce desk sample (WO-MIG-26). OFF unless RR_BRUCE_STATS=1 at poller start.
+        # Dry-run: no Telegram. Send only when RR_BRUCE_STATS_SEND=1 as well.
+        "id": "bruce_stats_posts",
+        "enabled": os.environ.get("RR_BRUCE_STATS", "0") == "1",
+        "description": "Bruce measured host and EcoFlow desk sample. Dry-run unless RR_BRUCE_STATS_SEND=1.",
+        "at_times": ["07:18", "15:18", "21:18"],
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Communications/BruceStats/scripts/bruce_stats.py"',
+        "timeout_sec": 60,
+        "needs_internet": os.environ.get("RR_BRUCE_STATS_SEND", "0") == "1",
+        "cwd": f"{PACIFIC}/Communications/BruceStats",
         "env": {},
     },
 ]
