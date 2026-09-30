@@ -4,6 +4,7 @@
   python3 voice_reports.py <report> [--no-voice]
   reports: hourly_chime · nws_weather · energy_report · remaining_tasks · morning_report · midday_report · late_report
            · earthquake_report · hurricane_desk · kilauea_report · solar_desk · security_desk · bandwidth_desk
+           · official_weather · boot_brief
 
 Each run writes Database Media/Audio/Voice/Reports/<report>_current.md (old copy -> Reports/Archive/
 <report>_YYYYMMDDTHHMM.md) and a stitched WAV Media/Audio/Voice/<report>_current.wav via voice-render.sh
@@ -22,6 +23,9 @@ Geology/Volcanoes/{kilauea,mauna-loa}-last.json; job gated RR_VOICE_KILAUEA=1. G
 solar_desk / security_desk / bandwidth_desk = G1 hourly-clip-reports desks (Bruce solar; Carly security + bandwidth) from
 Database Energy/{soc,watts,sun} and Pacific System/scripts/host_desks.py (net samples in Database System/network/).
 Gates PROPOSED (RR_VOICE_SOLAR / RR_VOICE_SECURITY / RR_VOICE_BANDWIDTH) - not registered in jobs.py (sign-off).
+official_weather = G1 official-weather-media spoken statement (Ava): HLS (Pacific Weather/scripts/official_statement.py ->
+Database Weather/Hawai'i/official/) or HWO / AFD (weather poller text products). boot_brief = G1 boot-prelims Boot Report
+(file-only, no Grok) as a template brief (Ava). Both PROPOSED (RR_VOICE_OFFICIAL / RR_VOICE_BOOT), not in jobs.py.
 Roll-ups can append an LLM summary via run-infer.sh only when RR_VOICE_ROLLUP_LLM=1 (off by default).
 Scheduling: jobs.py, one env gate per report (read at poller start). Added 2026-09-29 (g3-voice-reports2).
 """
@@ -71,7 +75,8 @@ STALE_MIN = 30
 KIND = {"hourly_chime": "chime", "nws_weather": "nws", "energy_report": "energy", "remaining_tasks": "remaining",
         "morning_report": "morning", "midday_report": "midday", "late_report": "late", "earthquake_report": "earthquake",
         "hurricane_desk": "hurricane", "kilauea_report": "kilauea",
-        "solar_desk": "solar", "security_desk": "security", "bandwidth_desk": "bandwidth"}
+        "solar_desk": "solar", "security_desk": "security", "bandwidth_desk": "bandwidth",
+        "official_weather": "official", "boot_brief": "boot"}
 
 
 def now() -> datetime:
@@ -661,12 +666,115 @@ def llm_summary(lines: list[str]) -> str | None:
         os.unlink(f.name)
 
 
+OFFICIAL = WX / "official"  # Pacific Weather/scripts/official_statement.py (HLS)
+HFO_TEXT = WX / "hfo" / "api.weather.gov" / "products" / "types"  # weather poller: <TYPE>/locations/HFO/HFO_current.txt
+OFFICIAL_MAX_H = 24  # a statement older than this is not read as current (G1 read the newest product regardless)
+_WMO_HEAD = re.compile(r"^\s*0{3}\s+[A-Z]{4}\d{2}\s+[A-Z]{4}\s+\d{6}\s+[A-Z]{6}\s+")
+_UGC = re.compile(r"\b(?:[A-Z]{2}[ZC][0-9>\-]{3,}-)+\d{6}-\s*")
+
+
+def _speech_product(text: str) -> str:
+    """Flattened NWS product -> speakable: drop the WMO / AWIPS header and UGC zone strings, ** markers, dashes runs."""
+    t = _UGC.sub("", _WMO_HEAD.sub("", " ".join((text or "").split())))
+    t = re.sub(r"\*\*|-{3,}|\s\*\s", " ", t)
+    return " ".join(t.split())
+
+
+def official_products(t: datetime) -> list[dict]:
+    """[{type, text, issued, age_h}] newest-first candidates: HLS (official/), HWO, AFD (poller)."""
+    out = []
+    st = jload(OFFICIAL / "official-last.json") or {}
+    hls = OFFICIAL / "HLS_current.txt"
+    issued = ((st.get("hls") or {}).get("issued")) if isinstance(st, dict) else None
+    if hls.is_file():
+        try:
+            age = (t - datetime.fromisoformat(str(issued).replace("Z", "+00:00"))).total_seconds() / 3600 if issued else None
+        except ValueError:
+            age = None
+        out.append({"type": "HLS", "text": hls.read_text(encoding="utf-8", errors="replace"), "issued": issued,
+                    "age_h": round(age, 1) if age is not None else None})
+    for typ in ("HWO", "AFD"):
+        f = HFO_TEXT / typ / "locations" / "HFO" / "HFO_current.txt"
+        if f.is_file():
+            age = (t.timestamp() - f.stat().st_mtime) / 3600  # poller rewrites on change; mtime ~ last fetch
+            out.append({"type": typ, "text": f.read_text(encoding="utf-8", errors="replace"),
+                        "issued": datetime.fromtimestamp(f.stat().st_mtime).astimezone().isoformat(timespec="minutes"),
+                        "age_h": round(age, 1)})
+    return out
+
+
+def b_official_weather(t: datetime):
+    """G1 official_weather_media._official_statement spoken text: HLS, else HWO, else AFD; 4500-char cap (G1)."""
+    prods = official_products(t)
+    fresh = [p for p in prods if p["age_h"] is not None and p["age_h"] <= OFFICIAL_MAX_H and _speech_product(p["text"])]
+    md = [f"# Official weather statement — {t.isoformat()}", "", "| Product | Issued / fetched | Age h | Used |",
+          "| --- | --- | --- | --- |"]
+    pick = fresh[0] if fresh else None
+    for p in prods:
+        md.append(f"| {p['type']} | {p['issued'] or 'n/a'} | {p['age_h'] if p['age_h'] is not None else 'n/a'} | "
+                  f"{'yes' if p is pick else ''} |")
+    if pick is None:
+        spoken = "Honolulu National Weather Service has no local hurricane statement in effect."  # G1 fallback wording
+    else:
+        spoken = _speech_product(pick["text"])
+        if len(spoken) > 4500:
+            spoken = spoken[:4500].rsplit(" ", 1)[0] + "."
+    sp = [f"Official NWS Honolulu statement. {spoken}"]
+    md += ["", "## Spoken", "", sp[0], "",
+           "_Sources: Database `Weather/Hawai'i/official/HLS_current.txt` (official_statement.py) + "
+           "`Weather/Hawai'i/hfo/api.weather.gov/products/types/{HWO,AFD}/locations/HFO/HFO_current.txt` (weather poller)._", ""]
+    return "\n".join(md), sp
+
+
+def _uptime() -> tuple[str, int]:
+    up = float(open("/proc/uptime").read().split()[0])
+    boot = datetime.fromtimestamp(time.time() - up).astimezone()
+    return boot.isoformat(timespec="minutes"), int(up // 60)
+
+
+def b_boot_brief(t: datetime):
+    """G1 boot-prelims Boot Report (morning before noon HST, midday after), file-only, template wording, no Grok."""
+    kind = "morning" if t.hour < 12 else "midday"  # G1 desk_report_kind
+    boot_at, up_min = _uptime()
+    facts, (rows, _), h = energy_facts(t), alerts(), host()
+    k = jload(VOLCANOES / "kilauea-last.json") or {}
+    storms = [x for x in hurricane_facts(t) if x.get("active")]
+    b = datetime.fromisoformat(boot_at)
+    sp = [f"Boot report, {kind} edition.", f"It's {clock(t)} Hawaiian Standard Time.".replace("..", "."),
+          (f"The Pacific desk came up at {spoken_clock(b.hour, b.minute)}, {up_min} minutes ago." if up_min < 120 else
+           f"The Pacific desk came up at {spoken_clock(b.hour, b.minute)}, about {round(up_min / 60)} hours ago.")
+          if up_min < 1440 else f"The Pacific desk has been up {up_min // 1440} days."]
+    lines = [f"Kind: {kind}", f"Boot: {boot_at} (up {up_min} min)", f"Host CPU {h['cpu']}%, memory {h['mem']}% used"]
+    ok = [f for f in facts if f["ok"]]
+    if ok:
+        sp.append("Battery levels: " + ", ".join(f"{f['name']} at {f['soc']}%" for f in ok) + ".")
+        lines.append("Batteries: " + ", ".join(f"{f['name']} {f['soc']}%" for f in ok))
+    else:
+        sp.append("EcoFlow is offline."); lines.append("Batteries: offline")
+    ev = sorted({r["event"] for r in rows})
+    sp.append(f"{len(rows)} active weather alert{'s' if len(rows) != 1 else ''}" + (f", including {', '.join(ev[:3])}." if ev else "."))
+    lines.append(f"NWS alerts: {len(rows)}" + (f" ({', '.join(ev)})" if ev else ""))
+    if k.get("alert_level"):
+        sp.append(f"Kilauea alert level {str(k['alert_level']).lower()}" + (", erupting." if k.get("erupting") else "."))
+        lines.append(f"Kilauea: {k['alert_level']} / {k.get('color_code')} erupting={k.get('erupting')}")
+    if storms:
+        s0 = storms[0]
+        sp.append(f"{s0['label']} {s0['name']} is about {s0['nm']} nautical miles from {s0['island']}.")
+        lines.append(f"Nearest storm: {s0['label']} {s0['name']} {s0['nm']} nm from {s0['island']}")
+    sp.append(f"CPU {h['cpu']}%, memory {h['mem']}% used. End of boot report.")
+    md = [f"# Boot brief ({kind}) — {t.isoformat()}", ""] + [f"- {x}" for x in lines] + [
+        "", "## Spoken", "", " ".join(sp), "",
+        "_Sources: /proc/uptime, Database Energy + Weather alerts + Geology/Volcanoes + hurricane track.json. "
+        "G1 prelims order (NOAA -> NWS -> Kilauea) = the proposed ON_BOOT job runs geology_collect first._", ""]
+    return "\n".join(md), sp
+
+
 BUILD = {"hourly_chime": b_hourly_chime, "nws_weather": b_nws_weather, "energy_report": b_energy_report,
          "remaining_tasks": b_remaining_tasks, "morning_report": lambda t: _rollup(t, "morning"),
          "midday_report": lambda t: _rollup(t, "midday"), "late_report": lambda t: _rollup(t, "late"),
          "earthquake_report": b_earthquake_report, "hurricane_desk": b_hurricane_desk,
          "kilauea_report": b_kilauea_report, "solar_desk": b_solar_desk, "security_desk": b_security_desk,
-         "bandwidth_desk": b_bandwidth_desk}
+         "bandwidth_desk": b_bandwidth_desk, "official_weather": b_official_weather, "boot_brief": b_boot_brief}
 
 
 def write_md(report: str, md: str) -> Path:
