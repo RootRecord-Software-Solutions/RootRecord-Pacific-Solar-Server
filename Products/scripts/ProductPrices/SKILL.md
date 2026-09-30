@@ -17,8 +17,8 @@ history row with that photo path + timestamp (and `prev_price` when it changed).
 Same photo + same price is a no-op. Agents read via desk live block or:
 
 ```bash
-python3 ~/.ollama/skills/product-prices/scripts/product_prices.py recent
-python3 ~/.ollama/skills/product-prices/scripts/product_prices.py lookup "sour patch"
+python3 "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Products/scripts/ProductPrices/product_prices.py" recent
+python3 "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Products/scripts/ProductPrices/product_prices.py" lookup "sour patch"
 ```
 
 Do not invent prices — only rows in the store.

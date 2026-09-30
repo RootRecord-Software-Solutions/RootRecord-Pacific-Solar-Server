@@ -12,10 +12,10 @@ Shelf counts from `store/stock.json`. If it is not in that file, we do
 not have it on file.
 
 ```bash
-python3 ~/.ollama/skills/pantry/scripts/pantry.py
-python3 ~/.ollama/skills/pantry/scripts/pantry.py add onion 2 ea
-python3 ~/.ollama/skills/pantry/scripts/pantry.py use onion 1
-python3 ~/.ollama/skills/pantry/scripts/pantry.py set bananas 6 ea
+python3 "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Products/scripts/Pantry/pantry.py"
+python3 "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Products/scripts/Pantry/pantry.py" add onion 2 ea
+python3 "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Products/scripts/Pantry/pantry.py" use onion 1
+python3 "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Products/scripts/Pantry/pantry.py" set bananas 6 ea
 ```
 
 Hidden council tags (not spoken): `<<<PANTRY add onion | 2 | ea>>>`
