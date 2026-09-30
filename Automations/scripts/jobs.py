@@ -500,6 +500,20 @@ EVERY_SECONDS = [
         "cwd": f"{PACIFIC}/Energy/River-Car",
         "env": {},
     },
+    {
+        # Inbox drain (WO-MIG-31). OFF unless RR_INBOX_DRAIN=1 at poller start.
+        # Copies the quiet-mode hold locally. No Cloudflare. No send.
+        "id": "inbox_drain",
+        "enabled": os.environ.get("RR_INBOX_DRAIN", "0") == "1",
+        "description": "Copy quiet-mode Relay-Inbox rows into Database Communications/Inbox/feedback.jsonl. Gated off. No D1. No send.",
+        "interval_sec": 300,
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Communications/Inbox/scripts/inbox.py" drain',
+        "timeout_sec": 30,
+        "needs_internet": False,
+        "cwd": f"{PACIFIC}/Communications/Inbox",
+        "env": {},
+    },
 ]
 
 EVERY_MINUTE = [
@@ -867,6 +881,20 @@ ON_AT = [
         "timeout_sec": 90,
         "needs_internet": True,
         "cwd": f"{PACIFIC}/Advertising",
+        "env": {},
+    },
+    {
+        # Overnight relay (WO-MIG-31). OFF unless RR_OVERNIGHT_RELAY=1 at poller start.
+        # Writes a status file only. No Discord post. No invented watts.
+        "id": "overnight_relay",
+        "enabled": os.environ.get("RR_OVERNIGHT_RELAY", "0") == "1",
+        "description": "Write Database Communications/Inbox/overnight-last.txt at 22:20 HST. Gated off. No Discord post.",
+        "at_times": ["22:20"],
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Communications/Inbox/scripts/inbox.py" overnight',
+        "timeout_sec": 30,
+        "needs_internet": False,
+        "cwd": f"{PACIFIC}/Communications/Inbox",
         "env": {},
     },
 ]

@@ -29,7 +29,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--root",
         default=None,
-        help="Directory for per-user sqlite files. Default is Database ContextSession/.",
+        help="Directory for sessions.db. Default is Database ContextSession/.",
     )
     sub = parser.add_subparsers(dest="cmd", required=True)
 

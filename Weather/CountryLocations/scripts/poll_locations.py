@@ -11,10 +11,11 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import time
 import urllib.parse
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from zoneinfo import ZoneInfo
@@ -33,6 +34,7 @@ LAST_PATH = OUT / "locations-last.json"
 UA = "RootRecord-Pacific/3 country-locations"
 TIMEOUT = 10
 PAUSE = 0.2
+MIN_AGE = timedelta(minutes=55)
 FORECAST = "https://api.open-meteo.com/v1/forecast"
 
 
@@ -141,9 +143,34 @@ def write_json(path: Path, payload: dict) -> None:
     os.replace(tmp, path)
 
 
+def snapshot_is_fresh() -> bool:
+    if "--force" in sys.argv or not LAST_PATH.is_file():
+        return False
+    try:
+        payload = json.loads(LAST_PATH.read_text(encoding="utf-8"))
+        stamp = datetime.fromisoformat(payload["updated_at"])
+    except (OSError, json.JSONDecodeError, KeyError, TypeError, ValueError):
+        return False
+    if stamp.tzinfo is None:
+        stamp = stamp.replace(tzinfo=HST)
+    return datetime.now(HST) - stamp < MIN_AGE
+
+
 def run() -> dict:
     OUT.mkdir(parents=True, exist_ok=True)
     LOG_DIR.mkdir(parents=True, exist_ok=True)
+    if snapshot_is_fresh():
+        payload = {
+            "ok": True,
+            "locations": 0,
+            "skipped": 0,
+            "http_calls": 0,
+            "fetched": [],
+            "updated_at": datetime.now(HST).isoformat(timespec="seconds"),
+            "note": "snapshot_fresh",
+        }
+        write_json(STATUS_PATH, payload)
+        return payload
     raw = load_allowlist(ALLOWLIST)
     entries = select_places(raw)
     rows = []

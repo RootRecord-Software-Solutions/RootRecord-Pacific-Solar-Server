@@ -1,6 +1,6 @@
 # Website
 
-Desk runtime for the Stripe snapshot, Vercel failed-build records, and live-data pages. Public HTML stays staged until Public website checkout puts the one Vercel app in `3 - RootRecord-Website`.
+Desk runtime for the Stripe snapshot, Vercel failed-build records, and live-data pages. The public cards live in the one Vercel app under `3 - RootRecord-Website/src/app/data/`.
 
 ## Status (2026-09-30 HST — WO-MIG-10)
 

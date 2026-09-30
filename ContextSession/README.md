@@ -10,9 +10,9 @@ Per-user context session store. On demand. No poller and no listening port.
 | --- | --- |
 | Domain folder | **`ContextSession/` only** (no lowercase twin) |
 | Package | `scripts/ContextSession` |
-| CLI | `scripts/context_session.py` — create, append, list, current |
+| CLI | `scripts/context_session.py` — create, append, list, current, compile |
 | Listener | FastAPI factory is in `api.py` and is not called. No `serve` command. |
-| Data | Database `2 - RootRecord-Database/ContextSession/` — one `{user_id}.db` per user (git-ignored) |
+| Data | Database `2 - RootRecord-Database/ContextSession/` — one `sessions.db` for every user, plus one overwritten `compile-last.json` (both git-ignored). No file per event. |
 | Logs | Database `Logs/ContextSession/` — reserved. The CLI prints JSON and does not write a log file. |
 | jobs.py | Not edited. No periodic job. |
 | Secrets | None |
@@ -24,6 +24,7 @@ python3 context_session.py --root DIR create USER SESSION [--provider P] [--titl
 python3 context_session.py --root DIR append USER SESSION ROLE TYPE CONTENT
 python3 context_session.py --root DIR list USER
 python3 context_session.py --root DIR current USER SESSION
+python3 context_session.py --root DIR compile
 ```
 
 `--root` defaults to the Database folder above. User ids and session ids must match `[A-Za-z0-9._-]{1,128}`.
