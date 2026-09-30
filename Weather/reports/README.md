@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-30T12:10:52-10:00 HST | 34 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-30T12:18:52-10:00 HST | 34 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -3673,7 +3673,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-30T12:04:10.262486-10:00 HST |
+| **Collected** | 2026-09-30T12:12:11.142436-10:00 HST |
 
 ```text
                         
@@ -7138,7 +7138,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-30T12:10:52.497126-10:00 HST |
+| **Collected** | 2026-09-30T12:18:52.396524-10:00 HST |
 
 ```text
 Home
@@ -7262,7 +7262,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Wed, 30 Sep 2026 22:10:24 UTC
+Last update Wed, 30 Sep 2026 22:17:59 UTC
 
 NHC issuing advisories for the Eastern Pacific on
 
@@ -7671,7 +7671,7 @@ Tropical Weather Outlook
 
 Tropical Weather Discussion
 
-1815 UTC Wed Sep 30 2026
+0015 UTC Thu Oct 01 2026
 
 Post-Tropical Cyclone Hanna
 
