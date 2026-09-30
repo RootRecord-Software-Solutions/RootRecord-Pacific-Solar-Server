@@ -376,6 +376,19 @@ EVERY_SECONDS = [
         "env": {},
     },
     {
+        # Slack poller (WO-MIG-22). OFF unless RR_SLACK=1 at poller start. No token and no post.
+        "id": "communications_slack",
+        "enabled": os.environ.get("RR_SLACK", "0") == "1",
+        "description": "Slack poller -> Database Communications/Slack/slack-last.json. No HTTP and no post until a token and sign-off exist.",
+        "interval_sec": 60,
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Communications/Slack/scripts/poll.py"',
+        "timeout_sec": 20,
+        "needs_internet": False,
+        "cwd": f"{PACIFIC}/Communications/Slack",
+        "env": {},
+    },
+    {
         # Stripe snapshot (2026-09-29, WO-MIG-10). OFF unless RR_STRIPE=1 at poller start.
         # No key writes not_configured and does not call Stripe. No delivery.
         "id": "stripe_poll",
