@@ -10,7 +10,7 @@
 #!/usr/bin/env python3
 """Build rootrecord-state.json from live sources. Does not send, launch, or restart anything."""
 from __future__ import annotations  # info: from __future__ import annotations
-import importlib.util, json, os, re, subprocess  # info: import importlib . util , json , os , re , subprocess
+import importlib.util, json, os, re, shutil, subprocess  # info: import importlib . util , json , os , re , shutil , subprocess
 from datetime import datetime, timezone  # info: from datetime import datetime , timezone
 from pathlib import Path  # info: from pathlib import Path
 
@@ -26,7 +26,11 @@ REPOS = PACIFIC / "Github" / "scripts" / "repos.conf"  # info: set REPOS
 HOST_STATUS = DB / "System" / "status" / "system-status.json"  # info: set HOST_STATUS
 DESK = DB / "Intake" / "desk-live.txt"  # info: set DESK
 ENERGY = DB / "Energy"  # info: set ENERGY
-SCHEMA = 1  # info: set SCHEMA
+SCHEMA = 2  # info: set SCHEMA
+PROJ = DB / "System" / "status" / "projections"  # info: set PROJ
+ENSURE = PACIFIC / "Communications" / "telegram" / "scripts" / "ensure-relay.sh"  # info: set ENSURE
+MATRIX = Path("/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library/Documentation/00-architecture/Old-Repo-Migration-Matrix.md")  # info: set MATRIX
+LEDGER = Path("/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library/Documentation/01-operations/2026-09-30-whats-left-for-alexander.md")  # info: set LEDGER
 
 # ====================================================
 # SECTION: function now_local
@@ -49,8 +53,8 @@ def why(status: str, kind: str, reason: str, blocked_by: str = "", enable_condit
 # What it does: One measured or declared field with source and confidence. Does not invent a value.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def obs(value, source: str, confidence: str, **extra) -> dict:  # info: def obs
-    row = {"value": value, "source": source, "confidence": confidence, "observed_at": now_local()}  # info: set row
+def obs(value, source: str, confidence: str, visibility: str = "internal", **extra) -> dict:  # info: def obs
+    row = {"value": value, "source": source, "confidence": confidence, "visibility": visibility, "observed_at": now_local()}  # info: set row
     row.update(extra)  # info: row . update ( extra )
     return row  # info: return row
 
@@ -231,7 +235,7 @@ def host_block() -> dict:  # info: def host_block
     except AttributeError:  # info: except AttributeError :
         os_name, host = "unknown", "unknown"  # info: os_name , host = "unknown" , "unknown"
     return {  # info: return {
-        "host": obs(host, "uname", "live"),  # info: "host" : obs ( host , "uname" , "live" ) ,
+        "host": obs(host, "uname", "live", visibility="private"),  # info: "host" : obs ( host , "uname" , "live" , visibility = "private" ) ,
         "os": obs(os_name, "uname", "live"),  # info: "os" : obs ( os_name , "uname" , "live" ) ,
         "resources": obs(picked or None, "system-status.json", "recent" if picked else "unknown", measured_at=(current or {}).get("observed_at")),  # info: "resources" : obs ( picked or None , "system-status.json" , "recent" if picked else "unknown"
     }  # info: }
