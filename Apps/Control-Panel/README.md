@@ -62,6 +62,8 @@ The keys and their defaults:
 
 Camera toggles only change what the **panel** shows. They never touch collectors, grab jobs or the poller.
 
+**On/off controls are buttons (2026-09-29 16:15 HST).** There are no switches. Each on/off setting is a labelled toggle button, for example `Camera viewer: Off` (red outline) or `Camera viewer: On` (green), from `rr_ui.state_toggle`. The **camera viewer button** is the first row of the **Cameras** page and the first row of **Settings → Panel** (Cameras group first). The two stay in sync. It is Off by default. A click changes the running panel only; **Save settings** keeps it. Risky actions still need the confirm dialog. AWS Fallback rows (`AWS: On/Off`) keep confirm, dry-run revert and failed-write revert. Test: `Tests/test_toggle_buttons.py` (30 checks, AWS ssh stubbed) · record: `/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library/Documentation/07-testing/2026-09-29-root-monitor-toggle-buttons.md`.
+
 **Known URLs** hold a name and a URL only. You can add, edit and remove them. Clicking one opens it with `xdg-open`. URLs carrying `user:pass@` or token/key/password query parameters are refused. The seed list came from read-only discovery in `poller-watch.py`, `rootserver_poller.py`, `cam_server.py`, `ollama-warmup.sh` and `run-infer.sh`: poller `/`, `/energy` and `/system-status.json` on :8799, the public rootserver and `/aeyes`, local A-EYES :8791, Ollama :11434 and FLM :52625. It contains **no secrets**.
 
 ## Controls and safety
