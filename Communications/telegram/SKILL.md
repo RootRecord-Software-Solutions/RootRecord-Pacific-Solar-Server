@@ -28,6 +28,7 @@ description: >-
 | Infer | `plumbing/scripts/run-infer.sh` (via relay) |
 
 Set `COUNCIL_CHAT_ID` before live poll. Stop legacy `apps.council` first.
+Sandbox tests use `SANDBOX_CHAT_ID` (`-1004406495175`, https://t.me/c/4406495175/2). `SANDBOX_REPLIES=1` answers that chat while the live council stays quiet. Reports, statuses, and commands target it with `RR_TELEGRAM_DEST=sandbox`.
 `DESK_LIVE_FILE` must point at the measured desk file (or leave empty = No data).
 
 # ------------------------------------------------------------------------------

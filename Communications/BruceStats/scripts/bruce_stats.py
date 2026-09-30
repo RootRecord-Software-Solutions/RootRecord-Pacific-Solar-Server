@@ -231,14 +231,14 @@ def append_log(path: Path, row: dict) -> None:  # info: def append_log
 
 # ====================================================
 # SECTION: function deliver
-# What it does: Telegram stays off unless RR_BRUCE_STATS_SEND=1. Never prints the token. Chat id comes from CouncilQuake's council_chat_id. That folder's maybe_send posts as Carly, so this functio
+# What it does: Telegram stays off unless RR_BRUCE_STATS_SEND=1. Never prints the token. Chat id comes from dest_chat_id (sandbox when RR_TELEGRAM_DEST=sandbox). Does not call Carly maybe_send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def deliver(text: str) -> dict:  # info: def deliver
     """Telegram stays off unless RR_BRUCE_STATS_SEND=1. Never prints the token.
 
-    Chat id comes from CouncilQuake's council_chat_id. That folder's maybe_send
-    posts as Carly, so this function does not call it.
+    Chat id comes from dest_chat_id. RR_TELEGRAM_DEST=sandbox selects the sandbox.
+    This function does not call Carly maybe_send.
     """
     if not send_enabled():  # info: if not send_enabled ( ) :
         return {"ok": True, "sent": False, "detail": "send gate off"}  # info: return { "ok" : True , "sent" :
@@ -248,10 +248,10 @@ def deliver(text: str) -> dict:  # info: def deliver
     if str(quake_scripts) not in sys.path:  # info: if str ( quake_scripts ) not in sys
         sys.path.insert(0, str(quake_scripts))  # info: sys . path . insert ( 0 ,
     from envload import bruce_token  # info: from envload import bruce_token
-    from quake_posts import council_chat_id  # info: from quake_posts import council_chat_id
+    from quake_posts import dest_chat_id  # info: from quake_posts import dest_chat_id
 
     token = bruce_token()  # info: set token
-    chat = council_chat_id()  # info: set chat
+    chat = dest_chat_id()  # info: set chat
     if not token or not chat or not text.strip():  # info: if not token or not chat or not
         return {"ok": False, "sent": False, "detail": "missing token, chat, or text"}  # info: return { "ok" : False , "sent" :
     body = json.dumps(  # info: set body

@@ -246,7 +246,8 @@ def check(*, alert: bool, probe_chat: bool, network: bool) -> dict[str, Any]:  #
     if alert and problems:  # info: if alert and problems :
         last_alert = float(state.get("last_alert_ts") or 0)  # info: set last_alert
         if time.time() - last_alert >= ALERT_COOLDOWN_S:  # info: if time . time ( ) - last_alert
-            chat_id = _load_kv(RELAY_CONF).get("COUNCIL_CHAT_ID", "")  # info: set chat_id
+            relay_kv = _load_kv(RELAY_CONF)  # info: set relay_kv
+            chat_id = relay_kv.get("SANDBOX_CHAT_ID", "") if os.environ.get("RR_TELEGRAM_DEST", "").strip().lower() == "sandbox" else relay_kv.get("COUNCIL_CHAT_ID", "")  # info: set chat_id
             msg = (  # info: set msg
                 "Council health check — systems not fully functional:\n"  # info: "Council health check — systems not fully functional:\n"
                 + "\n".join(f"• {p}" for p in problems[:8])  # info: + "\n" . join ( f" • {
