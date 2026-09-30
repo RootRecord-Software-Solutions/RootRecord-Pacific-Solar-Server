@@ -14,6 +14,7 @@ Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messagin
 | discord | Shell only — **WO-COM-002** token rotation required before LIVE |
 | G1 | `communications/*`, `network-globe`, `local-data-globe`, `council/council-telegram` |
 | `web-facts/` | G1 `websites/web-facts` port (allowlisted HTTPS GET), on demand only — LANDED, smoke PASS 2026-09-29 13:58 HST; not wired to the council relay |
+| `live-wx/` | G1 `weather/live-wx` port (NWS point forecast + HI alert names + nearest hurricane, for chat), on demand only (`--offline` = no HTTP) — LANDED, smoke PASS 2026-09-29 14:09 HST; not wired to the council relay |
 | `website/` | RootRecord-Cloud Vercel site (Next.js 15) staged as its **own clone** `website/RootRecord-Cloud/` (gitignored here; Vercel deploys from that repo). `npm ci` + `npm run build` PASS 2026-09-29 14:04 HST; no deploy, no auto-sync row (sign-off). See `website/README.md` |
 
 ---
