@@ -322,6 +322,19 @@ EVERY_SECONDS = [
         "env": {},
     },
     {
+        # Kilauea public draft queue (WO-MIG-24): from kilauea-last.json only. OFF unless
+        # RR_KILAUEA_DRAFT=1 at poller start. No HTTP and no send.
+        "id": "geology_kilauea_public_draft",
+        "enabled": os.environ.get("RR_KILAUEA_DRAFT", "0") == "1",
+        "description": "Queue a Kilauea public draft from Geology/Volcanoes/kilauea-last.json when the HVO notice id or alert level changes. No send.",
+        "interval_sec": 3600,
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Geology/PublicDraftQueue/scripts/queue_draft.py"',
+        "timeout_sec": 30,
+        "cwd": f"{PACIFIC}/Geology/PublicDraftQueue",
+        "env": {},
+    },
+    {
         # Energy smart devices (2026-09-29, smart-devices): WiZ bulbs (UDP 38899) + Tuya BSD01 plugs, read-only status.
         # OFF unless RR_SMART_DEVICES=1 is in the poller's environment at poller start. LAN only, never switches, no BLE.
         "id": "smart_devices_collect",
