@@ -160,17 +160,12 @@ def run() -> dict:
     OUT.mkdir(parents=True, exist_ok=True)
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     if snapshot_is_fresh():
-        payload = {
+        return {
             "ok": True,
-            "locations": 0,
-            "skipped": 0,
             "http_calls": 0,
-            "fetched": [],
-            "updated_at": datetime.now(HST).isoformat(timespec="seconds"),
             "note": "snapshot_fresh",
+            "updated_at": datetime.now(HST).isoformat(timespec="seconds"),
         }
-        write_json(STATUS_PATH, payload)
-        return payload
     raw = load_allowlist(ALLOWLIST)
     entries = select_places(raw)
     rows = []

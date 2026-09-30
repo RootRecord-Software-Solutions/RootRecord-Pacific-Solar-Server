@@ -753,6 +753,19 @@ ON_AT = [
         "env": {},
     },
     {
+        # Scoped path index (WO-MIG-42). OFF. Four source trees only. No file bytes.
+        "id": "path_index",
+        "enabled": False,
+        "description": "Path index (WO-MIG-42): path and kind for Pacific, Website, Library, and Android. No file contents.",
+        "interval_sec": 900,
+        "builtin": "",
+        "command": f'python3 "{PACIFIC}/System/PathIndex/scripts/path_index.py"',
+        "timeout_sec": 900,
+        "needs_internet": False,
+        "cwd": f"{PACIFIC}/System/PathIndex",
+        "env": {},
+    },
+    {
         # Template reports (2026-09-29, g3-template-reports). OFF unless RR_TEMPLATE_REPORTS=1 in the poller's environment
         # at poller start. Fills the 4 Library ops templates from measured data -> Database Reports/Generated/*_current.md
         # (Archive rotation, structure validator; never writes the Library). Free text via rr-exec, skipped if RAM < 3 GB / lock busy.
@@ -895,6 +908,34 @@ ON_AT = [
         "timeout_sec": 30,
         "needs_internet": False,
         "cwd": f"{PACIFIC}/Communications/Inbox",
+        "env": {},
+    },
+    {
+        # API prices (WO-MIG-35). OFF. Public-doc GET only if RR_API_PRICES=1.
+        # The script also refuses HTTP when that gate is unset.
+        "id": "api_prices",
+        "enabled": False,
+        "description": "Public API price catalog -> Database System/ApiPrices/. Gated off. No HTTP unless RR_API_PRICES=1.",
+        "at_times": ["10:25"],
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/System/ApiPrices/scripts/job.py" refresh',
+        "timeout_sec": 60,
+        "needs_internet": True,
+        "cwd": f"{PACIFIC}/System/ApiPrices",
+        "env": {},
+    },
+    {
+        # Cursor fallback (WO-MIG-35). OFF. No cursor agent unless RR_API_SPEND=1.
+        # Text would stay under Database System/ApiPrices/fallback/. No report write.
+        "id": "cursor_fallback",
+        "enabled": False,
+        "description": "One Cursor ask-mode fallback. Gated off. No agent unless RR_API_SPEND=1. Does not write reports.",
+        "at_times": ["10:22", "16:22"],
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/System/ApiPrices/scripts/job.py" cursor-drain',
+        "timeout_sec": 180,
+        "needs_internet": True,
+        "cwd": f"{PACIFIC}/System/ApiPrices",
         "env": {},
     },
 ]
