@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-30T00:45:11-10:00 HST | 20 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-30T00:53:11-10:00 HST | 20 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -895,7 +895,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-30T00:38:49.810873-10:00 HST |
+| **Collected** | 2026-09-30T00:46:29.403330-10:00 HST |
 
 ```text
                         
@@ -1311,7 +1311,7 @@ National Weather Service Honolulu HI
 |---|---|
 | **Resource ID** | nhc_gtwo_cpac_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=2 |
-| **Collected** | 2026-09-29T22:52:21.431415-10:00 HST |
+| **Collected** | 2026-09-30T00:47:11.404375-10:00 HST |
 
 ```text
 277 ACCA62 KNHC 300549TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 AM EDT miércoles 30 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada sobre elAtlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Roberts*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -1325,7 +1325,7 @@ National Weather Service Honolulu HI
 |---|---|
 | **Resource ID** | nhc_gtwo_cpac_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=7 |
-| **Collected** | 2026-09-29T22:53:22.589542-10:00 HST |
+| **Collected** | 2026-09-30T00:48:11.273195-10:00 HST |
 
 ```text
 277 ACCA62 KNHC 300549TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 AM EDT miércoles 30 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada sobre elAtlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Roberts*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -1367,7 +1367,7 @@ National Weather Service Honolulu HI
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-30T00:45:11.305391-10:00 HST |
+| **Collected** | 2026-09-30T00:53:11.189095-10:00 HST |
 
 ```text
 Home
@@ -1491,7 +1491,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Wed, 30 Sep 2026 10:40:12 UTC
+Last update Wed, 30 Sep 2026 10:50:05 UTC
 
 NHC issuing advisories for the Atlantic on
 
@@ -2391,7 +2391,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-30T00:38:13.654800-10:00 HST |
+| **Collected** | 2026-09-30T00:46:12.168148-10:00 HST |
 
 ```text
 National Weather Service
@@ -2440,9 +2440,9 @@ INFORMATION
 
 Wireless Emergency Alerts
 
-Weather-Ready Nation
-
 Brochures
+
+Weather-Ready Nation
 
 Cooperative Observers
 
