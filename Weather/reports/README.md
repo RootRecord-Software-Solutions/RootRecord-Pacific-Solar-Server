@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T15:16:30-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T15:24:30-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -2873,7 +2873,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-29T15:09:48.275687-10:00 HST |
+| **Collected** | 2026-09-29T15:17:45.789050-10:00 HST |
 
 ```text
 446
@@ -3146,76 +3146,76 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T15:09:51.247897-10:00 HST |
+| **Collected** | 2026-09-29T15:17:48.763329-10:00 HST |
 
 ```text
                         
-325
-SXHW80 PHFO 290115
+880
+SXHW80 PHFO 300115
 OMRHFO
 
 SURF OBSERVATIONS
 NATIONAL WEATHER SERVICE HONOLULU HI
-315 PM HST MON SEP 28 2026
+315 PM HST TUE SEP 29 2026
 
 FULL FACE SURF OBSERVATIONS ARE TAKEN BY COUNTY LIFE GUARDS AND
 COOPERATIVE OBSERVERS AND RELAYED TO THE NATIONAL WEATHER SERVICE
 FOR DISSEMINATION. THESE OBSERVATIONS ARE NOT QUALITY CONTROLLED.
 
-HIZ003-004-029>031-290100-
+HIZ003-004-029>031-300100-
 KAUAI-
 
 LOCATION        TIME   SURF HEIGHT DIR   PER                  REMARKS
 KEE
-HAENA        1230 PM           4-8  NE    10
-HANALEI      1230 PM           3-5 NNE    10
+HAENA        1000 AM           4-5  NW    11
+HANALEI      1000 AM           2-3   N     9
 ANAHOLA
 KEALIA
 LYDGATE
-POIPU
-SALT POND
-KEKAHA
+POIPU        1030 AM          6-8   SW    10
+SALT POND    1030 AM           6-8  SW    10
+KEKAHA       1030 AM           6-8  SW    10
 $$
 
-HIZ006-007-009>011-032>036-290100-
+HIZ006-007-009>011-032>036-300100-
 OAHU-
 
 LOCATION        TIME   SURF HEIGHT DIR PER         WIND      REMARKS
 DIAMOND HEAD
 SUNSET
-WAIKIKI       123 PM           3-4             NE 15-20       CANOES
-SANDY BEACH   123 PM           4-6             NE 20-25  SHORE BREAK
-MAKAPUU       123 PM           3-5             NE 15-25
-EHUKAI        123 PM           3-4             NE 10-15
-MAKAHA        123 PM           2-3             NE 20-25
+WAIKIKI      1118 AM           3-4              E 10-15       CANOES
+SANDY BEACH  1118 AM           3-5              NE 5-15  SHORE BREAK
+MAKAPUU      1118 AM           3-5             NE 10-15
+EHUKAI       1118 AM           2-3              E 10-15
+MAKAHA       1118 AM           2-3               E 5-10
 $$
 
-HIZ015>018-022-045>050-290100-
+HIZ015>018-022-045>050-300100-
 MAUI-MOLOKAI-LANAI-KAHOOLAWE-
 
 LOCATION        TIME   SURF HEIGHT   DIR         WIND      REMARKS
-KANAHA        135 PM           2-3            E 15-25  PARTLY CLDY
-BALDWIN SHOR  137 PM           2-4           NE 15-30 MOSTLY SUNNY
-BALDWIN OUTE  137 PM           6-8           NE 15-30 MOSTLY SUNNY
-HOOKIPA       151 PM          8-10        TRADE 15-20        SUNNY
-KAMAOLE I     149 PM           2-4           VRB 5-10  PARTLY CLDY
-KAMAOLE III   150 PM           2-4             S 5-10        SUNNY
-HANAKAOO      153 PM           2-3     S        S 5-1  PARTLY CLDY
+KANAHA       1127 AM           1-3           VRB 5-10  PARTLY CLDY
+BALDWIN SHOR 1128 AM           2-3           VRB 5-10        SUNNY
+BALDWIN OUTE 1128 AM           4-6           VRB 5-10        SUNNY
+HOOKIPA      1129 AM           6-8            E 20-25  PARTLY CLDY
+KAMAOLE I    1133 AM           2-4            VRB 0-5  PARTLY CLDY
+KAMAOLE III  1131 AM           2-3           VRB 5-10        SUNNY
+HANAKAOO
 FLEMING
 $$
 
-HIZ023-026>028-051>054-290100-
+HIZ023-026>028-051>054-300100-
 BIG ISLAND OF HAWAII-
 
 LOCATION        TIME   SURF HEIGHT   DIR         WIND      REMARKS
-RICHARDSONS   127 PM           3-4            NE 5-10  PARTLY CLDY
-HONOLII       129 PM           2-3           SE 10-20        SUNNY
+RICHARDSONS  1120 AM           2-3           VRB 5-10        SUNNY
+HONOLII      1121 AM           3-5             S 5-15 MOSTLY SUNNY
 PUNALU`U
-ISAAC HALE    130 PM    4-5 CHOPPY           L/V 5-10        SUNNY
-HAPUNA        131 PM           3-5            L/V 0-5        SUNNY
-KAHALUU       132 PM           3-4           NW 10-15        SUNNY
-MAGIC SANDS   133 PM    4-5 OCNL 6           NW 10-15 MOSTLY SUNNY
-KUA BAY       134 PM           1-3               W 10 MOSTLY SUNNY
+ISAAC HALE   1122 AM           3-5            E 10-15 MOSTLY SUNNY
+HAPUNA
+KAHALUU      1124 AM           5-6    SW      SW 5-10  PARTLY CLDY
+MAGIC SANDS  1125 AM           3-4    SW      SW 5-10        SUNNY
+KUA BAY      1126 AM           2-4           VRB 5-10 MOSTLY SUNNY
 $$
 
 LEGEND
@@ -4015,7 +4015,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-29T15:16:29.782128-10:00 HST |
+| **Collected** | 2026-09-29T15:24:30.001478-10:00 HST |
 
 ```text
 Home
@@ -4139,7 +4139,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Wed, 30 Sep 2026 01:09:44 UTC
+Last update Wed, 30 Sep 2026 01:19:36 UTC
 
 NHC issuing advisories for the Atlantic on
 
@@ -7755,69 +7755,71 @@ No outage message at this time.
 |---|---|
 | **Resource ID** | sfp_state_forecast |
 | **Official source** | https://api.weather.gov/products/types/SFP/locations/HFO |
-| **Collected** | 2026-09-29T03:48:32.081658-10:00 HST |
+| **Collected** | 2026-09-29T15:17:32.579724-10:00 HST |
 
 ```text
 000
-FPHW60 PHFO 291342
+FPHW60 PHFO 300105
 SFPHFO
 
 State Forecast for Hawaii
 National Weather Service Honolulu HI
-342 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-HIZ001-003-004-006-007-009>011-015>018-022-029>050-300415-
+HIZ001-003-004-006-007-009>011-015>018-022-029>050-301715-
 Kauai-Oahu-Maui-Molokai-Lanai-
-342 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-...HIGH SURF ADVISORY FOR NIIHAU AND KAUAI...
-
-.TODAY...Partly sunny. Breezy. Windward and mountains, isolated
-showers. Leeward, numerous showers in the morning. Isolated
-showers in the afternoon. Highs 86 to 91. Southeast winds 15 to
-25 mph. 
 .TONIGHT...Breezy. Frequent showers windward and mountains.
 isolated showers leeward. Lows 74 to 79. Southeast winds 15 to
 25 mph. 
-.WEDNESDAY...Mostly cloudy. On Kauai, frequent showers during the
-day, then scattered showers at night. Oahu and Maui County,
-scattered showers. Highs 85 to 90. Lows 74 to 79. Southeast winds
-15 to 20 mph. 
-.THURSDAY...Mostly cloudy. Windward and mountains, scattered
-showers. Leeward, scattered showers during the day, then isolated
-showers at night. Highs 84 to 89. Lows 73 to 78. Southeast winds
-around 15 mph. 
-.FRIDAY...Partly cloudy. On Kauai, scattered showers. Oahu and
-Maui County, isolated showers during the day. Scattered showers
-at night. Highs 84 to 89. Lows 72 to 77. East winds around
+.WEDNESDAY...Partly sunny. Windward and mountains, numerous
+showers in the morning, then scattered showers in the afternoon.
+Leeward, scattered showers through the day. Highs 85 to 90.
+Southeast winds 15 to 20 mph. 
+.WEDNESDAY NIGHT...Mostly cloudy. On Kauai and Oahu, numerous
+showers. Maui County, isolated showers in the evening. Scattered
+showers after midnight. Lows 74 to 79. Southeast winds around
 15 mph. 
-.SATURDAY...Partly cloudy. Scattered showers windward and
+.THURSDAY...Partly cloudy. On Kauai, numerous showers during the
+day, then scattered showers at night. Oahu and Maui County,
+scattered showers during the day. Isolated showers at night.
+Highs 84 to 89. Lows 73 to 78. East winds around 15 mph. 
+.FRIDAY...Partly cloudy. Scattered showers windward and
 mountains. isolated showers leeward. Highs 84 to 89. Lows 72 to
 77. East winds around 15 mph. 
-
-HIZ023-026>028-051>054-300415-
-Big Island of Hawaii-
-342 AM HST Tue Sep 29 2026
-
-.TODAY...Partly sunny. Isolated showers in the afternoon. Highs
-85 to 90. Variable winds to 15 mph becoming southeast around
-15 mph in the afternoon. 
-.TONIGHT...Mostly cloudy in the evening then clearing. Isolated
-showers. Lows 72 to 77. Variable winds to 15 mph becoming south
-around 15 mph after midnight. 
-.WEDNESDAY...Mostly cloudy. Leeward, isolated showers during the
-day. Windward, isolated showers during the day. Scattered showers
-at night. Highs 85 to 90. Lows 72 to 77. East winds around
+.SATURDAY...Partly cloudy. Scattered showers windward and
+mountains. Highs 85 to 90. Lows 72 to 77. East winds around
 15 mph. 
-.THURSDAY...Mostly cloudy. Windward, scattered showers during the
-day. Leeward, isolated showers during the day. Highs 84 to 89.
-Lows 71 to 76. Variable winds to 15 mph. 
-.FRIDAY...Mostly cloudy. Leeward, isolated showers. Windward,
-scattered showers at night. Highs 83 to 88. Lows 71 to 76.
-Variable winds to 15 mph. 
-.SATURDAY...Partly cloudy. Leeward, isolated showers during the
-day. Windward, scattered showers. Highs 84 to 89. Lows 71 to 76.
-Northeast winds around 15 mph.
+.SUNDAY...Mostly clear. Leeward, isolated showers during the day.
+Windward and mountains, scattered showers. Highs 84 to 89. Lows
+72 to 77. Northeast winds 15 to 20 mph. 
+
+HIZ023-026>028-051>054-301715-
+Big Island of Hawaii-
+305 PM HST Tue Sep 29 2026
+
+.TONIGHT...Partly cloudy. Isolated showers. Lows 72 to 77.
+Variable winds to 15 mph becoming south around 15 mph after
+midnight. 
+.WEDNESDAY...Partly sunny. Windward, scattered showers. Leeward,
+isolated showers in the afternoon. Highs 85 to 90. Southeast
+winds around 15 mph. 
+.WEDNESDAY NIGHT...Mostly cloudy in the evening then clearing.
+Isolated showers in the evening. Scattered showers after
+midnight. Lows 72 to 77. Variable winds to 15 mph. 
+.THURSDAY...Mostly cloudy. Leeward, isolated showers during the
+day. Windward, scattered showers during the day. Isolated showers
+at night. Highs 85 to 90. Lows 71 to 76. Variable winds to
+15 mph. 
+.FRIDAY...Mostly cloudy. Windward, isolated showers during the
+day, then scattered showers at night. Highs 84 to 89. Lows 71 to
+76. Variable winds to 15 mph. 
+.SATURDAY...Partly cloudy. Windward, isolated showers during the
+day, then scattered showers at night. Highs 84 to 89. Lows 71 to
+76. Northeast winds around 15 mph. 
+.SUNDAY...Partly cloudy. Scattered showers windward. Highs 85 to
+90. Lows 71 to 76. Northeast winds around 15 mph.
 ```
 
 ---
@@ -7832,72 +7834,72 @@ Northeast winds around 15 mph.
 
 ```text
                         
-325
-SXHW80 PHFO 290115
+880
+SXHW80 PHFO 300115
 OMRHFO
 
 SURF OBSERVATIONS
 NATIONAL WEATHER SERVICE HONOLULU HI
-315 PM HST MON SEP 28 2026
+315 PM HST TUE SEP 29 2026
 
 FULL FACE SURF OBSERVATIONS ARE TAKEN BY COUNTY LIFE GUARDS AND
 COOPERATIVE OBSERVERS AND RELAYED TO THE NATIONAL WEATHER SERVICE
 FOR DISSEMINATION. THESE OBSERVATIONS ARE NOT QUALITY CONTROLLED.
 
-HIZ003-004-029>031-290100-
+HIZ003-004-029>031-300100-
 KAUAI-
 
 LOCATION        TIME   SURF HEIGHT DIR   PER                  REMARKS
 KEE
-HAENA        1230 PM           4-8  NE    10
-HANALEI      1230 PM           3-5 NNE    10
+HAENA        1000 AM           4-5  NW    11
+HANALEI      1000 AM           2-3   N     9
 ANAHOLA
 KEALIA
 LYDGATE
-POIPU
-SALT POND
-KEKAHA
+POIPU        1030 AM          6-8   SW    10
+SALT POND    1030 AM           6-8  SW    10
+KEKAHA       1030 AM           6-8  SW    10
 $$
 
-HIZ006-007-009>011-032>036-290100-
+HIZ006-007-009>011-032>036-300100-
 OAHU-
 
 LOCATION        TIME   SURF HEIGHT DIR PER         WIND      REMARKS
 DIAMOND HEAD
 SUNSET
-WAIKIKI       123 PM           3-4             NE 15-20       CANOES
-SANDY BEACH   123 PM           4-6             NE 20-25  SHORE BREAK
-MAKAPUU       123 PM           3-5             NE 15-25
-EHUKAI        123 PM           3-4             NE 10-15
-MAKAHA        123 PM           2-3             NE 20-25
+WAIKIKI      1118 AM           3-4              E 10-15       CANOES
+SANDY BEACH  1118 AM           3-5              NE 5-15  SHORE BREAK
+MAKAPUU      1118 AM           3-5             NE 10-15
+EHUKAI       1118 AM           2-3              E 10-15
+MAKAHA       1118 AM           2-3               E 5-10
 $$
 
-HIZ015>018-022-045>050-290100-
+HIZ015>018-022-045>050-300100-
 MAUI-MOLOKAI-LANAI-KAHOOLAWE-
 
 LOCATION        TIME   SURF HEIGHT   DIR         WIND      REMARKS
-KANAHA        135 PM           2-3            E 15-25  PARTLY CLDY
-BALDWIN SHOR  137 PM           2-4           NE 15-30 MOSTLY SUNNY
-BALDWIN OUTE  137 PM           6-8           NE 15-30 MOSTLY SUNNY
-HOOKIPA       151 PM          8-10        TRADE 15-20        SUNNY
-KAMAOLE I     149 PM           2-4           VRB 5-10  PARTLY CLDY
-KAMAOLE III   150 PM           2-4             S 5-10        SUNNY
-HANAKAOO      153 PM           2-3     S        S 5-1  PARTLY CLDY
+KANAHA       1127 AM           1-3           VRB 5-10  PARTLY CLDY
+BALDWIN SHOR 1128 AM           2-3           VRB 5-10        SUNNY
+BALDWIN OUTE 1128 AM           4-6           VRB 5-10        SUNNY
+HOOKIPA      1129 AM           6-8            E 20-25  PARTLY CLDY
+KAMAOLE I    1133 AM           2-4            VRB 0-5  PARTLY CLDY
+KAMAOLE III  1131 AM           2-3           VRB 5-10        SUNNY
+HANAKAOO
 FLEMING
 $$
 
-HIZ023-026>028-051>054-290100-
+HIZ023-026>028-051>054-300100-
 BIG ISLAND OF HAWAII-
 
 LOCATION        TIME   SURF HEIGHT   DIR         WIND      REMARKS
-RICHARDSONS   127 PM           3-4            NE 5-10  PARTLY CLDY
-HONOLII       129 PM           2-3           SE 10-20        SUNNY
+RICHARDSONS  1120 AM           2-3           VRB 5-10        SUNNY
+HONOLII      1121 AM           3-5             S 5-15 MOSTLY SUNNY
 PUNALU`U
-ISAAC HALE    130 PM    4-5 CHOPPY           L/V 5-10        SUNNY
-HAPUNA        131 PM           3-5            L/V 0-5        SUNNY
-KAHALUU       132 PM           3-4           NW 10-15        SUNNY
-MAGIC SANDS   133 PM    4-5 OCNL 6           NW 10-15 MOSTLY SUNNY
-KUA BAY       134 PM           1-3               W 10 MOSTLY SUNNY
+ISAAC HALE   1122 AM           3-5            E 10-15 MOSTLY SUNNY
+HAPUNA
+KAHALUU      1124 AM           5-6    SW      SW 5-10  PARTLY CLDY
+MAGIC SANDS  1125 AM           3-4    SW      SW 5-10        SUNNY
+KUA BAY      1126 AM           2-4           VRB 5-10 MOSTLY SUNNY
 $$
 
 LEGEND
@@ -7922,7 +7924,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-29T15:09:33.250162-10:00 HST |
+| **Collected** | 2026-09-29T15:17:30.838699-10:00 HST |
 
 ```text
 National Weather Service
@@ -7971,9 +7973,9 @@ INFORMATION
 
 Wireless Emergency Alerts
 
-Brochures
-
 Weather-Ready Nation
+
+Brochures
 
 Cooperative Observers
 
