@@ -103,12 +103,42 @@ def process_cmds() -> list[tuple[int, str]]:  # info: def process_cmds
     return found  # info: return found
 
 # ====================================================
-# SECTION: function match_procs
-# What it does: Pids whose command contains a needle. Does not send.
+# SECTION: function match_token
+# What it does: Pids whose argv has this exact token. Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def match_procs(rows: list[tuple[int, str]], needle: str) -> list[int]:  # info: def match_procs
-    return [pid for pid, cmd in rows if needle in cmd]  # info: return [ pid for pid , cmd in rows if needle in cmd ]
+def match_token(rows: list[tuple[int, str]], token: str) -> list[int]:  # info: def match_token
+    return [pid for pid, cmd in rows if token in cmd.split()]  # info: return [ pid for pid , cmd in rows if token in cmd . split ( ) ]
+
+# ====================================================
+# SECTION: function exe_serve
+# What it does: Pids whose executable name is exe and argv contains serve. Does not start it.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def exe_serve(rows: list[tuple[int, str]], exe: str) -> list[int]:  # info: def exe_serve
+    found = []  # info: set found
+    for pid, cmd in rows:  # info: for pid , cmd in rows :
+        toks = cmd.split()  # info: set toks
+        if toks and toks[0].rsplit("/", 1)[-1] == exe and "serve" in toks:  # info: if toks and toks [ 0 ] . rsplit ( "/" , 1 ) [ - 1 ] == exe and "serve" in toks
+            found.append(pid)  # info: found . append ( pid )
+    return found  # info: return found
+
+# ====================================================
+# SECTION: function python_script
+# What it does: Pids whose interpreter is python and whose argv runs one script. Does not send signals.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def python_script(rows: list[tuple[int, str]], script_name: str) -> list[int]:  # info: def python_script
+    found = []  # info: set found
+    for pid, cmd in rows:  # info: for pid , cmd in rows :
+        toks = cmd.split()  # info: set toks
+        if len(toks) < 2:  # info: if len ( toks ) < 2 :
+            continue  # info: continue
+        if toks[0].rsplit("/", 1)[-1] not in ("python", "python3"):  # info: if toks [ 0 ] . rsplit ( "/" , 1 ) [ - 1 ] not in ( "python" , "python3" )
+            continue  # info: continue
+        if any(t.rsplit("/", 1)[-1] == script_name for t in toks[1:]):  # info: if any ( t . rsplit ( "/" , 1 ) [ - 1 ] == script_name for t in toks [ 1 : ] )
+            found.append(pid)  # info: found . append ( pid )
+    return found  # info: return found
 
 # ====================================================
 # SECTION: function poller_env
@@ -116,7 +146,7 @@ def match_procs(rows: list[tuple[int, str]], needle: str) -> list[int]:  # info:
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def poller_flags(rows: list[tuple[int, str]]) -> tuple[dict, str]:  # info: def poller_flags
-    pids = [pid for pid, cmd in rows if "rootserver_poller.py" in cmd and "poller-watch" not in cmd]  # info: set pids
+    pids = python_script(rows, "rootserver_poller.py")  # info: set pids
     if not pids:  # info: if not pids :
         return {}, "no_poller"  # info: return { } , "no_poller"
     try:  # info: try :
@@ -386,11 +416,11 @@ def build() -> dict:  # info: def build
         for j in jobs:  # info: for j in jobs :
             j["confidence"] = "unknown"  # info: j [ "confidence" ] = "unknown"
     relay = kv_file(RELAY_CONF)  # info: set relay
-    relay_pids = match_procs(rows, "council-relay.py")  # info: set relay_pids
-    ollama_pids = match_procs(rows, "ollama serve")  # info: set ollama_pids
-    poller_pids = [pid for pid, cmd in rows if "rootserver_poller.py" in cmd and "poller-watch" not in cmd]  # info: set poller_pids
-    flm_pids = match_procs(rows, "flm serve")  # info: set flm_pids
-    monitor_pids = match_procs(rows, "root-monitor")  # info: set monitor_pids
+    relay_pids = python_script(rows, "council-relay.py")  # info: set relay_pids
+    ollama_pids = exe_serve(rows, "ollama")  # info: set ollama_pids
+    poller_pids = python_script(rows, "rootserver_poller.py")  # info: set poller_pids
+    flm_pids = exe_serve(rows, "flm")  # info: set flm_pids
+    monitor_pids = match_token(rows, "root-monitor")  # info: set monitor_pids
     desk_ok = DESK.is_file()  # info: set desk_ok
     npu = Path("/dev/accel/accel0").exists()  # info: set npu
     programs = programs_block(by_id)  # info: set programs
@@ -417,7 +447,10 @@ def build() -> dict:  # info: def build
     if not flm_pids:  # info: if not flm_pids :
         healthy.append("flm_idle_on_demand")  # info: healthy . append ( "flm_idle_on_demand" )
     unknown.append("incidents")  # info: unknown . append ( "incidents" )
-    unknown.append("root_monitor")  # info: unknown . append ( "root_monitor" )
+    if monitor_pids:  # info: if monitor_pids :
+        healthy.append("root_monitor")  # info: healthy . append ( "root_monitor" )
+    else:  # info: else :
+        unknown.append("root_monitor")  # info: unknown . append ( "root_monitor" )
     doc = {  # info: set doc
         "generated_at": now_local(),  # info: "generated_at" : now_local ( ) ,
         "schema_version": SCHEMA,  # info: "schema_version" : SCHEMA ,
