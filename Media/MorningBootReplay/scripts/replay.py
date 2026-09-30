@@ -45,17 +45,22 @@ def now_hst() -> datetime:
 
 
 def _load() -> dict:
-    try:
-        data = json.loads(STATE_PATH.read_text(encoding="utf-8-sig"))
-        return data if isinstance(data, dict) else {}
-    except (OSError, ValueError):
-        return {}
+    for path in (STATE_PATH, OLD_STATE_PATH):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8-sig"))
+        except (OSError, ValueError):
+            continue
+        if isinstance(data, dict):
+            return data
+    return {}
 
 
 def _save(data: dict) -> None:
+    body = dict(data)
+    body["at"] = now_hst().isoformat()
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     tmp = STATE_PATH.with_suffix(".json.tmp")
-    tmp.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    tmp.write_text(json.dumps(body, indent=2) + "\n", encoding="utf-8")
     os.replace(tmp, STATE_PATH)
 
 
@@ -136,7 +141,8 @@ def arm() -> dict:
     path = default_wav()
     why = morning_wav(path, today)
     if why:
-        result = {"ok": False, "armed": False, "detail": why, "wav": str(path)}
+        result = {"ok": False, "armed": False, "played": False, "detail": why, "wav": str(path), "speaker": False}
+        _save({"enabled": False, "played": False, "detail": why, "wav": str(path), "speaker": False})
         _log(result)
         return result
     st = _load()

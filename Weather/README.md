@@ -27,6 +27,7 @@ Weather subsystem ownership: collection, ensure scripts, and related desk weathe
 | `weather_poller` | ON_BOOT, enabled 2026-09-29 → Pacific `Weather/scripts/ensure-weather-poller.sh` |
 | `service_supervisor` | EVERY_SECONDS 300 s (from the next poller start) → `Automations/scripts/supervise-services.sh` re-ensures weather + relay mid-session (max 3 per 30 min, then BLOCKED) |
 | `weather_retention` | ON_AT 00:30, **disabled** → `Weather/scripts/weather-retention.py --dry-run` |
+| `country_location_pollers` | EVERY_SECONDS 900 s, **`enabled: False`** → `Weather/CountryLocations/scripts/poll_locations.py`. Allowlist is `[]`. Does not call Open-Meteo. Not the Hawaiʻi daemon and not `weather_us_states`. |
 
 ---
 
@@ -36,6 +37,7 @@ Weather subsystem ownership: collection, ensure scripts, and related desk weathe
 | --- | --- | --- | --- |
 | `scripts/official_statement.py` | G1 `official-weather-media` HLS part: NWS HFO hurricane local statement (api.weather.gov first, product.php fallback). The weather poller already fetches HWO / AFD / SFP / ZFP / CWF / NOW; only HLS was missing | `Weather/Hawai'i/official/HLS_current.txt`, `official-last.json` | PROPOSED `weather_official_hls`, 600 s, `RR_OFFICIAL_HLS=1` |
 | `hurricanes/scripts/global_board.py` | G1 `hurricane-tracker` worldwide board: NHC + RAMMB + JTWC ABPW / ABIO merge + enrich (verbatim logic) | `Weather/Hawai'i/hurricanes/global/storms-last.json` | PROPOSED `weather_hurricane_global`, 05:40 / 09:40 / 12:40 / 16:40 / 20:40, `RR_HURRICANE_GLOBAL=1` |
+| `CountryLocations/scripts/poll_locations.py` | WO-MIG-13. One script replaces 306 identical `operations/locations/**/poller.py` copies. Current Open-Meteo only, and only for ids in `config/allowlist.json` | `Weather/CountryLocations/status-last.json` | In `jobs.py` as `country_location_pollers`, **`enabled: False`**. `RR_COUNTRY_LOCATIONS` unset |
 
 Smoke PASS 2026-09-29 14:27 / 14:34 HST — Library `07-testing/2026-09-29-old-repo-ports-breadth-batch5.md`. Blocks: Library `00-architecture/Pending-Job-Registrations-2026-09-29.md`. OBS overlays / storm radio stay BLOCKED.
 
@@ -59,7 +61,14 @@ Weather/
   scripts/
     ensure-weather-poller.sh
     # daemon, collectors after import
+  CountryLocations/
+    scripts/poll_locations.py
+    config/allowlist.json
+  US-States/
+    scripts/fetch_us_states.py
 ```
+
+`CountryLocations` and `US-States` are separate. `/us-states` on the Vercel app reads the US-States snapshot. It is not a country-location route, so `CountryLocations/config/allowlist.json` stays `[]`.
 
 ---
 

@@ -5,7 +5,7 @@ Same-day replay of the morning `boot_brief` WAV until noon HST. It does not synt
 | | |
 | --- | --- |
 | Code | `1 - Servers/1 - RootRecord-Pacific-Solar-Server/Media/MorningBootReplay/scripts` |
-| Database | `2 - RootRecord-Database/Media/MorningBootReplay/` (`morning-boot-replay.json`, runtime only) |
+| Database | `2 - RootRecord-Database/Media/MorningBootReplay/replay-last.json` (runtime only, `at` field) |
 | Logs | `2 - RootRecord-Database/Logs/Media/MorningBootReplay/` |
 
 The WAV is `2 - RootRecord-Database/Media/Audio/Voice/boot_brief_current.wav`, written by `Media/Voice`. Replay hands that report to `Media/Playback/scripts/play.py --report boot_brief --dry-run`. This folder never passes `--play`.
