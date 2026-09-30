@@ -58,7 +58,7 @@ from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk, Pango  # noqa: E402
 APP_ID = "cloud.rootrecord.ControlPanel"
 APP_NAME = "Root Monitor"
 PAGES = [("energy", "Energy"), ("weather", "Weather"), ("system", "System"), ("npu", "NPU"), ("ai", "AI log"),
-         ("poller", "Poller / services"), ("running", "Running"), ("network", "Network"), ("ssh", "SSH"),
+         ("poller", "Poller / services"), ("running", "Running"), ("network", "Network"), ("ssh", "SSH"), ("aws", "AWS Fallback"),
          ("cameras", "Cameras"), ("controls", "Controls"), ("migration", "Not migrated"), ("settings", "Settings")]
 
 CSS = b"""
@@ -81,6 +81,7 @@ def now_hst() -> str:
 
 from rr_ui import badge_css, esc, lbl, section, spawn, widget_texts  # noqa: E402
 from rr_pages import ExtraPages  # noqa: E402
+from rr_aws_page import AwsFallbackPage  # noqa: E402
 
 
 class BarRow:
@@ -113,7 +114,7 @@ class BarRow:
         self.detail.set_text(detail)
 
 
-class Panel(ExtraPages):
+class Panel(ExtraPages, AwsFallbackPage):
     def __init__(self, settings: dict, check: bool = False, camera_override: bool | None = None):
         self.s = settings
         self.check = check
@@ -163,11 +164,13 @@ class Panel(ExtraPages):
         self.builders = {"energy": self.b_energy, "weather": self.b_weather, "system": self.b_system,
                          "npu": self.b_npu, "ai": self.b_ai, "poller": self.b_poller, "cameras": self.b_cameras,
                          "controls": self.b_controls, "settings": self.b_settings, "running": self.b_running,
-                         "network": self.b_network, "ssh": self.b_ssh, "migration": self.b_migration}
+                         "network": self.b_network, "ssh": self.b_ssh, "migration": self.b_migration,
+                         "aws": self.b_aws}
         self.refreshers = {"energy": self.r_energy, "weather": self.r_weather, "system": self.r_system,
                            "npu": self.r_npu, "ai": self.r_ai, "poller": self.r_poller, "cameras": self.r_cameras,
                            "controls": self.r_controls, "settings": lambda: None, "running": self.r_running,
-                           "network": self.r_network, "ssh": lambda: None, "migration": lambda: None}
+                           "network": self.r_network, "ssh": lambda: None, "migration": lambda: None,
+                           "aws": lambda: None}
         self.page_boxes, self.built = {}, set()
         self.cam_tiles = {}
         for name, title in PAGES:
@@ -835,6 +838,7 @@ class Panel(ExtraPages):
     def on_page(self, *_):
         self._argvs = None
         self._logd = None
+        self.safe(self.awf_maybe_release)
         self.safe(self.refresh_visible)
         self.cam_timer_update()
         self.sl_update()

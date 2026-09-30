@@ -50,6 +50,9 @@ DEFAULTS: dict = {
     "starlink_enabled": True,
     "starlink_poll_sec": 10,
     "ssh_mainland_alias": "",
+    # AWS Fallback page (2026-09-29): dry-run by default; "write" is a sign-off item.
+    "aws_fallback_mode": "dry-run",
+    "aws_fallback_alias": "rr-aws-ip",
 }
 
 # Seeded 2026-09-29 by read-only discovery from poller-watch.py, rootserver_poller.py, cam_server.py,
