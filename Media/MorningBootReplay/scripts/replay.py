@@ -226,9 +226,7 @@ def run(dry_run: bool = True) -> dict:
         _log(result)
         return result
 
-    path = wav_from_state(st)
-    if not path.is_file():
-        path = default_wav()
+    path = default_wav()
     why = morning_wav(path, today)
     if why in {"wrong_wav_type", "stale_wav_day", "stale_wav_mtime"}:
         return disarm(why)
@@ -238,7 +236,8 @@ def run(dry_run: bool = True) -> dict:
         return result
 
     player = _handoff(path)
-    if not player.get("ok"):
+    # play.py reports audio_missing with ok=true. Only a dry-run of the real file counts.
+    if player.get("rc") != 0 or player.get("detail") != "dry_run":
         result = {"ok": False, "played": False, "detail": player.get("detail") or "player_failed", "player": player, "wav": str(path)}
         _log(result)
         return result

@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-30T00:11:38-10:00 HST | 19 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-30T00:19:11-10:00 HST | 19 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -895,7 +895,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-30T00:05:10.577183-10:00 HST |
+| **Collected** | 2026-09-30T00:12:29.576365-10:00 HST |
 
 ```text
                         
@@ -1283,7 +1283,7 @@ National Weather Service Honolulu HI
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-30T00:11:11.163088-10:00 HST |
+| **Collected** | 2026-09-30T00:19:11.371521-10:00 HST |
 
 ```text
 Home
@@ -1407,7 +1407,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Wed, 30 Sep 2026 10:00:16 UTC
+Last update Wed, 30 Sep 2026 10:18:07 UTC
 
 NHC issuing advisories for the Atlantic on
 
@@ -1917,7 +1917,7 @@ Tropical Weather Outlook
 
 Tropical Weather Discussion
 
-0615 UTC Wed Sep 30 2026
+1215 UTC Wed Sep 30 2026
 
 Tropical Storm Hanna
 
