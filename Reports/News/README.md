@@ -31,6 +31,7 @@ Discovery stays inside the official `hawaii.gov` namespace (G0 rule: portal host
 - 14:03 HST G0 caps (articles 20): rc 0, 12.3 s, 31 MB, 13 feeds + 12 pages checked, **25 × HTTP 404, 0 posts**. `https://www.hawaii.gov/` itself answers 200, but discovery only found guessed paths. The site's news links are probably script-rendered.
 - ~14:20 HST with seeds, `RR_NEWS_SEEDS_ONLY=1`: rc 0, 11.6 s, 32 MB, 16 feeds all `ok`, **278 posts** (Maui 134, 10 each from most state feeds). Newest: Maui County SMA meeting reminder; Hawaiʻi National Guard / Hurricane Nolo; Governor's Land Use Commission appointments.
 - Same with discovery too: rc 0, 22.8 s, 32 MB, 278 posts + the same 25 × 404.
+- WO-MIG-12 ~23:58 HST, `state_news.py --state wyoming` then `build_global_news.py`, temp root `/tmp/rr-mig-12`, caps 3/2/1/5: both rc 0. Wyoming db + last JSON written. Global index: 50 health rows, Wyoming `empty` (0 posts, source health 2 empty / 3 error), `locations` []. Live Database `Reports/News/` unchanged.
 - Not seeded: `health.hawaii.gov/feed/`, `dlnr.hawaii.gov/blog/feed/`, `honolulu.gov/feed/` (200, 0 items); `dcr.hawaii.gov/feed/`, Hawaiʻi County `RSSFeed.aspx` (403); Kauaʻi `RSSFeed.aspx` (404).
 
 ## Proposed job (not in jobs.py — sign-off)
