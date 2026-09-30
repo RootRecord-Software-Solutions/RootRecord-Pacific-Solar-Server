@@ -30,7 +30,9 @@ Light by design: stdlib only, every HTTP call ≤ 10 s (`RR_GEOLOGY_TIMEOUT`), n
 
 **Earthquake Discord post:** `Earthquake-Discord/scripts/earthquake_discord_post.py` formats `Earthquakes/{hawaii,global}-last.json`. Dry-run by default (2026-09-30). Job `earthquake_discord_post` stays off unless `RR_EARTHQUAKE_DISCORD=1`. Live send still needs sign-off.
 
-**Not ported (need Alexander's sign-off):** `council-quake` Telegram per-quake posts, `rr-kilauea` public draft queue, Grok report generation (cloud spend), speaker playback, OBS cam push (no OBS in G3), YouTube live-id scraping. G1/G0 sources stay **KEPT** (not retired).
+**Public draft queue:** `PublicDraftQueue/scripts/queue_draft.py` reads `kilauea-last.json` and queues a markdown draft when the HVO notice id or alert level changes. Job `geology_kilauea_public_draft` stays off unless `RR_KILAUEA_DRAFT=1`. No HTTP and no send.
+
+**Not ported (need Alexander's sign-off):** Grok report generation (cloud spend), speaker playback, OBS cam push (no OBS in G3), YouTube live-id scraping. G1/G0 sources stay **KEPT** (not retired).
 
 ### Ecosystem path
 
