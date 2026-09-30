@@ -108,21 +108,29 @@ def fetch_current(entry: dict) -> dict:
             "timezone": "UTC",
         }
     )
-    req = urllib.request.Request(FORECAST + "?" + query, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as response:
-        payload = json.load(response)
-    current = payload.get("current") or {}
-    return {
+    base = {
         "id": entry["id"],
         "name": entry["name"],
+        "country_code": entry.get("country_code") or "",
+        "country_name": entry.get("country_name") or "",
         "lat": entry["lat"],
         "lon": entry["lon"],
+        "provider": "open-meteo",
+    }
+    req = urllib.request.Request(FORECAST + "?" + query, headers={"User-Agent": UA})
+    try:
+        with urllib.request.urlopen(req, timeout=TIMEOUT) as response:
+            payload = json.load(response)
+    except (HTTPError, URLError, TimeoutError, json.JSONDecodeError):
+        return {**base, "obs_ts": None, "temp_c": None, "error": "fetch_failed"}
+    current = payload.get("current") or {}
+    return {
+        **base,
         "obs_ts": current.get("time"),
         "temp_c": current.get("temperature_2m"),
         "humidity_pct": current.get("relative_humidity_2m"),
         "wind_kph": current.get("wind_speed_10m"),
         "precipitation_mm": current.get("precipitation"),
-        "provider": "open-meteo",
     }
 
 
@@ -137,23 +145,28 @@ def run() -> dict:
     OUT.mkdir(parents=True, exist_ok=True)
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     raw = load_allowlist(ALLOWLIST)
-    entries = [item for item in (valid_entry(row) for row in raw) if item]
-    skipped = len(raw) - len(entries)
-    fetched: list[str] = []
+    entries = select_places(raw)
+    rows = []
     http_calls = 0
-    if entries:
-        for entry in entries:
-            obs = fetch_current(entry)
-            http_calls += 1
-            write_json(OUT / f"{entry['id']}-last.json", obs)
-            fetched.append(entry["id"])
+    for index, entry in enumerate(entries):
+        if index:
+            time.sleep(PAUSE)
+        obs = fetch_current(entry)
+        http_calls += 1
+        write_json(OUT / f"{entry['id']}-last.json", obs)
+        rows.append(obs)
+    updated_at = datetime.now(HST).isoformat(timespec="seconds")
+    write_json(
+        LAST_PATH,
+        {"ok": True, "updated_at": updated_at, "rows": rows},
+    )
     payload = {
         "ok": True,
         "locations": len(entries),
-        "skipped": skipped,
+        "skipped": max(0, len(raw) - len(entries)) if raw else 0,
         "http_calls": http_calls,
-        "fetched": fetched,
-        "updated_at": datetime.now(HST).isoformat(timespec="seconds"),
+        "fetched": [row["id"] for row in rows if row.get("temp_c") is not None],
+        "updated_at": updated_at,
     }
     write_json(STATUS_PATH, payload)
     with LOG_PATH.open("a", encoding="utf-8") as log:

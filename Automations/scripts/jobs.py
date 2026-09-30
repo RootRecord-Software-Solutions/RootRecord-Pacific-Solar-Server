@@ -728,6 +728,17 @@ ON_AT = [
         "env": {},
     },
     {
+        "id": "log_retention",
+        "enabled": False,  # GATED: off. Command stays --dry-run. Live --apply needs RR_LOG_RETENTION_APPLY=1 (WO-MIG-41).
+        "description": "Log retention (WO-MIG-41): move Database logs past 7 days to Archive/Previous-Datasets/Logs-<YYYYMM>/ (never delete). Dry run by default.",
+        "at_times": ["04:20"],
+        "builtin": "",
+        "command": f'python3 "{PACIFIC}/System/LogRetention/scripts/log_retention.py" --dry-run',
+        "timeout_sec": 600,
+        "cwd": f"{PACIFIC}/System/LogRetention",
+        "env": {},
+    },
+    {
         # Template reports (2026-09-29, g3-template-reports). OFF unless RR_TEMPLATE_REPORTS=1 in the poller's environment
         # at poller start. Fills the 4 Library ops templates from measured data -> Database Reports/Generated/*_current.md
         # (Archive rotation, structure validator; never writes the Library). Free text via rr-exec, skipped if RAM < 3 GB / lock busy.

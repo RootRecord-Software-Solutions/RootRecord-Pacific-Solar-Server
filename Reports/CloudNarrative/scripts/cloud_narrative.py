@@ -20,7 +20,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 HERE = Path(__file__).resolve().parent
-PACIFIC = HERE.parents[3]
+PACIFIC = HERE.parents[2]
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))
 DATA = DB / "Reports" / "CloudNarrative"
 LOG = DB / "Logs" / "Reports" / "CloudNarrative" / "cloud-narrative.jsonl"
