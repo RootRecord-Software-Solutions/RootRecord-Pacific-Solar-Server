@@ -293,7 +293,7 @@ def main(argv: list[str] | None = None) -> int:
         _emit(out)
         return 0 if out.get("ok") else 1
     if args.session:
-        out = session(execute=bool(args.execute), hold=bool(args.hold) or None)
+        out = session(execute=bool(args.execute), hold=bool(args.hold))
         _emit(out)
         return 0 if out.get("ok") else 1
     if args.tick:

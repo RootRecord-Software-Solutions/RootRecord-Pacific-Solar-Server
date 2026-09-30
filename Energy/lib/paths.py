@@ -25,6 +25,9 @@ WATTS = ENERGY_DATA / "watts"
 LOG_DIR = DATABASE_ROOT / "Logs" / "Energy"
 BLE_LOG = LOG_DIR / "ecoflow-ble.log"
 STATE_DIR = ENERGY_DATA / "state"
+# Cloud quota snapshots. Created only when a signed-off cloud read writes.
+CLOUD_QUOTA = ENERGY_DATA / "Cloud-Quota"
+CLOUD_QUOTA_LOG = LOG_DIR / "Cloud-Quota"
 
 
 def ensure_dirs() -> None:

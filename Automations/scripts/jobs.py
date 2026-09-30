@@ -485,6 +485,21 @@ EVERY_SECONDS = [
         "cwd": f"{PACIFIC}/Communications/CouncilHealth",
         "env": {},
     },
+    {
+        # River car DC drive (2026-09-30, WO-MIG-39). OFF unless RR_RIVER_CAR_DRIVE=1 at poller start.
+        # Tick skips until state auto is true and an enabled copy job exists. Copy is a stub.
+        # Does not switch the port. A live switch still needs RR_RIVER_CAR_EXECUTE=1.
+        "id": "energy_river_car_drive",
+        "enabled": os.environ.get("RR_RIVER_CAR_DRIVE", "0") == "1",
+        "description": "River 2 Pro car DC drive tick. Gated off. Skips until auto and a copy job. Does not switch power.",
+        "interval_sec": 1800,
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Energy/River-Car/scripts/drive_automation.py" --tick',
+        "timeout_sec": 30,
+        "needs_internet": False,
+        "cwd": f"{PACIFIC}/Energy/River-Car",
+        "env": {},
+    },
 ]
 
 EVERY_MINUTE = [
@@ -777,7 +792,7 @@ ON_AT = [
     {
         # Hurricane desk voice report (2026-09-29, old-repo migration): G1 weather/hurricane-desk Hawaii block, Carly, at the
         # G1 times. OFF unless RR_VOICE_HURRICANE=1 at poller start. Reads Database Weather/Hawai'i/hurricanes/tracking
-        # (weather poller) + NWS HI alerts. No delivery, no OBS/radio.
+        # (weather poller) + NWS HI alerts. No delivery, no OBS. Radio is media_hurricane_radio, gated off.
         "id": "voice_hurricane_desk",
         "enabled": os.environ.get("RR_VOICE_HURRICANE", "0") == "1",
         "description": "Carly hurricane desk (nearest tracked storm to a Hawaiian island + NWS tropical alerts). No delivery.",
@@ -786,6 +801,19 @@ ON_AT = [
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" hurricane_desk',
         "timeout_sec": 300,
         "cwd": f"{PACIFIC}/Media/Voice/scripts",
+        "env": {},
+    },
+    {
+        # Hurricane radio (2026-09-30, WO-MIG-19). OFF unless RR_HURRICANE_RADIO=1 at poller start.
+        # Hands hurricane_desk to Report playback --dry-run. Does not call aplay.
+        "id": "media_hurricane_radio",
+        "enabled": os.environ.get("RR_HURRICANE_RADIO", "0") == "1",
+        "description": "Request hurricane desk WAV through Report playback. No speaker.",
+        "at_times": ["06:35", "13:12", "17:02"],
+        "builtin": "",
+        "command": f'python3 "{PACIFIC}/Media/HurricaneRadio/scripts/radio.py" run',
+        "timeout_sec": 60,
+        "cwd": f"{PACIFIC}/Media/HurricaneRadio",
         "env": {},
     },
     {

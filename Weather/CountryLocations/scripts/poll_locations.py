@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Current Open-Meteo conditions for the CountryLocations allowlist.
+"""Current Open-Meteo conditions for country places the /locations page serves.
 
-Empty allowlist: exit 0, write status, do not call Open-Meteo.
+An empty allowlist means every non-US place in Geology/config/global-locations.json.
+US places stay on Weather/US-States. A non-empty allowlist restricts to those ids.
 No archive backfill. Does not touch the Hawaiʻi weather poller.
 
   python3 poll_locations.py
@@ -10,22 +11,28 @@ from __future__ import annotations
 
 import json
 import os
+import time
 import urllib.parse
 import urllib.request
 from datetime import datetime
 from pathlib import Path
+from urllib.error import HTTPError, URLError
 from zoneinfo import ZoneInfo
 
 HST = ZoneInfo("Pacific/Honolulu")
 HERE = Path(__file__).resolve().parent.parent
+PACIFIC = HERE.parents[1]
 ALLOWLIST = HERE / "config" / "allowlist.json"
+CATALOG = PACIFIC / "Geology" / "config" / "global-locations.json"
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))
 OUT = DB / "Weather" / "CountryLocations"
 LOG_DIR = DB / "Logs" / "Weather" / "CountryLocations"
 LOG_PATH = LOG_DIR / "poll_locations.log"
 STATUS_PATH = OUT / "status-last.json"
+LAST_PATH = OUT / "locations-last.json"
 UA = "RootRecord-Pacific/3 country-locations"
-TIMEOUT = 20
+TIMEOUT = 10
+PAUSE = 0.2
 FORECAST = "https://api.open-meteo.com/v1/forecast"
 
 
@@ -34,6 +41,47 @@ def load_allowlist(path: Path) -> list:
     if not isinstance(data, list):
         raise ValueError("allowlist must be a JSON list")
     return data
+
+
+def catalog_rows() -> list[dict]:
+    data = json.loads(CATALOG.read_text(encoding="utf-8"))
+    rows = data.get("locations") if isinstance(data, dict) else data
+    if not isinstance(rows, list):
+        raise ValueError("global-locations.json has no locations list")
+    places = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        if str(row.get("country_code") or "") == "US":
+            continue
+        item = valid_entry(row)
+        if item:
+            item["country_code"] = row.get("country_code") or ""
+            item["country_name"] = row.get("country_name") or item["country_code"]
+            places.append(item)
+    return places
+
+
+def select_places(raw: list) -> list[dict]:
+    catalog = catalog_rows()
+    if not raw:
+        return catalog
+    wanted = []
+    for row in raw:
+        if isinstance(row, str):
+            wanted.append(row)
+        elif isinstance(row, dict) and isinstance(row.get("id"), str):
+            wanted.append(row["id"])
+    by_id = {place["id"]: place for place in catalog}
+    chosen = []
+    for loc_id in wanted:
+        if loc_id in by_id:
+            chosen.append(by_id[loc_id])
+            continue
+        direct = valid_entry(next((row for row in raw if isinstance(row, dict) and row.get("id") == loc_id), None))
+        if direct:
+            chosen.append(direct)
+    return chosen
 
 
 def valid_entry(entry: object) -> dict | None:

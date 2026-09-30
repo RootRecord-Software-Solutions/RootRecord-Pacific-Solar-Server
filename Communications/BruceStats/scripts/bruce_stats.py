@@ -98,14 +98,17 @@ def host_line(snap) -> str:
 def pack_phrase(label: str, soc, watts) -> str:
     if soc is None and watts is None:
         return f"{label}: DOWN"
-    bits = [label]
+    bits = []
     soc_at = ""
     if isinstance(soc, dict):
         level = _num(soc.get("soc"))
-        if level is not None:
-            bits.append(f"SOC {level:g}%")
         soc_at = str(soc.get("at") or "").strip()
-        if soc_at:
+        if level is not None:
+            bit = f"SOC {level:g}%"
+            if soc_at:
+                bit += f" at {soc_at}"
+            bits.append(bit)
+        elif soc_at:
             bits.append(f"at {soc_at}")
     else:
         bits.append("SOC DOWN")
@@ -119,7 +122,9 @@ def pack_phrase(label: str, soc, watts) -> str:
             bits.append(f"at {watt_at}")
     else:
         bits.append("watts DOWN")
-    return " ".join(bits)
+    if not bits:
+        return f"{label}: DOWN"
+    return f"{label} " + ", ".join(bits)
 
 
 def ecoflow_line(energy: Path) -> str:

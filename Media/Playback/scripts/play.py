@@ -67,12 +67,13 @@ def resolve(report: str | None, clip: str | None) -> Path:
     return path
 
 
-def emit(payload: dict, code: int) -> int:
+def emit(payload: dict, code: int, *, state: bool = True) -> int:
     STATE.mkdir(parents=True, exist_ok=True)
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     body = dict(payload)
     body["at"] = now_hst().isoformat()
-    LAST.write_text(json.dumps(body, indent=2) + "\n", encoding="utf-8")
+    if state:
+        LAST.write_text(json.dumps(body, indent=2) + "\n", encoding="utf-8")
     line = json.dumps(body, ensure_ascii=False)
     with (LOG_DIR / "playback.log").open("a", encoding="utf-8") as fh:
         fh.write(line + "\n")
@@ -108,6 +109,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         fcntl.flock(lock_fh.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError:
+        lock_fh.close()
+        # Do not overwrite last-play.json. The holder of the lock owns that file.
         return emit({
             "ok": True,
             "played": False,
@@ -115,7 +118,7 @@ def main(argv: list[str] | None = None) -> int:
             "report": args.report,
             "clip": args.clip,
             "path": str(path),
-        }, 3)
+        }, 3, state=False)
 
     present = path.is_file() and path.stat().st_size > 0
     base = {

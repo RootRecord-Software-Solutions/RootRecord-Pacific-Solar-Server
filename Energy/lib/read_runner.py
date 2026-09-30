@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Read live snapshot (BLE preferred, official API fallback) and persist."""
+"""Read live snapshot (BLE preferred, cloud quota only when RR_ECOFLOW_CLOUD=1)."""
 from __future__ import annotations
 
 import argparse
 import asyncio
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -116,7 +117,7 @@ def derive_charge_source(fields: dict, source: str, other_ac_outs: list[float]) 
     for out in other_ac_outs:
         if out is not None and out > 20 and abs(out - ac_in) < max(80, ac_in * 0.4):
             return "battery_transfer"
-    if source == "api":
+    if source in ("api", "cloud"):
         return "generator"
     return "ac"
 
@@ -149,7 +150,7 @@ async def _read_ble(alias: str):
     await asyncio.sleep(2.0)
     fields = _fields_from_ble(device)
     if not _has_data(fields):
-        # Connected but no usable telemetry — treat as failure so API can run
+        # Connected but no usable telemetry — BLE miss. Cloud runs only if the flag is on.
         try:
             await device.disconnect()
         except Exception:
@@ -160,11 +161,26 @@ async def _read_ble(alias: str):
 
 def _read_api(alias: str) -> dict:
     from ecoflow_api import fetch_device_fields, EcoflowApiError
+    if os.environ.get("RR_ECOFLOW_CLOUD", "0") != "1":
+        raise EcoflowApiError("cloud=off")
     cfg = device_cfg(alias)
     sn = (cfg.get("sn") or "").strip()
     if not sn:
         raise EcoflowApiError(f"no sn for {alias}")
     return fetch_device_fields(sn)
+
+
+def _write_sample(snap: dict, alias: str, source: str) -> None:
+    """BLE samples stay in Energy/samples. A cloud read goes under Cloud-Quota."""
+    if source == "cloud":
+        scripts = HERE.parent / "Cloud-Quota" / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        from store import write_cloud_snapshot
+        write_cloud_snapshot(snap)
+        return
+    path = SAMPLES / f"read-{alias}-{datetime.now(HST).strftime('%Y%m%d-%H%M%S')}.json"
+    path.write_text(json.dumps(snap, indent=2), encoding="utf-8")
 
 
 def main() -> int:
@@ -198,11 +214,11 @@ def main() -> int:
         else:
             ble_err = reason
 
-    # 2) API fallback when BLE missing or empty
+    # 2) Cloud fallback when BLE missing or empty. No HTTP unless RR_ECOFLOW_CLOUD=1.
     if source != "ble":
         try:
             fields = _read_api(alias)
-            source = "api"
+            source = "cloud"
             device = None
         except Exception as e:
             print("WAITING")
@@ -243,9 +259,8 @@ def main() -> int:
     else:
         db_ok = True  # JSON path is authoritative for API reads
 
-    # 5) Samples / last files
-    path = SAMPLES / f"read-{alias}-{datetime.now(HST).strftime('%Y%m%d-%H%M%S')}.json"
-    path.write_text(json.dumps(snap, indent=2), encoding="utf-8")
+    # 5) Samples / last files. Cloud JSON is not written into Energy/samples.
+    _write_sample(snap, alias, source)
 
     if fields.get("soc") is not None:
         (SOC / f"{alias}-last.json").write_text(
