@@ -25,6 +25,7 @@ ALLOW = frozenset({
     "weather_poller",
     "geology_collect",
     "geology_kilauea_cams",
+    "council_quake_telegram",
     "heartbeat",
     "ecoflow_read_boot",
     "ecoflow_read_cycle",

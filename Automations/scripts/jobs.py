@@ -294,6 +294,20 @@ EVERY_SECONDS = [
         "env": {},
     },
     {
+        # Council quake Telegram notices (WO-MIG-25): read hawaii-last.json only. OFF unless
+        # RR_COUNCIL_QUAKE=1 at poller start. Dry-run: no send, no WAV. First live pass seeds.
+        "id": "council_quake_telegram",
+        "enabled": os.environ.get("RR_COUNCIL_QUAKE", "0") == "1",
+        "description": "Carly per-quake notice from Database Geology/Earthquakes/hawaii-last.json. Dry-run unless RR_COUNCIL_QUAKE_SEND=1.",
+        "interval_sec": 120,
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Communications/CouncilQuake/scripts/quake_posts.py"',
+        "timeout_sec": 30,
+        "needs_internet": False,
+        "cwd": f"{PACIFIC}/Communications/CouncilQuake",
+        "env": {},
+    },
+    {
         # Kilauea webcam stills (2026-09-29, migration-geology): G1 kilauea/kilauea-cams port (catalog + USGS still
         # fallback; OBS push not ported). OFF unless RR_KILAUEA_CAMS=1 at poller start. Conditional GET, ~0.85 MB per change.
         "id": "geology_kilauea_cams",
@@ -428,6 +442,20 @@ EVERY_SECONDS = [
         "timeout_sec": 90,
         "needs_internet": True,
         "cwd": f"{PACIFIC}/Website",
+        "env": {},
+    },
+    {
+        # Council health (2026-09-30, WO-MIG-27). OFF unless RR_COUNCIL_HEALTH=1 at poller start.
+        # Report only: no getUpdates, no send, no model load. Alerts need a separate sign-off.
+        "id": "council_health",
+        "enabled": os.environ.get("RR_COUNCIL_HEALTH", "0") == "1",
+        "description": "Council relay process, getMe, and 409 tail -> Database Communications/CouncilHealth/latest.json. Gated off. No send.",
+        "interval_sec": 300,
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Communications/CouncilHealth/scripts/council_health.py" --no-alert --no-probe',
+        "timeout_sec": 45,
+        "needs_internet": True,
+        "cwd": f"{PACIFIC}/Communications/CouncilHealth",
         "env": {},
     },
 ]
