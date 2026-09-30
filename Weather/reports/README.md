@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-30T12:01:52-10:00 HST | 33 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-30T12:10:52-10:00 HST | 34 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -1701,7 +1701,7 @@ Light winds. Chance of rain 20 percent.
 |---|---|
 | **Resource ID** | wa0_airmets |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=WA0&issuedby=HI |
-| **Collected** | 2026-09-29T23:41:53.877770-10:00 HST |
+| **Collected** | 2026-09-30T12:03:24.641390-10:00 HST |
 
 ```text
 306
@@ -1745,7 +1745,7 @@ FZLVL...153 PHLI SLOPING TO 166 PHTO.
 |---|---|
 | **Resource ID** | fa0_area_forecast |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=FA0&issuedby=HI |
-| **Collected** | 2026-09-30T02:18:00.677388-10:00 HST |
+| **Collected** | 2026-09-30T12:02:54.927373-10:00 HST |
 
 ```text
 306
@@ -1789,129 +1789,93 @@ FZLVL...153 PHLI SLOPING TO 166 PHTO.
 |---|---|
 | **Resource ID** | afd_area_forecast_discussion |
 | **Official source** | https://api.weather.gov/products/types/AFD/locations/HFO |
-| **Collected** | 2026-09-29T23:18:24.145993-10:00 HST |
+| **Collected** | 2026-09-30T12:06:54.605978-10:00 HST |
 
 ```text
 000
-FXHW60 PHFO 300643
+FXHW60 PHFO 301941
 AFDHFO
 
 Area Forecast Discussion
 National Weather Service Honolulu HI
-840 PM HST Tue Sep 29 2026
+941 AM HST Wed Sep 30 2026
 
 .SYNOPSIS...
-Hurricane Nolo will slowly track north to the west of the islands
-and remain over the Papahanaumokuakea Marine National Monument 
-through Wednesday. Nolo will take a westerly turn and move away 
-from the state Thursday, nearing the International Date Line as a
-Category 1 or Tropical Storm Sunday. Bands of showers along Nolo's 
-eastern flank will move up from the south and pass across the 
-islands the next few days with Oahu and Kauai likely picking up 
-the higher rain totals. Breezy southeast winds will persist 
-through Wednesday, weaken through late week and then transition 
-back to trades by early next week.
+The center of Tropical Storm Nolo has moved out of Hawaii's 
+offshore waters and will travel west over the Papahanaumokuakea 
+Marine National Monument waters the next several days. Bands of 
+showers along Nolo's eastern flank will move up from the south and
+pass across the islands the next few days with Oahu and Kauai 
+likely picking up the higher rainfall totals. Breezy southeast 
+winds will persist through the day, weaken through late week and 
+then transition back to trades early next week.
 
 .SHORT TERM UPDATE...
-Category 1 Hurricane Nolo, located approximately 250 nautical 
-miles west of Barking Sands Beach, Kauai, is slowly tracking north 
-this evening. Nolo's far eastern outer bands are providing brief 
-periods of light to moderate rain as they quickly pass over Kauai 
-and Oahu from the south. This evening's rainfall amounts have been 
-low with no more than quarter of an inch per hour rates at many west 
-and central Kauai sites. These low amounts are primarily attributed 
-to these rain cells passing north at 25 mph. While the bulk of the 
-heaviest precipitation stays over the nearshore waters west of 
-Niihau and Kauai, Nolo's more north-than-west motion will keep 
-return periods of rain in the forecast for mainly the western third 
-of the state through early Friday. Due to the quick passage of this 
-rain, most areas will not experience any significant flooding 
-concerns. Nuisance flooding of lower lying areas and street ponding 
-may occur, especially over Oahu and Kauai, the next couple of days 
-in the event that rainfall becomes more orientated to the background 
-southeast flow and exhibits more of a training nature.
+Periods of moderate to heavy rainfall affected Kauai this morning.
+A persistent moist south to south-southwest wind flow associated
+with the eastern flank of Tropical Storm Nolo will continue to
+bring period of moderate to heavy rainfall from time to time
+through this afternoon mainly across Kauai and Oahu. Latest REFS
+model was showing precipitation should tapper off by mid 
+afternoon as a drier air mass moves through the region. Rest of 
+the state should remain dry, although some showers cant be ruled 
+out. Flood advisory likely to continue for southern part of Kauai
+through this afternoon until drier air moves or rainfall rates 
+diminish.
+
+ 
 
 .AVIATION...
-Moderate to breezy southeast winds will persist through Wednesday
-as Hurricane Nolo gradually slides off to the west, away from the
-state. Outer rain bands associated with Nolo will bring showers 
-into mainly Kauai and Oahu from the south over the next 24 hours, 
-with Kauai expecting the most coverage. MVFR and even IFR 
-conditions will be possible within these showers. 
 
-AIRMET Sierra is in effect for Kauai due to the clouds and showers
-moving over the island from the south. This AIRMET will likely be
-needed through Wednesday and may need to be expanded to Oahu. 
+Moderate to breezy southeast winds will persist through this 
+afternoon then weaken heading into Thursday as Tropical Storm Nolo
+gradually slides off to the west, away from the state. Outer rain
+bands associated with Nolo will bring showers into mainly Kauai 
+and Oahu from the south over the next 24 hours, with Kauai 
+expecting the most coverage. MVFR and even IFR conditions will be 
+possible within these showers. 
+
+AIRMET Sierra for mountain obscuration is in effect for Kauai and
+Oahu due to the clouds and showers moving over the island from 
+the south. This AIRMET will likely be needed through most of 
+today.
 
 AIRMET Tango is in effect for low level turbulence west through
-north of the island terrain over Kauai. 
-
-.PREV DISCUSSION...
-Issued at 309 PM HST Tue Sep 29 2026
-Hurricane Nolo is around 310 miles west of Lihue this afternoon 
-tracking north at 8 mph. Nolo is expected to briefly stall west of
-the state tonight, then begin to move away to the west northwest.
-Breezy southeast winds will continue across the state into 
-Wednesday as Nolo remains close to the area.
-
-While Nolo will not make direct impacts to the state, rain bands
-along the eastern periphery will move in the southeast flow and
-bring showers across Kauai and Oahu through Thursday. Expecting 
-to see 3 to 6 inches of additional rain on Kauai and Niihau, and 
-up to 4 inches on Oahu. Not considering a Flood Watch with the 
-anticipation these rainfall amounts will be spread out over 
-several days and showers should be moving along quickly. However, 
-southeast flow will direct showers across the populated areas of 
-both islands. The rest of the state will be under a hybrid east
-southeast flow pattern where the Big Island will partially block
-Maui County resulting in localized nighttime land that will clear
-skies out and daytime sea breezes that will bring interior cloud 
-cover. Precipitation across Maui County and Big Island will be
-minimal.
-
-East southeasterly winds will continue, but gradually weaken, 
-through the second half of the week as Nolo tracks away. Winds
-will back to moderate trades by the weekend.
-
-On Monday and Tuesday, a weak front will push across the islands 
-and stall near the Big Island through the remainder of the week.
-Winds will taper off behind this front as a second front
-approaches much slower. Lingering clouds and showers near the Big
-Island and light winds statewide next week will result in a
-diurnal land and sea breeze weather pattern.
+north of the island terrain over Kauai. This AIRMET will likely be needed
+through most of today before the low level wind speeds ease as 
+early as this afternoon when Nolo pushes further west.
 
 .MARINE...
-Issued at 309 PM HST Tue Sep 29 2026
-Moderate to fresh SE winds prevails over area waters. Strong to 
-near-gale SE flow will develop tonight into Wednesday around Kauai
-due to Hurricane Nolo's close proximity. The Small Craft Advisory
-remains in effect for these waters. Moderate trades return early 
-next week.
 
-The moderate, medium period SW swell originating from Nolo has
-eased slightly with the latest observations coming in below the
-High Surf Advisory (HSA). The HSA has therefore been allowed to
-expire. Surf along E shores has declined in response to emerging 
-SE flow. Surf will remain small until moderate trades return early
-next week providing a modest boost. Multiple rounds of tiny swell
-originating out of the northwest quadrant will reach north and 
-select west facing exposures next week as the storm track in the 
-vicinity of the Aleutian Islands becomes increasingly active.
+Moderate to fresh south to southeast winds prevail for most areas
+as Tropical Storm Nolo slowly drifts westward away from the 
+Hawaiian Islands. For waters surrounding Kauai, stronger southerly
+winds will continue through the day, along with seas up to around
+11 feet. A Small Craft Advisory remains in effect through this 
+afternoon for the combination of winds and seas across Kauai
+waters. Gentle to fresh east to southeast winds will prevail 
+across all waters by Thursday. 
 
-.FIRE WEATHER...
-Issued at 309 PM HST Tue Sep 29 2026
-Fire conditions improving through the remainder of the week to due
-an increase in moisture across the state and breezy southeast
-winds.
+The moderate, medium period west to southwest swell originating 
+from Nolo will continue for Niihau and Kauai today. A small 
+background south swell continues for other islands. The next small
+boost in south swell energy will arrive early next week Monday 
+and Tuesday.
+
+Surf along other shores will remain small until moderate trades 
+return early next week providing a slight boost to east facing 
+shores. Multiple rounds of tiny northwest swell energy will reach 
+north and west facing shores into early next week as the storms 
+tracking near the Aleutian Islands becomes increasingly active.
 
 .HFO WATCHES/WARNINGS/ADVISORIES...
-Small Craft Advisory until 6 PM HST Wednesday for Kauai Channel-
-Kauai Leeward Waters-Kauai Northwest Waters-Kauai Windward 
-Waters.
+Small Craft Advisory until 6 PM HST this evening for Kauai 
+Channel-Kauai Leeward Waters-Kauai Northwest Waters-Kauai 
+Windward Waters.
 
-DISCUSSION...Foster
-AVIATION...Farris
-MARINE...JVC
+DISCUSSION...Castro
+AVIATION...Almanza
+MARINE...Vaughan
 ```
 
 ---
@@ -3090,19 +3054,19 @@ We apologize for the inconvenience and hope to have this issue resolved soon.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-30T03:25:48.774450-10:00 HST |
+| **Collected** | 2026-09-30T12:04:07.604521-10:00 HST |
 
 ```text
-097
-SRHW80 PHFO 301246
+383
+SRHW80 PHFO 302146
 RRAHFO
 
 Hawaii Rainfall Summary
 National Weather Service Honolulu HI
-245 AM HST Wed Sep 30 2026
+1145 AM HST Wed Sep 30 2026
 
 :
-.B HFO  0930 H  DH02 /DRH-03/PPT/DRH-06/PPQ/DRH-12/PPK/DRH-24/PPD
+.B HFO  0930 H  DH11 /DRH-03/PPT/DRH-06/PPQ/DRH-12/PPK/DRH-24/PPD
 :
 :Automated rain gage reports from around the State of Hawaii.
 :These are provisional reports that have not been quality
@@ -3110,112 +3074,112 @@ National Weather Service Honolulu HI
 :
 :T=Trace Rainfall, M=Missing Data
 :
-:Precipitation totals ending  2 AM HST
+:Precipitation totals ending  11 AM HST
 :
 :Island of Kauai                                   Inches
 :ID     Location                         3-Hr    6-Hr   12-Hr   24-Hr
 :       Windward/Mauka Sites
-MKAH1 : Makaha Ridge (RAWS)         :    0.37  /  0.54  /  0.61  /  0.61
-PLRH1 : Puu Lua (RAWS)              :    0.73  /  0.99  /  1.29  /  1.30
-WKRH1 : Waiakoali (USGS)            :    0.90  /  1.39  /  1.61  /  1.61
-KLOH1 : Kilohana (USGS)             :    0.79  /  1.13  /  1.37  /  1.37
-MCRH1 : Mohihi Crossing (USGS)      :    0.84  /  1.42  /  1.71  /  1.71
-WLGH1 : Waialae (USGS)              :    0.59  /  1.23  /  1.60  /  1.60
-LLMH1 : Lower Limahuli (UHM)        :    0.48  /  0.62  /  0.75  /  0.75
-WNHH1 : Wainiha (12010)             :    0.45  /  0.63  /  0.76  /  0.76
-WIPH1 : Waipa (UHM)                 :    0.62  /  1.02  /  1.21  /  1.21
-HNIH1 : Hanalei (12009)             :    0.71  /  1.05  /  1.21  /  1.21
-WLLH1 : Mount Waialeale (USGS)      :      M   /    M   /    M   /    M
-PRIH1 : Princeville Airport (12011) :    0.19  /  0.44  /  0.79  /  0.79
-CMGH1 : Common Ground (UHM)         :    0.50  /  0.80  /  1.20  /  1.20
-HLIH1 : Hanalei (RAWS)              :    0.77  /  1.09  /  1.15  /  1.15
+MKAH1 : Makaha Ridge (RAWS)         :    0.05  /  0.15  /  0.69  /  0.93
+PLRH1 : Puu Lua (RAWS)              :    0.35  /  1.14  /  2.44  /  3.01
+WKRH1 : Waiakoali (USGS)            :    0.41  /  0.96  /  2.36  /  3.07
+KLOH1 : Kilohana (USGS)             :    0.37  /  0.77  /  1.96  /  2.54
+MCRH1 : Mohihi Crossing (USGS)      :    0.71  /  1.69  /  3.35  /  4.22
+WLGH1 : Waialae (USGS)              :    1.03  /  2.07  /  4.11  /  5.12
+LLMH1 : Lower Limahuli (UHM)        :    0.02  /  0.07  /  0.61  /  0.88
+WNHH1 : Wainiha (12010)             :      M   /    M   /    M   /    M
+WIPH1 : Waipa (UHM)                 :    0.03  /  0.10  /  0.80  /  1.39
+HNIH1 : Hanalei (12009)             :    0.08  /  0.25  /  1.46  /  1.96
+WLLH1 : Mount Waialeale (USGS)      :    1.65  /  4.18  /  10.75 /  14.28
+PRIH1 : Princeville Airport (12011) :    0.00  /  0.42  /  1.54  /  2.14
+CMGH1 : Common Ground (UHM)         :    0.08  /  0.99  /  2.45  /  3.15
+HLIH1 : Hanalei (RAWS)              :    0.05  /  0.55  /  2.00  /  2.38
 MLDH1 : Moloaa Dairy (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
-ANHH1 : Anahola (12001)             :      M   /    M   /    M   /    M
-KPIH1 : Kapahi (12003)              :    0.00  /  0.15  /  0.40  /  0.40
-WLDH1 : N Wailua Ditch (USGS)       :    0.39  /  1.65  /  1.96  /  1.97
-WUHH1 : Wailua (12005)              :    0.51  /  0.65  /  0.87  /  0.87
-WIRH1 : Waiahi Rain Gage (USGS)     :    0.93  /  1.33  /  1.70  /  1.70
-LIHH1 : Lihue Var. Stn. (12006)     :    0.41  /  0.52  /  0.60  /  0.60
-HNMH1 : Hanamaulu (UHM)             :    0.85  /  1.37  /  1.80  /  1.80
-HLI   : Lihue Airport (ASOS)        :    0.12  /  0.12  /  0.14  /  0.14
+ANHH1 : Anahola (12001)             :    0.36  /  0.50  /  2.01  /  2.01
+KPIH1 : Kapahi (12003)              :      M   /    M   /    M   /    M
+WLDH1 : N Wailua Ditch (USGS)       :    0.95  /  1.41  /  3.31  /  4.88
+WUHH1 : Wailua (12005)              :    0.47  /  0.82  /  2.42  /  2.78
+WIRH1 : Waiahi Rain Gage (USGS)     :    0.60  /  1.11  /  2.54  /  3.31
+LIHH1 : Lihue Var. Stn. (12006)     :    0.64  /  0.89  /  1.84  /  2.03
+HNMH1 : Hanamaulu (UHM)             :    0.02  /  0.49  /  1.61  /  2.56
+HLI   : Lihue Airport (ASOS)        :    0.36  /  0.61  /  0.83  /  1.04
 :       Leeward Sites
-OMAH1 : Omao (12004)                :    0.30  /  0.33  /  0.40  /  0.40
-LNTH1 : Lawai NTBG (UHM)            :    0.47  /  0.49  /  0.53  /  0.53
-KHEH1 : Kalaheo (12008)             :    0.48  /  0.53  /  0.59  /  0.59
-PAKH1 : Port Allen (HSOIS)          :    0.34  /  0.45  /  0.68  /  0.68
-HNPH1 : Hanapepe (12002)            :    0.41  /  0.58  /  0.85  /  0.85
-POPH1 : Puu Opae (RAWS)             :    0.62  /  0.90  /  1.18  /  1.19
-WHGH1 : Waimea Heights (RAWS)       :    0.44  /  0.64  /  1.07  /  1.08
-WMTH1 : Waimea Tank (12007)         :    0.38  /  0.55  /  1.00  /  1.00
-MNRH1 : Mana (RAWS)                 :    0.55  /  0.65  /  0.85  /  0.85
+OMAH1 : Omao (12004)                :    0.03  /  0.11  /  0.54  /  0.64
+LNTH1 : Lawai NTBG (UHM)            :    0.02  /  0.17  /  0.91  /  0.97
+KHEH1 : Kalaheo (12008)             :    0.03  /  0.23  /  1.02  /  1.13
+PAKH1 : Port Allen (HSOIS)          :    0.12  /  0.16  /  0.63  /  0.97
+HNPH1 : Hanapepe (12002)            :    0.07  /  0.17  /  0.76  /  1.20
+POPH1 : Puu Opae (RAWS)             :    0.17  /  0.43  /  1.47  /  2.04
+WHGH1 : Waimea Heights (RAWS)       :    0.14  /  0.19  /  0.78  /  1.42
+WMTH1 : Waimea Tank (12007)         :    0.13  /  0.18  /  0.85  /  1.47
+MNRH1 : Mana (RAWS)                 :    0.06  /  0.10  /  0.93  /  1.23
 :
 :Island of Oahu                                    Inches
 :ID     Location                         3-Hr    6-Hr   12-Hr   24-Hr
 :       Windward/Mauka Sites
-KAHH1 : Kahuku (13027)              :    0.60  /  0.71  /  0.71  /  0.71
-KTAH1 : Kahuku Training Area (RAWS) :    0.00  /  0.00  /  0.01  /  0.01
-KFWH1 : Kii (RAWS)                  :    0.00  /  0.00  /  0.00  /  0.00
-PUNH1 : Punaluu Pump (13013)        :    0.08  /  0.17  /  0.18  /  0.18
-PNSH1 : Punaluu Stream (USGS)       :    0.17  /  0.22  /  0.26  /  0.26
-KNRH1 : Kahana (USGS)               :    0.06  /  0.06  /  0.06  /  0.06
-HAKH1 : Hakipuu Mauka (13004)       :    0.00  /  0.00  /  0.00  /  0.00
-WPPH1 : Waihee Pump (13002)         :    0.00  /  0.00  /  0.00  /  0.00
-WHSH1 : Waiahole (USGS)             :    0.00  /  0.00  /  0.00  /  0.00
-OFRH1 : Oahu Forest NWR (USFWS)     :    0.00  /  0.00  /  0.00  /  0.00
-AHUH1 : Ahuimanu Loop (13005)       :    0.00  /  0.00  /  0.00  /  0.00
-HRRH1 : Heeia NERR (NOAA/NOS)       :    0.01  /  0.01  /  0.01  /  0.01
-LULH1 : Luluku (13016)              :    0.00  /  0.00  /  0.00  /  0.00
-NRSH1 : Nuuanu Res No. 1 (UHM)      :    0.00  /  0.00  /  0.00  /  0.00
-KWIH1 : Kalawahine (UHM)            :    0.00  /  0.00  /  0.00  /  0.00
-LYOH1 : Lyon (UHM)                  :    0.00  /  0.00  /  0.00  /  0.00
-MNLH1 : Manoa Lyon Arboretum (13023):    0.00  /  0.00  /  0.00  /  0.00
-STVH1 : St. Stephens (13006)        :    0.00  /  0.00  /  0.00  /  0.00
+KAHH1 : Kahuku (13027)              :    0.05  /  0.29  /  0.92  /  1.03
+KTAH1 : Kahuku Training Area (RAWS) :    0.01  /  0.01  /  0.01  /  0.02
+KFWH1 : Kii (RAWS)                  :    0.22  /  0.30  /  0.34  /  0.34
+PUNH1 : Punaluu Pump (13013)        :    0.57  /  0.79  /  0.97  /  1.07
+PNSH1 : Punaluu Stream (USGS)       :    0.73  /  0.79  /  0.97  /  1.06
+KNRH1 : Kahana (USGS)               :    0.57  /  0.65  /  0.71  /  0.71
+HAKH1 : Hakipuu Mauka (13004)       :    0.37  /  0.72  /  0.88  /  0.88
+WPPH1 : Waihee Pump (13002)         :    0.38  /  0.74  /  0.79  /  0.79
+WHSH1 : Waiahole (USGS)             :    0.78  /  0.89  /  0.91  /  0.91
+OFRH1 : Oahu Forest NWR (USFWS)     :    0.25  /  0.55  /  0.56  /  0.56
+AHUH1 : Ahuimanu Loop (13005)       :    0.45  /  0.93  /  1.00  /  1.00
+HRRH1 : Heeia NERR (NOAA/NOS)       :    0.27  /  0.66  /  0.72  /  0.72
+LULH1 : Luluku (13016)              :    0.47  /  1.07  /  1.07  /  1.07
+NRSH1 : Nuuanu Res No. 1 (UHM)      :    0.46  /  1.21  /  1.27  /  1.27
+KWIH1 : Kalawahine (UHM)            :    0.38  /  1.17  /  1.30  /  1.30
+LYOH1 : Lyon (UHM)                  :    0.66  /  1.08  /  1.18  /  1.18
+MNLH1 : Manoa Lyon Arboretum (13023):    0.25  /  1.12  /  1.23  /  1.23
+STVH1 : St. Stephens (13006)        :    0.39  /  0.95  /  1.04  /  1.04
 MAUH1 : Maunawili (13008)           :      M   /    M   /    M   /    M
-OFSH1 : Olomana Fire Station (13009):    0.00  /  0.00  /  0.00  /  0.00
-WMLH1 : Waimanalo (13011)           :    0.00  /  0.00  /  0.00  /  0.00
-BELH1 : Bellows AFS (HSOIS)         :    0.00  /  0.00  /  0.00  /  0.00
-KMHH1 : Kamehame (13012)            :    0.00  /  0.00  /  0.00  /  0.00
-HAJH1 : Hawaii Kai Golf Crse (13015):    0.00  /  0.00  /  0.00  /  0.00
+OFSH1 : Olomana Fire Station (13009):    0.24  /  0.67  /  0.67  /  0.67
+WMLH1 : Waimanalo (13011)           :    0.13  /  0.52  /  0.62  /  0.62
+BELH1 : Bellows AFS (HSOIS)         :    0.04  /  0.28  /  0.33  /  0.33
+KMHH1 : Kamehame (13012)            :    0.04  /  0.34  /  0.42  /  0.42
+HAJH1 : Hawaii Kai Golf Crse (13015):    0.03  /  0.34  /  0.42  /  0.42
 :       Leeward/Central Sites
-KUXH1 : Kaluanui (UHM)              :    0.00  /  0.00  /  0.00  /  0.00
-NIUH1 : Niu Valley (13001)          :    0.00  /  0.00  /  0.00  /  0.00
-PFSH1 : Palolo Fire Station (13010) :    0.00  /  0.00  /  0.00  /  0.00
+KUXH1 : Kaluanui (UHM)              :    0.12  /  0.36  /  0.39  /  0.39
+NIUH1 : Niu Valley (13001)          :    0.04  /  0.40  /  0.45  /  0.45
+PFSH1 : Palolo Fire Station (13010) :    0.19  /  0.91  /  0.99  /  0.99
 HNL   : Honolulu Airport (ASOS)             See note at bottom  :
-MOAH1 : Moanalua (13003)            :    0.00  /  0.00  /  0.00  /  0.00
-MOGH1 : Moanalua RG (USGS)          :    0.00  /  0.00  /  0.00  /  0.00
-TNLH1 : Tunnel RG (USGS)            :    0.00  /  0.00  /  0.00  /  0.00
-PACH1 : Palisades (13020)           :    0.00  /  0.00  /  0.00  /  0.00
-WAWH1 : Waiawa C.F. (13025)         :    0.00  /  0.00  /  0.00  /  0.00
-MITH1 : Mililani (13022)            :    0.00  /  0.00  /  0.00  /  0.00
-SCBH1 : Schofield Barracks (RAWS)   :    0.00  /  0.00  /  0.00  /  0.00
-SCEH1 : Schofield East (RAWS)       :    0.00  /  0.00  /  0.00  /  0.00
-WAFH1 : Wheeler Airfield            :    0.00  /  0.00  /  0.00  /  0.00
-POAH1 : Poamoho (13018)             :    0.00  /  0.00  /  0.00  /  0.00
-KRGH1 : Kalahee Ridge (UHM)         :    0.00  /  0.00  /  0.00  /  0.00
-KMRH1 : Kamananui Stream (USGS)     :    0.00  /  0.00  /  0.00  /  0.00
-PPRH1 : Pupukea Road (USGS)         :    0.00  /  0.00  /  0.00  /  0.00
-PMHH1 : Poamoho RG 1 (USGS)         :    0.11  /  0.32  /  0.62  /  0.62
-DLGH1 : Dillingham (RAWS)           :    0.00  /  0.00  /  0.00  /  0.00
-AALH1 : Kaala (UHM)                 :    0.06  /  0.07  /  0.07  /  0.07
-PECH1 : Waipio (13019)              :    0.00  /  0.00  /  0.00  /  0.00
-KUNH1 : Kunia Substation (13021)    :    0.00  /  0.00  /  0.00  /  0.00
-HOFH1 : Honouliuli (RAWS)           :    0.00  /  0.00  /  0.00  /  0.00
-PTWH1 : Ewa Beach USGS (13024)      :    0.00  /  0.00  /  0.00  /  0.00
+MOAH1 : Moanalua (13003)            :    0.54  /  1.20  /  1.20  /  1.20
+MOGH1 : Moanalua RG (USGS)          :    0.66  /  0.99  /  1.06  /  1.06
+TNLH1 : Tunnel RG (USGS)            :    1.08  /  1.14  /  1.16  /  1.16
+PACH1 : Palisades (13020)           :    0.22  /  0.73  /  0.86  /  0.86
+WAWH1 : Waiawa C.F. (13025)         :    0.27  /  0.79  /  1.18  /  1.18
+MITH1 : Mililani (13022)            :    0.12  /  0.91  /  1.33  /  1.33
+SCBH1 : Schofield Barracks (RAWS)   :    0.59  /  1.88  /  1.97  /  1.97
+SCEH1 : Schofield East (RAWS)       :    0.24  /  0.59  /  0.84  /  0.84
+WAFH1 : Wheeler Airfield (13028)    :    0.13  /  1.27  /  1.45  /  1.45
+POAH1 : Poamoho (13018)             :    0.98  /  2.10  /  3.02  /  3.02
+KRGH1 : Kalahee Ridge (UHM)         :    0.04  /  0.27  /  0.27  /  0.27
+KMRH1 : Kamananui Stream (USGS)     :    0.10  /  0.40  /  0.41  /  0.41
+PPRH1 : Pupukea Road (USGS)         :    0.13  /  0.47  /  0.50  /  0.50
+PMHH1 : Poamoho RG 1 (USGS)         :    0.60  /  0.66  /  0.79  /  1.30
+DLGH1 : Dillingham (RAWS)           :    0.01  /  0.44  /  0.44  /  0.44
+AALH1 : Kaala (UHM)                 :    0.22  /  0.82  /  1.09  /  1.10
+PECH1 : Waipio (13019)              :    0.08  /  0.75  /  0.94  /  0.94
+KUNH1 : Kunia Substation (13021)    :    0.09  /  2.51  /  3.29  /  3.29
+HOFH1 : Honouliuli (RAWS)           :    0.05  /  0.66  /  0.95  /  0.95
+PTWH1 : Ewa Beach USGS (13024)      :    0.05  /  0.45  /  0.74  /  0.74
 HJR   : Kalaeloa Airport (ASOS)             See note at bottom  :
-PLHH1 : Palehua (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
-LUAH1 : Lualualei (13017)           :    0.00  /  0.00  /  0.00  /  0.00
-WNVH1 : Waianae Valley (RAWS)       :    0.00  /  0.00  /  0.00  /  0.00
-WBHH1 : Waianae Boat Harbor (HSOIS) :    0.00  /  0.00  /  0.00  /  0.00
-WAIH1 : Waianae (13014)             :    0.00  /  0.00  /  0.00  /  0.00
-MKHH1 : Makaha Stream (USGS)        :    0.00  /  0.00  /  0.00  /  0.00
-MKRH1 : Makua Range (RAWS)          :    0.00  /  0.00  /  0.00  /  0.00
-KKRH1 : Kuaokala (RAWS)             :    0.00  /  0.00  /  0.00  /  0.00
+PLHH1 : Palehua (RAWS)              :    0.18  /  0.73  /  1.39  /  1.39
+LUAH1 : Lualualei (13017)           :    0.16  /  0.25  /  0.83  /  0.83
+WNVH1 : Waianae Valley (RAWS)       :    0.04  /  0.31  /  0.84  /  0.84
+WBHH1 : Waianae Boat Harbor (HSOIS) :    0.04  /  0.30  /  0.30  /  0.30
+WAIH1 : Waianae (13014)             :    0.01  /  0.01  /  0.48  /  0.48
+MKHH1 : Makaha Stream (USGS)        :    0.12  /  0.86  /  0.96  /  0.96
+MKRH1 : Makua Range (RAWS)          :    0.05  /  0.42  /  0.42  /  0.42
+KKRH1 : Kuaokala (RAWS)             :    0.00  /  0.21  /  0.29  /  0.29
 :
 :Island of Molokai                                 Inches
 :ID     Location                         3-Hr    6-Hr   12-Hr   24-Hr
 KOPH1 : Keopukaloa (UHM)            :    0.00  /  0.00  /  0.00  /  0.00
 HOMH1 : Honolimaloo (UHM)           :    0.00  /  0.00  /  0.00  /  0.00
-KMLH1 : Kamalo (14013)              :    0.00  /  0.00  /  0.00  /  0.00
+KMLH1 : Kamalo (14013)              :    0.00  /  0.01  /  0.01  /  0.01
 MKPH1 : Makapulapai (RAWS)          :    0.00  /  0.00  /  0.00  /  0.00
 PAFH1 : Puu Alii (RAWS)             :    0.00  /  0.00  /  0.00  /  0.00
 MLKH1 : Molokai 1 (RAWS)            :      M   /    M   /    M   /    M
@@ -3254,12 +3218,12 @@ PHQH1 : Park HQ (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
 NNEH1 : Nene Nest (UHM)             :    0.00  /  0.00  /  0.00  /  0.00
 SUMH1 : Summit (UHM)                :    0.00  /  0.00  /  0.00  /  0.00
 KLFH1 : Kula 1 (RAWS)               :    0.00  /  0.00  /  0.00  /  0.00
-KKNH1 : Kahikinui 1 (RAWS)          :    0.00  /  0.00  /  0.00  /  0.00
+KKNH1 : Kahikinui 1 (RAWS)          :    0.02  /  0.02  /  0.02  /  0.02
 KMEH1 : Kamehamenui 1 (RAWS)        :    0.00  /  0.00  /  0.00  /  0.00
 KKEH1 : Keokea (UHM)                :    0.00  /  0.00  /  0.00  /  0.00
 ULUH1 : Ulupalakua (14003)          :    0.00  /  0.00  /  0.00  /  0.00
 LPOH1 : Lipoa (UHM)                 :    0.00  /  0.00  /  0.00  /  0.00
-KHIH1 : Kihei #2 (14009)            :      M   /    M   /    M   /    M
+KHIH1 : Kihei #2 (14009)            :    0.00  /  0.00  /    M   /  0.00
 KPDH1 : Kealia Pond (USFWS)         :    0.00  /  0.00  /  0.00  /  0.00
 WCCH1 : Waikapu Country Club (14005):    0.00  /  0.00  /  0.00  /  0.00
 HULH1 : Hanaula (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
@@ -3273,44 +3237,44 @@ HOOH1 : Honolua (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
 :       Windward Sites
 UPLH1 : Upolu Airport (HSOIS)       :    0.00  /  0.00  /  0.00  /  0.00
 KMMH1 : Kaluamakani (UHM)           :    0.00  /  0.00  /  0.00  /  0.00
-KWSH1 : Kawainui Stream (USGS)      :    0.00  /  0.00  /  0.00  /  0.01
+KWSH1 : Kawainui Stream (USGS)      :    0.00  /  0.00  /  0.00  /  0.00
 KUUH1 : Kamuela Upper (15002)       :    0.00  /  0.00  /  0.00  /  0.00
 KMUH1 : Kamuela (15005)             :    0.00  /  0.00  /  0.00  /  0.00
 HNKH1 : Honokaa (15010)             :    0.00  /  0.00  /  0.00  /  0.00
 PMLH1 : Puu Mali (RAWS)             :    0.00  /  0.00  /  0.00  /  0.00
-WPNH1 : Waipunalei (UHM)            :      M   /    M   /    M   /  0.00
-KNKH1 : Kanakaleonui (UHM)          :    0.00  /  0.00  /  0.01  /  0.01
+WPNH1 : Waipunalei (UHM)            :    0.00  /  0.00  /  0.00  /  0.00
+KNKH1 : Kanakaleonui (UHM)          :    0.00  /  0.00  /  0.00  /  0.01
 LPHH1 : Laupahoehoe PD (15001)      :    0.00  /  0.00  /  0.00  /  0.00
 LAUH1 : Laupahoehoe (UHM)           :    0.00  /  0.00  /  0.00  /  0.00
 SPNH1 : Spencer (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
-HKUH1 : Hakalau (RAWS)              :    0.00  /  0.01  /  0.01  /  0.01
+HKUH1 : Hakalau (RAWS)              :    0.00  /  0.00  /  0.00  /  0.01
 KLXH1 : Kulaimano (UHM)             :    0.00  /  0.00  /  0.00  /  0.00
-NLIH1 : Honolii Stream (USGS)       :    0.02  /  0.02  /  0.02  /  0.02
-SDQH1 : Saddle Quarry (USGS)        :    0.01  /  0.05  /  0.23  /  0.23
-PIOH1 : Piihonua (UHM)              :    0.00  /  0.00  /  0.14  /  0.14
+NLIH1 : Honolii Stream (USGS)       :    0.00  /  0.00  /  0.02  /  0.02
+SDQH1 : Saddle Quarry (USGS)        :    0.00  /  0.00  /  0.01  /  0.23
+PIOH1 : Piihonua (UHM)              :    0.00  /  0.00  /  0.00  /  0.14
 PIIH1 : Piihonua (15016)            :    0.00  /  0.00  /  0.00  /  0.00
-IPIH1 : IPIF (UHM)                  :    0.00  /  0.00  /  0.00  /  0.00
-WKAH1 : Waiakea Uka (15017)         :    0.00  /  0.00  /  0.00  /  0.00
+IPIH1 : IPIF (UHM)                  :    0.01  /  0.01  /  0.01  /  0.01
+WKAH1 : Waiakea Uka (15017)         :    0.00  /  0.00  /  0.01  /  0.01
 WEXH1 : Waiakea Exp Stn (NOAA/CRN)  :    0.00  /  0.00  /  0.00  /  0.00
-HTO   : Hilo Airport (ASOS)         :      T   /  0.01  /  0.01  /  0.01
-PHAH1 : Pahoa (15015)               :    0.00  /  0.01  /  0.01  /  0.01
-PAOH1 : Pahoa (UHM)                 :    0.00  /  0.01  /  0.01  /  0.01
-MTVH1 : Mountain View (15014)       :    0.04  /  0.04  /  0.04  /  0.04
-GLNH1 : Glenwood (15013)            :    0.00  /  0.00  /  0.00  /  0.00
+HTO   : Hilo Airport (ASOS)         :    0.00  /  0.00  /    T   /  0.01
+PHAH1 : Pahoa (15015)               :    0.00  /  0.06  /  0.06  /  0.07
+PAOH1 : Pahoa (UHM)                 :    0.00  /  0.14  /  0.14  /  0.15
+MTVH1 : Mountain View (15014)       :    0.00  /  0.00  /  0.11  /  0.11
+GLNH1 : Glenwood (15013)            :    0.05  /  0.05  /  0.10  /  0.10
 :       Leeward Sites
 MOBH1 : Mauna Loa Ob Stn (NOAA/CRN) :    0.00  /  0.00  /  0.00  /  0.00
-NHKH1 : Nahuku (UHM)                :    0.00  /  0.00  /  0.00  /  0.00
-KKUH1 : Keaumo (RAWS)               :    0.00  /  0.04  /  0.16  /  0.16
-KMOH1 : Kealakomo (RAWS)            :    0.00  /  0.00  /  0.00  /  0.00
-PLIH1 : Pali 2 (RAWS)               :    0.05  /  0.06  /  0.06  /  0.06
-KPRH1 : Kapapala (RAWS)             :    0.00  /  0.00  /  0.01  /  0.01
+NHKH1 : Nahuku (UHM)                :    0.00  /  0.01  /  0.02  /  0.02
+KKUH1 : Keaumo (RAWS)               :    0.00  /  0.00  /  0.00  /  0.16
+KMOH1 : Kealakomo (RAWS)            :    0.08  /  0.11  /  0.11  /  0.11
+PLIH1 : Pali 2 (RAWS)               :    0.00  /  0.07  /  0.26  /  0.27
+KPRH1 : Kapapala (RAWS)             :    0.00  /  0.00  /  0.01  /  0.02
 KAYH1 : Kapapala Ranch (15003)      :      M   /    M   /    M   /    M
-PPLH1 : Pahala (15004)              :    0.00  /  0.02  /  0.08  /  0.08
+PPLH1 : Pahala (15004)              :    0.03  /  0.03  /  0.03  /  0.11
 KIOH1 : Kaiholena (UHM)             :      M   /    M   /    M   /    M
 NENH1 : Nene Cabin (RAWS)           :    0.00  /  0.00  /  0.00  /  0.00
 SOPH1 : South Point (HSOIS)         :    0.00  /  0.00  /  0.00  /  0.00
-LKHH1 : Lower Kahuku (RAWS)         :    0.00  /  0.02  /  0.03  /  0.03
-KRCH1 : Kahuku Ranch (RAWS)         :    0.00  /  0.01  /  0.02  /  0.02
+LKHH1 : Lower Kahuku (RAWS)         :    0.00  /  0.00  /  0.00  /  0.03
+KRCH1 : Kahuku Ranch (RAWS)         :    0.00  /  0.00  /  0.00  /  0.02
 KOMH1 : Kona Hema (UHM)             :    0.00  /  0.00  /  0.00  /  0.00
 PHRH1 : Puho CS (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
 HAUH1 : Honaunau (15007)            :    0.00  /  0.00  /  0.00  /  0.00
@@ -3338,7 +3302,7 @@ WKVH1 : Waikoloa (RAWS)             :    0.00  /  0.00  /  0.00  /  0.00
 PERH1 : Puhe CS (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
 KHRH1 : Kohala Ranch (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
 KASH1 : Kahua Ranch (15006)         :    0.00  /  0.00  /  0.00  /  0.00
-KEHH1 : Kehena (UHM)                :    0.00  /  0.00  /  0.00  /  0.01
+KEHH1 : Kehena (UHM)                :    0.00  /  0.00  /  0.00  /  0.00
 PLAH1 : Puuloa (UHM)                :    0.00  /  0.00  /  0.00  /  0.00
 .END
 
@@ -3709,7 +3673,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-30T03:25:52.432849-10:00 HST |
+| **Collected** | 2026-09-30T12:04:10.262486-10:00 HST |
 
 ```text
                         
@@ -3803,16 +3767,16 @@ $$
 |---|---|
 | **Resource ID** | hsf_high_seas_npac |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=HSF&issuedby=NP |
-| **Collected** | 2026-09-30T00:19:58.824087-10:00 HST |
+| **Collected** | 2026-09-30T12:02:39.974902-10:00 HST |
 
 ```text
-581
-FZPN40 PHFO 301018
+673
+FZPN40 PHFO 301513
 HSFNP
 
 HIGH SEAS FORECAST
 NATIONAL WEATHER SERVICE HONOLULU HI
-1100 UTC WED SEP 30 2026
+1700 UTC WED SEP 30 2026
 
 SUPERSEDED BY NEXT ISSUANCE IN 6 HOURS
 
@@ -3827,35 +3791,37 @@ SECURITE
 
 NORTH PACIFIC EQUATOR TO 30N BETWEEN 140W AND 180W
 
-SYNOPSIS VALID 0600 UTC SEP 30 2026.
-24 HOUR FORECAST VALID 0600 UTC OCT 01 2026.
-48 HOUR FORECAST VALID 0600 UTC OCT 02 2026.
+SYNOPSIS VALID 1200 UTC SEP 30 2026.
+24 HOUR FORECAST VALID 1200 UTC OCT 01 2026.
+48 HOUR FORECAST VALID 1200 UTC OCT 02 2026.
 
 .WARNINGS.
 
 ...TROPICAL STORM WARNING...
-.TROPICAL STORM NOLO NEAR 22.4N 164.6W 987 MB AT 0900 UTC SEP 30
-MOVING WNW OR 290 DEG AT 5 KT. MAXIMUM SUSTAINED WINDS 60 KT
-GUSTS 75 KT. TROPICAL STORM FORCE WINDS WITHIN 120 NM NE
-QUADRANT...90 NM SE QUADRANT...80 NM SW QUADRANT...AND 110 NM NW
-QUADRANT. SEAS 4 M OR GREATER WITHIN 150 NM E SEMICIRCLE AND
-240 NM W SEMICIRCLE WITH SEAS TO 10 M. SEAS 2.5 TO 3.5 M ELSEWHERE
-FROM 16N TO 27N BETWEEN 159W AND 180W. WINDS 20 TO 30 KT ELSEWHERE
-FROM 20N TO 26N BETWEEN 158W AND 169W. ISOLATED MODERATE TSTMS
-WITHIN 90 NM OF CENTER.
-.24 HOUR FORECAST TROPICAL STORM NOLO NEAR 22.7N 165.0W. MAXIMUM
+.TROPICAL STORM NOLO NEAR 22.0N 165.0W 991 MB AT 1500 UTC SEP 30
+MOVING WSW OR 250 DEG AT 5 KT. MAXIMUM SUSTAINED WINDS 50 KT
+GUSTS 60 KT. TROPICAL STORM FORCE WINDS WITHIN 110 NM NE
+QUADRANT...70 NM SE QUADRANT...60 NM SW QUADRANT...AND 100 NM NW
+QUADRANT. SEAS 4 M OR GREATER WITHIN 150 NM NE QUADRANT...120
+NM SE QUADRANT...210 NM SW QUADRANT...AND 240 NM NW QUADRANT
+WITH SEAS TO 8 M. SEAS 2.5 TO 3.5 M ELSEWHERE FROM 17N TO
+27N BETWEEN 159W AND 180W. WINDS 20 TO 30 KT ELSEWHERE FROM 20N
+TO 26N BETWEEN 158W AND 169W. ISOLATED MODERATE TSTMS WITHIN 90 NM
+OF CENTER.
+.24 HOUR FORECAST TROPICAL STORM NOLO NEAR 22.1N 165.7W. MAXIMUM
 SUSTAINED WINDS 50 KT GUSTS 60 KT. TROPICAL STORM FORCE WINDS
-WITHIN 100 NM N SEMICIRCLE AND 70 NM S SEMICIRCLE. SEAS 4 M OR
-GREATER FROM 20N TO 25N BETWEEN 163W AND 169W WITH SEAS TO 8 M.
-SEAS 2.5 TO 3.5 M ELSEWHERE FROM 17N TO 30N BETWEEN 161W AND 178W.
-WINDS 20 TO 30 KT ELSEWHERE FROM 20N TO 27N BETWEEN 161W AND 171W.
-.48 HOUR FORECAST TROPICAL STORM NOLO NEAR 22.8N 166.5W. MAXIMUM
-SUSTAINED WINDS 55 KT GUSTS 65 KT. TROPICAL STORM FORCE WINDS
-WITHIN 100 NM NE QUADRANT...80 NM SE QUADRANT...70 NM SW
+WITHIN 90 NM N SEMICIRCLE...60 NM SE QUADRANT AND 50 NM SW
+QUADRANT. SEAS 4 M OR GREATER FROM 19N TO 25N BETWEEN 163W AND
+169W WITH SEAS TO 7 M. SEAS 2.5 TO 3.5 M ELSEWHERE FROM 17N
+TO 30N BETWEEN 160W AND 177W. WINDS 20 TO 30 KT ELSEWHERE FROM 19N
+TO 27N BETWEEN 161W AND 171W.
+.48 HOUR FORECAST TROPICAL STORM NOLO NEAR 22.6N 167.1W. MAXIMUM
+SUSTAINED WINDS 60 KT GUSTS 75 KT. TROPICAL STORM FORCE WINDS
+WITHIN 100 NM NE QUADRANT...80 NM SE QUADRANT...60 NM SW
 QUADRANT...AND 90 NM NW QUADRANT. SEAS 4 M OR GREATER FROM 21N TO
-25N BETWEEN 163W AND 170W WITH SEAS TO 7 M. SEAS 2.5 TO 3.5 M
+26N BETWEEN 163W AND 170W WITH SEAS TO 7 M. SEAS 2.5 TO 3.5 M
 ELSEWHERE FROM 17N TO 29N BETWEEN 161W AND 176W. WINDS 20 TO 30 KT
-ELSEWHERE FROM 20N TO 27N BETWEEN 161W AND 173W.
+ELSEWHERE FROM 19N TO 27N BETWEEN 162W AND 173W.
 
 FORECAST WINDS IN AND NEAR ACTIVE TROPICAL CYCLONES SHOULD BE
 USED WITH CAUTION DUE TO UNCERTAINTY IN FORECAST TRACK...SIZE
@@ -3863,18 +3829,19 @@ AND INTENSITY.
 
 .SYNOPSIS AND FORECAST.
 
-.FRONT 30N165W 28N169W 29N174W MOVING SE 15 KT.
-.24 HOUR FORECAST 30N156W 28N160W THENCE TROUGH 28N162W.
-.48 HOUR FORECAST FRONT 30N149W 29N150W 29N155W. TROUGH 30N165W
-26N166W.
+.FRONT 30N164W 28N167W THENCE TROUGH 27N170W 30N178W MOVING SE 15
+KT.
+.24 HOUR FORECAST 30N153W 28N158W THENCE TROUGH 26N164W.
+.48 HOUR FORECAST FRONT 30N150W 29N152W THENCE TROUGH 29N162W
+28N166W 26N167W.
 
 .WINDS 20 KT OR LESS OVER REMAINDER OF FORECAST AREA.
 
 .SEAS 2.5 M OR LOWER OVER REMAINDER OF FORECAST AREA.
 
-.MONSOON TROUGH 11N140W 09N146W 12N162W 09N180W. SCATTERED MODERATE
-TSTMS S OF TROUGH W OF 155W. ISOLATED MODERATE TSTMS S OF
-TROUGH E OF 155W.
+.MONSOON TROUGH 11N140W 10N151W 12N159W 11N170W 08N180W. SCATTERED
+MODERATE TSTMS S OF TROUGH W OF 160W. ISOLATED MODERATE TSTMS S OF
+TROUGH E OF 160W.
 
 .FORECASTER TSAMOUS. HONOLULU HI.
 ```
@@ -4097,12 +4064,12 @@ National Weather Service Honolulu HI
 |---|---|
 | **Resource ID** | mfm_marine_forecast_matrix |
 | **Official source** | https://www.weather.gov/hfo/MFM |
-| **Collected** | 2026-09-30T02:26:06.082215-10:00 HST |
+| **Collected** | 2026-09-30T12:02:44.997014-10:00 HST |
 
 ```text
-612
+290
 
-FXHW40 PHFO 300101
+FXHW40 PHFO 301318
 
 MFMHFO
 
@@ -4110,7 +4077,7 @@ MARINE FORECAST MATRICES
 
 NATIONAL WEATHER SERVICE HONOLULU HI
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
 THE INFORMATION PRESENTED IN THIS PRODUCT REFLECTS A
 
@@ -4120,117 +4087,115 @@ CURRENT INFORMATION SHOULD CHECK THE LATEST COASTAL WIND AND BUOY
 
 REPORTS.
 
-PHZ112-301400-
+PHZ112-010200-
 
 CK FAD BUOY MAKAHUENA PT KAUAI
 
 21.80N 159.35W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR         SE SE SE  S  S  S  S  S SE SE SE SE SE SE SE SE SE SE SE SE SE
+WIND DIR         SE  S  S  S  S SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE  E
 
-WIND SPD         21 21 24 20 23 21 21 21 13 13 10 10 10 10 10 10 10 10 10 10 11
+WIND SPD         20 19 18 16 15 13 13 13 13 12 12 10  9  9  9  9 10 10  9  9  7
 
-WIND GUST        27 27 31 26 30 27 27 27 14 14 11 11 10 10 11 11 11 11 11 11 12
+WIND GUST        26 24 22 20 18 16 17 16 17 14 15 13 11 11 11 11 12 12 10 10  8
 
 -------------------------------------------------------------------------------
 
-WAVE DIR          W  W  W  W  W  W  W  W  W  W  W  W  W  W  W SW  S  W  W  W  W
+WAVE DIR          W  W  W  W  W  W  W  W  W  W  W SW  S  W  W  W  W  W  W  W  W
 
-WAVE HGT          5  4  4  4  4  4  4  4  4  4  4  4  3  4  4  4  4  4  4  4  4
+WAVE HGT          4  4  4  4  4  4  4  4  3  4  4  4  4  4  4  4  4  4  4  4  4
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                             N  N  N  N
+WAVE DIR                                                 N  N  N  N  N  N  N  N
 
-WAVE HGT                                                             1  1  1  1
+WAVE HGT                                                 1  1  1  1  1  1  1  1
 
-PERIOD                                                              10 10 10 10
-
--------------------------------------------------------------------------------
-
-WAVE DIR          E  E  S  S  S  E  S SE  E  E  E  E  E  E  E  E  E  E  E  E  E
-
-WAVE HGT          8  8  9  9  8  8  8  8  5  5  5  5  5  5  5  5  5  5  5  5  5
-
-PERIOD            7  7  7  7  7  7  7  7  6  6  5  6  5  5  5  5  5  5  5  5  5
+PERIOD                                                  10 10 10 10 10 10  9  9
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT      9  9 10 10  9  9  9  9  6  6  6  6  6  6  6  6  6  6  6  6  6
+WAVE DIR          E  E  S  S  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-CLOUDS           BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK SC
+WAVE HGT          8  8  8  8  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
 
-POP 12HR                    100          90          90          90          80
-
-RAIN SHWRS        O  O  O  O  O  O  O  O  O  O  O  O  O  O  L  L  O  O  O  O  L
-
-TSTMS                   S  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR      SE SE  E    E  E  E NE   NE NE NE NE   NE
-
-WIND SPD      11 10  7    8 12 14 15   14 15 16 15   13
-
-WIND GUST     12 10  7    8 14 16 18   16 18 18 18   15
+PERIOD            7  7  7  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       W  W  W   SW  S  S  S    S  S  S  S    S
+SIG WAVE HGT     10 10 10 10  7  7  7  7  7  7  7  7  7  8  8  8  8  8  8  8  8
 
-WAVE HGT       4  4  4    4  4  3  3    2  1  1  1    1
+CLOUDS           OV OV BK BK BK BK OV OV BK BK BK BK BK BK BK BK BK BK BK BK SC
 
-PERIOD        11 11 11   11 11 10 11   17 17 18 18   17
+POP 12HR                    100          90          80          70          60
+
+RAIN SHWRS        O  O  O  O  O  O  O  O  O  O  L  L  L  L  L  L  L  L  L  L  C
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E  E NE   NE NE NE NE   NE
+
+WIND SPD       7    7 10 12 14   14 14 16 16   15
+
+WIND GUST      8    9 12 14 18   18 18 20 21   18
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       N  N  N    N  N  N  N    N  N  N  N    N
+WAVE DIR       W   SW  S  S  S    S  S  S  S    S
 
-WAVE HGT       1  1  1    1  1  1  1    1  1  1  1    1
+WAVE HGT       4    4  4  3  3    3  3  3  3    4
 
-PERIOD        10 10  9    9  9  9  8    8  8  8  8    8
+PERIOD        11   11 11 10 12   12 11 18 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   6  6  6    6  5  4  4    4  4  4  4    4
+WAVE DIR       N    N  N  N  N    N  N  N NE   NE
 
-CLOUDS        SC SC FW   FW FW FW FW   FW FW FW FW   FW
+WAVE HGT       1    1  1  1  1    1  1  1  1    1
 
-POP 12HR         60      30    20      20    20
+PERIOD         9    9  9  9  8    8  8  8  8    8
 
-PHZ111-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   7    7  6  5  6    6  6  5  6    6
+
+CLOUDS        SC   SC SC FW SC   SC SC SC FW   SC
+
+POP 12HR           30    20      20    20
+
+PHZ111-010200-
 
 EK FAD BUOY HANALEI KAUAI
 
 22.30N 159.43W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
 WIND DIR         SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE
 
-WIND SPD         24 25 30 21 18 18 15 13 13 13 11 11 12 12 12 12 12 12 12 12 12
+WIND SPD         18 16 17 16 15 12 11 13 12 15 12 14 11 11 11 11 11 11 10 10 11
 
-WIND GUST        31 32 39 27 23 23 19 16 14 14 13 13 13 13 13 13 13 13 14 14 13
+WIND GUST        23 20 21 20 19 15 14 16 15 19 15 17 14 14 13 13 13 13 12 12 13
 
 -------------------------------------------------------------------------------
 
@@ -4242,1225 +4207,1223 @@ PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          N  N  N  N  N
+WAVE DIR                                              N  N  N  N  N  N  N  N  N
 
-WAVE HGT                                                          2  3  3  3  3
+WAVE HGT                                              2  3  3  3  3  3  3  3  3
 
-PERIOD                                                           10 10 10  9  9
+PERIOD                                               10 10 10  9  9  9  9  9  9
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WAVE HGT          6  6  7  7  7  6  6  6  4  4  4  4  4  4  4  4  4  4  4  4  4
+WAVE HGT          6  6  6  5  5  5  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4
 
-PERIOD            7  7  7  7  7  7  7  7  6 14 14 14 13 13 13 13 13 12 12 12 12
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT      6  6  7  7  7  6  6  6  4  4  4  4  4  5  5  5  5  5  5  5  5
-
-CLOUDS           BK BK BK BK BK BK SC SC SC SC SC SC SC SC SC SC SC SC FW FW FW
-
-POP 12HR                     70          60          40          40          30
-
-RAIN SHWRS        L  L  L  L  L  L  C  C  C  C  C  C  C  C  C  C  C  C  C  C  C
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR      SE SE SE    E  E  E  E    E  E  E NE   NE
-
-WIND SPD      12 11 11   10 12 14 13   11 13 11  9    8
-
-WIND GUST     13 13 12   11 13 16 15   13 14 12 10    9
+PERIOD            7  7  7  7  7  7 14 14 13  6 13 13 13 12  9 12  6  6  6  6  6
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       W  W  W    W  W  W
+SIG WAVE HGT      8  7  7  7  5  5  5  5  5  6  6  6  6  6  6  6  6  6  6  6  6
 
-WAVE HGT       1  1  1    1  1  1
+CLOUDS           OV OV BK BK BK BK BK BK BK BK BK BK BK BK BK BK SC SC SC SC SC
 
-PERIOD        11 11 11   11 11  8  8    7  7  7  7   17
+POP 12HR                    100          80          70          60          50
+
+RAIN SHWRS        O  O  O  O  O  O  O  O  L  L  L  L  L  L  L  L  C  C  C  C  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR      SE    E  E  E  E    E  E  E NE   NE
+
+WIND SPD      11   10 10 11 11   10 11 11 11    9
+
+WIND GUST     13   12 12 14 14   13 14 14 13   11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       N  N  N    N  N  N  N    N  N  N  N    N
+WAVE DIR       W    W  W  W
 
-WAVE HGT       3  3  3    3  3  3  2    2  2  2  3    3
+WAVE HGT       1    1  1  1
 
-PERIOD         9  9  9    9  9  9  8    8 11 11 13   13
+PERIOD        11   11 11  8
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   5  5  4    4  4  4  4    4  4  4  5    5
+WAVE DIR       N    N  N  N  N    N  N  N NW   NW
 
-CLOUDS        FW FW SC   SC SC FW FW   FW FW FW SC   SC
+WAVE HGT       3    3  3  3  2    2  2  2  3    3
 
-POP 12HR         30      30    20      20    30
+PERIOD         9    9  9  9  8    8 11 11 13   13
 
-PHZ112-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   5    5  5  5  4    5  5  6  6    6
+
+CLOUDS        SC   SC SC FW SC   SC SC SC SC   SC
+
+POP 12HR           30    20      20    30
+
+PHZ112-010200-
 
 KK FAD BUOY WAIMEA KAUAI
 
 21.85N 159.72W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR         SE SE SE  S  S  S  S  S SE SE SE SE SE SE SE SE SE SE SE SE SE
+WIND DIR         SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE
 
-WIND SPD         23 23 21 21 22 29 20 18 13 13 12 12 13 13 13 13 12 12 12 12 13
+WIND SPD         20 18 17 16 15 13 14 14 13 13 13 12 11 11 11 11 11 11 11 11  9
 
-WIND GUST        30 30 27 27 28 38 26 23 15 15 13 13 14 14 15 15 13 13 14 14 14
+WIND GUST        26 23 22 20 19 17 17 17 16 16 16 15 14 14 13 13 14 14 14 14 11
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W
 
-WAVE HGT          5  4  5  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4
+WAVE HGT          4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                         NW NW NW NW NW
+WAVE DIR                                             NW NW NW NW NW NW NW NW NW
 
-WAVE HGT                                                          2  2  2  2  2
+WAVE HGT                                              2  2  2  2  2  1  1  1  1
 
-PERIOD                                                            9  9  9  9  9
-
--------------------------------------------------------------------------------
-
-WAVE DIR          S SE  S SE  S  S  S  S  E  E  E SE  E SE SE SE SE SE SE SE SE
-
-WAVE HGT          8  8  8  8  8  8  8  7  5  4  5  4  4  4  4  4  4  4  4  4  4
-
-PERIOD            7  7  7  7  7  7  7  7  6  6  5  6  5  6  5  6  5  6  6  5  5
+PERIOD                                                9  9  9  9  9  9  9  9  9
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT      9  9  9  9  9  9  9  8  6  6  6  6  6  6  6  6  6  6  6  6  6
+WAVE DIR          S  S SE SE SE  E  E  E  E SE  E SE  E SE  E SE SE  E SE SE SE
 
-CLOUDS           OV OV OV OV BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK SC
+WAVE HGT          8  8  8  7  5  5  5  5  5  5  5  4  4  4  4  4  4  4  4  4  4
 
-POP 12HR                     90          80          80          80          60
-
-RAIN SHWRS        O  O  O  O  O  O  O  O  O  O  O  O  O  O  L  L  L  L  L  L  C
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR      SE SE SE    E  E  E  E    E NE NE NE   NE
-
-WIND SPD      13 12 10    8  9  9 10   10  7  6  7    7
-
-WIND GUST     14 14 10    8 10  9 10   11  7  7  7    7
+PERIOD            7  7  7  7  6  6  6  6  6  6  6  6  6  5  6  5  5  6  6  6  6
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       W  W  W    W  W SW  S    S  S  S  S    S
+SIG WAVE HGT     10 10 10  9  7  7  7  7  7  7  7  7  7  8  8  8  8  8  8  8  8
 
-WAVE HGT       4  4  4    4  4  3  3    2  2  1  1    1
+CLOUDS           OV OV BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK SC
 
-PERIOD        11 11 11   11 11  9  9   17 17 18 18   17
+POP 12HR                    100          80          70          70          60
+
+RAIN SHWRS        O  O  O  O  O  O  O  O  L  L  L  L  L  L  L  L  L  L  L  L  C
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR      SE    E  E  E  E    E NE  E NE   NE
+
+WIND SPD       9    8  9  7  9   10  8  8  9    6
+
+WIND GUST     11    9 11  8 11   12  9  9 11    7
 
 -------------------------------------------------------------------------------
 
-WAVE DIR      NW NW NW    N  N NW NW   NW NW NW NW   NW
+WAVE DIR       W    W  W SW  S    S  S  S  S    S
 
-WAVE HGT       2  1  1    1  1  1  1    1  1  1  2    2
+WAVE HGT       4    4  4  3  3    3  3  3  3    4
 
-PERIOD         9  9  9    9  9 14 14   13 12 11 13   13
+PERIOD        11   11 11  9 12   12 11 18 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   6  6  6    6  5  4  3    3  4  4  4    4
+WAVE DIR      NW    N  N NW NW   NW NW NW NW   NW
 
-CLOUDS        SC SC SC   FW FW SC FW   FW FW FW FW   FW
+WAVE HGT       1    1  1  1  1    1  1  1  2    2
 
-POP 12HR         50      30    10      10    10
+PERIOD         9    9  9 14 14   13 12 11 13   13
 
-PHZ112-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   7    7  6  5  6    5  5  5  5    5
+
+CLOUDS        SC   SC SC FW SC   FW SC SC FW   FW
+
+POP 12HR           30    20      20    20
+
+PHZ112-010200-
 
 PP FAD BUOY KOLOA KAUAI
 
 21.79N 159.57W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR         SE SE  S  S  S  S  S  S SE SE SE SE SE SE SE SE SE SE SE SE SE
+WIND DIR         SE  S  S SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE  E
 
-WIND SPD         19 21 23 20 21 25 21 21 13 13 10 10 10 10 11 11 11 11 11 11 12
+WIND SPD         20 18 17 16 15 13 13 13 12 12 12  9  9  9 10 10 11 11 10 10  8
 
-WIND GUST        24 27 30 26 27 32 27 27 15 15 10 10 11 11 12 12 12 12 12 12 13
+WIND GUST        26 23 22 21 18 17 16 16 15 14 15 11 11 11 12 12 13 13 12 12  9
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W
 
-WAVE HGT          5  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4
+WAVE HGT          4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                         NW NW NW NW NW
+WAVE DIR                                             NW NW NW NW NW NW NW NW NW
 
-WAVE HGT                                                          1  1  1  1  1
+WAVE HGT                                              1  1  1  1  1  1  1  1  1
 
-PERIOD                                                            9  9  9  9  9
-
--------------------------------------------------------------------------------
-
-WAVE DIR          E  E SE SE  S  S  S  S  E  E  E  E  E  E  E  E  E  E  E  E  E
-
-WAVE HGT          8  9  9  8  8  8  8  8  5  5  5  5  5  5  5  5  5  5  5  5  5
-
-PERIOD            7  7  7  7  7  7  7  7  6  6  5  6  6  6  6  6  6  6  6  5  5
+PERIOD                                                9  9  9  9  9  9  9  9  9
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT      9 10 10  9  9  9  9  9  6  6  6  6  6  6  6  6  6  6  6  6  6
+WAVE DIR          E  S SE  S  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
+
+WAVE HGT          8  8  8  8  6  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
+
+PERIOD            7  7  7  7  6  6  6  6  6  6  6  6  6  5  6  5  6  6  6  6  6
+
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT     10 10 10 10  7  7  7  7  7  7  7  7  7  8  8  8  8  8  8  8  8
 
 CLOUDS           OV OV BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK SC
 
-POP 12HR                     90          90          90          80          70
+POP 12HR                    100          90          70          70          60
 
-RAIN SHWRS        O  O  O  O  O  O  O  O  O  O  O  O  O  O  L  L  L  L  L  L  L
+RAIN SHWRS        O  O  O  O  O  O  O  O  L  L  L  L  L  L  L  L  L  L  L  L  C
 
-TSTMS                   S  S
+DATE               SAT 10/03/26  SUN 10/04/26  MON
 
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
 
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
 
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
+WIND DIR       E    E  E  E NE   NE NE  E NE   NE
 
-WIND DIR      SE SE SE    E  E  E  E   NE NE NE NE   NE
+WIND SPD       8    8 11 11 14   15 14 15 15   13
 
-WIND SPD      12 11  9    9 12 14 15   15 14 14 13   11
-
-WIND GUST     13 12  9    9 13 16 18   17 16 17 14   12
+WIND GUST      9    9 13 13 17   18 17 19 19   16
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       W  W  W    W SW  S  S    S  S  S  S    S
+WAVE DIR       W    W SW  S  S    S  S  S  S    S
 
-WAVE HGT       4  4  4    4  4  3  3    2  2  1  1    1
+WAVE HGT       4    4  4  3  3    3  3  3  3    4
 
-PERIOD        11 11 11   11 11  9 11   17 17 18 18   17
-
--------------------------------------------------------------------------------
-
-WAVE DIR      NW NW NW            NW   NW NW NW NW   NW
-
-WAVE HGT       1  1  1             1    1  1  1  1    1
-
-PERIOD         9  9  9            13   13 12 11 13   13
+PERIOD        11   11 11  9 12   12 11 18 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   6  6  6    6  5  4  4    4  4  4  4    4
+WAVE DIR       N            NW   NW NW NW NW   NW
 
-CLOUDS        SC SC FW   FW FW SC FW   FW FW FW FW   FW
+WAVE HGT       1             1    1  1  1  1    1
 
-POP 12HR         60      30    20      10    10
+PERIOD         9            13   13 12 11 13   13
 
-PHZ111-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   7    7  6  5  6    6  6  5  5    5
+
+CLOUDS        SC   SC SC FW SC   FW SC SC FW   SC
+
+POP 12HR           30    20      20    20
+
+PHZ111-010200-
 
 WK FAD BUOY WAILUA KAUAI
 
 22.02N 159.22W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR         SE SE SE  S  S  S  S  S  S  S  S  S  S  S  S  S SE SE SE SE SE
+WIND DIR         SE  S  S  S  S  S  S  S SE SE SE  S SE SE SE SE SE SE SE SE  E
 
-WIND SPD         20 22 24 25 22 22 22 22 13 13  8  8  9  9 11 11  9  9  9  9  9
+WIND SPD         20 19 18 16 15 13 12 13 12 13 11  9  8  8  8  8  8  8  8  8  8
 
-WIND GUST        26 28 31 32 28 28 28 28 14 14  8  8  9  9 12 12  9  9  9  9 10
+WIND GUST        25 24 23 20 19 17 15 16 15 16 13 11 10 10 10 10  9  9 10 10  9
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S
 
-WAVE HGT          3  3  3  2  2  2  2  2  1  1  1  1  1  1  1  1  2  3  3  3  3
+WAVE HGT          2  2  2  2  1  1  1  1  1  1  1  1  2  3  3  3  3  3  3  2  2
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          N  N  N  N  N
+WAVE DIR                                              N  N  N  N  N  N  N  N  N
 
-WAVE HGT                                                          1  2  2  2  2
+WAVE HGT                                              1  2  2  2  2  2  2  3  3
 
-PERIOD                                                           10 10 10 10 10
-
--------------------------------------------------------------------------------
-
-WAVE DIR          E  E  E  S  S  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
-
-WAVE HGT          7  8  9  9  9  8  8  8  5  5  5  5  5  5  5  5  5  5  5  5  5
-
-PERIOD            7  7  7  7  7  7  7  7  6  6  6  6  6  6  6  6  6  6  6  6  6
+PERIOD                                               10 10 10 10 10  9  9  9  9
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT      8  9 10  9  9  8  8  8  5  5  5  5  5  5  5  5  5  6  6  6  6
+WAVE DIR          E  E  E  S  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-CLOUDS           BK BK OV OV BK BK BK BK BK BK BK BK BK BK BK BK SC SC SC SC SC
+WAVE HGT          8  8  8  8  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
 
-POP 12HR                     90          80          90          80          70
-
-RAIN SHWRS        L  L  O  O  O  O  O  O  O  O  O  O  O  O  L  L  L  L  L  L  C
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR      SE SE  E    E  E  E NE   NE NE NE NE   NE
-
-WIND SPD       9  9  8   10 11 13 14   12 13 13 12   11
-
-WIND GUST     10 10  8   10 12 15 16   13 15 14 14   12
+PERIOD            7  7  7  7  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       S  S  S    S  S  S  S    S  S  S  S    S
+SIG WAVE HGT     10  9  9  9  6  6  6  6  6  6  6  6  6  8  8  8  8  8  8  8  8
 
-WAVE HGT       3  3  2    2  1  1  1    1  1  1  1    1
+CLOUDS           OV OV BK BK BK BK OV OV BK BK BK BK BK BK BK BK SC SC SC SC SC
 
-PERIOD        11 11 11   11 11 12 12   11 18 18 18   17
+POP 12HR                    100          90          80          70          50
+
+RAIN SHWRS        O  O  O  O  O  O  O  O  O  O  L  L  L  L  L  L  C  C  C  C  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E  E NE   NE NE NE NE   NE
+
+WIND SPD       8    8  8 11 12   11 12 13 13   12
+
+WIND GUST      9   10 10 13 15   14 15 16 17   15
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       N  N  N    N  N  N  N    N  N  N  N    N
+WAVE DIR       S    S  S  S  S    S  S  S  S    S
 
-WAVE HGT       2  3  3    3  2  2  2    2  2  2  2    2
+WAVE HGT       2    2  1  1  3    3  3  3  3    4
 
-PERIOD        10  9  9    9  9  9  8    8  8  8  8    8
+PERIOD        11   11 11 12 12   12 11 18 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   6  6  5    5  5  4  4    4  4  4  5    5
+WAVE DIR       N    N  N  N  N    N  N  N  N    N
 
-CLOUDS        SC FW SC   SC SC FW FW   FW FW FW SC   SC
+WAVE HGT       3    3  2  2  2    2  2  2  2    2
 
-POP 12HR         50      30    20      20    20
+PERIOD         9    9  9  9  8    8  8  8  8    8
 
-PHZ113-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   7    6  6  5  6    6  6  6  6    6
+
+CLOUDS        SC   SC SC FW SC   SC SC SC SC   SC
+
+POP 12HR           30    20      20    30
+
+PHZ113-010200-
 
 MID POINT KAUAI CHANNEL
 
 21.77N 158.82W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR         SE SE SE SE SE  S  S  S SE SE SE SE SE SE SE SE SE SE SE SE SE
+WIND DIR         SE  S  S  S SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE  E
 
-WIND SPD         18 20 22 20 22 22 22 21 16 16 15 15 15 15 14 14 11 11 11 11 10
+WIND SPD         18 18 17 16 15 15 15 14 13 13 13 12 11 11 11 11  9  9  7  7  7
 
-WIND GUST        23 26 28 26 28 28 28 27 19 19 17 17 18 18 16 16 12 12 12 12 10
+WIND GUST        23 23 22 21 19 18 18 17 17 17 16 15 14 14 13 13 11 11  8  8  8
 
 -------------------------------------------------------------------------------
 
-WAVE DIR          W  W  W  W  W  W  S  S  S SW SW  S  S  S  S  S  S  S  S  W  W
+WAVE DIR          W  W  S  S  S SW SW  S  S  S  S  S  S  S  S  W  W  W  W SW SW
 
-WAVE HGT          4  4  4  4  4  4  4  4  4  3  3  3  3  3  3  3  4  4  4  4  4
+WAVE HGT          4  4  4  4  4  3  3  3  3  3  3  3  4  4  4  4  4  4  4  4  4
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          N  N  N  N  N
+WAVE DIR                                              N  N  N  N  N  N  N  N  N
 
-WAVE HGT                                                          2  3  3  3  3
+WAVE HGT                                              2  3  3  3  3  3  3  3  3
 
-PERIOD                                                           10 10 10  9  9
-
--------------------------------------------------------------------------------
-
-WAVE DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
-
-WAVE HGT          6  7  8  8  8  8  8  8  5  5  5  5  5  5  5  5  5  5  5  5  5
-
-PERIOD            6  6  6  7  7  6  7  7  6  5  5  5  5  5  5  5  5  5  5  5  5
+PERIOD                                               10 10 10  9  9  9  9  9  9
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT      7  8  9  9  9  9  9  9  6  6  6  6  6  6  6  6  7  7  7  7  7
+WAVE DIR          E  E  E  S  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-CLOUDS           BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK SC
+WAVE HGT          8  8  8  8  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
 
-POP 12HR                     80          90          90          80          70
-
-RAIN SHWRS        L  L  O  O  O  O  O  O  O  O  O  O  O  O  L  L  L  L  L  L  C
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR      SE SE  E    E  E  E  E    E NE NE NE   NE
-
-WIND SPD      10  8  8   11 13 16 18   15 15 16 16   15
-
-WIND GUST     10  8  8   13 15 19 21   17 18 18 19   17
+PERIOD            7  7  6  6  6  6  6  5  6  5  6  5  6  5  6  5  6  6  6  6  5
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       W SW  S    S  S  S  S    S  S  S  S    S
+SIG WAVE HGT     10 10 10 10  7  7  7  7  7  7  7  7  8  9  9  9  9  9  9  8  8
 
-WAVE HGT       4  4  4    4  3  3  2    2  1  1  1    1
+CLOUDS           BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK BK SC SC SC SC SC
 
-PERIOD        11 11 11   11 11 12 12   17 17 18 18   17
+POP 12HR                     90          90          70          70          50
+
+RAIN SHWRS        O  O  O  O  O  O  O  O  L  L  L  L  L  L  L  L  C  C  C  C  C
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E  E NE    E  E NE NE   NE
+
+WIND SPD       7    9 12 13 16   15 15 16 17   16
+
+WIND GUST      8   11 15 16 20   19 19 20 21   20
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       N  N  N    N  N  N  N    N  N  N  N    N
+WAVE DIR       S    S  S  S  S    S  S  S  S    S
 
-WAVE HGT       3  3  3    3  3  3  2    2  2  2  2    3
+WAVE HGT       4    4  3  3  3    3  3  3  3    4
 
-PERIOD         9  9  9    9  9  9  8    8 11 11 10   12
+PERIOD        11   11 11 12 12   12 11 18 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   7  6  6    6  6  5  5    5  5  5  5    5
+WAVE DIR       N    N  N  N  N    N  N  N NW   NW
 
-CLOUDS        SC SC SC   SC FW FW FW   FW FW FW FW   SC
+WAVE HGT       3    3  3  3  2    2  2  2  2    3
 
-POP 12HR         40      30    20      20    20
+PERIOD         9    9  9  9  8    8 11 11 12   12
 
-PHZ115-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   7    7  7  6  6    6  6  6  6    6
+
+CLOUDS        SC   SC FW FW FW   SC SC SC SC   SC
+
+POP 12HR           30    20      20    20
+
+PHZ115-010200-
 
 MAMALA BAY OAHU
 
 21.27N 157.86W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR         SE SE SE SE SE SE  S  S SE SE SE SE SE SE SE SE  E  E  E  E  E
+WIND DIR         SE SE  S  S SE SE SE SE SE SE SE  S  E  E  E  E  E  E  E  E  E
 
-WIND SPD         11 11 14 17 20 18 17 16 10 10 10 10  9  9  9  9  6  6  6  6  7
+WIND SPD         11 14 11 11 11 11 10  9  6  8  6  7  6  6  6  6  7  7  6  6  6
 
-WIND GUST        13 13 17 21 26 23 21 20 10 10 11 11  9  9  9  9  7  7  7  7  7
+WIND GUST        13 17 14 14 13 13 12 10  7  9  7  8  6  6  6  6  8  8  7  7  7
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S
 
-WAVE HGT          4  4  3  3  3  3  3  3  3  3  3  2  2  2  2  2  3  3  3  3  3
+WAVE HGT          3  3  3  3  3  3  3  2  2  2  2  2  3  3  3  3  3  3  3  3  3
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S SW SW
+WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S
 
-WAVE HGT          3  4  4  4  4  5  5  5  3  3  3  3  3  3  3  3  3  3  3  3  3
+WAVE HGT          5  5  5  5  4  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3
 
-PERIOD            6  6  6  6  6  6  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT      5  6  5  5  5  6  6  6  4  4  4  4  4  4  4  4  4  4  4  4  4
-
-CLOUDS           SC SC BK BK BK BK SC SC BK BK BK BK SC SC SC SC SC SC SC SC FW
-
-POP 12HR                     70          70          70          60          30
-
-RAIN SHWRS        C  C  L  L  L  L  L  L  L  L  L  L  L  L  C  C  C  C  S  S  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E  E  E    E  E  E NE   NE NE NE NE   NE
-
-WIND SPD       7  7  7    9 10 13 13   12 13 14 13   11
-
-WIND GUST      7  7  7    9 11 15 15   14 15 17 15   13
+PERIOD            6  6  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       S  S  S    S  S  S  S    S  S  S  S    S
+SIG WAVE HGT      5  7  7  7  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
 
-WAVE HGT       3  3  3    3  2  2  1    1  1  1  1    1
+CLOUDS           BK BK BK BK BK BK BK BK BK BK SC SC SC SC SC SC SC SC SC SC FW
 
-PERIOD        11 11 11   11 12 12 12   12 18 18 18   18
+POP 12HR                     60          70          60          40          40
+
+RAIN SHWRS        L  L  L  L  L  L  L  L  L  L  C  C  C  C  C  C  C  C  C  C
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E  E NE   NE NE NE NE   NE
+
+WIND SPD       6    7  9 12 11   11 12 14 14   12
+
+WIND GUST      7    8 11 14 14   14 15 18 17   15
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   4  4  4    4  4  4  4    4  4  4  4    4
+WAVE DIR       S    S  S  S  S    S  S  S  S    S
 
-CLOUDS        FW FW FW   FW FW FW FW   FW FW FW FW   FW
+WAVE HGT       3    3  2  2  3    3  3  3  3    4
 
-POP 12HR         20      10    10      10    10
+PERIOD        11   11 12 12 12   12 11 18 18   18
 
-PHZ118-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   5    5  5  5  4    4  4  5  5    5
+
+CLOUDS        FW   SC FW FW SC   FW SC SC SC   SC
+
+POP 12HR           20    20      20    20
+
+PHZ118-010200-
 
 P FAD BUOY PENGUIN BANK OAHU
 
 20.77N 157.82W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR         SE SE SE SE SE SE  S  S SE SE SE SE SE SE SE SE SE SE SE SE SE
+WIND DIR         SE  S  S  S  S SE SE  S  S SE SE SE SE SE SE SE SE SE SE SE  E
 
-WIND SPD         14 14 16 19 21 21 19 19 15 15 14 14 13 13 11 11 12 12 11 11  9
+WIND SPD         16 15 15 14 13 13 14 13 13 13 11 11 12 12 11 11  9  9  8  8  7
 
-WIND GUST        17 17 20 24 27 27 24 24 18 18 17 17 15 15 12 12 13 13 13 13  9
+WIND GUST        20 19 19 17 16 17 17 16 16 16 14 14 15 15 13 13 10 10 10 10  8
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S
 
-WAVE HGT          4  4  3  3  3  3  3  3  3  3  3  2  2  2  2  2  3  3  3  3  3
+WAVE HGT          3  3  3  3  3  3  3  2  2  2  2  2  3  3  3  3  3  3  3  3  3
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          W NW NW NW NW
+WAVE DIR                                              W NW NW NW NW NW NW  W  W
 
-WAVE HGT                                                          1  1  1  1  1
+WAVE HGT                                              1  1  1  1  1  1  1  1  1
 
-PERIOD                                                            9  9  9  9  9
-
--------------------------------------------------------------------------------
-
-WAVE DIR         SE SE SE SE SE SE SE SE SE  S  S  S  S  S  S  S  S  S  S SE SE
-
-WAVE HGT          4  5  5  5  5  6  6  6  4  4  4  4  4  4  4  4  4  4  4  3  3
-
-PERIOD            6  6  6  6  6  6  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5
+PERIOD                                                9  9  9  9  9  9  9  9  9
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT      6  6  6  7  7  7  7  7  5  5  5  5  5  5  5  5  5  5  5  4  4
+WAVE DIR         SE  S SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE
 
-CLOUDS           BK BK BK BK BK BK SC SC BK BK BK BK SC SC SC SC SC SC SC SC FW
+WAVE HGT          6  6  6  6  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4
 
-POP 12HR                     70          70          80          70          50
-
-RAIN SHWRS        C  C  L  L  L  L  L  L  L  L  O  O  L  L  C  C  C  C  C  C  C
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR      SE  E  E    E NE NE NE   NE NE NE NE   NE
-
-WIND SPD       9  6  6    6  8  9 16   13 14 15 19   18
-
-WIND GUST      9  7  7    7  8  9 19   15 16 18 23   22
+PERIOD            6  6  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       S  S  S    S  S  S  S    S  S  S  S    S
+SIG WAVE HGT      8  8  8  8  6  6  6  6  6  6  6  6  6  6  6  5  5  5  5  5  5
 
-WAVE HGT       3  3  3    3  2  2  1    1  1  1  1    2
+CLOUDS           BK BK BK BK BK BK BK BK BK BK SC SC SC SC SC SC SC SC SC SC FW
 
-PERIOD        11 11 11   11 12 12 12   12 18 18 18   18
+POP 12HR                     70          80          60          40          50
+
+RAIN SHWRS        L  L  L  L  L  L  O  O  L  L  C  C  C  C  C  C  C  C  C  C  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E NE NE   NE NE NE NE   NE
+
+WIND SPD       7    6  7  8 14   14 13 16 19   18
+
+WIND GUST      8    6  8  9 18   17 16 20 24   23
 
 -------------------------------------------------------------------------------
 
-WAVE DIR      NW NW SW   NE  N NE NW   NW NW NW NW   NW
+WAVE DIR       S    S  S  S  S    S  S  S  S    S
 
-WAVE HGT       1  1  1    1  1  1  1    1  1  1  1    2
+WAVE HGT       3    3  2  2  3    3  3  3  4    4
 
-PERIOD         9  9  9    9  9  9  9   12 12 11 10   12
+PERIOD        11   11 12 12 12   12 12 18 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   4  4  4    4  4  4  4    4  4  4  5    5
+WAVE DIR      SW   NE  N NE NW   NW NW NW NW   NW
 
-CLOUDS        FW FW FW   SC FW FW FW   FW FW FW FW   SC
+WAVE HGT       1    1  1  1  1    1  1  1  1    2
 
-POP 12HR         30      30    20      20    10
+PERIOD         9    9  9  9  9   12 12 11 13   13
 
-PHZ115-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   5    5  5  5  6    5  5  5  6    6
+
+CLOUDS        FW   SC FW FW FW   FW SC FW FW   FW
+
+POP 12HR           30    20      20    20
+
+PHZ115-010200-
 
 R FAD BUOY MAKAHA OAHU
 
 21.46N 158.28W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR         SE SE SE SE SE SE  S  S SE SE SE SE SE SE SE SE SE SE SE SE SE
+WIND DIR         SE SE  S  S SE SE SE SE SE SE SE SE SE SE SE SE SE SE  S  S  E
 
-WIND SPD         18 17 20 21 22 21 23 21 12 12 12 12 12 12 12 12  8  8  7  7  6
+WIND SPD         15 16 16 14 12 12 11 10 10 10 11 11  8  8  7  7  6  6  5  5  3
 
-WIND GUST        23 21 26 27 28 27 30 27 14 14 13 13 13 13 14 14  9  9  7  7  7
+WIND GUST        18 20 20 18 15 14 14 13 12 12 14 14 10 10  8  8  7  7  6  6  4
 
 -------------------------------------------------------------------------------
 
-WAVE DIR          W  W  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S
+WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S
 
-WAVE HGT          4  4  4  4  3  3  3  3  3  3  3  3  3  3  3  3  3  4  4  4  4
+WAVE HGT          3  3  3  3  3  3  3  3  3  3  3  3  3  4  4  4  4  4  4  3  3
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                         NW NW NW  N  N
+WAVE DIR                                             NW NW NW  N  N  N  N  N  N
 
-WAVE HGT                                                          2  2  2  2  2
+WAVE HGT                                              2  2  2  2  2  2  2  2  2
 
-PERIOD                                                           10 10 10  9  9
-
--------------------------------------------------------------------------------
-
-WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S SW SW
-
-WAVE HGT          4  4  5  6  6  6  6  6  4  4  4  3  3  3  4  3  3  3  3  3  3
-
-PERIOD            6  6  6  6  6  6  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5
+PERIOD                                               10 10 10  9  9  9  9  9  9
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT      6  6  7  7  7  7  7  7  5  5  5  4  4  4  5  5  5  5  5  5  5
+WAVE DIR          S  S  S  S SE  S SE  S SE  S  S  S  S  S  S  S  S  S  S  S  S
 
-CLOUDS           SC SC BK BK SC SC BK BK BK BK BK BK SC SC SC SC SC SC SC SC FW
+WAVE HGT          6  6  6  6  4  4  4  4  4  4  4  4  3  3  3  3  3  3  3  3  3
 
-POP 12HR                     60          50          60          40          30
-
-RAIN SHWRS        C  C  L  L  C  C  C  C  C  C  L  L  C  C  C  C  C  C  C  C
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR      SE  S  E    E  E NE NE   NE NE NE NE   NE
-
-WIND SPD       6  4  4    5  6  4  9    7  8 13 11   11
-
-WIND GUST      7  7  7    7  7  7  9    7  8 14 13   12
+PERIOD            6  6  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       S  S  S    S  S  S  S    S  S  S  S    S
+SIG WAVE HGT      8  8  8  8  6  6  6  5  5  5  6  6  6  6  6  6  6  6  6  6  6
 
-WAVE HGT       4  4  3    3  3  2  2    1  1  1  1    2
+CLOUDS           BK BK BK BK SC SC BK BK BK BK SC SC SC SC SC SC SC SC SC SC SC
 
-PERIOD        11 11 11   11 12 12 12   17 17 18 18   17
+POP 12HR                     60          70          60          40          50
+
+RAIN SHWRS        L  L  L  L  C  C  L  L  L  L  C  C  C  C  C  C  C  C  C  C  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E NE NE   NE NE NE NE   NE
+
+WIND SPD       3    5  5  3  8    8  8 13 12   10
+
+WIND GUST      4    5  5  4  9    9  9 16 15   13
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       N  N  N    N  N  N  N   NW NW NW NW   NW
+WAVE DIR       S    S  S  S  S    S  S  S  S    S
 
-WAVE HGT       2  2  2    2  2  1  1    2  2  2  2    2
+WAVE HGT       3    3  3  2  3    3  3  3  4    4
 
-PERIOD         9  9  9    9  9  9 13   13 12 11 10   12
+PERIOD        11   11 12 12 12   12 11 18 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   5  5  5    5  4  4  3    3  3  4  4    4
+WAVE DIR       N    N  N  N  N   NW NW NW NW   NW
 
-CLOUDS        FW SC SC   FW FW FW FW   FW FW FW FW   FW
+WAVE HGT       2    2  2  1  1    2  2  2  2    2
 
-POP 12HR         10      10     5      10     5
+PERIOD         9    9  9  9 13   13 12 11 10   12
 
-PHZ114-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   6    6  5  5  5    5  5  5  5    5
+
+CLOUDS        SC   SC FW FW SC   FW SC SC FW   FW
+
+POP 12HR           20    10      20    20
+
+PHZ114-010200-
 
 U FAD BUOY KANEOHE OAHU
 
 21.58N 157.69W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR          E  E SE  S SE  S  S  S SE SE SE SE SE SE SE SE  E  E  E  E  E
+WIND DIR         SE SE SE SE SE SE SE SE SE SE SE SE  E  E SE SE  E  E  E  E  E
 
-WIND SPD         17 17 15 15 18 20 20 19 11 11 10 10 12 12 12 12 13 13 13 13 13
+WIND SPD         11 13 12 13 11 12 10  8 11 12 12 11 12 12 12 12 11 11 12 12 12
 
-WIND GUST        21 21 19 19 23 26 26 24 12 12 11 11 13 13 14 14 15 15 14 14 15
+WIND GUST        13 16 15 16 13 15 12  9 13 14 14 14 15 15 15 15 14 14 15 15 14
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          N  N  N  N  N
+WAVE DIR                                              N  N  N  N  N  N  N  N  N
 
-WAVE HGT                                                          2  3  3  3  3
+WAVE HGT                                              2  3  3  3  3  3  3  3  3
 
-PERIOD                                                           10 10 10  9  9
+PERIOD                                               10 10 10  9  9  9  9  9  9
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WAVE HGT          6  6  6  6  6  6  6  6  5  5  4  4  4  4  4  4  4  4  4  4  4
+WAVE HGT          6  6  6  6  5  5  5  5  5  5  4  4  4  4  4  4  4  4  4  4  4
 
-PERIOD            7  6  6  6  6  6  6  6 12 14 14 14 13 13 13 13 13 12 12 12 12
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT      6  6  6  6  6  6  6  6  5  5  4  4  4  4  4  4  4  5  5  5  5
-
-CLOUDS           SC SC SC SC SC SC SC SC SC SC SC SC SC SC SC SC SC SC SC SC FW
-
-POP 12HR                     40          70          70          50          30
-
-RAIN SHWRS        C  C  C  C  C  C  L  L  L  L  L  L  C  C  C  C  C  C  C  C  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E  E  E    E  E  E  E    E  E NE NE   NE
-
-WIND SPD      13 13 14   11 12 14 14   13 14 12 13   12
-
-WIND GUST     15 14 16   12 13 16 16   15 16 14 15   14
+PERIOD            6  6  6  6  6  6 14 14 13  6 13 13 13 12 12 12  6  6  6  6  6
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       N  N  N    N  N  N  N    N  N NW NW   NW
+SIG WAVE HGT      7  7  7  7  6  6  5  5  5  5  5  5  5  6  6  6  6  6  6  6  6
 
-WAVE HGT       3  3  3    3  3  2  2    2  2  2  2    3
+CLOUDS           BK BK BK BK BK BK BK BK SC SC SC SC SC SC SC SC SC SC SC SC FW
 
-PERIOD         9  9  9    9  9  9  8   12 12 11 11   12
+POP 12HR                     60          70          50          20          30
+
+RAIN SHWRS        L  L  L  L  L  L  L  L  C  C  C  C  S  S  S  S  C  C  C  C
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E  E  E    E  E NE NE   NE
+
+WIND SPD      12   11 11 11 12   13 13 13 14   13
+
+WIND GUST     14   13 14 13 15   16 16 16 18   16
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   5  5  5    5  4  4  4    4  4  4  5    5
+WAVE DIR                     S    S  S  S  S    S
 
-CLOUDS        FW FW FW   SC FW FW FW   FW FW FW FW   SC
+WAVE HGT                     1    1  1  1  1    1
 
-POP 12HR         20      30    20      30    30
+PERIOD                      12   12 20 20 18   18
 
-PHZ114-301400-
+-------------------------------------------------------------------------------
+
+WAVE DIR       N    N  N  N  N    N  N NW NW   NW
+
+WAVE HGT       3    3  3  2  2    2  2  2  2    3
+
+PERIOD         9    9  9  9  8   12 12 11 11   12
+
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   6    6  5  5  5    5  5  6  6    6
+
+CLOUDS        FW   SC FW FW SC   SC SC SC SC   SC
+
+POP 12HR           20    10      20    30
+
+PHZ114-010200-
 
 II FAD BUOY HALEIWA OAHU
 
 21.74N 158.22W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR          E  E SE SE SE SE  S  S SE SE SE SE SE SE SE SE  E  E  E  E  E
+WIND DIR         SE SE  S  S  S SE SE SE SE SE SE  E  E  E  E  E  E  E  E  E  E
 
-WIND SPD         17 16 12 12 12 11 17 20 10 10  9  9  8  8  7  7 10 10 11 11 11
+WIND SPD         10  7  9 11 10 10  7  7  8 10  6  7 10 10 10 10  9  9  7  7 10
 
-WIND GUST        21 20 15 15 15 13 21 26 11 11  9  9  9  9  7  7 11 11 12 12 12
+WIND GUST        12  9 10 14 12 12  9  8 10 12  7  8 12 12 12 12 11 11  8  8 12
 
 -------------------------------------------------------------------------------
 
-WAVE DIR          W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W
+WAVE DIR          W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W SW SW
 
-WAVE HGT          4  4  3  3  3  3  3  3  2  2  2  2  2  2  2  2  3  3  3  3  3
+WAVE HGT          3  3  3  3  2  2  2  2  2  2  2  2  3  3  3  3  3  3  3  3  3
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          N  N  N  N  N
+WAVE DIR                                              N  N  N  N  N  N  N  N  N
 
-WAVE HGT                                                          2  3  3  3  3
+WAVE HGT                                              2  3  3  3  3  3  3  3  3
 
-PERIOD                                                           10 10 10  9  9
+PERIOD                                               10 10 10  9  9  9  9  9  9
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WAVE HGT          5  5  5  5  5  5  5  5  4  4  4  4  4  4  4  4  4  4  4  4  4
+WAVE HGT          5  5  5  5  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4
 
-PERIOD            7  7  7  6  6  6  6  6  6  5  6  8  6  5  6  6  6  5  5  8  8
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT      7  7  6  6  6  6  6  6  5  5  5  5  5  5  5  5  5  6  6  6  6
-
-CLOUDS           SC SC BK BK BK BK BK BK SC SC SC SC SC SC BK BK FW FW FW FW FW
-
-POP 12HR                     50          70          60          60          40
-
-RAIN SHWRS        C  C  C  C  L  L  L  L  L  L  C  C  L  L  L  L  C  C  S  S  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E  E  E    E  E  E  E    E  E NE NE   NE
-
-WIND SPD      11 10 12   12 13 17 17   15 17 15 16   14
-
-WIND GUST     12 10 14   13 15 20 21   18 20 18 19   16
+PERIOD            7  7  6  6  6  5  6  5  6  6  6  6  6  5  6  6  6  6  6  6  6
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       W SW SW   SW SW SW SW   SW SW SW SW   SW
+SIG WAVE HGT      7  7  7  7  6  6  6  6  6  6  6  6  6  8  8  8  8  8  8  8  8
 
-WAVE HGT       3  3  3    2  2  1  1    1  1  1  1    1
+CLOUDS           BK BK BK BK BK BK BK BK BK BK SC SC SC SC SC SC SC SC SC SC FW
 
-PERIOD        11 11 11   11 11 12 12   16 17 18 18   17
+POP 12HR                     70          60          60          40          40
+
+RAIN SHWRS        L  L  L  L  L  L  L  L  L  L  C  C  C  C  C  C  C  C  C  C  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E  E  E    E  E NE NE   NE
+
+WIND SPD      10   11 12 14 15   15 15 16 16   15
+
+WIND GUST     12   13 15 18 19   18 19 20 21   19
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       N  N  N    N  N  N  N    N  N  N NW   NW
+WAVE DIR      SW   SW SW SW SW   SW SW SW SW   SW
 
-WAVE HGT       3  3  3    3  3  2  2    2  2  2  3    3
+WAVE HGT       3    2  2  1  1    1  1  1  1    1
 
-PERIOD         9  9  9    9  9  9  8   12 12 11 11   12
+PERIOD        11   11 11 12 12   12 20 20 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   6  6  5    5  4  4  4    4  4  4  4    5
+WAVE DIR       N    N  N  N  N    N  N  N NW   NW
 
-CLOUDS        FW FW SC   FW FW FW FW   FW FW FW FW   FW
+WAVE HGT       3    3  3  2  2    2  2  2  3    3
 
-POP 12HR         20      20    10      20    20
+PERIOD         9    9  9  9  8   12 12 11 11   12
 
-PHZ114-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   7    6  5  5  5    5  5  5  6    6
+
+CLOUDS        FW   SC FW FW FW   SC SC SC FW   SC
+
+POP 12HR           20    10      20    30
+
+PHZ114-010200-
 
 LL FAD BUOY HAUULA OAHU
 
 21.75N 157.76W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR          E SE SE SE SE SE SE SE SE SE SE SE SE SE SE SE  E  E SE SE  E
+WIND DIR         SE SE SE SE SE SE SE SE SE SE SE SE  E  E SE SE SE SE  E  E  E
 
-WIND SPD         19 17 19 19 17 18 20 19 14 14 13 13 14 14 14 14 15 15 15 15 15
+WIND SPD         13 14 13 14 15 14 12 11 13 13 13 14 14 14 15 15 14 14 13 13 13
 
-WIND GUST        24 21 24 24 21 23 26 24 16 16 15 15 16 16 16 16 17 17 18 18 17
+WIND GUST        16 18 16 17 18 17 14 14 17 17 17 17 18 18 18 18 18 18 17 17 17
 
 -------------------------------------------------------------------------------
 
-WAVE DIR          W  W  W  W  W  W  W  W  W  W  W  W  W  W        W  W  W  W  W
+WAVE DIR          W  W  W  W  W  W  W  W  W  W        W  W  W  W  W  W  W  W  W
 
-WAVE HGT          1  1  1  1  1  1  1  1  1  1  1  1  1  1        1  1  1  1  1
+WAVE HGT          1  1  1  1  1  1  1  1  1  1        1  1  1  1  1  1  1  1  1
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          N  N  N  N  N
+WAVE DIR                                              N  N  N  N  N  N  N  N  N
 
-WAVE HGT                                                          2  3  3  3  3
+WAVE HGT                                              2  3  3  3  3  3  3  3  3
 
-PERIOD                                                           10 10 10  9  9
+PERIOD                                               10 10 10  9  9  9  9  9  9
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WAVE HGT          6  6  6  6  6  6  6  6  5  5  5  5  4  4  4  4  4  4  4  4  4
+WAVE HGT          6  6  6  6  5  5  5  5  5  5  5  5  5  5  5  5  4  5  4  4  4
 
-PERIOD            7  6  6  6  6  6  6  6  6 14 14 14 13 13 13 13 13 12 12 12 12
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT      6  6  6  6  6  6  6  6  5  5  5  5  4  4  4  4  5  5  5  5  5
-
-CLOUDS           SC SC SC SC SC SC SC SC SC SC SC SC SC SC SC SC FW FW FW FW FW
-
-POP 12HR                     50          70          70          60          30
-
-RAIN SHWRS        C  C  C  C  C  C  L  L  L  L  L  L  L  L  C  C  C  C  S  S  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E  E  E    E  E  E  E    E  E NE NE   NE
-
-WIND SPD      15 15 15   13 13 15 15   15 16 12 14   13
-
-WIND GUST     17 17 17   14 15 18 18   18 19 14 15   14
+PERIOD            6  6  6  6  6  6 14 14 13  6 13 13 13 12 12 12  6  6  6  6  6
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       W  W  W
+SIG WAVE HGT      7  7  7  7  6  6  6  6  5  5  5  5  6  6  6  6  6  6  6  6  6
 
-WAVE HGT       1  1  1
+CLOUDS           BK BK BK BK SC SC BK BK SC SC SC SC SC SC SC SC SC SC SC SC FW
 
-PERIOD        11 11 11   11 13 13 12   20 20 20 18   18
+POP 12HR                     60          60          50          20          30
+
+RAIN SHWRS        L  L  L  L  C  C  L  L  C  C  C  C  S  S  S  S  C  C  C  C
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E  E  E    E  E NE NE   NE
+
+WIND SPD      13   12 13 12 13   14 15 14 15   14
+
+WIND GUST     17   15 16 15 16   17 18 17 19   17
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       N  N  N    N  N  N  N    N NE  N NW   NW
+WAVE DIR       W                           S    S
 
-WAVE HGT       3  3  3    3  3  2  2    2  2  2  2    3
+WAVE HGT       1                           1    1
 
-PERIOD         9  9  9    9  9  9  8   12 12 11 11   12
+PERIOD        11   11 11                  18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   5  5  5    5  4  4  4    4  4  4  5    5
+WAVE DIR       N    N  N  N  N    N NE  N NW   NW
 
-CLOUDS        FW FW FW   FW FW FW FW   FW FW FW FW   SC
+WAVE HGT       3    3  3  2  2    2  2  2  3    3
 
-POP 12HR         20      30    20      30    30
+PERIOD         9    9  9  9  8   12 12 11 11   12
 
-PHZ114-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   6    6  5  5  5    5  5  6  6    6
+
+CLOUDS        FW   SC FW FW FW   SC SC SC SC   SC
+
+POP 12HR           20    10      20    30
+
+PHZ114-010200-
 
 UH WAIMEA BUOY OAHU
 
 21.67N 158.12W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR          E  E  E  E  E SE  S  S SE SE SE SE SE SE SE SE  E  E  E  E  E
+WIND DIR         SE SE SE SE SE SE SE SE SE  E SE  E  E  E  E  E  E  E  E  E  E
 
-WIND SPD         10 11  7  8  9 12 17 14 10 10  9  9  9  9  8  8  9  9 10 10 10
+WIND SPD          8  8  8 10  8  7  7  6  7 11  8  5  9  9  9  9  9  9  7  7  8
 
-WIND GUST        12 13  8  9 11 15 21 17 11 11  9  9  9  9  8  8  9  9 11 11 10
+WIND GUST         9  9  9 13 10  8  8  7  8 13  9  5 11 11 11 11 10 10  8  8 10
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W
 
-WAVE HGT          3  2  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+WAVE HGT          1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          N  N  N  N  N
+WAVE DIR                                              N  N  N  N  N  N  N  N  N
 
-WAVE HGT                                                          2  2  2  3  3
+WAVE HGT                                              2  2  2  3  3  3  3  3  3
 
-PERIOD                                                           10 10 10  9  9
-
--------------------------------------------------------------------------------
-
-WAVE DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
-
-WAVE HGT          3  3  3  3  3  3  3  3  2  2  2  2  2  2  2  2  2  2  2  2  2
-
-PERIOD            7  7  7  7  7  7  7  7  5  5 14 14 13  9 13 13  9  9  9 12 12
+PERIOD                                               10 10 10  9  9  9  9  9  9
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT      5  4  4  4  4  3  3  3  2  2  2  2  2  2  3  3  3  3  3  4  4
+WAVE DIR          E NE  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-CLOUDS           SC SC SC SC SC SC BK BK SC SC SC SC SC SC SC SC FW FW FW FW FW
+WAVE HGT          3  3  3  3  3  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2
 
-POP 12HR                     50          60          50          50          30
-
-RAIN SHWRS        C  C  C  C  C  C  L  L  C  C  C  C  C  C  C  C  C  C  S  S  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E  E  E    E  E  E  E    E  E NE NE   NE
-
-WIND SPD      10  8 10   10 11 13 13   11 13 14 13   12
-
-WIND GUST     10  9 10   10 12 14 15   12 15 16 14   13
+PERIOD            7  7  6  6  6  5  9  9  9  6  9  9  6  5  9  8  6  6  6  6  6
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       W  W  W    W  W  W  W    W  W  W  W    W
+SIG WAVE HGT      4  3  3  3  2  2  2  2  2  2  3  3  3  4  4  5  5  5  5  5  5
 
-WAVE HGT       1  1  1    1  1  1  1    1  1  1  1    1
+CLOUDS           BK BK BK BK SC SC SC SC BK BK SC SC SC SC SC SC SC SC SC SC FW
 
-PERIOD        11 11 11   11 11  7  7   17 17 18 18   17
+POP 12HR                     70          50          60          40          40
+
+RAIN SHWRS        L  L  L  L  C  C  C  C  L  L  C  C  C  C  C  C  C  C  C  C  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E  E  E    E  E NE NE   NE
+
+WIND SPD       8    9 10 11 12   11 12 14 14   12
+
+WIND GUST     10   10 12 13 15   14 15 17 17   15
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       N  N  N    N  N  N  N    N  N  N NW   NW
+WAVE DIR       W    W  W  W SW         SW SW   SW
 
-WAVE HGT       3  3  3    3  3  2  2    2  2  2  3    3
+WAVE HGT       1    1  1  1  1          1  1    1
 
-PERIOD         9  9  9    9  9  9  8   12 12 11 11   12
+PERIOD        11   11 11  7  7         18 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   4  4  4    4  3  3  3    3  3  3  3    4
+WAVE DIR       N    N  N  N  N    N  N  N NW   NW
 
-CLOUDS        FW SC SC   FW FW FW FW   FW FW FW FW   FW
+WAVE HGT       3    3  3  2  2    2  2  2  3    3
 
-POP 12HR         20      20    20      20    20
+PERIOD         9    9  9  9  8   12 12 11 11   12
 
-PHZ116-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   5    5  4  4  3    3  3  4  4    5
+
+CLOUDS        FW   SC FW FW SC   FW SC SC SC   SC
+
+POP 12HR           20    10      20    30
+
+PHZ116-010200-
 
 MID POINT KAIWI CHANNEL
 
 21.21N 157.50W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR         SE  S SE  S SE SE  S  S SE SE SE SE SE SE SE SE  E  E  E  E  E
+WIND DIR          S  S  S  S  S  S SE SE SE SE SE SE  E  E  E  E  E  E  E  E  E
 
-WIND SPD          6 11 12 14 19 20 18 18 11 11 12 12  7  7  7  7  7  7  7  7  7
+WIND SPD          9 11 14 11 11 12 10 10 10  6  7  6  7  7  6  6  6  6  7  7  8
 
-WIND GUST         7 13 15 17 24 26 23 23 12 12 13 13  7  7  7  7  7  7  7  7  7
+WIND GUST        11 14 17 14 14 14 13 12 12  7  8  7  8  8  7  7  7  7  8  8  9
 
 -------------------------------------------------------------------------------
 
-WAVE DIR          W  W  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S SW SW SW SW
+WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S SW SW SW SW SW SW SW SW
 
-WAVE HGT          4  4  3  3  3  3  3  3  3  3  3  2  2  2  2  2  3  3  3  3  3
+WAVE HGT          3  3  3  3  3  3  3  2  2  2  2  2  3  3  3  3  3  3  3  3  3
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          N  N  N  N  N
+WAVE DIR                                              N  N  N  N  N  N  N  N  N
 
-WAVE HGT                                                          2  2  2  3  3
+WAVE HGT                                              2  2  2  3  3  3  3  3  3
 
-PERIOD                                                           10 10 10 10 10
-
--------------------------------------------------------------------------------
-
-WAVE DIR          E  E  E  E  E  E SE SE  E  E  E  E  E  E  E  E  E  E  E  E  E
-
-WAVE HGT          5  5  5  5  5  6  6  6  4  4  4  4  4  4  4  4  4  4  4  4  4
-
-PERIOD            6  6  6  6  6  6  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5
+PERIOD                                               10 10 10 10 10  9  9  9  9
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT      6  6  6  6  6  7  7  7  5  5  5  5  5  5  5  5  5  5  5  6  6
+WAVE DIR          E  E SE SE  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-CLOUDS           SC SC SC SC SC SC SC SC SC SC BK BK SC SC FW FW SC SC FW FW FW
+WAVE HGT          5  6  6  6  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4
 
-POP 12HR                     50          60          60          50          30
-
-RAIN SHWRS        C  C  C  C  C  C  L  L  L  L  L  L  C  C  C  C  C  C  S  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E  E  E    E  E NE NE    E  E NE NE   NE
-
-WIND SPD       7  8  9   11 12 17 17   16 16 17 17   17
-
-WIND GUST      7  8  9   12 14 20 21   19 19 20 20   20
+PERIOD            6  6  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
 
 -------------------------------------------------------------------------------
 
-WAVE DIR      SW SW SW    S  S  S  S    S  S  S  S    S
+SIG WAVE HGT      7  8  8  8  6  6  6  6  6  6  6  6  6  6  6  8  8  8  8  8  8
 
-WAVE HGT       3  3  3    3  3  2  2    1  1  1  1    2
+CLOUDS           SC SC SC SC SC SC BK BK BK BK SC SC SC SC SC SC SC SC SC SC FW
 
-PERIOD        11 11 11   11 12 12 12   12 18 18 18   18
+POP 12HR                     50          70          60          20          30
+
+RAIN SHWRS        C  C  C  C  C  C  L  L  L  L  C  C  S  S  S  S  C  C  C  C
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E NE NE   NE NE NE NE   NE
+
+WIND SPD       8    9 12 15 15   16 15 17 17   17
+
+WIND GUST      9   10 14 18 19   20 19 21 22   22
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       N  N  N    N  N  N  N    N  N NW NW    N
+WAVE DIR      SW    S  S  S  S    S  S  S  S    S
 
-WAVE HGT       3  3  3    3  2  2  2    2  2  2  2    2
+WAVE HGT       3    3  3  2  3    3  3  3  4    4
 
-PERIOD        10  9  9    9  9  9  8    8  8 10 10   11
+PERIOD        11   11 12 12 12   12 12 18 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   6  6  6    5  4  4  4    4  4  4  4    4
+WAVE DIR       N    N  N  N  N    N  N NW NW    N
 
-CLOUDS        FW FW FW   FW FW FW FW   FW FW FW FW   SC
+WAVE HGT       3    3  2  2  2    2  2  2  2    2
 
-POP 12HR         10      20    10      10    10
+PERIOD         9    9  9  9  8    8  8 10 10   12
 
-PHZ117-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   7    6  5  5  6    6  6  5  6    5
+
+CLOUDS        FW   SC FW FW FW   FW SC SC FW   SC
+
+POP 12HR           20    10      20    20
+
+PHZ117-010200-
 
 O FAD BUOY KALAUPAPA MOLOKAI
 
 21.30N 157.05W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR          E  E  E  E  E  E  E  E SE SE  E  E  E  E  E  E  E  E  E  E  E
+WIND DIR          E  E  E  E  E SE SE  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WIND SPD         19 19 14 15 17  8 14 13 10 10  8  8 12 12 12 12 13 13 12 12 14
+WIND SPD         13 10  9 10 10 10  9 12 13 13 13 12 13 13 11 11 13 13 13 13 12
 
-WIND GUST        24 24 17 19 21  9 17 16 10 10  8  8 14 14 14 14 15 15 14 14 16
+WIND GUST        16 12 11 12 13 12 11 14 16 16 16 15 16 16 14 14 16 16 16 16 14
 
 -------------------------------------------------------------------------------
 
-WAVE DIR          W  W  W  W  W  W  W  W  W  W  W                 W  W  W  W  W
+WAVE DIR          W  W  W  W  W  W  W                 W  W  W  W  W  W  W
 
-WAVE HGT          1  1  1  1  1  1  1  1  1  1  1                 1  1  1  1  1
+WAVE HGT          1  1  1  1  1  1  1                 1  1  1  1  1  1  1
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          N  N  N  N  N
+WAVE DIR                                              N  N  N  N  N  N  N  N  N
 
-WAVE HGT                                                          2  3  3  3  3
+WAVE HGT                                              2  3  3  3  3  3  3  3  3
 
-PERIOD                                                           10 10 10  9  9
+PERIOD                                               10 10 10  9  9  9  9  9  9
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WAVE HGT          6  6  6  5  5  5  5  5  4  4  4  4  4  4  4  4  4  4  4  4  4
+WAVE HGT          5  5  5  5  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4
 
-PERIOD            6  6  6  6  6  6  6  6 12 14 14 14 13 13 13 13 13 12 12 12 12
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT      6  6  6  5  5  5  5  5  4  4  4  4  4  4  4  4  5  5  5  5  5
-
-CLOUDS           SC SC SC SC SC SC SC SC SC SC SC SC FW FW FW FW FW FW FW FW SC
-
-POP 12HR                     20          50          40          30          20
-
-RAIN SHWRS              S  S  C  C  C  C  C  C  C  C  C  C  C  C  S  S  S  S  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E  E  E    E  E  E  E    E  E  E NE   NE
-
-WIND SPD      14 14 13   13 14 18 17   16 18 17 16   15
-
-WIND GUST     16 16 15   15 16 22 21   19 21 20 19   18
+PERIOD            6  6  6  6 12 14 14 14 13 13 13 13 13 12 12 12 12  5  5  6  5
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       W  W
+SIG WAVE HGT      5  6  6  6  5  5  5  5  5  5  5  5  6  6  6  6  6  6  6  6  6
 
-WAVE HGT       1  1
+CLOUDS           SC SC SC SC SC SC SC SC SC SC SC SC FW FW FW FW SC SC SC SC FW
 
-PERIOD        11 11 11   11 11 15 15   17 17 18 18   18
+POP 12HR                     50          50          40          10          20
+
+RAIN SHWRS        C  C  C  C  C  C  C  C  C  C  C  C              S  S  S  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E  E  E    E  E NE NE   NE
+
+WIND SPD      12   11 13 15 15   15 16 16 17   16
+
+WIND GUST     14   14 16 19 19   19 20 21 21   20
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       N  N  W    N  N  N  N    N  N NW NW   NW
+WAVE DIR       W    N  N  N  N    N  N NW NW   NW
 
-WAVE HGT       3  3  3    3  2  2  2    2  2  2  2    3
+WAVE HGT       3    3  2  2  2    2  2  2  3    3
 
-PERIOD         9  9  9    9  9  9  8   12 12 11 11   12
+PERIOD         9    9  9  9  8   12 12 11 11   12
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   5  5  5    4  4  4  4    4  4  5  5    5
+SIG WAVE HGT   6    5  5  5  5    5  5  6  6    6
 
-CLOUDS        SC SC FW   FW FW FW FW   FW FW FW FW   FW
+CLOUDS        FW   FW FW FW FW   FW SC SC SC   SC
 
-POP 12HR         20      20    20      20    20
+POP 12HR           20    10      20    20
 
-PHZ120-301400-
+PHZ120-010200-
 
 MID POINT PAILOLO CHANNEL
 
 21.05N 156.72W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR          E  E  E  E  S  E SW  S  E  E  E  E  E  E  E  E  E  E  E  E  E
+WIND DIR          E SE  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WIND SPD         17 14 14 15 12 12 13 12 14 14 13 13 14 14 15 15 15 15 14 14 15
+WIND SPD         12 11  8  9 12 11 11 11 13 13 14 13 14 14 13 13 13 13 14 14 13
 
-WIND GUST        22 17 17 19 14 14 17 14 15 15 14 14 16 16 17 17 17 17 16 16 17
+WIND GUST        15 13  9 11 15 14 13 14 16 16 18 17 17 17 16 16 17 17 18 18 17
 
 -------------------------------------------------------------------------------
 
@@ -5472,485 +5435,487 @@ PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          S SE SE SE SE
+WAVE DIR                                              S SE SE SE SE SE SE  N  N
 
-WAVE HGT                                                          1  1  1  1  1
+WAVE HGT                                              1  1  1  1  1  1  1  1  1
 
-PERIOD                                                           10 11 11 10 10
+PERIOD                                               10 11 11 10 10 10 10 10 10
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WAVE HGT          5  5  5  5  4  4  4  4  4  4  4  4  4  3  4  3  3  3  3  3  3
+WAVE HGT          4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  3  4  3  3  3
 
-PERIOD            6  6  6  6  6  6  6  6 12 11 14 14 13 13 13 13 13 12 12 12 12
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT      5  5  5  5  4  4  4  4  4  4  4  4  4  3  4  3  3  3  3  3  3
-
-CLOUDS           FW FW SC SC SC SC SC SC SC SC SC SC FW FW FW FW FW FW FW FW FW
-
-POP 12HR                     10          30          30          20          20
-
-RAIN SHWRS                    S  S  C  C  C  C  C  C  S  S  S  S  S  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E  E  E    E  E NE NE    E  E NE NE   NE
-
-WIND SPD      15 15 15   14 16 18 17   17 18 17 17   16
-
-WIND GUST     17 18 17   16 19 21 21   20 21 21 20   18
+PERIOD            7  6  6  6  7  8 14 14 13  8 13 13 13 12 12 12 12  7  7  7  5
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       S  S  S    S  S  S  S    S  S  S  S    S
+SIG WAVE HGT      4  4  4  4  5  5  5  5  5  3  5  3  3  4  4  4  4  4  4  4  4
 
-WAVE HGT       1  1  1    1  1  1  1    1  1  1  1    1
+CLOUDS           SC SC SC SC SC SC SC SC SC SC SC SC FW FW FW FW SC SC SC SC FW
 
-PERIOD        11 11 11   11 12 12 12   11 11 12 18   18
+POP 12HR                     40          30          40          10          30
+
+RAIN SHWRS        C  C  C  C  S  S  C  C  C  C  C  C              S  S  C  C
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E NE NE    E  E NE NE   NE
+
+WIND SPD      13   13 15 16 16   16 16 17 17   16
+
+WIND GUST     17   16 19 20 20   20 21 21 21   21
 
 -------------------------------------------------------------------------------
 
-WAVE DIR      SE NE  N    N  N  N  N    N  N  N  N    N
+WAVE DIR       S    S  S  S  S    S  S  S  S    S
 
-WAVE HGT       1  1  1    1  1  1  1    1  1  1  1    1
+WAVE HGT       1    1  1  1  1    1  1  1  1    1
 
-PERIOD        10 10 10    9  9  9  9    8  8  8  8    9
+PERIOD        11   11 12 12 12   11 11 11 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   3  3  3    3  3  3  3    3  3  3  3    3
+WAVE DIR       N    N  N  N  N    N  N  N  N    N
 
-CLOUDS        FW SC FW   FW FW FW SC   FW FW FW FW   FW
+WAVE HGT       1    1  1  1  1    1  1  1  1    1
 
-POP 12HR         20      20    20      20    20
+PERIOD        10    9  9  9  9    8  8  8  8    8
 
-PHZ118-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   3    3  3  4  4    4  4  4  4    5
+
+CLOUDS        FW   FW FW FW SC   FW SC SC SC   SC
+
+POP 12HR           20    10      20    20
+
+PHZ118-010200-
 
 CC FAD BUOY KAENA PT LANAI
 
 20.85N 157.14W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR         SE SE SE SE SE  S  S  S SE SE SE SE SE SE SE SE  E  E  E  E  E
+WIND DIR         SE SE  S  S  S SE SE SE SE SE  S SE  E  E  E  E  E  E SE SE  E
 
-WIND SPD         15 13 14 14 15 16 17 16 12 12 11 11  8  8  8  8  7  7  5  5  4
+WIND SPD          9 11 12 11 11 10 11 10  9 10  7  9  6  6  5  5  3  3  4  4  5
 
-WIND GUST        19 16 17 17 19 20 21 20 13 13 12 12  8  8  9  9  7  7  7  7  7
+WIND GUST        11 14 14 14 13 12 13 12 11 12  8 10  7  7  5  5  4  4  4  4  5
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S
 
-WAVE HGT          4  3  3  3  3  3  3  3  3  3  2  2  2  2  2  2  2  3  3  3  3
+WAVE HGT          3  3  3  3  3  3  2  2  2  2  2  2  2  3  3  3  3  3  3  3  3
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                         NW NW NW NW NW
+WAVE DIR                                             NW NW NW NW NW NW NW NW NW
 
-WAVE HGT                                                          1  1  1  1  1
+WAVE HGT                                              1  1  1  1  1  1  1  1  1
 
-PERIOD                                                            9 10 10  9  9
-
--------------------------------------------------------------------------------
-
-WAVE DIR         SE SE  S  S  S  S  S  S  S SW  S  S  S SW  S SW SW SW SW  W  W
-
-WAVE HGT          3  4  4  4  4  4  4  4  3  3  3  3  3  3  3  3  3  3  3  3  3
-
-PERIOD            5  5  5  6  5  6  5  6  5  5  5  5  5  5  5  5  5  5  5  5  5
+PERIOD                                                9 10 10  9  9  9  9  9  9
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT      5  5  5  5  5  5  5  5  5  4  4  4  4  4  4  4  4  4  4  4  4
+WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S
 
-CLOUDS           SC SC SC SC SC SC SC SC SC SC SC SC SC SC FW FW FW FW FW FW FW
+WAVE HGT          4  4  4  4  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3
 
-POP 12HR                     30          30          40          30          10
-
-RAIN SHWRS        S  S  C  C  C  C  C  C  C  C  C  C  C  C  C  C
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E SE  E   NE  E  E NE   NE  E NE NE   NE
-
-WIND SPD       4  6  6    5  6  7 11    9  9 10 12   10
-
-WIND GUST      7  7  7    7  7  7 13    9  9 11 13   11
+PERIOD            6  6  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       S  S  S    S  S  S  S    S  S  S  S    S
+SIG WAVE HGT      5  6  6  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
 
-WAVE HGT       3  3  3    3  2  2  2    1  1  1  2    2
+CLOUDS           SC SC SC SC SC SC SC SC BK BK SC SC FW FW FW FW SC SC SC SC FW
 
-PERIOD        11 11 11   11 12 12 12   12 20 20 18   18
+POP 12HR                     40          50          60          20          30
+
+RAIN SHWRS        C  C  C  C  C  C  C  C  L  L  C  C        S  S  C  C  S  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E   NE  E  E NE   NE NE NE NE   NE
+
+WIND SPD       5    4  5  4  8    9  8 10 12   10
+
+WIND GUST      5    4  5  4 10   10 10 12 14   13
 
 -------------------------------------------------------------------------------
 
-WAVE DIR      NW NW NW    N NW NW NW   NW NW NW NW   NW
+WAVE DIR       S    S  S  S  S    S  S  S  S    S
 
-WAVE HGT       1  1  1    1  1  1  1    1  1  1  1    1
+WAVE HGT       3    3  2  2  3    3  3  3  4    4
 
-PERIOD         9  9  9    9  9  9 13   13 12 11 11   12
+PERIOD        11   11 12 12 12   12 20 20 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   4  4  4    4  3  3  3    3  3  3  3    3
+WAVE DIR      NW    N NW NW NW   NW NW NW NW   NW
 
-CLOUDS        FW FW SC   FW FW FW FW   FW FW CL CL   FW
+WAVE HGT       1    1  1  1  1    1  1  1  1    1
 
-POP 12HR          5       5     5       5     0
+PERIOD         9    9  9  9 13   13 12 11 11   12
 
-PHZ118-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   5    5  4  4  4    4  4  4  4    4
+
+CLOUDS        FW   SC FW FW FW   FW SC FW FW   FW
+
+POP 12HR           20    10      20    20
+
+PHZ118-010200-
 
 KAUMALAPAU HARBOR
 
 20.79N 157.00W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR         SE SE SE SE SE SE  S  S SE SE SE SE SE SE SE SE  E  E NE NE SE
+WIND DIR          E SE  S  S SE SE SE SE SE SE  S  S  E  E  E  E SE SE  S  S  E
 
-WIND SPD         14 13 14 12 14 14 14 14 11 11  9  9  7  7  8  8  5  5  3  3  3
+WIND SPD          8  9 10 11 11 10 11  9  6  7  6  9  4  4  3  3  2  2  4  4  4
 
-WIND GUST        17 16 17 16 17 17 17 17 13 13 10 10  7  7  7  7  7  7  7  7  7
-
--------------------------------------------------------------------------------
-
-WAVE DIR          S  S  S  S  S  S  S  S  S SW  S SW  S SW SW SW SW SW SW  W  W
-
-WAVE HGT          3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2  2
-
-PERIOD            5  5  5  6  5  6  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
+WIND GUST         9 10 12 13 13 13 14 11  7  9  7 11  4  4  4  4  4  4  4  4  4
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT      3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2  2
+WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S SW SW SW SW SW SW SW SW
 
-CLOUDS           SC SC SC SC FW FW SC SC FW FW SC SC SC SC SC SC SC SC FW FW FW
+WAVE HGT          3  3  4  4  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3
 
-POP 12HR                     30          20          30          30          20
-
-RAIN SHWRS        S  S  C  C  S  S  S  S  C  C  C  C  C  C  C  C  S  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR      SE SE SE   NE NE  E NE    E  E  E NE   NE
-
-WIND SPD       3  5  4    4  4  3  9    5  4  5  9    8
-
-WIND GUST      7  7  7    7  7  7  9    7  7  7  9    8
+PERIOD            6  6  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   2  2  2    2  2  1  0    0  0  0  0    0
+SIG WAVE HGT      3  3  3  3  3  3  3  3  3  3  3  3  3  4  4  3  3  3  3  3  3
 
-CLOUDS        FW SC SC   FW FW FW FW   FW FW FW CL   FW
+CLOUDS           SC SC SC SC SC SC SC SC BK BK SC SC FW FW FW FW SC SC SC SC FW
 
-POP 12HR         10      10    10      10    10
+POP 12HR                     40          40          60          10          30
 
-PHZ117-301400-
+RAIN SHWRS        C  C  C  C  C  C  C  C  L  L  C  C              C  C  S  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E   NE NE SE NE   NE  E NE NE   NE
+
+WIND SPD       4    3  3  1  6    5  5  6  9    8
+
+WIND GUST      4    4  4  4  6    5  5  6 11    9
+
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   2    2  2  1  1    1  1  0  0    0
+
+CLOUDS        FW   SC FW FW SC   FW FW SC FW   FW
+
+POP 12HR           20    10      20    20
+
+PHZ117-010200-
 
 DD FAD BUOY OPANA PT MAUI
 
 21.03N 156.25W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR          E SE SE SE SE SE SE SE  E  E  E  E  E  E  E  E  E  E  E  E  E
+WIND DIR         SE  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WIND SPD         23 23 20 19 18 17 17 19 17 17 14 14 17 17 19 19 17 17 15 15 17
+WIND SPD         18 17 16 16 15 15 14 14 15 18 18 18 16 16 14 14 16 16 17 17 14
 
-WIND GUST        30 30 26 24 23 21 21 24 20 20 17 17 21 21 22 22 20 20 18 18 20
+WIND GUST        22 21 21 20 19 19 18 18 19 22 23 23 20 20 18 18 20 20 22 22 18
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          N  N  N  N  N
+WAVE DIR                                              N  N  N  N  N  N  N  N  N
 
-WAVE HGT                                                          2  3  3  3  3
+WAVE HGT                                              2  3  3  3  3  3  3  3  3
 
-PERIOD                                                           10 10 10  9  9
+PERIOD                                               10 10 10  9  9  9  9  9  9
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WAVE HGT          6  6  6  6  5  5  5  5  4  4  4  4  4  4  4  4  4  4  4  4  4
+WAVE HGT          5  5  5  5  5  5  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4
 
-PERIOD           13 13  6 12 12  6  6  6 12 13 14 14 13 13 13 13 13 12 12 12 12
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT      6  6  6  6  5  5  5  5  4  4  4  4  4  4  4  4  4  5  5  5  5
-
-CLOUDS           FW FW SC SC SC SC SC SC SC SC SC SC FW FW FW FW FW FW FW FW FW
-
-POP 12HR                      5          30          20          20          10
-
-RAIN SHWRS                    S  S  C  C  S  S  S  S  S  S  S  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E  E  E    E  E  E  E    E  E  E  E   NE
-
-WIND SPD      17 18 16   14 15 17 15   16 17 13 12   11
-
-WIND GUST     20 21 19   16 18 20 17   19 21 15 14   12
+PERIOD           12 12  6  6 12 14 14 14 13 13 13 13 13 12 12 12 12 12 11 11  8
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       N  N  N    N  N  N  N    N  N NW NW   NW
+SIG WAVE HGT      5  6  6  6  5  5  5  5  5  5  5  5  5  6  6  6  6  6  6  6  6
 
-WAVE HGT       3  3  3    2  2  2  2    2  2  2  3    3
+CLOUDS           SC SC SC SC SC SC SC SC SC SC SC SC FW FW FW FW SC SC SC SC FW
 
-PERIOD         9  9  9    9  9  9  8   13 13 12 11   12
+POP 12HR                     30          30          30          10          20
+
+RAIN SHWRS        C  C  C  C  S  S  C  C  C  C  S  S              S  S  S  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E  E  E    E  E  E  E    E
+
+WIND SPD      14   13 15 15 14   14 16 13 13   12
+
+WIND GUST     18   17 19 18 17   17 20 17 16   15
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   5  5  4    4  4  4  4    4  4  4  4    4
+WAVE DIR       N    N  N  N  N    N  N NW NW   NW
 
-CLOUDS        FW FW FW   FW FW FW SC   SC FW FW FW   FW
+WAVE HGT       3    2  2  2  2    2  2  2  3    3
 
-POP 12HR         10      10    20      20    20
+PERIOD         9    9  9  9  8   13 13 12 11   12
 
-PHZ117-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   5    5  5  5  5    5  5  5  6    6
+
+CLOUDS        FW   FW FW FW SC   FW SC SC SC   SC
+
+POP 12HR           20    10      20    30
+
+PHZ117-010200-
 
 FF FAD BUOY PUKAULUA PT MAUI
 
 20.84N 155.73W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR         SE  E SE SE SE SE SE SE SE SE SE SE  E  E  E  E  E  E  E  E  E
+WIND DIR         SE SE SE SE  E SE SE  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WIND SPD         16 17 17 16 17 18 18 18 14 14 14 14 15 15 13 13 13 13 14 14 15
+WIND SPD         16 16 14 14 14 14 14 14 14 15 14 13 13 13 13 13 14 14 13 13 12
 
-WIND GUST        20 21 21 20 21 23 23 23 16 16 17 17 17 17 15 15 15 15 16 16 17
+WIND GUST        21 20 18 17 18 18 18 17 18 18 17 16 16 16 16 16 18 18 17 17 15
 
 -------------------------------------------------------------------------------
 
 WAVE DIR         SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW
 
-WAVE HGT          2  2  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+WAVE HGT          1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          N  N  N  N  N
+WAVE DIR                                              N  N  N  N  N  N  N  N  N
 
-WAVE HGT                                                          2  3  3  3  3
+WAVE HGT                                              2  3  3  3  3  3  3  3  3
 
-PERIOD                                                           10 10 10  9  9
+PERIOD                                               10 10 10  9  9  9  9  9  9
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WAVE HGT          5  5  6  5  5  6  5  5  5  4  4  4  4  4  4  4  4  4  4  4  4
+WAVE HGT          5  5  6  5  5  5  5  4  4  4  4  4  4  4  4  4  4  4  4  4  4
 
-PERIOD           13 13  7 12 12  6  5  6 12 13 14 14 13 13 13 13 13 12 12 12 12
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT      6  6  6  5  5  6  5  5  5  4  4  4  4  4  5  5  5  5  5  5  5
-
-CLOUDS           FW FW SC SC FW FW FW FW SC SC SC SC FW FW FW FW FW FW SC SC SC
-
-POP 12HR                      5           5          10           5           5
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E  E  E    E  E  E  E    E  E NE NE   NE
-
-WIND SPD      15 14 13   12 12 13 13   13 13 10 10   12
-
-WIND GUST     17 16 15   13 13 14 14   15 14 11 11   13
+PERIOD            5  5  6  6 12 14 14 14 13 13 13 13 13 12 12 12 12 12 11 11  5
 
 -------------------------------------------------------------------------------
 
-WAVE DIR      SW SW SW   SW SW SW SW   SW SW SW SW   SW
+SIG WAVE HGT      5  7  6  6  6  5  5  5  5  5  6  6  6  6  6  6  6  6  6  6  6
 
-WAVE HGT       1  1  1    1  1  1  1    1  1  1  1    1
+CLOUDS           SC SC SC SC FW FW SC SC FW FW FW FW FW FW FW FW SC SC SC SC FW
 
-PERIOD        11 11 11   11 12 12 12   12 11 18 18   18
+POP 12HR                     20          20          10          10          20
+
+RAIN SHWRS        S  S  S  S        S  S                          S  S  S  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E  E  E    E  E NE NE   NE
+
+WIND SPD      12   12 12 11 12   12 13 10 11   12
+
+WIND GUST     15   14 14 13 15   14 16 13 14   14
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       N  N  N    N  N  N  N    N  N NW NW   NW
+WAVE DIR      SW   SW SW SW SW   SW SW SW SW   SW
 
-WAVE HGT       3  3  3    2  2  2  2    2  2  2  3    3
+WAVE HGT       1    1  1  1  1    1  1  1  1    1
 
-PERIOD         9  9  9    9  9  9  8   13 13 12 11   12
+PERIOD        11   11 12 12 12   11 11 18 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   5  5  5    4  4  4  4    4  4  4  5    5
+WAVE DIR       N    N  N  N  N    N  N NW NW   NW
 
-CLOUDS        SC FW FW   FW FW FW SC   FW FW FW FW   SC
+WAVE HGT       3    2  2  2  2    2  2  2  3    3
 
-POP 12HR          5      10    10      20    20
+PERIOD         9    9  9  9  8   13 13 12 11   12
 
-PHZ118-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   6    5  5  5  4    5  4  5  6    6
+
+CLOUDS        FW   SC FW FW SC   SC SC SC SC   SC
+
+POP 12HR           20    10      20    30
+
+PHZ118-010200-
 
 LA FAD BUOY LAHAINA MAUI
 
 20.68N 156.71W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR         SE SE SE SE SE SE  S SW SE SE  E  E  E  E SE SE  E  E NE NE  E
+WIND DIR         SE SE SE SE SE SE SE SE  E  E SE SE  E  E NE NE  E  E  E  E  E
 
-WIND SPD         18 20 20 11 12 10  9  9 10 10  8  8  7  7  8  8  7  7  5  5  5
+WIND SPD          8  8  8  8  8  9  9 10  8  8 11  9  6  6  4  4  5  5  6  6  5
 
-WIND GUST        23 26 26 16 16 12 11 11 11 11  8  8  7  7  8  8  7  7  7  7  7
+WIND GUST        10 10  9  9 10 11 11 12 10 10 13 11  6  6  5  5  5  5  7  7  5
 
 -------------------------------------------------------------------------------
 
-WAVE DIR         SW SW SW SW SW SW SW SW  S  S  S  S  S  S  S  S  S  S  S SW SW
+WAVE DIR         SW SW SW SW  S  S  S  S  S  S  S  S  S  S  S SW SW SW SW  S  S
 
-WAVE HGT          3  3  3  3  3  3  3  3  3  3  2  2  2  2  2  2  2  3  3  3  3
+WAVE HGT          3  3  3  3  3  3  2  2  2  2  2  2  2  3  3  3  3  3  3  3  3
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          W  W  W  W  W
+WAVE DIR                                              W  W  W NW NW  S  S SE SE
 
-WAVE HGT                                                          1  1  1  1  1
+WAVE HGT                                              1  1  1  1  1  1  1  1  1
 
-PERIOD                                                            9 10 10 10 10
-
--------------------------------------------------------------------------------
-
-WAVE DIR          E  E  E SE  S  S SW  S SW SW SW SW  W SW  W  W  W SW SW  W  W
-
-WAVE HGT          3  4  4  3  3  3  3  3  2  2  2  2  2  2  2  2  2  2  2  2  2
-
-PERIOD            4  4  4  6  5  6  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
+PERIOD                                                9 10 10 10 10 10 10 10 10
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT      4  5  5  5  5  4  4  4  4  4  3  3  3  3  3  3  3  4  4  4  4
+WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S SW  W  W  W  W  W  W  W  W
 
-CLOUDS           SC SC SC SC FW FW SC SC FW FW FW FW FW FW FW FW FW FW FW FW FW
+WAVE HGT          3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2  2  2  2  2
 
-POP 12HR                     10          10          20          10           5
-
-RAIN SHWRS                                S  S  S  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E  E  E   NE NE  E NE   NE  E  E  N    N
-
-WIND SPD       5  8  6    5  5  6  8    5  2  5  7    7
-
-WIND GUST      7  7  7    7  7  7  8    7  7  7  7    7
+PERIOD            6  5  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
 
 -------------------------------------------------------------------------------
 
-WAVE DIR      SW  S  S    S  S  S  S    S  S  S  S    S
+SIG WAVE HGT      5  4  4  4  5  5  3  3  3  3  3  3  3  5  5  5  5  5  5  5  5
 
-WAVE HGT       3  3  3    3  2  2  2    1  1  2  2    3
+CLOUDS           SC SC SC SC SC SC SC SC SC SC SC SC FW FW FW FW SC SC SC SC FW
 
-PERIOD        11 11 11   11 12 12 12   12 14 18 18   18
+POP 12HR                     30          30          50          10          20
+
+RAIN SHWRS        C  C  C  C  S  S  C  C  C  C  C  C              S  S  S  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E   NE NE  E NE   NE NE NE NE   NE
+
+WIND SPD       5    5  5  5  6    5  4  4  7    6
+
+WIND GUST      5    5  5  5  7    6  4  5  8    6
 
 -------------------------------------------------------------------------------
 
-WAVE DIR      SW  S SE   SE SE SE SE   SE SE SE
+WAVE DIR       S    S  S  S  S    S  S  S  S    S
 
-WAVE HGT       1  1  1    1  1  1  1    1  1  1
+WAVE HGT       3    3  2  2  3    3  3  3  4    4
 
-PERIOD        10 10 10    9  9  9  9    9  8  8  9   13
+PERIOD        11   11 12 12 12   12 12 18 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   4  4  4    3  3  2  2    2  2  3  3    2
+WAVE DIR      SE   SE SE SE SE   SE SE SE
 
-CLOUDS        FW FW FW   FW FW FW FW   FW FW FW FW   FW
+WAVE HGT       1    1  1  1  1    1  1  1
 
-POP 12HR          0       5     0       0     0
+PERIOD        10    9  9  9  9    9  8  8
 
-PHZ119-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   5    4  3  2  3    4  4  3  4    3
+
+CLOUDS        FW   SC FW FW SC   FW FW FW FW   FW
+
+POP 12HR           20    10      20    20
+
+PHZ119-010200-
 
 MAALAEA BAY
 
 20.77N 156.49W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR          N  N  N  N  N  N  N  S  N  N  N  N  N  N  N  N  N  N  N  N  N
+WIND DIR          N  N  S  S  N  N  N  N  N  N  N  N  N  N  N  N  N  N  N  N  N
 
-WIND SPD         18 18 18 18 16 16 16  9 17 17 17 17 17 17 17 17 17 17 17 17 17
+WIND SPD         12 12  4  5 12 12 12 12 12 12 13 12 16 16 16 16 16 16 16 16 16
 
-WIND GUST        23 23 23 23 20 20 20 13 20 20 20 20 20 20 20 20 20 20 20 20 20
+WIND GUST        17 17  5  5 17 17 17 17 17 17 18 18 20 20 20 20 20 20 20 20 20
 
 -------------------------------------------------------------------------------
 
@@ -5962,73 +5927,75 @@ PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR          E  E  E  E  E  E  E  E NW NW NW NW NW NW NW NW NW NW NW NW NW
+WAVE DIR          E  E  E  E  E  E  W  E NW  E NW  W NW NW NW NW NW NW NW NW NW
 
-WAVE HGT          2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+WAVE HGT          2  2  2  3  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2
 
-PERIOD            5  5  5  6  6  6  5  6  5  5  5  5  5  5  5  5  5  5  5  5  5
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT      1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1
-
-CLOUDS           SC SC SC SC FW FW SC SC SC SC SC SC FW FW SC SC SC SC FW FW FW
-
-POP 12HR                      0          10           5          10           5
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       N  N  N    N  N  N  N    N  N  N  N    N
-
-WIND SPD      17 17 17   17 19 19 19   19 19 19 19   17
-
-WIND GUST     20 20 20   20 23 23 23   23 23 23 23   20
+PERIOD            6  6  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
 
 -------------------------------------------------------------------------------
 
-WAVE DIR      NW NW NW    W  W  W  W    W  W  W  W    W
+SIG WAVE HGT      1  1  1  1  1  1  1  1  1  1  1  1  1  2  2  2  2  2  2  2  2
 
-WAVE HGT       1  1  1    1  1  1  1    1  1  1  1    1
+CLOUDS           SC SC SC SC FW FW SC SC SC SC SC SC FW FW FW FW SC SC SC SC FW
 
-PERIOD        11 11 11   11 12 12 12   13 20 20 18   18
+POP 12HR                     30          20          40          10          30
+
+RAIN SHWRS        C  C  C  C        S  S  C  C  C  C              S  S  C  C
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       N    N  N  N  N    N  N  N  N    N
+
+WIND SPD      16   16 18 18 18   18 18 18 18   18
+
+WIND GUST     20   20 23 23 23   23 23 23 23   23
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   1  1  1    1  1  2  2    2  2  2  2    2
+WAVE DIR      NW    W  W  W  W    W  W  W  W    W
 
-CLOUDS        FW SC SC   FW FW FW SC   FW FW FW FW   FW
+WAVE HGT       1    1  1  1  1    1  1  1  1    2
 
-POP 12HR          5       5     5       5     5
+PERIOD        11   11 12 12 12   12 20 20 18   18
 
-PHZ121-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   1    1  1  2  2    2  2  2  2    2
+
+CLOUDS        FW   SC FW FW SC   FW SC SC FW   FW
+
+POP 12HR           20    10      20    20
+
+PHZ121-010200-
 
 NL FAD BUOY NUU LANDING MAUI
 
 20.55N 156.16W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR          E  E NE  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
+WIND DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WIND SPD         16 16 15 13 11  9  6  5 13 13 14 14 15 15 13 13 14 14 14 14 14
+WIND SPD         13 10 10 10 12 13 12 12 14 15 14 13 13 13 13 13 13 13 13 13 13
 
-WIND GUST        20 20 19 16 13 11  7  7 15 15 16 16 17 17 15 15 15 15 16 16 16
+WIND GUST        16 13 12 12 15 16 15 15 17 18 17 16 17 17 16 16 17 17 16 16 16
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S
 
-WAVE HGT          3  3  3  3  3  3  3  3  3  3  3  3  2  2  2  2  2  3  3  3  3
+WAVE HGT          3  3  3  3  3  3  3  3  2  2  2  2  2  3  3  3  3  3  3  3  3
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
@@ -6036,163 +6003,163 @@ PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 WAVE DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WAVE HGT          5  5  5  5  5  5  5  5  4  4  4  4  4  4  4  4  4  4  4  4  4
+WAVE HGT          5  5  5  5  5  5  5  4  4  4  4  4  4  4  4  4  4  4  4  4  4
 
-PERIOD           10  6  6  6  6  6  6  6 12 13 14 14 13 13 13 13 13 12 12 12 12
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT      6  6  6  6  6  6  6  6  5  5  5  5  4  4  4  4  4  5  5  5  5
-
-CLOUDS           SC SC SC SC SC SC SC SC SC SC SC SC SC SC FW FW FW FW FW FW FW
-
-POP 12HR                     10          30          20          10          10
-
-RAIN SHWRS                          C  C  S  S  S  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E  E  E    E  E  E  E    E  E  E  E    E
-
-WIND SPD      14 14 14   13 14 16 15   17 18 16 13   12
-
-WIND GUST     16 16 16   15 16 19 18   20 21 19 15   13
+PERIOD            6  6  6  6 12 14 14 14 13 13 13 13 12 12 12 12 12 12 11 11  5
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       S  S  S    S  S  S  S    S  S  S  S    S
+SIG WAVE HGT      7  7  7  7  6  6  6  6  5  5  5  5  5  6  6  6  6  6  6  6  6
 
-WAVE HGT       3  3  3    3  3  2  2    2  2  3  3    3
+CLOUDS           SC SC SC SC SC SC SC SC SC SC SC SC FW FW FW FW SC SC SC SC FW
 
-PERIOD        11 11 11   11 12 12 12   12 20 20 18   18
+POP 12HR                     30          30          30          10          20
+
+RAIN SHWRS        C  C  C  C  S  S  C  C  C  C  S  S              S  S  S  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E  E  E    E  E  E  E    E
+
+WIND SPD      13   12 13 14 14   15 16 16 14   13
+
+WIND GUST     16   15 17 18 18   19 21 20 17   17
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   5  5  5    4  4  4  4    4  4  4  4    4
+WAVE DIR       S    S  S  S  S    S  S  S  S    S
 
-CLOUDS        FW FW FW   FW FW FW SC   FW FW FW FW   FW
+WAVE HGT       3    3  3  2  3    3  3  3  4    4
 
-POP 12HR          5       5     5       5     5
+PERIOD        11   11 12 12 12   12 20 20 18   18
 
-PHZ121-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   6    5  5  5  6    6  6  5  5    5
+
+CLOUDS        FW   SC FW FW SC   FW SC SC FW   FW
+
+POP 12HR           20    10      20    20
+
+PHZ121-010200-
 
 MID POINT ALENUIHAHA CHANNEL
 
 20.27N 156.47W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR          E  E NE NE NE  E  S  S  E  E  E  E  E  E  E  E  E  E  E  E  E
+WIND DIR          E NE  E SE  E  E  E NE  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WIND SPD         15 15 15 11  6  4  2 10  6  6  8  8 14 14 16 16 17 17 18 18 17
+WIND SPD          5  3  3  4  6  8  6  7 10 15 15 15 17 17 17 17 16 16 14 14 12
 
-WIND GUST        19 19 19 13  7  7  7 12  7  7  8  8 16 16 19 19 20 20 21 21 20
+WIND GUST         6  4  4  4  7  9  6  8 12 18 19 19 21 21 21 21 21 21 17 17 15
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S
 
-WAVE HGT          3  3  3  3  3  3  3  3  3  3  3  3  3  2  2  2  2  3  3  3  3
+WAVE HGT          3  3  3  3  3  3  3  3  3  2  2  2  2  3  3  3  3  3  3  3  3
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          W  W  W  W  W
+WAVE DIR                                              W  W  W  W  W  W  W  W  W
 
-WAVE HGT                                                          1  1  1  1  1
+WAVE HGT                                              1  1  1  1  1  1  1  1  1
 
-PERIOD                                                            9 10 10  9  9
+PERIOD                                                9 10 10  9  9 10 10 10 10
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WAVE HGT          4  5  5  5  5  4  4  5  4  4  4  4  4  4  4  4  4  4  4  4  4
+WAVE HGT          4  4  5  5  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4
 
-PERIOD           10  6  6  6  6  6  6  6 12 13 14 14 14 13 13 13 13 13 13 12 12
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT      5  6  6  7  7  5  5  6  5  5  5  5  5  5  5  5  5  5  5  5  5
-
-CLOUDS           FW FW SC SC FW FW FW FW FW FW SC SC FW FW FW FW FW FW FW FW FW
-
-POP 12HR                     10          20          30          20          10
-
-RAIN SHWRS                          S  S  S  S  C  C  S  S  S  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E  E  E    E  E NE NE    E  E  E NE   NE
-
-WIND SPD      17 16 17   18 19 20 19   19 21 20 19   15
-
-WIND GUST     20 19 20   21 22 24 23   23 26 25 23   17
+PERIOD            6  6  6  6  5  5 14 14 14  5  9  9  9  5  5  5  5  5  5  5  5
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       S  S  S    S  S  S  S    S  S  S  S    S
+SIG WAVE HGT      8  6  6  7  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6
 
-WAVE HGT       3  3  3    3  3  2  2    2  2  2  3    3
+CLOUDS           SC SC SC SC SC SC SC SC SC SC SC SC FW FW SC SC SC SC SC SC FW
 
-PERIOD        11 11 11   11 12 12 12   12 20 20 18   18
+POP 12HR                     30          40          30          20          20
+
+RAIN SHWRS        C  C  C  C  S  S  C  C  C  C  S  S        S  S  S  S  S  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E  E NE    E NE  E NE   NE
+
+WIND SPD      12   15 18 19 19   20 20 20 21   17
+
+WIND GUST     15   19 24 24 24   25 26 26 26   22
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       W  W  W    W  W  W  W    W  W  W  W    W
+WAVE DIR       S    S  S  S  S    S  S  S  S    S
 
-WAVE HGT       1  1  1    1  1  1  1    1  1  1  1    1
+WAVE HGT       3    3  3  2  3    3  3  4  4    4
 
-PERIOD        10 10 10   10  9  9  9    9  9 14 14   14
+PERIOD        11   11 12 12 12   12 20 20 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   5  5  5    5  5  5  5    5  5  5  5    5
+WAVE DIR       W    W  W  W  W    W  W  W  W    W
 
-CLOUDS        FW FW FW   FW FW FW FW   FW FW FW FW   FW
+WAVE HGT       1    1  1  1  1    1  1  1  1    1
 
-POP 12HR          5       5     0       5     5
+PERIOD        10   10  9  9  9    9  9 14 14   14
 
-PHZ124-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   6    6  6  6  7    7  7  6  6    6
+
+CLOUDS        FW   SC FW FW FW   FW FW FW FW   FW
+
+POP 12HR           20    10      20    10
+
+PHZ124-010200-
 
 A FAD BUOY SOUTH PT HAWAII
 
 18.96N 155.56W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR          E  E NE NE  E NE NE  E  E  E  E  E  E  E  E  E  E  E NE NE  E
+WIND DIR         NE  E  E  E  E NE NE NE  E  E  E  E  E  E NE NE  E  E  E  E NE
 
-WIND SPD         11 12 11  8  8 11 12  9  9  9  9  9 11 11 11 11 12 12 10 10 12
+WIND SPD         10  9  9  9  8  9  8  8 10 11 11 11 11 11  9  9 11 11 10 10 10
 
-WIND GUST        13 15 13  9  9 13 15 11  9  9 10 10 12 12 12 12 13 13 11 11 14
+WIND GUST        12 11 11 10  9 11 10 10 12 14 13 13 13 13 11 11 14 14 13 13 12
 
 -------------------------------------------------------------------------------
 
 WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S
 
-WAVE HGT          2  2  2  2  2  2  2  2  2  2  1  1  1  1  1  1  1  1  1  1  1
+WAVE HGT          2  2  2  2  2  2  1  1  1  1  1  1  1  1  1  1  1  2  2  2  2
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
@@ -6200,155 +6167,157 @@ PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 WAVE DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
-WAVE HGT          4  4  4  4  4  4  4  4  4  3  3  3  3  3  3  3  3  3  3  3  3
+WAVE HGT          4  4  4  4  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3
 
-PERIOD           13 13 12 12 12 12 11 11 11 13 14 14 13 13 13 13 12 12 12 12 12
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT      4  4  4  4  4  4  4  4  4  4  3  3  3  3  3  3  3  3  3  3  3
-
-CLOUDS           SC SC SC SC SC SC FW FW SC SC SC SC SC SC SC SC SC SC FW FW FW
-
-POP 12HR                     20          30          40          30          20
-
-RAIN SHWRS        S  S  S  S  S  S  C  C  C  C  C  C  C  C  S  S  S  S  S  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E  E NE   NE  E  E  E    E  E  E  E    E
-
-WIND SPD      12 12 11   11 14 17 16   15 17 15 13    9
-
-WIND GUST     14 13 12   13 16 20 19   18 20 17 15   10
+PERIOD           12 12 11 11 13 14 14 14 13 13 13 13 12 12 12 12 12 12 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       S  S  S    S  S  S  S    S  S  S  S    S
+SIG WAVE HGT      4  4  4  4  5  5  3  3  3  3  3  3  3  4  4  4  4  5  5  5  5
 
-WAVE HGT       2  2  2    2  1  1  1    1  1  1  1    2
+CLOUDS           SC SC SC SC SC SC SC SC SC SC FW FW FW FW SC SC SC SC SC SC FW
 
-PERIOD        11 11 11   11 12 12 12   12 20 20 18   18
+POP 12HR                     40          30          20          20          20
+
+RAIN SHWRS        C  C  S  S  S  S  C  C  S  S  S  S        S  S  S  S  S  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR      NE   NE  E  E  E    E  E  E  E   NE
+
+WIND SPD      10   10 14 14 15   15 15 16 14    9
+
+WIND GUST     12   13 17 18 18   19 19 20 17   11
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   4  4  4    3  3  4  4    4  4  5  5    5
+WAVE DIR       S    S  S  S  S    S  S  S  S    S
 
-CLOUDS        FW SC SC   SC FW FW FW   FW FW FW FW   FW
+WAVE HGT       2    2  1  1  2    2  2  2  3    3
 
-POP 12HR         10      20    10      20    20
+PERIOD        11   11 12 12 12   12 17 18 18   18
 
-PHZ123-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   5    4  3  4  6    6  6  6  6    6
+
+CLOUDS        FW   SC FW FW SC   FW SC SC FW   FW
+
+POP 12HR           20    10      20    20
+
+PHZ123-010200-
 
 B FAD BUOY MILOLII HAWAII
 
 19.19N 155.94W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR          N  E SE SE SE SE SE  S  E  E  E  E SE SE SE SE  E  E  E  E  E
+WIND DIR         SE SE SE  S SE SE SE SE SE SE SE SE  E  E  E  E  E  E  E  E  E
 
-WIND SPD          4  1  1  5  8  7  6 13  7  7  6  6  6  6  6  6  6  6  6  6  6
+WIND SPD          5  7  9 11  9  7  5  6  6  5  7  7  5  5  5  5  5  5  5  5  5
 
-WIND GUST         7  7  7  7  9  8  7 16  7  7  7  7  7  7  7  7  7  7  7  7  7
+WIND GUST         6  8 11 13 11  8  6  7  6  6  8  8  6  6  6  6  5  5  5  5  6
 
 -------------------------------------------------------------------------------
 
-WAVE DIR         SW SW SW SW  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S
+WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S
 
-WAVE HGT          3  3  3  3  3  3  3  3  3  3  3  3  3  3  2  2  2  3  3  3  3
+WAVE HGT          3  3  3  3  3  3  3  3  3  3  2  2  2  3  3  3  3  3  3  3  3
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          W  W  W  W  W
+WAVE DIR                                              W  W  W  W  W  W  W  W  W
 
-WAVE HGT                                                          2  2  2  1  1
+WAVE HGT                                              2  2  2  1  1  1  1  1  1
 
-PERIOD                                                            9 10 10  9  9
-
--------------------------------------------------------------------------------
-
-WAVE DIR          S  S  S  S  S  S  S  S  W SW  W  S  W  S  W SW SW  W  W  S  S
-
-WAVE HGT          2  2  2  2  2  2  2  2  1  1  1  1  1  1  1  1  1  1  1  1  1
-
-PERIOD            4  4  4  4  4  4  4  4  3  3  3  3  3  3  3  3  3  3  3  3  3
+PERIOD                                                9 10 10  9  9 10 10 10 10
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT      4  5  5  5  5  5  5  5  4  4  4  4  4  4  3  3  3  4  4  3  3
+WAVE DIR          S  S  S  S SW  S SW  S SW  S SW  S SW  S SW  S  S  S  S  S  S
 
-CLOUDS           FW FW SC SC FW FW FW FW SC SC FW FW FW FW SC SC SC SC SC SC SC
+WAVE HGT          2  2  2  3  2  2  2  2  2  2  2  2  2  2  2  1  1  1  1  1  1
 
-POP 12HR                      0          10           5          10          10
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E  E NE    E  E  E  E    E SE  S SE    N
-
-WIND SPD       6  5  6    4  4  4  5    5  4  2  3    4
-
-WIND GUST      7  7  7    7  7  7  7    7  7  7  7    7
+PERIOD            4  4  4  4  4  4  4  4  4  4  4  4  4  3  4  3  3  3  3  3  3
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       S  S  S    S  S SW SW   SW SW SW  S    S
+SIG WAVE HGT      5  6  6  6  5  5  5  5  5  5  3  3  3  5  5  4  4  4  4  4  4
 
-WAVE HGT       3  3  3    3  3  3  2    2  2  2  3    3
+CLOUDS           FW FW SC SC FW FW FW FW FW FW FW FW FW FW FW FW SC SC SC SC FW
 
-PERIOD        11 11 11   11 12 12 12   12 20 20 18   18
+POP 12HR                     20          20          10          20          20
+
+RAIN SHWRS        S  S  S  S        S  S              S  S        S  S  S  S  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E    E  E  E NE   NE  E  S  E    N
+
+WIND SPD       5    3  3  2  2    3  1  2  1    2
+
+WIND GUST      6    4  4  4  4    4  4  4  4    4
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       W  W  W    W  W  W  W    W  W  W  W   NW
+WAVE DIR       S    S  S SW SW   SW  S  S  S    S
 
-WAVE HGT       1  1  1    1  1  1  1    1  1  1  1    1
+WAVE HGT       3    3  3  3  2    2  3  3  4    4
 
-PERIOD        10 10 10   10  9  9  9    9  9 10 14   14
+PERIOD        11   11 12 12 12   12 20 20 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   3  3  3    3  3  3  3    3  3  3  3    3
+WAVE DIR       W    W  W  W  W    W  W  W  W   NW
 
-CLOUDS        SC SC BK   BK SC SC SC   SC SC FW SC   SC
+WAVE HGT       1    1  1  1  1    1  1  1  1    1
 
-POP 12HR         10      10    10      10    10
+PERIOD        10   10  9  9  9    9  9 10 14   14
 
-PHZ122-301400-
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   3    3  3  4  3    3  4  4  4    4
+
+CLOUDS        FW   SC FW FW SC   FW FW FW FW   FW
+
+POP 12HR           20    10      20    20
+
+PHZ122-010200-
 
 D FAD BUOY CAPE KUMUKAHI HAWAII
 
 19.63N 154.78W
 
-301 PM HST TUE SEP 29 2026
+318 AM HST WED SEP 30 2026
 
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
 
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
 
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
 
-WIND DIR         SE SE SE SE SE SE SE SE SE SE SE SE  E  E  E  E  E  E  E  E  E
+WIND DIR         SE SE SE SE SE SE SE SE SE  E  E  E  E  E  E  E  E  E SE SE  E
 
-WIND SPD         10 10 12 13 13 11 12 12 10 10  9  9 10 10  9  9  7  7  7  7 10
+WIND SPD         11 10 11 10 10  9  9  9  9 10 10  8  6  6  7  7  9  9  9  9  7
 
-WIND GUST        12 12 15 16 16 13 15 15 10 10 10 10 11 11  9  9  7  7  7  7 10
+WIND GUST        13 12 13 12 12 11 11 10 11 12 12 10  7  7  8  8 11 11 11 11  8
 
 -------------------------------------------------------------------------------
 
@@ -6360,183 +6329,11 @@ PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          N  N  N  N  N
+WAVE DIR                                              N  N  N  N  N  N  N  N  N
 
-WAVE HGT                                                          2  2  2  2  2
+WAVE HGT                                              2  2  2  2  2  2  2  2  2
 
-PERIOD                                                           10 10 10 10 10
-
--------------------------------------------------------------------------------
-
-WAVE DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
-
-WAVE HGT          4  4  4  4  4  4  4  4  4  4  3  3  3  3  3  3  3  3  3  3  3
-
-PERIOD           13 13 12 12 12 12 11 11 11 13 14 14 13 13 13 13 12 12 12 12 12
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT      5  5  5  5  5  5  4  4  4  4  3  3  3  3  3  3  4  4  4  4  4
-
-CLOUDS           SC SC SC SC SC SC SC SC SC SC SC SC SC SC FW FW SC SC SC SC SC
-
-POP 12HR                     10          10          20          20          20
-
-RAIN SHWRS                                      S  S  S  S              S  S  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       E  E  E    E  E NE NE   NE NE  N  N    N
-
-WIND SPD      10 10  8    7  7 12 12   13 12 11 12   11
-
-WIND GUST     10 10  7    7  7 14 14   15 13 12 13   13
-
--------------------------------------------------------------------------------
-
-WAVE DIR       S  S  S    S  S  S  S    S  S  S  S    S
-
-WAVE HGT       1  1  1    1  1  1  1    1  1  1  1    1
-
-PERIOD        11 11 11   11 12 12 12   12 20 20 18   18
-
--------------------------------------------------------------------------------
-
-WAVE DIR       N  N  N    N  N  N  N    N  N  N  N   NW
-
-WAVE HGT       2  2  2    2  2  2  2    2  2  2  2    2
-
-PERIOD        10  9  9    9  9  9  9   13 13 12 11   10
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT   4  4  4    4  4  5  5    5  5  5  5    5
-
-CLOUDS        SC FW FW   SC FW FW SC   SC FW FW SC   SC
-
-POP 12HR         20      20    20      30    30
-
-PHZ123-301400-
-
-F FAD BUOY KAILUA-KONA HAWAII
-
-19.51N 156.16W
-
-301 PM HST TUE SEP 29 2026
-
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
-
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
-
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
-
-WIND DIR          N  N NW NE  E  S  S  S  E  E  E  E SW SW SW SW NW NW  W  W  W
-
-WIND SPD          5  3  2  2  1  5  8 17  3  3  2  2  2  2  3  3  3  3  4  4  4
-
-WIND GUST         7  7  7  7  7  7  9 21  7  7  7  7  7  7  7  7  7  7  7  7  7
-
--------------------------------------------------------------------------------
-
-WAVE DIR         SW SW SW SW SW SW SW SW SW SW SW  S  S  S  S  S  S  S  S SW SW
-
-WAVE HGT          3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3
-
-PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
-
--------------------------------------------------------------------------------
-
-WAVE DIR                                                          W  W  W  W  W
-
-WAVE HGT                                                          2  2  2  1  1
-
-PERIOD                                                            9 10 10  9  9
-
--------------------------------------------------------------------------------
-
-WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  W  W  W  W  W  W  W  W  W
-
-WAVE HGT          2  2  2  2  2  3  3  3  2  2  2  2  2  2  2  2  2  2  2  2  2
-
-PERIOD            5  5  5  5  5  5  5  5  4  4  4  4  4  4  4  4  4  4  4  4  4
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT      4  4  5  5  5  5  5  5  5  4  4  4  4  4  4  4  4  4  4  4  4
-
-CLOUDS           FW FW SC SC FW FW FW FW SC SC FW FW FW FW FW FW SC SC SC SC SC
-
-POP 12HR                      5          10          10          10          20
-
-RAIN SHWRS                                                        S  S  S  S  S
-
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
-
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
-
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
-
-WIND DIR       W NW NW    N  W  S  S   NE NE  W  S    W
-
-WIND SPD       4  4  6    4  5  5  2    3  3  2  4    3
-
-WIND GUST      7  7  7    7  7  7  7    7  7  7  7    7
-
--------------------------------------------------------------------------------
-
-WAVE DIR      SW  S  S   SW SW SW SW   SW SW SW  S    S
-
-WAVE HGT       3  3  3    3  3  3  2    2  2  3  3    3
-
-PERIOD        11 11 11   11 12 12 12   12 20 20 18   18
-
--------------------------------------------------------------------------------
-
-WAVE DIR       W  W  W    W  W  W  W    W SW SE SE    E
-
-WAVE HGT       1  1  1    1  1  1  1    1  1  1  1    1
-
-PERIOD        10 10 10   10  9  9  9    9  9  8 14   14
-
--------------------------------------------------------------------------------
-
-SIG WAVE HGT   4  4  4    4  4  3  3    3  3  4  4    4
-
-CLOUDS        SC FW SC   SC SC FW FW   SC FW FW FW   SC
-
-POP 12HR         20      20    10      20    10
-
-PHZ122-301400-
-
-SS FAD BUOY APUA PT HAWAII
-
-19.19N 155.22W
-
-301 PM HST TUE SEP 29 2026
-
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
-
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
-
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
-
-WIND DIR          E  E NE  E  N SE  E SE  E  E  E  E  E  E  E  E  E  E NE NE  E
-
-WIND SPD          7  7  3  4  5  7  7  6  7  7  8  8  9  9 10 10  9  9  7  7  9
-
-WIND GUST         8  8  7  7  7  9  8  7  7  7  8  8  9  9 10 10  9  9  7  7 10
-
--------------------------------------------------------------------------------
-
-WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S
-
-WAVE HGT          3  3  3  3  3  3  3  2  2  2  2  2  2  1  1  1  1  1  1  2  2
-
-PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
+PERIOD                                               10 10 10 10 10  9  9  9  9
 
 -------------------------------------------------------------------------------
 
@@ -6544,135 +6341,307 @@ WAVE DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
 
 WAVE HGT          4  4  4  4  4  4  4  4  3  3  3  3  3  3  3  3  3  3  3  3  3
 
-PERIOD           13 13 12 12 12 12 11 11 11 13 14 14 13 13 13 13 12 12 12 12 12
+PERIOD           12 12 11 11 12 14 14 14 13 13 13 13 13 12 12 12 12 12 11 11 11
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT      5  5  5  5  5  5  5  4  4  4  4  4  4  3  3  3  3  3  3  4  4
+SIG WAVE HGT      5  6  4  4  5  5  3  3  3  3  3  3  5  5  5  5  5  5  5  5  5
 
-CLOUDS           SC SC SC SC SC SC SC SC SC SC SC SC SC SC SC SC FW FW FW FW FW
+CLOUDS           SC SC SC SC FW FW SC SC FW FW FW FW FW FW SC SC SC SC SC SC FW
 
-POP 12HR                     30          30          40          30          20
+POP 12HR                     20          30          10          20          20
 
-RAIN SHWRS        S  S  C  C  S  S  C  C  C  C  C  C  C  C  S  S  S  S  S  S
+RAIN SHWRS        S  S  S  S        C  C                    S  S  S  S  S  S
 
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
+DATE               SAT 10/03/26  SUN 10/04/26  MON
 
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
 
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
 
-WIND DIR       E  E  E   NE NE  E NE   NE NE  E NE   NE
+WIND DIR       E    E  E  E NE   NE NE NE  N    N
 
-WIND SPD       9 10  9    9 11 16 14   12 14 16 13   10
+WIND SPD       7    6  6  9 11   10 10 12 12   11
 
-WIND GUST     10 11  9   10 12 19 16   14 16 18 15   10
-
--------------------------------------------------------------------------------
-
-WAVE DIR       S  S  S    S  S  S  S    S  S  S  S    S
-
-WAVE HGT       2  2  2    2  2  1  1    1  1  1  2    2
-
-PERIOD        11 11 11   11 12 12 12   12 20 20 18   18
+WIND GUST      8    7  7 11 13   13 12 15 15   13
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   4  4  4    4  3  4  4    4  4  4  4    4
+WAVE DIR       S    S  S  S  S    S  S  S  S    S
 
-CLOUDS        FW SC SC   FW FW FW FW   FW FW FW FW   FW
+WAVE HGT       1    1  1  1  1    1  1  1  1    1
 
-POP 12HR         10      20    10      20    10
-
-PHZ122-301400-
-
-XX FAD BUOY PUAKO HAWAII
-
-20.02N 156.02W
-
-301 PM HST TUE SEP 29 2026
-
-DATE           09/29/26      WED 09/30/26            THU 10/01/26            FRI
-
-HST 3HRLY     15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06
-
-UTC 3HRLY     01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16
-
-WIND DIR          W  W  W  W  W  S NW NW  E  E SE SE SE SE SW SW SE SE SE SE SE
-
-WIND SPD          4  3  3  4  2  0  6  8  3  3  3  3  1  1  3  3  3  3  5  5  4
-
-WIND GUST         7  7  7  7  7  7  7  9  7  7  7  7  7  7  7  7  7  7  7  7  7
+PERIOD        11   11 12 12 12   12 12 12 18   18
 
 -------------------------------------------------------------------------------
 
-WAVE DIR         SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW
+WAVE DIR       N    N  N  N  N    N  N  N  N   NW
 
-WAVE HGT          3  3  3  3  3  3  3  3  3  3  2  2  2  2  2  2  2  2  2  3  3
+WAVE HGT       2    2  2  2  2    2  2  2  2    3
+
+PERIOD         9    9  9  9  9   13 13 12 11   11
+
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   5    5  5  6  5    5  4  5  6    6
+
+CLOUDS        FW   FW FW FW SC   SC SC SC SC   SC
+
+POP 12HR           10    10      20    30
+
+PHZ123-010200-
+
+F FAD BUOY KAILUA-KONA HAWAII
+
+19.51N 156.16W
+
+318 AM HST WED SEP 30 2026
+
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
+
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
+
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
+
+WIND DIR         SE  S  S  S  S  S  S  E SW  S SW  S NW NW  W  W  W  W NW NW NW
+
+WIND SPD          4  5  8  9  7  4  2  2  2  6  5  5  2  2  3  3  3  3  3  3  4
+
+WIND GUST         4  5  9 11  8  4  4  4  4  6  6  5  4  4  4  4  4  4  4  4  4
+
+-------------------------------------------------------------------------------
+
+WAVE DIR         SW SW SW SW SW SW SW  S  S  S  S  S  S  S  S SW SW  S  S  S  S
+
+WAVE HGT          3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3
 
 PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 -------------------------------------------------------------------------------
 
-WAVE DIR                                                          W  W  W  W  W
+WAVE DIR                                              W  W  W  W  W  W  W  W  W
 
-WAVE HGT                                                          1  1  1  1  1
+WAVE HGT                                              2  2  2  1  1  1  1  1  1
 
-PERIOD                                                            9 10 10 10 10
+PERIOD                                                9 10 10  9  9 10 10 10 10
 
 -------------------------------------------------------------------------------
 
-WAVE DIR          S  S  S  W  W SW SW SW  W  W  W  W  W  W  W  W  W  W  W  W  W
+WAVE DIR          S  S  S  S  S  S  S  S SW  S SW  S SW  S  W  S  S  W  S SW  S
+
+WAVE HGT          3  3  3  4  3  3  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2
+
+PERIOD            4  4  5  5  5  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4  4
+
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT      5  6  6  6  6  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
+
+CLOUDS           SC SC SC SC FW FW SC SC FW FW FW FW SC SC SC SC SC SC SC SC FW
+
+POP 12HR                     20          20          10          30          20
+
+RAIN SHWRS        S  S  S  S        S  S              S  S  C  C  S  S  S  S  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR      NW   NW SW SW  W    W NE SW  S    W
+
+WIND SPD       4    5  4  5  3    2  1  1  2    1
+
+WIND GUST      4    5  4  6  4    4  4  4  4    4
+
+-------------------------------------------------------------------------------
+
+WAVE DIR       S   SW SW SW SW   SW SW SW SW    S
+
+WAVE HGT       3    3  3  3  3    3  3  4  4    4
+
+PERIOD        11   11 12 12 12   12 20 20 18   18
+
+-------------------------------------------------------------------------------
+
+WAVE DIR       W    W  W  W  W    W SW SE NE    E
+
+WAVE HGT       1    1  1  1  1    1  1  1  1    1
+
+PERIOD        10   10  9  9  9    9  9  8 14   14
+
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   5    5  5  4  4    4  4  4  5    5
+
+CLOUDS        FW   SC FW FW SC   FW FW FW SC   FW
+
+POP 12HR           30    20      20    10
+
+PHZ122-010200-
+
+SS FAD BUOY APUA PT HAWAII
+
+19.19N 155.22W
+
+318 AM HST WED SEP 30 2026
+
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
+
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
+
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
+
+WIND DIR          E SE SE SE  E  E  E  E  E  E  E  E  E  E NE NE  E  E  E  E  E
+
+WIND SPD          6  7  7  6  6  5  6  6  8  9  9  9  8  8  6  6  8  8  9  9  8
+
+WIND GUST         7  8  8  6  6  6  6  7  9 10 10 11 10 10  7  7 10 10 10 10  9
+
+-------------------------------------------------------------------------------
+
+WAVE DIR          S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S  S
+
+WAVE HGT          3  3  3  2  2  2  2  2  2  1  1  1  1  1  1  2  2  2  2  2  2
+
+PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
+
+-------------------------------------------------------------------------------
+
+WAVE DIR          E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
+
+WAVE HGT          4  4  4  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  3
+
+PERIOD           12 11 11 11 12 14 14 14 13 13 13 13 12 12 12 12 12 12 11 11 11
+
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT      5  5  5  4  5  5  5  5  5  3  3  3  3  4  4  5  5  5  5  5  5
+
+CLOUDS           SC SC SC SC SC SC SC SC SC SC SC SC FW FW SC SC SC SC SC SC FW
+
+POP 12HR                     40          30          20          20          20
+
+RAIN SHWRS        C  C  S  S  S  S  C  C  S  S  S  S        S  S  S  S  S  S
+
+DATE               SAT 10/03/26  SUN 10/04/26  MON
+
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
+
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
+
+WIND DIR       E   NE NE  E NE   NE NE  E NE   NE
+
+WIND SPD       8    8 10 13 13   12 12 16 13   10
+
+WIND GUST      9   10 12 17 16   15 15 20 16   12
+
+-------------------------------------------------------------------------------
+
+WAVE DIR       S    S  S  S  S    S  S  S  S    S
+
+WAVE HGT       2    2  2  1  2    2  2  2  3    3
+
+PERIOD        11   11 12 12 12   12 20 20 18   18
+
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   5    5  4  4  5    5  5  6  6    6
+
+CLOUDS        FW   FW FW FW SC   FW SC SC SC   SC
+
+POP 12HR           10    10      20    30
+
+PHZ122-010200-
+
+XX FAD BUOY PUAKO HAWAII
+
+20.02N 156.02W
+
+318 AM HST WED SEP 30 2026
+
+DATE             WED 09/30/26            THU 10/01/26            FRI 10/02/26
+
+HST 3HRLY     03 06 09 12 15 18 21 00 03 06 09 12 15 18 21 00 03 06 09 12 15 18
+
+UTC 3HRLY     13 16 19 22 01 04 07 10 13 16 19 22 01 04 07 10 13 16 19 22 01 04
+
+WIND DIR         SE  N NW  N  N  E SW NW NE SE  W  W SE SE SE SE SE SE  S  S  E
+
+WIND SPD          3  1  3  4  3  1  0  2  2  1  5  4  2  2  4  4  3  3  1  1  3
+
+WIND GUST         4  4  4  4  4  4  4  4  4  4  5  4  4  4  4  4  4  4  4  4  4
+
+-------------------------------------------------------------------------------
+
+WAVE DIR         SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW SW
+
+WAVE HGT          3  3  3  3  3  3  2  2  2  2  2  2  2  2  2  3  3  3  3  2  2
+
+PERIOD           11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
+
+-------------------------------------------------------------------------------
+
+WAVE DIR                                              W  W  W  W  W  W  W  N  N
+
+WAVE HGT                                              1  1  1  1  1  1  1  1  1
+
+PERIOD                                                9 10 10 10 10 10 10 10 10
+
+-------------------------------------------------------------------------------
+
+WAVE DIR         SW  W  S  S  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W  W
 
 WAVE HGT          2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2
 
-PERIOD            4  4  4  4  4  5  5  6  4  5  4  5  4  5  4  5  4  5  5  4  4
+PERIOD            4  5  5  6  5  5  5  5  5  5  5  5  5  5  4  5  5  4  4  4  4
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT      4  4  5  5  5  4  4  4  4  4  3  3  3  3  3  3  3  3  3  4  4
+SIG WAVE HGT      5  4  4  4  5  5  3  3  3  3  3  3  3  4  4  5  5  5  5  4  4
 
-CLOUDS           FW FW SC SC FW FW FW FW FW FW SC SC FW FW FW FW SC SC FW FW FW
+CLOUDS           SC SC SC SC FW FW SC SC FW FW FW FW SC SC SC SC SC SC SC SC FW
 
-POP 12HR                      5          10          20          10          20
+POP 12HR                     20          30          10          20          20
 
-RAIN SHWRS                                      S  S                    S  S
+RAIN SHWRS        S  S  S  S        C  C              S  S  S  S  S  S  S  S
 
-DATE           10/02/26  SAT 10/03/26  SUN 10/04/26  MON
+DATE               SAT 10/03/26  SUN 10/04/26  MON
 
-HST 6HRLY     12 18 00   06 12 18 00   06 12 18 00   06
+HST 6HRLY     00   06 12 18 00   06 12 18 00   06
 
-UTC 6HRLY     22 04 10   16 22 04 10   16 22 04 10   16
+UTC 6HRLY     10   16 22 04 10   16 22 04 10   16
 
-WIND DIR      SE  S  E    E NE  W NE   NE NE NE NE   NE
+WIND DIR       E    E NE  N  E   NE NE NE NE   NE
 
-WIND SPD       4  3  3    5  4  2  5    6  5  9  8    6
+WIND SPD       3    4  4  1  3    6  6  9 10    8
 
-WIND GUST      7  7  7    7  7  7  7    7  7  9  8    7
-
--------------------------------------------------------------------------------
-
-WAVE DIR      SW SW SW   SW SW SW SW   SW SW SW SW   SW
-
-WAVE HGT       3  3  2    2  2  2  2    1  1  2  2    3
-
-PERIOD        11 11 11   11 12 12 12   12 11 18 18   18
+WIND GUST      4    4  4  4  4    6  7 11 12    9
 
 -------------------------------------------------------------------------------
 
-WAVE DIR       W  N  N    N  N  N  N    N  N  N  N    N
+WAVE DIR      SW   SW SW SW SW   SW SW SW SW   SW
 
-WAVE HGT       1  1  1    1  1  1  1    1  1  1  1    1
+WAVE HGT       2    2  2  2  2    1  1  1  2    2
 
-PERIOD        10 10 10   10  9  9  9    9  8  8  8    8
+PERIOD        11   11 12 12 12   12 11 18 18   18
 
 -------------------------------------------------------------------------------
 
-SIG WAVE HGT   4  3  3    3  3  3  3    3  3  3  3    3
+WAVE DIR       N    N  N  N  N    N  N  N  N    N
 
-CLOUDS        FW FW FW   FW FW FW FW   FW FW FW FW   FW
+WAVE HGT       1    1  1  1  1    1  1  1  1    1
 
-POP 12HR         10       5     5       0     0
+PERIOD        10   10  9  9  9    9  8  8  8    8
+
+-------------------------------------------------------------------------------
+
+SIG WAVE HGT   3    3  3  4  3    3  3  4  4    4
+
+CLOUDS        FW   SC FW FW SC   FW FW FW FW   FW
+
+POP 12HR           20    10      20    20
 ```
 
 ---
@@ -6683,31 +6652,33 @@ POP 12HR         10       5     5       0     0
 |---|---|
 | **Resource ID** | mww_marine_weather_message |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=MWW&site=hfo |
-| **Collected** | 2026-09-30T02:18:15.685491-10:00 HST |
+| **Collected** | 2026-09-30T12:03:09.984059-10:00 HST |
 
 ```text
-502
-WHHW70 PHFO 292350
+303
+WHHW70 PHFO 301320
 MWWHFO
 
 URGENT - MARINE WEATHER MESSAGE
 National Weather Service Honolulu HI
-150 PM HST Tue Sep 29 2026
+320 AM HST Wed Sep 30 2026
 
-PHZ110>113-010330-
+PHZ110>113-010230-
 /O.CON.PHFO.SC.Y.0038.000000T0000Z-261001T0400Z/
 Kauai Northwest Waters-Kauai Windward Waters-Kauai Leeward Waters-
 Kauai Channel-
-150 PM HST Tue Sep 29 2026
+320 AM HST Wed Sep 30 2026
 
-...SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 6 PM HST
-WEDNESDAY...
+...SMALL CRAFT ADVISORY REMAINS IN EFFECT UNTIL 6 PM HST THIS
+EVENING...
 
-* WHAT...Southeast winds up to 30 kt and seas up to 13 feet.
+* WHAT...South to southeast winds 15 to 25 kt and seas 8 to 11
+feet.
 
-* WHERE...Kauai Northwest Waters and Kauai Leeward Waters.
+* WHERE...Kauai Northwest Waters, Kauai Windward Waters, Kauai
+Leeward Waters and Kauai Channel.
 
-* WHEN...Until 6 PM HST Wednesday.
+* WHEN...Until 6 PM HST this evening.
 
 * IMPACTS...Conditions will be hazardous to small craft.
 
@@ -6715,6 +6686,8 @@ PRECAUTIONARY/PREPAREDNESS ACTIONS...
 
 Inexperienced mariners, especially those operating smaller
 vessels, should avoid navigating in these conditions.
+
+RCB
 ```
 
 ---
@@ -7109,10 +7082,10 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_cpac_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=2 |
-| **Collected** | 2026-09-30T01:53:58.198212-10:00 HST |
+| **Collected** | 2026-09-30T12:04:52.413411-10:00 HST |
 
 ```text
-094 ACCA62 KNHC 301142TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT miércoles 30 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada sobre elAtlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Adams*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
+059 ACCA62 KNHC 301733TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 PM EDT miércoles 30 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes ha emitido suúltima advertencia sobre el Ciclón Pos-Tropical Hanna, ubicado sobreel Atlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Beven*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
 ```
 
 ---
@@ -7123,10 +7096,10 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_cpac_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=7 |
-| **Collected** | 2026-09-30T01:54:58.824446-10:00 HST |
+| **Collected** | 2026-09-30T12:05:53.182654-10:00 HST |
 
 ```text
-094 ACCA62 KNHC 301142TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT miércoles 30 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada sobre elAtlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Adams*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
+059 ACCA62 KNHC 301733TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 PM EDT miércoles 30 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes ha emitido suúltima advertencia sobre el Ciclón Pos-Tropical Hanna, ubicado sobreel Atlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Beven*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
 ```
 
 ---
@@ -7137,10 +7110,10 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_epac_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=epac&fdays=2 |
-| **Collected** | 2026-09-30T01:55:58.664264-10:00 HST |
+| **Collected** | 2026-09-30T12:06:52.369451-10:00 HST |
 
 ```text
-094 ACCA62 KNHC 301142TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT miércoles 30 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada sobre elAtlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Adams*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
+059 ACCA62 KNHC 301733TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 PM EDT miércoles 30 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes ha emitido suúltima advertencia sobre el Ciclón Pos-Tropical Hanna, ubicado sobreel Atlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Beven*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
 ```
 
 ---
@@ -7151,10 +7124,10 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_epac_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=epac&fdays=7 |
-| **Collected** | 2026-09-30T01:56:58.214559-10:00 HST |
+| **Collected** | 2026-09-30T12:07:52.547199-10:00 HST |
 
 ```text
-094 ACCA62 KNHC 301142TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 AM EDT miércoles 30 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada sobre elAtlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Adams*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
+059 ACCA62 KNHC 301733TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL200 PM EDT miércoles 30 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes ha emitido suúltima advertencia sobre el Ciclón Pos-Tropical Hanna, ubicado sobreel Atlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Beven*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
 ```
 
 ---
@@ -7165,7 +7138,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-30T12:01:52.239131-10:00 HST |
+| **Collected** | 2026-09-30T12:10:52.497126-10:00 HST |
 
 ```text
 Home
@@ -7289,7 +7262,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Wed, 30 Sep 2026 21:57:27 UTC
+Last update Wed, 30 Sep 2026 22:10:24 UTC
 
 NHC issuing advisories for the Eastern Pacific on
 
@@ -7951,7 +7924,7 @@ Glossary
 |---|---|
 | **Resource ID** | noaa_homepage |
 | **Official source** | https://www.noaa.gov/ |
-| **Collected** | 2026-09-30T12:01:52.773659-10:00 HST |
+| **Collected** | 2026-09-30T12:10:52.907582-10:00 HST |
 
 ```text
 National Oceanic and Atmospheric Administration Home
@@ -8101,16 +8074,16 @@ No-Fear Act
 |---|---|
 | **Resource ID** | off_offshore_forecast |
 | **Official source** | https://forecast.weather.gov/product.php?site=HFO&product=OFF&issuedby=HFO |
-| **Collected** | 2026-09-29T23:57:54.620129-10:00 HST |
+| **Collected** | 2026-09-30T12:02:25.048633-10:00 HST |
 
 ```text
-457
-FZHW60 PHFO 300949 CCA
+119
+FZHW60 PHFO 302152
 OFFHFO
 
-Offshore Waters Forecast for Hawaii...CORRECTED
+Offshore Waters Forecast for Hawaii
 National Weather Service Honolulu HI
-1149 PM HST Tue Sep 29 2026
+1152 AM HST Wed Sep 30 2026
 
 Hawaiian offshore waters beyond 40 nautical miles out to 240
 nautical miles including the portion of the Papahanaumokuakea
@@ -8120,163 +8093,218 @@ Seas given as significant wave height, which is the average height
 of the highest 1/3 of the waves. Individual waves may be more than
 twice the significant wave height.
 
-PHZ105-301630-
-1149 PM HST Tue Sep 29 2026
+PHZ105-010430-
+1152 AM HST Wed Sep 30 2026
 
 .Synopsis for the Hawaiian offshore waters...
-Corrected Tropical Storm Nolo forecast position dates.
-
 The center of Tropical Storm Nolo is tracking W along the W edge
 of the offshore waters. Nolo will continue to move slowly W with
 tropical storm force winds exiting the far W Hawaiian Offshore
-Waters by Thursday.
-
-AT 1100 PM HST TROPICAL STORM NOLO WAS CENTERED AT 22.4N
-164.6W...MOVING WNW AT 5 KT
+Waters by Thursday. At 1100 AM HST Tropical Storm Nolo was
+centered at 21.6N 164.7W...moving S at 3 kt.
 
 NOLO FORECAST POSITIONS
-800 AM HST WEDNESDAY 22.6N 164.6W
-800 PM HST WEDNESDAY 22.7N 165.0W
-800 AM HST THURSDAY 22.6N 165.6W
-800 PM HST THURSDAY 22.8N 166.5W
-800 AM HST FRIDAY 23.1N 167.4W
-800 PM HST FRIDAY 23.4N 168.8W
-800 PM HST SATURDAY 24.1N 174.5W
-800 PM HST SUNDAY 26.1N 178.7E
 
-PHZ180-301630-
+800 PM HST WEDNESDAY 21.8N 165.0W
+800 AM HST THURSDAY 21.9N 165.6W
+800 PM HST THURSDAY 22.3N 166.3W
+800 AM HST FRIDAY 22.6N 167.1W
+800 PM HST FRIDAY 22.8N 168.7W
+800 AM HST SATURDAY 23.0N 171.3W
+800 AM HST FRIDAY 24.1N 178.2W
+800 AM HST SUNDAY 25.5N 174.9E
+800 AM HST MONDAY 26.5N 167.5E
+800 AM HST TUESDAY 28.0N 159.2E
+
+PHZ180-010430-
 Hawaiian Offshore Waters-
-1149 PM HST Tue Sep 29 2026
+1152 AM HST Wed Sep 30 2026
 
 ...TROPICAL STORM WARNING IN EFFECT...
 
-.REST OF TONIGHT...Tropical storm conditions expected S of 25N, N
-of 20N, and W of 162W. SE to S winds 15 to 25 kt. Seas 6 to 10
-ft. Isolated thunderstorms far W waters.
-.WEDNESDAY AND WEDNESDAY NIGHT...Tropical storm conditions
-expected S of 25N, N of 20N, and W of 162W. SE to S winds 15 to 25
-kt. Seas 6 to 10 ft. Isolated thunderstorms far W waters.
-.THURSDAY AND THURSDAY NIGHT...W of 160W, SE to S winds 15 to 30
-kt. Elsewhere, E to SE winds 10 to 20 kt. Seas 5 to 10 ft, highest
-far W waters. Isolated thunderstorms far W waters.
-.FRIDAY...E to SE winds 10 to 20 kt. Seas 5 to 8 ft.
-.SATURDAY...E winds 10 to 20 kt. Seas 5 to 7 ft.
-.SUNDAY...NE to E winds 15 to 25 kt. Seas 5 to 7 ft.
+.THIS AFTERNOON...Tropical storm conditions expected W of 163W.
+Elsewhere, SE to S winds 15 to 25 kt. Seas 6 to 10 ft. Isolated
+thunderstorms far W waters.
+.TONIGHT...Tropical storm conditions expected W of 163W.
+Elsewhere, SE to S winds 15 to 25 kt. Seas 6 to 10 ft. Isolated
+thunderstorms far W waters.
+.THURSDAY THROUGH THURSDAY NIGHT...NW Half, SE winds 15 to 25 kt.
+SE Half, SE winds 15 to 25 kt, becoming E 10 to 15 kt in the
+afternoon. Seas 6 to 9 ft. Isolated thunderstorms NW Half.
+.FRIDAY...SE winds 15 to 25 kt NW Half, E 10 to 15 kt SE Half.
+Seas 6 to 9 ft. Isolated thunderstorms NW Half.
+.SATURDAY THROUGH SUNDAY...E winds 10 to 20 kt. Seas 6 to 7 ft.
 ```
 
 ---
 
-### 31. Statewide Surf Forecast (+discussion)
+### 31. State Forecast for Hawaii
+
+| Field | Value |
+|---|---|
+| **Resource ID** | sfp_state_forecast |
+| **Official source** | https://api.weather.gov/products/types/SFP/locations/HFO |
+| **Collected** | 2026-09-30T12:02:54.515956-10:00 HST |
+
+```text
+000
+FPHW60 PHFO 301404
+SFPHFO
+
+State Forecast for Hawaii
+National Weather Service Honolulu HI
+404 AM HST Wed Sep 30 2026
+
+HIZ001-003-004-006-007-009>011-015>018-022-029>050-010415-
+Kauai-Oahu-Maui-Molokai-Lanai-
+404 AM HST Wed Sep 30 2026
+
+.TODAY...Mostly cloudy. Occasional showers windward and
+mountains. scattered showers leeward. Highs 84 to 89. Southeast
+winds 15 to 20 mph. 
+.TONIGHT...Mostly cloudy. Occasional showers on Kauai. scattered
+showers Oahu and Maui County. Lows 74 to 79. Southeast winds
+around 15 mph. 
+.THURSDAY...Mostly cloudy. Windward and mountains, numerous
+showers. Leeward, scattered showers. Highs 84 to 89. Lows 73 to
+78. East winds around 15 mph. 
+.FRIDAY...Partly cloudy. On Kauai, numerous showers during the
+day, then scattered showers at night. Oahu and Maui County,
+scattered showers during the day, then isolated showers at night.
+Highs 84 to 89. Lows 73 to 78. East winds around 15 mph. 
+.SATURDAY...Partly cloudy. Isolated showers. Highs 84 to 89. Lows
+72 to 77. East winds around 15 mph. 
+.SUNDAY...Partly cloudy. Windward and mountains, scattered
+showers. Leeward, isolated showers. Highs 84 to 89. Lows 72 to
+77. Northeast winds around 15 mph. 
+
+HIZ023-026>028-051>054-010415-
+Big Island of Hawaii-
+404 AM HST Wed Sep 30 2026
+
+.TODAY...Mostly sunny. Windward, scattered showers. Leeward,
+isolated showers through the day. Highs 85 to 90. Variable winds
+to 15 mph. 
+.TONIGHT...Partly cloudy. Windward, scattered showers. Leeward,
+isolated showers through the night. Lows 72 to 77. Variable winds
+to 15 mph. 
+.THURSDAY...Partly cloudy. Windward, scattered showers during the
+day, then isolated showers at night. Leeward, isolated showers.
+Highs 84 to 89. Lows 71 to 76. Variable winds to 15 mph. 
+.FRIDAY...Partly cloudy. Windward, isolated showers during the
+day. Leeward, scattered showers during the day, then isolated
+showers at night. Highs 83 to 88. Lows 71 to 76. Variable winds
+to 15 mph. 
+.SATURDAY...Partly cloudy. Isolated showers. Highs 84 to 89. Lows
+71 to 76. Northeast winds around 15 mph. 
+.SUNDAY...Windward, mostly cloudy, Scattered showers. Leeward,
+mostly clear, Isolated showers during the day. Highs 85 to 90.
+Lows 71 to 76. Northeast winds around 15 mph.
+```
+
+---
+
+### 32. Statewide Surf Forecast (+discussion)
 
 | Field | Value |
 |---|---|
 | **Resource ID** | srf_statewide_surf_forecast |
 | **Official source** | https://www.weather.gov/hfo/SRF |
-| **Collected** | 2026-09-30T02:26:11.810601-10:00 HST |
+| **Collected** | 2026-09-30T12:02:51.591596-10:00 HST |
 
 ```text
-454
-FZHW52 PHFO 300100
+684
+FZHW52 PHFO 301840
 SRFHFO
 
 Surf Zone Forecast for Hawaii
 National Weather Service Honolulu HI
-300 PM HST Tue Sep 29 2026
+840 AM HST Wed Sep 30 2026
 
-.DISCUSSION...The moderate, medium period SW swell originating from
-Nolo has eased slightly with the latest observations coming in below
-the High Surf Advisory (HSA). The HSA has therefore been allowed to
-expire. Surf along E shores has declined in response to emerging SE
-flow. Surf will remain small until moderate trades return early next
-week providing a modest boost. Multiple rounds of tiny swell
-originating out of the northwest quadrant will reach north and select
-west facing exposures next week as the storm track in the vicinity of
-the Aleutian Islands becomes increasingly active.
+.DISCUSSION...
+The moderate, medium period west to southwest swell originating
+from Nolo will continue for Niihau and Kauai today. A small
+background south swell continues for other islands. The next small
+boost in south swell energy will arrive early next week Monday
+and Tuesday.
 
-HIZ003-029>031-010200-
+Surf along other shores will remain small until moderate trades
+return early next week providing a slight boost to east facing
+shores. Multiple rounds of tiny northwest swell energy will reach
+north and west facing shores into early next week as the storms
+tracking near the Aleutian Islands becomes increasingly active.
+
+HIZ003-029>031-011945-
 Kauai-
-300 PM HST Tue Sep 29 2026
+840 AM HST Wed Sep 30 2026
 
 __________________________________________________________________
-                      Tonight                    Wednesday
+                       Today                     Thursday
 
 Shores                  Surf                       Surf
-                     PM     AM                  AM     PM
+                     AM     PM                  AM     PM
 __________________________________________________________________
 
-North Facing         2-4    1-3                 1-3    1-3
+North Facing         1-3    1-3                 1-3    1-3
 West Facing          5-7    5-7                 5-7    5-7
-South Facing         4-6    4-6                 3-5    3-5
-East Facing          4-6    3-5                 3-5    3-5
+South Facing         5-7    5-7                 5-7    5-7
+East Facing          3-5    3-5                 3-5    3-5
 
-.TONIGHT...
-Weather.....................Mostly cloudy. Frequent showers.
-Low Temperature.............In the mid 70s.
-Winds.......................Southeast winds 15 to 20 mph.
-Tides...
-   Hanalei Bay..............High 1.1 feet 03:35 PM HST.
-                            Low 0.0 feet 09:28 PM HST.
-                            High 2.3 feet 05:34 AM HST.
-   Nawiliwili...............High 1.1 feet 04:36 PM HST.
-                            Low 0.0 feet 10:50 PM HST.
-
-.WEDNESDAY...
-Weather.....................Mostly cloudy. Numerous showers.
+.REST OF TODAY...
+Weather.....................Cloudy. Occasional showers.
 High Temperature............In the mid 80s.
-Winds.......................South winds around 15 mph.
+Winds.......................Southeast winds around 15 mph.
 Tides...
    Hanalei Bay..............Low 0.8 feet 12:26 PM HST.
                             High 1.0 feet 03:44 PM HST.
-   Nawiliwili...............High 2.1 feet 06:35 AM HST.
-                            Low 0.8 feet 01:48 PM HST.
+   Nawiliwili...............Low 0.8 feet 01:48 PM HST.
                             High 0.9 feet 04:45 PM HST.
 Sunrise.....................6:28 AM HST.
 Sunset......................6:27 PM HST.
 
-HIZ006-007-009-032>035-010200-
+.TONIGHT...
+Weather.....................Cloudy. Occasional showers.
+Low Temperature.............In the mid 70s.
+Winds.......................Southeast winds around 10 mph.
+Tides...
+   Hanalei Bay..............Low 0.1 feet 10:03 PM HST.
+   Nawiliwili...............Low 0.1 feet 11:25 PM HST.
+
+.THURSDAY...
+Weather.....................Mostly cloudy. Numerous showers.
+High Temperature............In the mid 80s.
+Winds.......................Southeast winds around 10 mph.
+Tides...
+   Hanalei Bay..............High 2.3 feet 06:40 AM HST.
+   Nawiliwili...............High 2.1 feet 07:41 AM HST.
+Sunrise.....................6:29 AM HST.
+Sunset......................6:26 PM HST.
+
+HIZ006-007-009-032>035-011945-
 Oahu-
-300 PM HST Tue Sep 29 2026
+840 AM HST Wed Sep 30 2026
 
 __________________________________________________________________
-                      Tonight                    Wednesday
+                       Today                     Thursday
 
 Shores                  Surf                       Surf
-                     PM     AM                  AM     PM
+                     AM     PM                  AM     PM
 __________________________________________________________________
 
-North Facing         2-4    1-3                 1-3    1-3
+North Facing         1-3    1-3                 1-3    1-3
 West Facing          4-6    4-6                 4-6    4-6
 South Facing         4-6    4-6                 4-6    4-6
-East Facing          4-6    3-5                 3-5    3-5
+East Facing          3-5    3-5                 3-5    3-5
 
-.TONIGHT...
-Weather.....................Mostly cloudy. Scattered showers.
-Low Temperature.............In the upper 70s.
+.REST OF TODAY...
+UV Index....................Very High.
+Weather.....................Mostly cloudy. Numerous showers.
+High Temperature............In the mid 80s.
 Winds.......................Southeast winds around 15 mph.
 Tides...
-   Honolulu.................High 1.0 feet 05:19 PM HST.
-                            Low 0.1 feet 11:14 PM HST.
-   Waianae..................Low 0.6 feet 01:05 PM HST.
-                            High 1.0 feet 05:39 PM HST.
-                            Low 0.1 feet 11:32 PM HST.
-   Haleiwa..................High 0.8 feet 04:17 PM HST.
-                            Low 0.0 feet 09:09 PM HST.
-                            High 1.7 feet 05:48 AM HST.
-   Mokuoloe.................High 1.6 feet 02:52 PM HST.
-                            Low -0.1 feet 09:51 PM HST.
-                            High 2.3 feet 05:30 AM HST.
-
-.WEDNESDAY...
-UV Index....................Very High.
-Weather.....................Partly sunny. Numerous showers.
-High Temperature............In the mid 80s.
-Winds.......................Southeast winds around 20 mph.
-Tides...
-   Honolulu.................High 2.2 feet 06:50 AM HST.
-                            Low 0.6 feet 02:13 PM HST.
+   Honolulu.................Low 0.6 feet 02:13 PM HST.
                             High 0.8 feet 05:57 PM HST.
-   Waianae..................High 2.0 feet 07:10 AM HST.
-                            Low 0.6 feet 02:31 PM HST.
+   Waianae..................Low 0.6 feet 02:31 PM HST.
    Haleiwa..................Low 0.5 feet 12:08 PM HST.
                             High 0.7 feet 04:55 PM HST.
    Mokuoloe.................Low 1.3 feet 11:39 AM HST.
@@ -8284,113 +8312,166 @@ Tides...
 Sunrise.....................6:22 AM HST.
 Sunset......................6:22 PM HST.
 
-HIZ017-018-045>050-010200-
+.TONIGHT...
+Weather.....................Mostly cloudy. Numerous showers.
+Low Temperature.............In the mid 70s.
+Winds.......................Southeast winds around 10 mph.
+Tides...
+   Honolulu.................Low 0.1 feet 11:49 PM HST.
+   Waianae..................High 0.8 feet 06:17 PM HST.
+                            Low 0.1 feet 12:07 AM HST.
+   Haleiwa..................Low 0.1 feet 09:44 PM HST.
+   Mokuoloe.................Low -0.1 feet 10:28 PM HST.
+
+.THURSDAY...
+UV Index....................Very High.
+Weather.....................Mostly cloudy. Numerous showers.
+High Temperature............In the mid 80s.
+Winds.......................Southeast winds around 10 mph.
+Tides...
+   Honolulu.................High 2.2 feet 07:55 AM HST.
+                            Low 0.6 feet 04:05 PM HST.
+   Waianae..................High 2.0 feet 08:15 AM HST.
+                            Low 0.6 feet 04:23 PM HST.
+   Haleiwa..................High 1.7 feet 06:53 AM HST.
+                            Low 0.5 feet 02:00 PM HST.
+                            High 0.5 feet 05:53 PM HST.
+   Mokuoloe.................High 2.2 feet 06:47 AM HST.
+Sunrise.....................6:23 AM HST.
+Sunset......................6:20 PM HST.
+
+HIZ017-018-045>050-011945-
 Maui-
-300 PM HST Tue Sep 29 2026
+840 AM HST Wed Sep 30 2026
 
 __________________________________________________________________
-                      Tonight                    Wednesday
+                       Today                     Thursday
 
 Shores                  Surf                       Surf
-                     PM     AM                  AM     PM
+                     AM     PM                  AM     PM
 __________________________________________________________________
 
-North Facing         2-4    1-3                 1-3    1-3
-West Facing          3-5    3-5                 3-5    3-5
+North Facing         1-3    1-3                 1-3    1-3
+West Facing          2-4    2-4                 2-4    2-4
 South Facing         4-6    4-6                 4-6    4-6
-East Facing          4-6    3-5                 3-5    3-5
+East Facing          3-5    3-5                 3-5    3-5
 
-.TONIGHT...
-Weather.....................Sunny until 6 PM, then partly cloudy.
-Low Temperature.............In the mid 70s.
-Winds.......................East winds 10 to 15 mph.
-Tides...
-   Kahului..................High 1.8 feet 03:02 PM HST.
-                            Low -0.1 feet 09:43 PM HST.
-                            High 2.4 feet 05:02 AM HST.
-
-.WEDNESDAY...
-Weather.....................Mostly sunny. Scattered showers.
+.REST OF TODAY...
+Weather.....................Partly sunny. Scattered showers.
 High Temperature............In the mid 80s.
-Winds.......................Southeast winds 10 to 15 mph.
+Winds.......................Southeast winds around 10 mph.
 Tides...
    Kahului..................Low 1.3 feet 11:08 AM HST.
                             High 1.6 feet 03:10 PM HST.
 Sunrise.....................6:16 AM HST.
 Sunset......................6:16 PM HST.
 
-HIZ052>054-010200-
+.TONIGHT...
+Weather.....................Partly cloudy. Scattered showers.
+Low Temperature.............In the mid 70s.
+Winds.......................East winds around 10 mph.
+Tides...
+   Kahului..................Low -0.1 feet 10:17 PM HST.
+
+.THURSDAY...
+Weather.....................Partly sunny. Scattered showers.
+High Temperature............In the mid 80s.
+Winds.......................East winds around 10 mph.
+Tides...
+   Kahului..................High 2.3 feet 06:10 AM HST.
+Sunrise.....................6:17 AM HST.
+Sunset......................6:14 PM HST.
+
+HIZ052>054-011945-
 Big Island Windward and Southeast-
-300 PM HST Tue Sep 29 2026
+840 AM HST Wed Sep 30 2026
 
 __________________________________________________________________
-                      Tonight                    Wednesday
+                       Today                     Thursday
 
 Shores                  Surf                       Surf
-                     PM     AM                  AM     PM
+                     AM     PM                  AM     PM
 __________________________________________________________________
 
 North Facing         1-3    1-3                 1-3    1-3
 East Facing          4-6    4-6                 4-6    4-6
 South Facing         4-6    4-6                 4-6    4-6
 
-.TONIGHT...
-Weather.....................Mostly sunny until 6 PM, then mostly
-                            cloudy. Isolated showers.
-Low Temperature.............In the lower 70s.
-Winds.......................Southeast winds around 10 mph.
-Tides...
-   Hilo Bay.................High 1.8 feet 04:09 PM HST.
-                            Low -0.1 feet 10:35 PM HST.
-                            High 2.7 feet 05:47 AM HST.
-
-.WEDNESDAY...
+.REST OF TODAY...
 Weather.....................Mostly sunny. Scattered showers.
-High Temperature............In the lower 80s.
-Winds.......................Southeast winds 10 to 15 mph.
+High Temperature............In the mid 80s.
+Winds.......................Southeast winds around 10 mph.
 Tides...
    Hilo Bay.................Low 1.1 feet 12:16 PM HST.
                             High 1.6 feet 04:33 PM HST.
 Sunrise.....................6:11 AM HST.
 Sunset......................6:10 PM HST.
 
-HIZ023-026-051-010200-
+.TONIGHT...
+Weather.....................Partly cloudy until 12 AM, then mostly
+                            cloudy. Scattered showers.
+Low Temperature.............In the lower 70s.
+Winds.......................Southeast winds around 5 mph.
+Tides...
+   Hilo Bay.................Low 0.0 feet 11:14 PM HST.
+
+.THURSDAY...
+Weather.....................Mostly sunny. Isolated showers.
+High Temperature............In the lower 80s.
+Winds.......................Southeast winds 5 to 10 mph.
+Tides...
+   Hilo Bay.................High 2.5 feet 06:50 AM HST.
+                            Low 1.2 feet 01:46 PM HST.
+                            High 1.3 feet 04:52 PM HST.
+Sunrise.....................6:11 AM HST.
+Sunset......................6:09 PM HST.
+
+HIZ023-026-051-011945-
 Big Island Leeward-
-300 PM HST Tue Sep 29 2026
+840 AM HST Wed Sep 30 2026
 
 __________________________________________________________________
-                      Tonight                    Wednesday
+                       Today                     Thursday
 
 Shores                  Surf                       Surf
-                     PM     AM                  AM     PM
+                     AM     PM                  AM     PM
 __________________________________________________________________
 
 West Facing          4-6    4-6                 4-6    4-6
 South Facing         4-6    4-6                 4-6    4-6
 
+.REST OF TODAY...
+Weather.....................Mostly sunny. Isolated showers.
+High Temperature............In the upper 80s.
+Winds.......................West winds around 5 mph.
+Tides...
+   Kona.....................Low 0.7 feet 12:53 PM HST.
+                            High 1.3 feet 05:11 PM HST.
+   Kawaihae.................Low 0.6 feet 01:45 PM HST.
+Sunrise.....................6:15 AM HST.
+Sunset......................6:14 PM HST.
+
 .TONIGHT...
 Weather.....................Partly cloudy. Isolated showers.
 Low Temperature.............In the lower 70s.
-Winds.......................Northwest winds around 5 mph, becoming
-                            northeast after midnight.
+Winds.......................Northwest winds around 5 mph.
 Tides...
-   Kona.....................High 1.4 feet 04:47 PM HST.
-                            Low -0.1 feet 11:12 PM HST.
-   Kawaihae.................High 1.3 feet 05:28 PM HST.
-                            Low 0.0 feet 11:23 PM HST.
+   Kona.....................Low 0.0 feet 11:51 PM HST.
+   Kawaihae.................High 1.0 feet 06:06 PM HST.
+                            Low 0.1 feet 12:00 AM HST.
 
-.WEDNESDAY...
+.THURSDAY...
 Weather.....................Mostly sunny. Isolated showers.
-High Temperature............In the upper 80s.
-Winds.......................West winds 5 to 10 mph.
+High Temperature............In the mid 80s.
+Winds.......................Northwest winds around 5 mph.
 Tides...
-   Kona.....................High 2.1 feet 06:25 AM HST.
-                            Low 0.7 feet 12:53 PM HST.
-                            High 1.3 feet 05:11 PM HST.
-   Kawaihae.................High 2.4 feet 06:39 AM HST.
-                            Low 0.6 feet 01:45 PM HST.
+   Kona.....................High 2.0 feet 07:28 AM HST.
+                            Low 0.8 feet 02:23 PM HST.
+                            High 1.1 feet 05:30 PM HST.
+   Kawaihae.................High 2.4 feet 07:38 AM HST.
+                            Low 0.6 feet 03:17 PM HST.
 Sunrise.....................6:15 AM HST.
-Sunset......................6:14 PM HST.
+Sunset......................6:13 PM HST.
 
 __________________________________________________________________
 
@@ -8420,7 +8501,7 @@ __________________________________________________________________
 
 ---
 
-### 32. Statewide Surf Observations
+### 33. Statewide Surf Observations
 
 | Field | Value |
 |---|---|
@@ -8514,13 +8595,13 @@ $$
 
 ---
 
-### 33. Tsunami Bulletin product type reference
+### 34. Tsunami Bulletin product type reference
 
 | Field | Value |
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-30T03:25:33.694259-10:00 HST |
+| **Collected** | 2026-09-30T12:03:53.310741-10:00 HST |
 
 ```text
 National Weather Service
@@ -8569,9 +8650,9 @@ INFORMATION
 
 Wireless Emergency Alerts
 
-Brochures
-
 Weather-Ready Nation
+
+Brochures
 
 Cooperative Observers
 
