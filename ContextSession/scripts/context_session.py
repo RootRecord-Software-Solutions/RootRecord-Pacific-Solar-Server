@@ -5,6 +5,7 @@
   python3 context_session.py --root DIR append USER SESSION ROLE TYPE CONTENT
   python3 context_session.py --root DIR list USER
   python3 context_session.py --root DIR current USER SESSION
+  python3 context_session.py --root DIR compile
 """
 from __future__ import annotations
 
@@ -51,6 +52,8 @@ def _parser() -> argparse.ArgumentParser:
     current = sub.add_parser("current")
     current.add_argument("user_id")
     current.add_argument("session_id")
+
+    sub.add_parser("compile")
     return parser
 
 
@@ -75,6 +78,8 @@ def main(argv: list[str] | None = None) -> int:
                 "user_id": args.user_id,
                 "sessions": store.list_sessions(args.user_id),
             }
+        elif args.cmd == "compile":
+            payload = store.compile()
         else:
             payload = store.current(args.user_id, args.session_id)
     except (ValueError, sqlite3.IntegrityError) as exc:
