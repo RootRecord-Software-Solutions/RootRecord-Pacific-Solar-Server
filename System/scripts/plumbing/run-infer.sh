@@ -48,7 +48,7 @@ if [[ "${RR_NPU_PERSONA:-0}" == "1" && -z "$SPEC_SYS" && "$TARGET" =~ ^(ava|bruc
 from pathlib import Path  # info: from pathlib import Path
 p=Path(sys.argv[1])  # info: set p
 t=p.read_text(encoding="utf-8")  # info: set t
-m=re.search("(?s)^SYSTEM\\s+\"\"\"\\n?(.*?)\\n?\"\"\"", t)  # info: set m
+m=re.search("(?ms)^SYSTEM\\s+\"\"\"\\n?(.*?)\\n?\"\"\"", t)  # info: set m
 sys_text=(m.group(1).strip() if m else "")  # info: set sys_text
 temp, npred = "0.3", "180"  # info: set temp
 for k,v in re.findall(r"^PARAMETER\s+(temperature|num_predict)\s+(\S+)", t, re.M):  # info: for
