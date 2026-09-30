@@ -1,0 +1,18 @@
+# Paths github_sync_all must not auto-commit for the public ecosystem umbrella.
+# Live telemetry, databases, logs, and worklogs stay on disk. Intentional
+# commits of other paths still sync. Lines are git pathspecs.
+2 - RootRecord-Database/Energy/samples
+2 - RootRecord-Database/Energy/soc
+2 - RootRecord-Database/Energy/watts
+2 - RootRecord-Database/System/samples
+2 - RootRecord-Database/System/layers
+2 - RootRecord-Database/System/cpu
+2 - RootRecord-Database/System/load
+2 - RootRecord-Database/System/mem
+2 - RootRecord-Database/System/last
+2 - RootRecord-Database/System/status
+2 - RootRecord-Database/System/system.db
+2 - RootRecord-Database/Worklog
+2 - RootRecord-Database/Logs
+
+1 - Servers/1 - RootRecord-Pacific-Solar-Server/Communications/network/cloudflare/bin/cloudflared

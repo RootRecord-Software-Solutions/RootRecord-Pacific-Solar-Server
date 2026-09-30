@@ -76,6 +76,8 @@ The corresponding database tree is:
 /home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database
 ```
 
+This directory is inside the umbrella git root. It does not have its own `.git`. Desk publish uses the `ecosystem` row in `Github/scripts/repos.conf`. The `pacific` catalog row is disabled.
+
 ---
 
 ## 🛡️ Runtime discipline
@@ -93,6 +95,7 @@ The corresponding database tree is:
 
 | Repository | Role |
 | --- | --- |
+| **[RootRecord-Ecosystem](https://github.com/RootRecord-Software-Solutions/RootRecord-Ecosystem)** | Public umbrella and this desk's git root |
 | **[RootRecord-Library](https://github.com/RootRecord-Software-Solutions/RootRecord-Library)** | Durable docs, agent context & work orders |
 | **[RootRecord-Database](https://github.com/RootRecord-Software-Solutions/RootRecord-Database)** | Data, media & log layout |
 | **[US-Mainland-Server](https://github.com/rootrecordsoftwaresolutions/US-Mainland-Server)** | Continuity node |

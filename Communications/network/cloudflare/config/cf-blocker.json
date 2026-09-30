@@ -10,10 +10,10 @@
   ],
   "findings": {
     "CLOUDFLARE_API_TOKEN": "invalid (401)",
-    "global_key_account": "2b317e91da019f4fdb854e3b8e26fa94 (rootrecord@outlook.com)",
+    "global_key_account": "[redacted Cloudflare account ID] (rootrecord@outlook.com)",
     "zones_in_that_account": 0,
     "rootrecord.cloud": "on Cloudflare NS but NOT in API-accessible account",
-    "origin_tunnel_account": "d2daf26398a805b29e12ddba2b2228cf (from token; API 403)",
+    "origin_tunnel_account": "[redacted Cloudflare account ID] (from token; API 403)",
     "poller": "active locally on :8799; tunnel client connects; public hostname Waiting"
   },
   "need": [

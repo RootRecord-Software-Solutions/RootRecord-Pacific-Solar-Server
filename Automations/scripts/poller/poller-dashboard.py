@@ -190,7 +190,7 @@ def build(snap, remaining: int, width: int, height: int) -> list[str]:
     L.append(f"{BG}{WHITE}{BOLD}{title}{' ' * pad}{CYAN}{clock}{RST}")
     ref = "".join("■" if i < REFRESH - remaining else "□" for i in range(REFRESH))
     L.append(f" {DIM}read-only viewer · refresh in {RST}{CYAN}{remaining}s{RST} {DIM}{ref}{RST}"
-             f"   {DIM}log:{RST} {BASE0}{snap['log_state']}{RST}")
+             f"   {DIM}log:{RST} {BASE0}{LOG.name}{RST} {DIM}{snap['log_state']}{RST}")
     L.append(f" {DIM}{'─' * (width - 2)}{RST}")
     rows = snap["services"]
     half = (len(rows) + 1) // 2

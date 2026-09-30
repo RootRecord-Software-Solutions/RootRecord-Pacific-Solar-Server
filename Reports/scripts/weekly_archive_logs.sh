@@ -14,13 +14,12 @@ LOG_DIR="${LIBRARY_ROOT}/Documentation/01-operations/0 - Human Operator Work Log
 ARCHIVE_ROOT="${LIBRARY_ROOT}/Documentation/01-operations/archive"
 DRY_RUN="${DRY_RUN:-0}"
 
-# ISO week (HST)
+# ISO week (HST). %u is 1=Monday .. 7=Sunday.
+# "monday this week" on GNU date is the upcoming Monday, which would archive
+# the current week. Subtract (weekday-1) days so Monday of this week is the cutoff.
 WEEK_LABEL="$(TZ=Pacific/Honolulu date '+%G-W%V')"
-# Start of current week Monday 00:00 HST as epoch (approx via date)
-# Files named YYYY-MM-DD ... — archive if date < this week's Monday
-MONDAY="$(TZ=Pacific/Honolulu date -d 'monday this week' '+%Y-%m-%d' 2>/dev/null \
-  || TZ=Pacific/Honolulu date -d 'last monday' '+%Y-%m-%d' 2>/dev/null \
-  || true)"
+DOW="$(TZ=Pacific/Honolulu date '+%u')"
+MONDAY="$(TZ=Pacific/Honolulu date -d "$((DOW - 1)) days ago" '+%Y-%m-%d')"
 
 if [[ -z "${MONDAY:-}" ]]; then
   # Fallback: keep last 7 days by string compare only if Monday unknown

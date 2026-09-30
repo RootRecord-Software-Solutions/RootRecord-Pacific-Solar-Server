@@ -43,7 +43,24 @@ def _fields_from_ble(device) -> dict:
     }
 
 
-def _summary_line(alias: str, fields: dict, db_ok: bool, source: str, charge_source: str) -> str:
+def _ble_reason_token(ble_err: str | None) -> str:
+    """One SUMMARY token. The poller splits the line on spaces."""
+    if not ble_err:
+        return ""
+    token = "_".join(ble_err.split()).replace("=", "-")
+    if len(token) > 160:
+        token = token[:157] + "..."
+    return f" ble={token}"
+
+
+def _summary_line(
+    alias: str,
+    fields: dict,
+    db_ok: bool,
+    source: str,
+    charge_source: str,
+    ble_err: str | None = None,
+) -> str:
     def fmt(v, unit=""):
         if v is None:
             return "—"
@@ -52,6 +69,7 @@ def _summary_line(alias: str, fields: dict, db_ok: bool, source: str, charge_sou
         return f"{v}{unit}"
 
     cs = f" charge={charge_source}" if charge_source and charge_source != "none" else ""
+    why = _ble_reason_token(ble_err) if source != "ble" else ""
     return (
         f"SUMMARY={alias}"
         f" soc={fmt(fields.get('soc'), '%')}"
@@ -60,6 +78,7 @@ def _summary_line(alias: str, fields: dict, db_ok: bool, source: str, charge_sou
         f" usbc={fmt(fields.get('usbc_output_power'), 'W')}"
         f" src={source}{cs}"
         f" db={'ok' if db_ok else 'fail'}"
+        f"{why}"
     )
 
 
@@ -244,7 +263,7 @@ def main() -> int:
 
     # 6) Console
     if not _is_internal_only(alias):
-        print(_summary_line(alias, fields, db_ok, source, charge_source))
+        print(_summary_line(alias, fields, db_ok, source, charge_source, ble_err))
     else:
         print(f"INTERNAL={alias} soc={fields.get('soc')} src={source} charge={charge_source}")
 

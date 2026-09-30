@@ -26,6 +26,19 @@ line="$(awk -F '\t' -v want="$ID" '$1 == want { print; exit }' "$REPOS_CONF" || 
 
 IFS=$'\t' read -r id enabled mode local_path slug remote_name <<<"$line"
 
+if [[ "$mode" == "mirror" ]]; then
+  work="$BAK_ROOT/worktrees/$id"
+  if [[ ! -d "$work/.git" ]]; then
+    rm -rf "$work"
+    echo "[clone] $id → $work"
+    git clone --branch main "git@github.com:${slug}.git" "$work"
+  fi
+  git -C "$work" remote set-url "$remote_name" "git@github.com:${slug}.git" 2>/dev/null \
+    || git -C "$work" remote add "$remote_name" "git@github.com:${slug}.git"
+  echo "[ok] $id mirror → github.com/$slug"
+  exit 0
+fi
+
 mkdir -p "$local_path"
 
 if [[ ! -d "$local_path/.git" ]]; then

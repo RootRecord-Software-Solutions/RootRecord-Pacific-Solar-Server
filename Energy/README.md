@@ -4,7 +4,13 @@ Energy monitoring, EcoFlow device reads, and power subsystem ownership for the P
 
 ---
 
-## Status (2026-09-28) — Phase 1 LIVE
+## Status (2026-09-29 22:26 HST) — reads LIVE
+
+API reads are live. At 22:26 HST the poller logged Delta 2 at 7% (57 W AC out, 9 W USB-C) and River 2 Pro at 100%. The laptop was 43% and discharging at 22:21. The BLE owner is Pacific `Energy/scripts/ble/ble-owner.py`. There is no lowercase `energy` symlink, and no Pacific Energy file still says `import energy`.
+
+Do not arm, disarm, or switch AC from this page. Those actions stay on WO-ECO-001 Phase 2.
+
+## Earlier status (2026-09-28) — Phase 1 layout
 
 | Item | State |
 | --- | --- |

@@ -33,6 +33,36 @@ is_runtime_code_tree() {
   return 1
 }
 
+# Public umbrella contains the live Pacific tree plus high-churn database files.
+# Reload only when a pull changes Pacific runtime code. Database telemetry must not.
+ecosystem_pull_needs_reload() {
+  local old="$1" new="$2" f files
+  [[ -n "$old" && -n "$new" ]] || return 1
+  files="$(git -c core.quotePath=false diff --name-only "$old" "$new" 2>/dev/null)" || return 1
+  while IFS= read -r f; do
+    [[ -n "$f" ]] || continue
+    case "$f" in
+      "1 - Servers/1 - RootRecord-Pacific-Solar-Server/"*)
+        case "${f##*/}" in
+          *.md|*.MD|*.markdown|README|README.*) ;;
+          *) return 0 ;;
+        esac
+        ;;
+    esac
+  done <<< "$files"
+  return 1
+}
+
+# Drop live telemetry from the index after git add -A. Worktree files stay.
+unstage_ecosystem_runtime() {
+  local spec skip_file="$GITHUB_SCRIPTS/ecosystem-skip-autocommit.txt"
+  [[ -f "$skip_file" ]] || return 0
+  while IFS= read -r spec || [[ -n "${spec:-}" ]]; do
+    [[ -z "${spec:-}" || "$spec" =~ ^[[:space:]]*# ]] && continue
+    git reset -q -- "$spec" 2>/dev/null || true
+  done < "$skip_file"
+}
+
 # True when every file changed old..new is documentation (*.md, *.markdown, README*).
 # Docs-only pulls must not restart the poller stack (Alexander 2026-09-29). Unknown/empty diff -> false (reload as before).
 pull_is_docs_only() {
@@ -58,17 +88,24 @@ mark_code_pulled() {
   echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) id=$id head=$remote_head path=$local_path" \
     >> "$BAK_ROOT/flags/code-pulled.log"
   echo "$remote_head" > "$BAK_ROOT/flags/code-pulled.$id"
-  if is_runtime_code_tree "$id" "$local_path" && pull_is_docs_only "$old_head" "$remote_head"; then
-    echo "— [$id] docs-only pull (*.md/README) — no poller stack reload"
-  elif is_runtime_code_tree "$id" "$local_path"; then
-    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) runtime-code-pulled id=$id head=$remote_head" \
-      > "$BAK_ROOT/flags/reload-poller-stack"
-    echo "↻ [$id] CODE_PULLED — poller stack reload armed"
-    if [[ -f "$RELOAD_SCRIPT" ]]; then
-      bash "$RELOAD_SCRIPT" || echo "⚠ [$id] schedule-stack-reload failed"
-    else
-      echo "⚠ [$id] missing $RELOAD_SCRIPT — flag left for next sync-all"
+  if [[ "$id" == "ecosystem" ]]; then
+    if ! ecosystem_pull_needs_reload "$old_head" "$remote_head"; then
+      echo "— [$id] pull did not change Pacific runtime code — no poller stack reload"
+      return 0
     fi
+  elif is_runtime_code_tree "$id" "$local_path" && pull_is_docs_only "$old_head" "$remote_head"; then
+    echo "— [$id] docs-only pull (*.md/README) — no poller stack reload"
+    return 0
+  elif ! is_runtime_code_tree "$id" "$local_path"; then
+    return 0
+  fi
+  echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) runtime-code-pulled id=$id head=$remote_head" \
+    > "$BAK_ROOT/flags/reload-poller-stack"
+  echo "↻ [$id] CODE_PULLED — poller stack reload armed"
+  if [[ -f "$RELOAD_SCRIPT" ]]; then
+    bash "$RELOAD_SCRIPT" || echo "⚠ [$id] schedule-stack-reload failed"
+  else
+    echo "⚠ [$id] missing $RELOAD_SCRIPT — flag left for next sync-all"
   fi
 }
 
@@ -79,17 +116,23 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do
   found=1
   [[ "$enabled" == "1" ]] || { echo "[skip] $id disabled"; exit 0; }
 
+  mirror_writeback() {
+    [[ "$mode" == "mirror" ]] || return 0
+    rsync -a --exclude '.git' "$root"/ "$local_path"/
+    echo "↓ [$id] merged GitHub copy written back to the live folder"
+  }
+
   if [[ "$mode" == "inplace" ]]; then
     root="$local_path"
   else
     root="$BAK_ROOT/worktrees/$id"
-    mkdir -p "$root"
     if [[ ! -d "$root/.git" ]]; then
-      echo "ERROR: mirror worktree missing — run setup-all-remotes.sh first" >&2
-      exit 1
+      bash "$GITHUB_SCRIPTS/setup-remote.sh" "$id" || exit 1
     fi
+    [[ -d "$root/.git" ]] || { echo "ERROR: mirror worktree missing for $id" >&2; exit 1; }
     rsync -a --delete \
       --exclude '.git' \
+      --exclude '.venv' \
       --exclude 'node_modules' \
       --exclude '.next' \
       --exclude 'tsconfig.tsbuildinfo' \
@@ -118,10 +161,18 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do
 
   if ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then
     git add -A
-    n=$(git diff --cached --name-only | wc -l | tr -d ' ')
-    msg="auto: $(date -u +%Y-%m-%dT%H:%MZ) desk sync ($n file(s))"
-    git commit -m "$msg" >/dev/null
-    echo "↑ [$id] committed $n local file(s)"
+    if [[ "$id" == "ecosystem" ]]; then
+      unstage_ecosystem_runtime
+    fi
+    if git diff --cached --quiet; then
+      n=0
+      echo "— [$id] no committable local changes"
+    else
+      n=$(git diff --cached --name-only | wc -l | tr -d ' ')
+      msg="auto: $(date -u +%Y-%m-%dT%H:%MZ) desk sync ($n file(s))"
+      git commit -m "$msg" >/dev/null
+      echo "↑ [$id] committed $n local file(s)"
+    fi
   else
     n=0
     echo "— [$id] no local changes"
@@ -157,6 +208,7 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do
       exit 1
     fi
     echo "✓ [$id] GitHub changes merged into local $branch"
+    mirror_writeback
     mark_code_pulled "$id" "$local_path" "$(git rev-parse HEAD)" "$local_head"
   fi
 
@@ -181,6 +233,7 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do
         echo "✗ [$id] final merge conflict; local history preserved" >&2
         exit 1
       fi
+      mirror_writeback
       mark_code_pulled "$id" "$local_path" "$(git rev-parse HEAD)" "$local_head"
     fi
 

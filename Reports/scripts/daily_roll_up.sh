@@ -129,11 +129,7 @@ ${MIG}
 
 ## Archive note
 
-Filename:
-
-```text
-${TODAY} System Operator Worklog — Session auto.md
-```
+Filename: ${TODAY} System Operator Worklog — Session auto.md
 
 Weekly archive (logs): move closed sessions older than the current week into
 Documentation/01-operations/archive/YYYY-Www/ without rewriting content.
