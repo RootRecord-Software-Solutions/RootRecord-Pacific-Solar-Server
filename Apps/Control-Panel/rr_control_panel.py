@@ -86,6 +86,7 @@ levelbar block.full { background-color: #859900; }
 levelbar.rr-usage block.low { background-color: #859900; }
 levelbar.rr-usage block.high { background-color: #b58900; }
 levelbar.rr-usage block.full { background-color: #dc322f; }
+button.rr-island:checked { background-color: #859900; color: #fdf6e3; }
 """
 
 
@@ -305,6 +306,25 @@ class Panel(ExtraPages, AwsFallbackPage):  # info: class Panel
         self.w_sun = lbl("", "rr-big", wrap=True)  # info: self . w_sun = lbl ( "" ,
         i.append(self.w_sun)  # info: i . append ( self . w_sun )
         box.append(o)  # info: box . append ( o )
+        o, i = section("Stations — hourly NWS wind report")  # info: o , i = section (
+        row = Gtk.Box(spacing=6)
+        self.w_island_btns = {}
+        self._island_lock = False
+        current = src.island_label(self.s.get("weather_zone") or "Big Island")
+        for label, _tok in src.ISLANDS:
+            b = Gtk.ToggleButton(label=label)
+            b.add_css_class("rr-island")
+            b.set_active(label == current)
+            row.append(b)
+            self.w_island_btns[label] = b
+        i.append(row)
+        for label, b in self.w_island_btns.items():
+            b.connect("toggled", self.on_island, label)
+        self.w_station_sum = lbl("", wrap=True)
+        self.w_stations = lbl("", "rr-mono", select=True)
+        i.append(self.w_station_sum)
+        i.append(self.w_stations)
+        box.append(o)
         o, i = section("Zone forecast")  # info: o , i = section ( "Zone forecast" )
         self.w_zone = lbl("", "heading")  # info: self . w_zone = lbl ( "" ,
         self.w_today = lbl("", wrap=True, select=True)  # info: self . w_today = lbl ( "" ,
@@ -328,15 +348,65 @@ class Panel(ExtraPages, AwsFallbackPage):  # info: class Panel
             self._solar_at = time.time()  # info: self . _solar_at = time . time (
         return self._solar_v  # info: return self . _solar_v
 
+    def on_island(self, btn, label):  # info: def on_island
+        if self._island_lock:  # info: if self . _island_lock :
+            return  # info: return
+        if not btn.get_active():  # info: if not btn . get_active ( ) :
+            if not any(b.get_active() for b in self.w_island_btns.values()):  # info: if not any (
+                self._island_lock = True  # info: self . _island_lock = True
+                btn.set_active(True)  # info: btn . set_active ( True )
+                self._island_lock = False  # info: self . _island_lock = False
+            return  # info: return
+        self._island_lock = True  # info: self . _island_lock = True
+        for name, other in self.w_island_btns.items():  # info: for name , other in self . w_island_btns
+            if name != label:  # info: if name != label :
+                other.set_active(False)  # info: other . set_active ( False )
+        self._island_lock = False  # info: self . _island_lock = False
+        self.s["weather_zone"] = label  # info: self . s [ "weather_zone" ] = label
+        try:  # info: try :
+            rr_settings.save(self.s)  # info: rr_settings . save ( self . s )
+            self.toast(f"Weather: {label}")  # info: self . toast ( f" Weather: { label
+        except Exception as e:  # info: except Exception as e :
+            self.toast(f"Save failed: {e}")  # info: self . toast ( f" Save failed: { e
+        self.safe(self.r_weather)  # info: self . safe ( self . r_weather )
+
     def r_weather(self):  # info: def r_weather
-        w = src.weather(self.paths, self.s["weather_zone"], None)  # info: set w
+        w = src.weather(self.paths, self.s.get("weather_zone") or "Big Island", None)  # info: set w
         self.w_sun.set_text(self._solar or "solar table not available")  # info: self . w_sun . set_text ( self .
-        self.w_zone.set_text(f"{w['zone']}")  # info: self . w_zone . set_text ( f" {
+        label = w.get("island") or src.island_label(self.s.get("weather_zone") or "Big Island")  # info: set label
+        self._island_lock = True  # info: self . _island_lock = True
+        for name, b in getattr(self, "w_island_btns", {}).items():  # info: for name , b in getattr (
+            if b.get_active() != (name == label):  # info: if b . get_active ( ) !=
+                b.set_active(name == label)  # info: b . set_active ( name == label )
+        self._island_lock = False  # info: self . _island_lock = False
+        st = w.get("stations") or {}  # info: set st
+        spots = []  # info: set spots
+        if label == "Big Island":  # info: if label == "Big Island" :
+            spots = [s for s in (src.station_spot(st, "Hilo AP"), src.station_spot(st, "Kona Intl")) if s]  # info: set spots
+        elif label == "Maui":  # info: elif label == "Maui" :
+            spots = [s for s in (src.station_spot(st, "Kahului AP"),) if s]  # info: set spots
+        elif label == "Oahu":  # info: elif label == "Oahu" :
+            spots = [s for s in (src.station_spot(st, "Honolulu AP"),) if s]  # info: set spots
+        elif label == "Kauai":  # info: elif label == "Kauai" :
+            spots = [s for s in (src.station_spot(st, "Lihue"),) if s]  # info: set spots
+        bits = [f"{st.get('reporting', 0)} reporting · {st.get('silent', 0)} silent"] + spots  # info: set bits
+        if st.get("collected"):  # info: if st . get ( "collected" ) :
+            bits.append(f"collected {st['collected']}")  # info: bits . append (
+        self.w_station_sum.set_text(" · ".join(bits) if st.get("rows") else "Hourly station report is not on disk yet.")  # info: self . w_station_sum . set_text (
+        self.w_stations.set_text(src.format_stations(st) if st.get("rows") else "")  # info: self . w_stations . set_text (
+        self.w_zone.set_text(label)  # info: self . w_zone . set_text ( label )
         self.w_today.set_markup(f"<b>Today:</b> {esc(w['today'] or '—')}")  # info: self . w_today . set_markup ( f" <b>Today:</b>
         self.w_tonight.set_markup(f"<b>Tonight:</b> {esc(w['tonight'] or '—')}")  # info: self . w_tonight . set_markup ( f" <b>Tonight:</b>
         self.w_adv.set_text("\n".join(w["advisories"]))  # info: self . w_adv . set_text ( "\n" .
-        self.w_meta.set_text(f"ZFP collected {w['collected'] or '—'} · State report generated {w['state_generated'] or '—'}")  # info: self . w_meta . set_text ( f" ZFP collected
-        self.report["weather"] = {"zone": w["zone"], "today": bool(w["today"]), "solar": bool(self._solar)}  # info: self . report [ "weather" ] = {
+        if w.get("collected"):  # info: if w . get ( "collected" ) :
+            meta = f"ZFP collected {w['collected']}"  # info: set meta
+        else:  # info: else :
+            meta = "Zone forecast file is not on disk yet (zfp_zone_forecast_current.md). The station list above is the live report."  # info: set meta
+        if w.get("state_generated"):  # info: if w . get ( "state_generated" ) :
+            meta += f" · State report generated {w['state_generated']}"  # info: set meta
+        self.w_meta.set_text(meta)  # info: self . w_meta . set_text ( meta )
+        self.report["weather"] = {"zone": label, "today": bool(w["today"]), "solar": bool(self._solar),  # info: self . report [ "weather" ] = {
+                                 "stations": st.get("reporting", 0)}  # info: "stations" : st . get ( "reporting" , 0 ) }
 
     # ----------------------------------------------------------- system
     def b_system(self, box):  # info: def b_system

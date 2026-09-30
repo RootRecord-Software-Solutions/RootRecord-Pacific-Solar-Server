@@ -334,7 +334,76 @@ def system(paths: Paths) -> dict:  # info: def system
 
 
 # ---------------------------------------------------------------- weather
+# Button label -> island token in oso_hourly_obs_current.md ("Hawaii" is the Big Island).
+ISLANDS = (("Big Island", "Hawaii"), ("Maui", "Maui"), ("Oahu", "Oahu"), ("Kauai", "Kauai"))
+_ISLAND_BY_LABEL = {label: token for label, token in ISLANDS}
+_ISLAND_BY_LABEL["Hawaii"] = "Hawaii"
+_ISLAND_BY_LABEL["Honolulu Metro"] = "Oahu"
+_LABEL_BY_TOKEN = {token: label for label, token in ISLANDS}
+_ZFP_NEEDLES = {
+    "Big Island": ("big island",),
+    "Maui": ("maui",),
+    "Oahu": ("oahu", "honolulu"),
+    "Kauai": ("kauai", "kaua"),
+}
+_OSO_LINE = re.compile(
+    r"^(?P<id>\S+)\s+(?P<loc>.+?)\s+(?P<island>Kauai|Oahu|Molokai|Lanai|Kahoolawe|Maui|Hawaii)\s+(?P<rest>\S.*)$"
+)
 _zfp_cache: dict = {}  # info: set _zfp_cache
+
+
+def island_label(zone: str) -> str:
+    token = _ISLAND_BY_LABEL.get((zone or "").strip(), "Hawaii")
+    return _LABEL_BY_TOKEN.get(token, "Big Island")
+
+
+def hourly_stations(paths: Paths, zone: str) -> dict:
+    """Stations for one island from the NWS hourly wind report. Read-only."""
+    label = island_label(zone)
+    token = _ISLAND_BY_LABEL.get(label, "Hawaii")
+    out = {"label": label, "collected": "", "rows": [], "reporting": 0, "silent": 0}
+    path = paths.weather_l0 / "oso_hourly_obs_current.md"
+    try:
+        text = path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return out
+    m = re.search(r"\*\*Collected:\*\*\s*(\S+)", text)
+    out["collected"] = m.group(1) if m else ""
+    for line in text.splitlines():
+        hit = _OSO_LINE.match(line.strip())
+        if not hit or hit.group("island") != token:
+            continue
+        parts = hit.group("rest").split()
+        row = {"id": hit.group("id"), "loc": " ".join(hit.group("loc").split()),
+               "time": "", "dir": "MSG", "spd": "MSG", "gust": "MSG"}
+        if parts and parts[0] != "MSG" and len(parts) >= 5:
+            row["time"], row["dir"], row["spd"], row["gust"] = parts[1], parts[2], parts[3], parts[4]
+        elif len(parts) >= 3:
+            row["dir"], row["spd"], row["gust"] = parts[0], parts[1], parts[2]
+        out["rows"].append(row)
+        if row["spd"] == "MSG":
+            out["silent"] += 1
+        else:
+            out["reporting"] += 1
+    return out
+
+
+def station_spot(st: dict, name: str) -> str:
+    for r in st.get("rows") or []:
+        if name.lower() in r["loc"].lower() and r["spd"] != "MSG":
+            return f"{r['loc']} {r['dir']}° {r['spd']} kt at {r['time']}"
+    return ""
+
+
+def format_stations(st: dict) -> str:
+    lines = []
+    for r in st.get("rows") or []:
+        if r["spd"] == "MSG":
+            lines.append(f"{r['loc']:<24}  no report")
+        else:
+            gust = "" if r["gust"] in ("MSG", "") else f"  gust {r['gust']} kt"
+            lines.append(f"{r['loc']:<24} {r['time'] or '—':>5}  {r['dir']:>3}°  {r['spd']:>3} kt{gust}")
+    return "\n".join(lines)
 
 
 # ====================================================
