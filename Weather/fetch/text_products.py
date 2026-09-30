@@ -68,11 +68,46 @@ def fetch_all(manifest: Manifest, base_dir: str) -> list[_engine.FetchOutcome]:
             clean_text_body=True,
             extract_text=_extract_latest_product_text,
         )
-        if outcome.status == "failed":
+        if (
+            resource_id in {"nowhfo_short_term_forecast", "hwo_hazardous_weather_outlook"}
+            and outcome.status in {"failed", "invalid"}
+        ):
+            # HFO often has no active NOW/HWO in the products API. The
+            # configured fallback page is the live office product (a nowcast
+            # page, or the hazard feed) rather than an empty product.php shell.
+            page_outcome = _fetch_configured_fallback(manifest, base_dir, resource_id)
+            if page_outcome is not None and page_outcome.status not in {"failed", "invalid"}:
+                outcomes.append(page_outcome)
+                continue
+            if page_outcome is not None:
+                outcome = page_outcome
+        if outcome.status in {"failed", "invalid"}:
             # Primary path down -- fall back to the product.php scrape for
             # whichever product has a known fallback URL configured.
             fallback_outcome = text_products_fallback.fetch_one(manifest, base_dir, resource_id)
-            outcomes.append(fallback_outcome or outcome)
+            if fallback_outcome is not None and fallback_outcome.status not in {"failed", "invalid"}:
+                outcomes.append(fallback_outcome)
+            else:
+                outcomes.append(outcome)
         else:
             outcomes.append(outcome)
     return outcomes
+
+
+def _fetch_configured_fallback(manifest: Manifest, base_dir: str, resource_id: str):
+    config = _engine.load_resources_yaml()
+    item = next((entry for entry in config.get("text_products", []) if entry.get("id") == resource_id), None)
+    if not item:
+        return None
+    url = item.get("fallback_url")
+    if not url:
+        return None
+    extract = text_products_fallback.extract_rss_descriptions if url.endswith(".xml") else text_products_fallback.extract_pre_text
+    return _engine.run_resource(
+        manifest, base_dir, resource_id, url,
+        method="text",
+        clean_text_body=True,
+        extract_text=extract,
+        expected_ext="txt",
+        resource_id_hint=resource_id,
+    )

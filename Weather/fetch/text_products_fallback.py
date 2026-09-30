@@ -29,6 +29,12 @@ FALLBACK_URLS: dict[str, str] = {
 _PRE_BLOCK_RE = re.compile(r"<pre[^>]*>(.*?)</pre>", re.DOTALL | re.IGNORECASE)
 
 
+def _unescape_product_text(text: str) -> str:
+    for entity, char in (("&amp;", "&"), ("&lt;", "<"), ("&gt;", ">"), ("&quot;", '"'), ("&#39;", "'"), ("&nbsp;", " ")):
+        text = text.replace(entity, char)
+    return text.strip()
+
+
 def extract_pre_text(html_bytes: bytes) -> str:
     html = html_bytes.decode("utf-8", errors="replace")
     match = _PRE_BLOCK_RE.search(html)
@@ -36,10 +42,43 @@ def extract_pre_text(html_bytes: bytes) -> str:
         raise ValueError("no <pre> block found -- page shape may have changed or returned an error page")
     # Minimal unescape -- product.php text is plain enough that the common
     # HTML entities are the only ones likely to appear.
-    text = match.group(1)
-    for entity, char in (("&amp;", "&"), ("&lt;", "<"), ("&gt;", ">"), ("&quot;", '"'), ("&#39;", "'")):
-        text = text.replace(entity, char)
-    return text.strip()
+    return _unescape_product_text(match.group(1))
+
+
+_ITEM_RE = re.compile(r"<item\b[^>]*>(.*?)</item>", re.DOTALL | re.IGNORECASE)
+_DESC_RE = re.compile(r"<description\b[^>]*>(.*?)</description>", re.DOTALL | re.IGNORECASE)
+_CDATA_RE = re.compile(r"<!\[CDATA\[(.*?)\]\]>", re.DOTALL)
+_TAG_RE = re.compile(r"<[^>]+>")
+
+
+def extract_rss_descriptions(xml_bytes: bytes) -> str:
+    """Pull forecast text out of an HFO RSS/XML feed.
+
+    Item descriptions are either plain product text (TAFs) or HTML that
+    wraps the product. Prefer a <pre> block when the description has one.
+    """
+    xml = xml_bytes.decode("utf-8", errors="replace")
+    chunks: list[str] = []
+    for item in _ITEM_RE.findall(xml):
+        desc_match = _DESC_RE.search(item)
+        if not desc_match:
+            continue
+        desc = desc_match.group(1).strip()
+        cdata = _CDATA_RE.search(desc)
+        if cdata:
+            desc = cdata.group(1)
+        pre = _PRE_BLOCK_RE.search(desc)
+        text = pre.group(1) if pre else _TAG_RE.sub(" ", desc)
+        text = _unescape_product_text(text)
+        text = re.sub(r"[ \t]+\n", "\n", text)
+        text = re.sub(r"\n{3,}", "\n\n", text).strip()
+        if text:
+            chunks.append(text)
+    if not chunks:
+        raise ValueError("no RSS item descriptions -- feed had no product text")
+    # HFO archive feeds list newest first. Keep a bounded set so a 90-day
+    # rainfall file stays a product body rather than the whole history.
+    return "\n\n".join(chunks[:12])
 
 
 def fetch_one(manifest: Manifest, base_dir: str, resource_id: str) -> _engine.FetchOutcome | None:

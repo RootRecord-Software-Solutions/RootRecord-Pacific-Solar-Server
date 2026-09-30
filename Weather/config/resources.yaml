@@ -86,7 +86,7 @@ text_products:
     tier: 1
     method: api
     url: "https://api.weather.gov/products/types/HWO/locations/HFO"
-    fallback_url: "https://www.weather.gov/hfo/watchwarn"
+    fallback_url: "https://www.weather.gov/source/hfo/xml/wwa.xml"
     clean_text: true
 
   - id: pns_public_information_statement
@@ -488,7 +488,8 @@ marine:
     name: "High Seas Forecast S. Pacific"
     tier: 4
     method: scrape
-    url: "https://forecast.weather.gov/product.php?site=HFO&product=HSF&issuedby=SP"
+    url: "https://tgftp.nws.noaa.gov/data/raw/fq/fqps01.nffn..txt"
+    note: "HSFSP (FZPS40 PHFO) was discontinued 2026-02-17. This is the Fiji METAREA XIV bulletin for the equator to 25S between 160E and 120W."
     clean_text: true
 
   - id: mfm_marine_forecast_matrix
@@ -517,7 +518,7 @@ marine:
     name: "Marine Weather Message"
     tier: 1
     method: scrape
-    url: "https://forecast.weather.gov/product.php?site=HFO&product=MWW&site=hfo"
+    url: "https://forecast.weather.gov/product.php?site=HFO&product=MWW&issuedby=HFO"
     clean_text: true
 
   - id: marine_names_zone_map
@@ -546,14 +547,15 @@ aviation:
     name: "TAFs (HNL, LIH, OGG, ITO, KOA, MKK, JHM, LNY, MDY, PPG)"
     tier: 4
     method: scrape
-    url: "https://www.weather.gov/hfo/TAFPA"
+    url: "https://www.weather.gov/source/hfo/xml/TAFPA.xml"
     clean_text: true
 
   - id: fa0_area_forecast
     name: "Area Forecast (FA)"
     tier: 4
     method: scrape
-    url: "https://forecast.weather.gov/product.php?site=HFO&product=FA0&issuedby=HI"
+    url: "https://forecast.weather.gov/product.php?site=HFO&product=WA0&issuedby=HI"
+    note: "FA0HI was retired 2025-01-27. HFO's remaining text area product is the Hawaii AIRMET (WA0HI); the cloud depiction moved to the graphical forecast."
     clean_text: true
 
   - id: wa0_airmets
@@ -567,7 +569,7 @@ aviation:
     name: "SIGMETs / Tropical Cyclone SIGMETs / Volcanic Ash SIGMETs"
     tier: 4
     method: scrape
-    url: "https://www.weather.gov/hfo/aviation"
+    url: "https://aviationweather.gov/api/data/isigmet?format=raw"
     clean_text: true
 
 # ---------------------------------------------------------------------------
@@ -610,20 +612,21 @@ climate:
     tier: 5
     method: scrape
     url: "https://forecast.weather.gov/product.php?site=HFO&product=RTP&issuedby=HI"
+    note: "HFO is not issuing RTPHI. The extractor falls through to the current CLI daily climate summaries, which carry statewide temp and precip."
     clean_text: true
 
   - id: rwr_state_roundup
     name: "State Weather Roundup + Buoy Reports"
     tier: 5
     method: scrape
-    url: "https://www.weather.gov/hfo/RWR"
+    url: "https://forecast.weather.gov/product.php?site=HFO&product=RWR&issuedby=HI"
     clean_text: true
 
   - id: hrs_archive_90day_rainfall
     name: "90-day rainfall archive"
     tier: 5
     method: scrape
-    url: "https://www.weather.gov/hfo/HRS_archive"
+    url: "https://www.weather.gov/source/hfo/xml/RRAHFO.xml"
 
   - id: rain_summary_graphical
     name: "Graphical rainfall summary"
@@ -635,7 +638,7 @@ climate:
     name: "Hydro-Met Data Report Pt.5 (72hr archive)"
     tier: 5
     method: scrape
-    url: "https://www.weather.gov/hfo/RR5_archive"
+    url: "https://forecast.weather.gov/product.php?site=HFO&product=RR5&issuedby=HFO"
 
   full_catalog_reference_only:
     name: "Full text-product catalog (275+ AWIPS IDs, includes obscure ones)"

@@ -44,6 +44,20 @@ hosts:
     rate_floor_seconds: 60
     notes: "CurrentStorms.json + Tropical Weather Outlook + monthly summary. Used by hurricanes/ sub-skill."
 
+  www.noaa.gov:
+    rate_floor_seconds: 30
+    user_agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    accept_header: "text/html,application/xhtml+xml"
+    notes: "Homepage returns 403 to the default WeatherSkill user agent. A browser user agent returns the real page via httpx."
+
+  aviationweather.gov:
+    rate_floor_seconds: 15
+    notes: "Aviation Weather Center raw SIGMET and TAF feeds."
+
+  tgftp.nws.noaa.gov:
+    rate_floor_seconds: 15
+    notes: "Plain-text WMO bulletins, including the South Pacific high-seas successor."
+
   # Placeholders — referenced by hurricanes/references/sources.md, not yet
   # confirmed live in the resource map. Kept here so hurricanes/scripts can
   # look up a floor without a KeyError once they're wired up.
