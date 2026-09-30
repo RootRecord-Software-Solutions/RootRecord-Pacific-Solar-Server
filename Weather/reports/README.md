@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T18:48:51-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T18:57:51-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -2876,19 +2876,19 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-29T18:42:06.441581-10:00 HST |
+| **Collected** | 2026-09-29T18:51:08.854659-10:00 HST |
 
 ```text
-752
-SRHW80 PHFO 300346
+802
+SRHW80 PHFO 300446
 RRAHFO
 
 Hawaii Rainfall Summary
 National Weather Service Honolulu HI
-545 PM HST Tue Sep 29 2026
+645 PM HST Tue Sep 29 2026
 
 :
-.B HFO  0929 H  DH17 /DRH-03/PPT/DRH-06/PPQ/DRH-12/PPK/DRH-24/PPD
+.B HFO  0929 H  DH18 /DRH-03/PPT/DRH-06/PPQ/DRH-12/PPK/DRH-24/PPD
 :
 :Automated rain gage reports from around the State of Hawaii.
 :These are provisional reports that have not been quality
@@ -2896,44 +2896,44 @@ National Weather Service Honolulu HI
 :
 :T=Trace Rainfall, M=Missing Data
 :
-:Precipitation totals ending  5 PM HST
+:Precipitation totals ending  6 PM HST
 :
 :Island of Kauai                                   Inches
 :ID     Location                         3-Hr    6-Hr   12-Hr   24-Hr
 :       Windward/Mauka Sites
 MKAH1 : Makaha Ridge (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
-PLRH1 : Puu Lua (RAWS)              :    0.02  /  0.03  /  0.03  /  0.03
-WKRH1 : Waiakoali (USGS)            :    0.02  /  0.02  /  0.02  /  0.02
-KLOH1 : Kilohana (USGS)             :    0.02  /  0.02  /  0.02  /  0.02
-MCRH1 : Mohihi Crossing (USGS)      :    0.02  /  0.02  /  0.02  /  0.02
-WLGH1 : Waialae (USGS)              :    0.04  /  0.04  /  0.04  /  0.05
+PLRH1 : Puu Lua (RAWS)              :    0.02  /  0.04  /  0.04  /  0.04
+WKRH1 : Waiakoali (USGS)            :    0.00  /  0.02  /  0.02  /  0.02
+KLOH1 : Kilohana (USGS)             :    0.01  /  0.02  /  0.02  /  0.02
+MCRH1 : Mohihi Crossing (USGS)      :    0.02  /  0.04  /  0.04  /  0.04
+WLGH1 : Waialae (USGS)              :    0.04  /  0.04  /  0.04  /  0.04
 LLMH1 : Lower Limahuli (UHM)        :    0.01  /  0.01  /  0.01  /  0.01
 WNHH1 : Wainiha (12010)             :    0.00  /  0.00  /  0.00  /  0.00
-WIPH1 : Waipa (UHM)                 :    0.02  /  0.02  /  0.02  /  0.02
-HNIH1 : Hanalei (12009)             :    0.00  /  0.00  /  0.00  /  0.00
+WIPH1 : Waipa (UHM)                 :    0.07  /  0.08  /  0.08  /  0.08
+HNIH1 : Hanalei (12009)             :    0.03  /  0.03  /  0.03  /  0.03
 WLLH1 : Mount Waialeale (USGS)      :      M   /    M   /    M   /    M
 PRIH1 : Princeville Airport (12011) :    0.00  /  0.00  /  0.00  /  0.01
-CMGH1 : Common Ground (UHM)         :    0.00  /  0.00  /  0.00  /  0.00
+CMGH1 : Common Ground (UHM)         :    0.06  /  0.06  /  0.06  /  0.06
 HLIH1 : Hanalei (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
 MLDH1 : Moloaa Dairy (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
 ANHH1 : Anahola (12001)             :    0.00  /  0.00  /  0.00  /  0.00
-KPIH1 : Kapahi (12003)              :    0.01  /  0.01  /  0.01  /  0.01
-WLDH1 : N Wailua Ditch (USGS)       :    0.02  /  0.02  /  0.02  /  0.10
-WUHH1 : Wailua (12005)              :    0.02  /  0.02  /  0.02  /  0.02
-WIRH1 : Waiahi Rain Gage (USGS)     :    0.02  /  0.02  /  0.02  /  0.02
-LIHH1 : Lihue Var. Stn. (12006)     :    0.01  /  0.01  /  0.01  /  0.01
-HNMH1 : Hanamaulu (UHM)             :    0.01  /  0.01  /  0.01  /  0.01
+KPIH1 : Kapahi (12003)              :    0.02  /  0.02  /  0.02  /  0.02
+WLDH1 : N Wailua Ditch (USGS)       :    0.03  /  0.03  /  0.03  /  0.11
+WUHH1 : Wailua (12005)              :    0.07  /  0.07  /  0.07  /  0.07
+WIRH1 : Waiahi Rain Gage (USGS)     :    0.03  /  0.03  /  0.03  /  0.03
+LIHH1 : Lihue Var. Stn. (12006)     :    0.05  /  0.06  /  0.06  /  0.06
+HNMH1 : Hanamaulu (UHM)             :    0.08  /  0.08  /  0.08  /  0.08
 HLI   : Lihue Airport (ASOS)        :    0.03  /  0.03  /  0.03  /  0.03
 :       Leeward Sites
 OMAH1 : Omao (12004)                :    0.01  /  0.01  /  0.01  /  0.01
 LNTH1 : Lawai NTBG (UHM)            :    0.00  /  0.00  /  0.00  /  0.00
 KHEH1 : Kalaheo (12008)             :    0.00  /  0.00  /  0.00  /  0.00
 PAKH1 : Port Allen (HSOIS)          :    0.00  /  0.00  /  0.00  /  0.00
-HNPH1 : Hanapepe (12002)            :    0.00  /  0.00  /  0.00  /  0.00
-POPH1 : Puu Opae (RAWS)             :    0.01  /  0.02  /  0.02  /  0.02
-WHGH1 : Waimea Heights (RAWS)       :    0.01  /  0.02  /  0.02  /  0.02
-WMTH1 : Waimea Tank (12007)         :    0.01  /  0.01  /  0.01  /  0.01
-MNRH1 : Mana (RAWS)                 :    0.00  /  0.00  /  0.00  /  0.00
+HNPH1 : Hanapepe (12002)            :    0.14  /  0.14  /  0.14  /  0.14
+POPH1 : Puu Opae (RAWS)             :    0.02  /  0.04  /  0.04  /  0.04
+WHGH1 : Waimea Heights (RAWS)       :    0.11  /  0.13  /  0.13  /  0.13
+WMTH1 : Waimea Tank (12007)         :    0.25  /  0.26  /  0.26  /  0.26
+MNRH1 : Mana (RAWS)                 :    0.01  /  0.01  /  0.01  /  0.01
 :
 :Island of Oahu                                    Inches
 :ID     Location                         3-Hr    6-Hr   12-Hr   24-Hr
@@ -2942,7 +2942,7 @@ KAHH1 : Kahuku (13027)              :    0.00  /  0.00  /  0.00  /  0.00
 KTAH1 : Kahuku Training Area (RAWS) :    0.00  /  0.00  /  0.00  /  0.00
 KFWH1 : Kii (RAWS)                  :    0.00  /  0.00  /  0.00  /  0.00
 PUNH1 : Punaluu Pump (13013)        :    0.00  /  0.00  /  0.00  /  0.00
-PNSH1 : Punaluu Stream (USGS)       :    0.01  /  0.01  /  0.01  /  0.01
+PNSH1 : Punaluu Stream (USGS)       :    0.04  /  0.04  /  0.04  /  0.04
 KNRH1 : Kahana (USGS)               :    0.00  /  0.00  /  0.00  /  0.00
 HAKH1 : Hakipuu Mauka (13004)       :    0.00  /  0.00  /  0.00  /  0.00
 WPPH1 : Waihee Pump (13002)         :    0.00  /  0.00  /  0.00  /  0.00
@@ -2980,7 +2980,7 @@ POAH1 : Poamoho (13018)             :    0.00  /  0.00  /  0.00  /  0.00
 KRGH1 : Kalahee Ridge (UHM)         :    0.00  /  0.00  /  0.00  /  0.00
 KMRH1 : Kamananui Stream (USGS)     :    0.00  /  0.00  /  0.00  /  0.00
 PPRH1 : Pupukea Road (USGS)         :    0.00  /  0.00  /  0.00  /  0.00
-PMHH1 : Poamoho RG 1 (USGS)         :    0.08  /  0.08  /  0.08  /  0.08
+PMHH1 : Poamoho RG 1 (USGS)         :    0.13  /  0.13  /  0.13  /  0.13
 DLGH1 : Dillingham (RAWS)           :    0.00  /  0.00  /  0.00  /  0.00
 AALH1 : Kaala (UHM)                 :    0.00  /  0.00  /  0.00  /  0.01
 PECH1 : Waipio (13019)              :    0.00  /  0.00  /  0.00  /  0.00
@@ -3065,15 +3065,15 @@ KMUH1 : Kamuela (15005)             :    0.00  /  0.00  /  0.00  /  0.00
 HNKH1 : Honokaa (15010)             :    0.00  /  0.00  /  0.00  /  0.00
 PMLH1 : Puu Mali (RAWS)             :    0.00  /  0.00  /  0.00  /  0.00
 WPNH1 : Waipunalei (UHM)            :    0.00  /  0.00  /  0.00  /  0.00
-KNKH1 : Kanakaleonui (UHM)          :    0.00  /  0.00  /  0.00  /  0.00
+KNKH1 : Kanakaleonui (UHM)          :    0.01  /  0.01  /  0.01  /  0.01
 LPHH1 : Laupahoehoe PD (15001)      :    0.00  /  0.00  /  0.00  /  0.00
 LAUH1 : Laupahoehoe (UHM)           :    0.00  /  0.00  /  0.00  /  0.00
 SPNH1 : Spencer (UHM)               :    0.00  /  0.00  /  0.00  /  0.00
 HKUH1 : Hakalau (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
 KLXH1 : Kulaimano (UHM)             :    0.00  /  0.00  /  0.00  /  0.00
 NLIH1 : Honolii Stream (USGS)       :    0.00  /  0.00  /  0.00  /  0.00
-SDQH1 : Saddle Quarry (USGS)        :    0.06  /  0.06  /  0.06  /  0.06
-PIOH1 : Piihonua (UHM)              :    0.03  /  0.03  /  0.03  /  0.03
+SDQH1 : Saddle Quarry (USGS)        :    0.10  /  0.10  /  0.10  /  0.10
+PIOH1 : Piihonua (UHM)              :    0.10  /  0.10  /  0.10  /  0.10
 PIIH1 : Piihonua (15016)            :    0.00  /  0.00  /  0.00  /  0.00
 IPIH1 : IPIF (UHM)                  :    0.00  /  0.00  /  0.00  /  0.00
 WKAH1 : Waiakea Uka (15017)         :    0.00  /  0.00  /  0.00  /  0.00
@@ -3086,7 +3086,7 @@ GLNH1 : Glenwood (15013)            :    0.00  /  0.00  /  0.00  /  0.00
 :       Leeward Sites
 MOBH1 : Mauna Loa Ob Stn (NOAA/CRN) :    0.00  /  0.00  /  0.00  /  0.00
 NHKH1 : Nahuku (UHM)                :    0.00  /  0.00  /  0.00  /  0.00
-KKUH1 : Keaumo (RAWS)               :    0.10  /  0.10  /  0.10  /  0.10
+KKUH1 : Keaumo (RAWS)               :    0.09  /  0.12  /  0.12  /  0.12
 KMOH1 : Kealakomo (RAWS)            :    0.00  /  0.00  /  0.00  /  0.00
 PLIH1 : Pali 2 (RAWS)               :    0.00  /  0.00  /  0.00  /  0.00
 KPRH1 : Kapapala (RAWS)             :    0.00  /  0.00  /  0.00  /  0.00
@@ -3096,7 +3096,7 @@ KIOH1 : Kaiholena (UHM)             :      M   /    M   /    M   /    M
 NENH1 : Nene Cabin (RAWS)           :    0.00  /  0.00  /  0.00  /  0.00
 SOPH1 : South Point (HSOIS)         :    0.00  /  0.00  /  0.00  /  0.00
 LKHH1 : Lower Kahuku (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
-KRCH1 : Kahuku Ranch (RAWS)         :    0.00  /  0.00  /  0.00  /  0.00
+KRCH1 : Kahuku Ranch (RAWS)         :    0.01  /  0.01  /  0.01  /  0.01
 KOMH1 : Kona Hema (UHM)             :    0.00  /  0.00  /  0.00  /  0.00
 PHRH1 : Puho CS (RAWS)              :    0.00  /  0.00  /  0.00  /  0.00
 HAUH1 : Honaunau (15007)            :    0.00  /  0.00  /  0.00  /  0.00
@@ -3931,7 +3931,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_atlc_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=2 |
-| **Collected** | 2026-09-29T18:38:50.867853-10:00 HST |
+| **Collected** | 2026-09-29T18:55:50.675557-10:00 HST |
 
 ```text
 223 ACCA62 KNHC 292307TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada al este delas Bermudas, y ha emitido la advertencia final sobre el CiclónPos-Tropical Fay, ubicado sobre el Atlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Reinhart*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3959,7 +3959,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_cpac_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=2 |
-| **Collected** | 2026-09-29T18:42:50.989805-10:00 HST |
+| **Collected** | 2026-09-29T18:51:50.687513-10:00 HST |
 
 ```text
 223 ACCA62 KNHC 292307TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada al este delas Bermudas, y ha emitido la advertencia final sobre el CiclónPos-Tropical Fay, ubicado sobre el Atlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Reinhart*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3973,7 +3973,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_cpac_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=cpac&fdays=7 |
-| **Collected** | 2026-09-29T18:43:50.684297-10:00 HST |
+| **Collected** | 2026-09-29T18:52:50.755677-10:00 HST |
 
 ```text
 223 ACCA62 KNHC 292307TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada al este delas Bermudas, y ha emitido la advertencia final sobre el CiclónPos-Tropical Fay, ubicado sobre el Atlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Reinhart*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -3987,7 +3987,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_epac_2day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=epac&fdays=2 |
-| **Collected** | 2026-09-29T18:44:51.304898-10:00 HST |
+| **Collected** | 2026-09-29T18:53:50.656525-10:00 HST |
 
 ```text
 223 ACCA62 KNHC 292307TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada al este delas Bermudas, y ha emitido la advertencia final sobre el CiclónPos-Tropical Fay, ubicado sobre el Atlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Reinhart*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -4001,7 +4001,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_epac_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=epac&fdays=7 |
-| **Collected** | 2026-09-29T18:37:50.630818-10:00 HST |
+| **Collected** | 2026-09-29T18:54:50.857868-10:00 HST |
 
 ```text
 223 ACCA62 KNHC 292307TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada al este delas Bermudas, y ha emitido la advertencia final sobre el CiclónPos-Tropical Fay, ubicado sobre el Atlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Reinhart*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -7818,7 +7818,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-29T18:41:51.289400-10:00 HST |
+| **Collected** | 2026-09-29T18:50:53.601693-10:00 HST |
 
 ```text
 National Weather Service
