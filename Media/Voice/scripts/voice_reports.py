@@ -3,7 +3,7 @@
 
   python3 voice_reports.py <report> [--no-voice]
   reports: hourly_chime · nws_weather · energy_report · remaining_tasks · morning_report · midday_report · late_report
-           · earthquake_report · hurricane_desk · kilauea_report
+           · earthquake_report · hurricane_desk · kilauea_report · solar_desk · security_desk · bandwidth_desk
 
 Each run writes Database Media/Audio/Voice/Reports/<report>_current.md (old copy -> Reports/Archive/
 <report>_YYYYMMDDTHHMM.md) and a stitched WAV Media/Audio/Voice/<report>_current.wav via voice-render.sh
@@ -19,6 +19,9 @@ tracking/*/track.json (Pacific weather poller, NHC CurrentStorms, Hawaiʻi-relev
 RR_VOICE_HURRICANE=1. G1 global JTWC/RAMMB board, OBS and radio push stay NOT ported.
 kilauea_report = G1 hourly Kīlauea desk line (persona._kilauea_line) + the cached HVO-notice lead-in, from Database
 Geology/Volcanoes/{kilauea,mauna-loa}-last.json; job gated RR_VOICE_KILAUEA=1. G1 rr-kilauea Grok draft / Discord post NOT ported.
+solar_desk / security_desk / bandwidth_desk = G1 hourly-clip-reports desks (Bruce solar; Carly security + bandwidth) from
+Database Energy/{soc,watts,sun} and Pacific System/scripts/host_desks.py (net samples in Database System/network/).
+Gates PROPOSED (RR_VOICE_SOLAR / RR_VOICE_SECURITY / RR_VOICE_BANDWIDTH) - not registered in jobs.py (sign-off).
 Roll-ups can append an LLM summary via run-infer.sh only when RR_VOICE_ROLLUP_LLM=1 (off by default).
 Scheduling: jobs.py, one env gate per report (read at poller start). Added 2026-09-29 (g3-voice-reports2).
 """
@@ -67,7 +70,8 @@ DEVICES = (("delta2", "Delta 2"), ("river2pro", "River 2 Pro"))
 STALE_MIN = 30
 KIND = {"hourly_chime": "chime", "nws_weather": "nws", "energy_report": "energy", "remaining_tasks": "remaining",
         "morning_report": "morning", "midday_report": "midday", "late_report": "late", "earthquake_report": "earthquake",
-        "hurricane_desk": "hurricane", "kilauea_report": "kilauea"}
+        "hurricane_desk": "hurricane", "kilauea_report": "kilauea",
+        "solar_desk": "solar", "security_desk": "security", "bandwidth_desk": "bandwidth"}
 
 
 def now() -> datetime:
@@ -468,6 +472,95 @@ def b_kilauea_report(t: datetime):
     return "\n".join(md), sp
 
 
+def _host_desks():
+    sys.path.insert(0, str(PACIFIC / "System" / "scripts"))
+    import host_desks  # noqa: E402  (Pacific System/scripts/host_desks.py, G1 host_metrics port)
+    return host_desks
+
+
+def b_solar_desk(t: datetime):
+    """G1 hourly-clip-reports solar_spoken ("Solar desk at <clock>. <EcoFlow line>") + G1 hourly-solar-weather sun times."""
+    facts = energy_facts(t)
+    sun = jload(ENERGY / "sun" / "sun-times-last.json") or {}
+    sp = [f"Solar desk at {clock(t)} Hawaiian Standard Time.".replace("..", ".")]
+    lines = []
+    for f in facts:
+        if not f["ok"]:
+            lines.append(f"{f['name']}: offline")
+            continue
+        bits = [f"state of charge {f['soc']}%"]
+        if f.get("solar_w") is not None:
+            bits.append(f"solar input {f['solar_w']} watts")
+        if f.get("ac_out_w") is not None:
+            bits.append(f"AC out {f['ac_out_w']} watts")
+        lines.append(f"{f['name']}: " + ", ".join(bits))
+    if not any(f["ok"] for f in facts):
+        sp.append("EcoFlow is offline.")
+    else:
+        sp += [x + "." for x in lines]
+        for f in facts:
+            if f["ok"] and f.get("age_min") is not None and f["age_min"] > STALE_MIN:
+                sp.append(f"That {f['name']} reading is {f['age_min']} minutes old.")
+    if sun.get("date") == t.date().isoformat() and sun.get("sunset"):
+        sp.append(f"Sunrise was {sun['sunrise']}, sunset is {sun['sunset']}." if t.strftime("%H:%M") < sun["sunset"]
+                  else f"Sunset was {sun['sunset']}; next sunrise {sun.get('next_sunrise', 'n/a')}.")
+    md = [f"# Solar desk — {t.isoformat()}", ""] + [f"- {x}" for x in lines] + [
+        f"- Sun: {sun.get('sunrise', 'n/a')} / {sun.get('sunset', 'n/a')} ({sun.get('date', 'n/a')}, Open-Meteo)", "",
+        "## Spoken", "", " ".join(sp), "",
+        "_Source: Database Energy/soc + Energy/watts (EcoFlow BLE) + Energy/sun/sun-times-last.json._", ""]
+    return "\n".join(md), sp
+
+
+def b_security_desk(t: datetime):
+    """G1 host_metrics.security_spoken, unchanged wording, from host_desks.security_snapshot() (counts only)."""
+    row = _host_desks().security_snapshot()
+    bits = [f"Security desk at {clock(t)} Hawaiian Standard Time.".replace("..", ".")]
+    ufw = row.get("ufw_boot")
+    if ufw is True:
+        bits.append("Uncomplicated Firewall is set to start on boot.")
+    elif ufw is False:
+        bits.append("Uncomplicated Firewall is not set to start on boot.")
+    ssh = row.get("ssh_active")
+    if ssh is True:
+        bits.append("OpenSSH service is active.")
+    elif ssh is False:
+        bits.append("OpenSSH service is not active.")
+    if row.get("listen_tcp") is not None:
+        bits.append(f"{row['listen_tcp']} TCP listeners.")
+    if row.get("established") is not None:
+        bits.append(f"{row['established']} established connections.")
+    if row.get("failed_1h") is not None:
+        bits.append(f"Failed sign-ins: {row['failed_1h']} in the last hour, {row['failed_24h']} in the last twenty four hours.")
+    else:
+        bits.append("The sign-in log is not readable.")
+    if row.get("fail2ban"):
+        bits.append("Fail2ban is running.")
+    md = [f"# Security desk — {t.isoformat()}", "", "```json", json.dumps(row, indent=2), "```", "", "## Spoken", "", " ".join(bits), "",
+          "_Source: Pacific System/scripts/host_desks.py (ufw.conf, systemctl is-active, /proc/net/tcp, auth.log counts only)._", ""]
+    return "\n".join(md), bits
+
+
+def b_bandwidth_desk(t: datetime):
+    """G1 host_metrics.bandwidth_spoken (records one sample, then last hour / 24 h deltas)."""
+    hd = _host_desks()
+    net = hd.net_counters()
+    if net and not os.environ.get("RR_VOICE_BANDWIDTH_DRY"):
+        hd.append_net_sample(net)
+    hour, day = hd.net_usage_window(3600, now=net), hd.net_usage_window(86400, now=net)
+    md = [f"# Bandwidth desk — {t.isoformat()}", "", f"- iface: {(net or {}).get('iface')} ({(net or {}).get('link')})",
+          f"- last hour: {hour}", f"- last 24 h: {day}", ""]
+    if hour is None and day is None:
+        md += ["_Not enough samples yet (needs samples covering 45 min; run `host_desks.py net-sample` every 5 min)._", ""]
+        return "\n".join(md), ["Bandwidth data is not on file yet."]
+    sb = hd.spoken_bytes
+    bits = [f"Bandwidth desk at {clock(t)} Hawaiian Standard Time.".replace("..", "."), f"This host is on {(net or {}).get('link') or 'network'}."]
+    bits.append(f"Last hour: {sb(hour['rx'])} down, {sb(hour['tx'])} up, {sb(hour['total'])} total." if hour else "Last hour is not on file yet.")
+    bits.append(f"Last twenty four hours: {sb(day['rx'])} down, {sb(day['tx'])} up, {sb(day['total'])} total." if day
+                else "Last twenty four hours is not on file yet.")
+    md += ["## Spoken", "", " ".join(bits), ""]
+    return "\n".join(md), bits
+
+
 def _say_code(code: str) -> str:
     """WO-ECO -> 'E C O', WO-RPT-001 -> 'R P T 1' (short acronyms spelled out for Kokoro)."""
     parts = []
@@ -548,7 +641,8 @@ BUILD = {"hourly_chime": b_hourly_chime, "nws_weather": b_nws_weather, "energy_r
          "remaining_tasks": b_remaining_tasks, "morning_report": lambda t: _rollup(t, "morning"),
          "midday_report": lambda t: _rollup(t, "midday"), "late_report": lambda t: _rollup(t, "late"),
          "earthquake_report": b_earthquake_report, "hurricane_desk": b_hurricane_desk,
-         "kilauea_report": b_kilauea_report}
+         "kilauea_report": b_kilauea_report, "solar_desk": b_solar_desk, "security_desk": b_security_desk,
+         "bandwidth_desk": b_bandwidth_desk}
 
 
 def write_md(report: str, md: str) -> Path:
