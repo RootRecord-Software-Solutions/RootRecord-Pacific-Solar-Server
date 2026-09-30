@@ -17,12 +17,14 @@ def _extract_marine_text(body: bytes) -> str:
     return text
 
 
-def fetch_all(manifest: Manifest, base_dir: str) -> list[_engine.FetchOutcome]:
+def fetch_all(manifest: Manifest, base_dir: str, only: set[str] | None = None) -> list[_engine.FetchOutcome]:
     config = _engine.load_resources_yaml()
     marine = config["marine"]
     outcomes = []
 
     for item in marine:
+        if only is not None and item["id"] not in only:
+            continue
         if item["id"] == "cwf_coastal_waters":
             # Sole owner is fetch/text_products.py, which already handles the
             # CWF API resource. Running it here as well creates two concurrent

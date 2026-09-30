@@ -57,9 +57,11 @@ PRODUCT_TYPES: dict[str, str] = {
 }
 
 
-def fetch_all(manifest: Manifest, base_dir: str) -> list[_engine.FetchOutcome]:
+def fetch_all(manifest: Manifest, base_dir: str, only: set[str] | None = None) -> list[_engine.FetchOutcome]:
     outcomes = []
     for resource_id, awips_type in PRODUCT_TYPES.items():
+        if only is not None and resource_id not in only:
+            continue
         url = f"https://api.weather.gov/products/types/{awips_type}/locations/HFO"
         outcome = _engine.run_resource(
             manifest, base_dir, resource_id, url,

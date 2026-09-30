@@ -36,12 +36,14 @@ def extract_rtp_or_cli(page_bytes: bytes) -> str:
     return "\n\n".join(parts)
 
 
-def fetch_all(manifest: Manifest, base_dir: str) -> list[_engine.FetchOutcome]:
+def fetch_all(manifest: Manifest, base_dir: str, only: set[str] | None = None) -> list[_engine.FetchOutcome]:
     config = _engine.load_resources_yaml()
     climate = config["climate"]
     outcomes = []
 
     for item in climate["items"]:
+        if only is not None and item["id"] not in only:
+            continue
         if "url_template" in item:
             for station in item["stations"]:
                 resource_id = f"{item['id']}_{station}"

@@ -108,8 +108,8 @@ def get(url: str, *, etag: str | None = None, last_modified: str | None = None,
     """Conditional GET, respecting the host's rate floor.
 
     Returns FetchResult with not_modified=True (and content=None) on a 304.
-    Raises httpx.HTTPStatusError on 4xx/5xx (caller/scheduler handles backoff
-    and increments manifest.record_failure).
+    Retries 502/503/504 up to the host max_retries. Raises httpx.HTTPStatusError
+    on a remaining 4xx/5xx.
     """
     host = urlsplit(url).netloc
     settings = _host_settings(host)

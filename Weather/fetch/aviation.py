@@ -13,15 +13,15 @@ def extract_phfo_sigmets(raw: bytes) -> str:
     The raw feed is worldwide. HFO products are the blocks that name PHFO
     (international, tropical-cyclone, and volcanic-ash SIGMETs).
     """
-    text = raw.decode("utf-8", errors="replace")
-    parts = re.split(r"\n-{5,}\n|\n(?=Hazard:)", text)
+    text = raw.decode("utf-8", errors="replace").replace("\r\n", "\n").replace("\r", "\n")
+    parts = re.split(r"\n(?=Hazard:)", text)
     kept = [part.strip() for part in parts if "PHFO" in part.upper()]
     if not kept:
         raise ValueError("no PHFO SIGMET in the international SIGMET feed")
     return "\n\n".join(kept)
 
 
-def _extract_for(item: dict) -> object:
+def _extract_for(item: dict):
     url = item["url"]
     if item["id"] == "aviation_sigmets":
         return extract_phfo_sigmets
@@ -30,12 +30,14 @@ def _extract_for(item: dict) -> object:
     return text_products_fallback.extract_pre_text
 
 
-def fetch_all(manifest: Manifest, base_dir: str) -> list[_engine.FetchOutcome]:
+def fetch_all(manifest: Manifest, base_dir: str, only: set[str] | None = None) -> list[_engine.FetchOutcome]:
     config = _engine.load_resources_yaml()
     aviation = config["aviation"]
     outcomes = []
 
     for item in aviation:
+        if only is not None and item["id"] not in only:
+            continue
         outcomes.append(
             _engine.run_resource(
                 manifest, base_dir, item["id"], item["url"],
