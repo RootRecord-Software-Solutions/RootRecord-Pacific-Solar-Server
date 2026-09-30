@@ -33,7 +33,7 @@ Light by design: stdlib only, every HTTP call ≤ 10 s (`RR_GEOLOGY_TIMEOUT`), n
 
 **Public draft queue:** `PublicDraftQueue/scripts/queue_draft.py` reads `kilauea-last.json` and queues a markdown draft when the HVO notice id or alert level changes. Job `geology_kilauea_public_draft` stays off unless `RR_KILAUEA_DRAFT=1`. No HTTP and no send.
 
-**Not ported (need Alexander's sign-off):** Grok report generation (cloud spend), speaker playback, OBS cam push (no OBS in G3), YouTube live-id scraping. G1/G0 sources stay **KEPT** (not retired).
+**Not ported (need Alexander's sign-off):** speaker playback, OBS cam push (no OBS in G3), YouTube live-id scraping. Optional Kīlauea cloud prose is `Reports/CloudNarrative` (WO-MIG-32, dry-run; a live spend still needs sign-off). G1/G0 sources stay **KEPT** (not retired).
 
 ### Ecosystem path
 
