@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-30T03:07:33-10:00 HST | 31 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-30T03:15:33-10:00 HST | 31 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -937,7 +937,7 @@ We apologize for the inconvenience and hope to have this issue resolved soon.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-30T02:51:49.144682-10:00 HST |
+| **Collected** | 2026-09-30T03:08:48.533043-10:00 HST |
 
 ```text
 097
@@ -1556,7 +1556,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-30T03:00:49.611903-10:00 HST |
+| **Collected** | 2026-09-30T03:08:51.096522-10:00 HST |
 
 ```text
                         
@@ -5012,7 +5012,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-30T03:07:32.764947-10:00 HST |
+| **Collected** | 2026-09-30T03:15:32.728640-10:00 HST |
 
 ```text
 Home
@@ -5136,7 +5136,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Wed, 30 Sep 2026 13:00:06 UTC
+Last update Wed, 30 Sep 2026 13:10:08 UTC
 
 NHC issuing advisories for the Atlantic on
 
@@ -5800,7 +5800,7 @@ Glossary
 |---|---|
 | **Resource ID** | noaa_homepage |
 | **Official source** | https://www.noaa.gov/ |
-| **Collected** | 2026-09-30T02:41:33.205193-10:00 HST |
+| **Collected** | 2026-09-30T03:15:33.217303-10:00 HST |
 
 ```text
 National Oceanic and Atmospheric Administration Home
@@ -6369,7 +6369,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-30T02:51:33.715570-10:00 HST |
+| **Collected** | 2026-09-30T03:08:33.785496-10:00 HST |
 
 ```text
 National Weather Service
@@ -6418,9 +6418,9 @@ INFORMATION
 
 Wireless Emergency Alerts
 
-Weather-Ready Nation
-
 Brochures
+
+Weather-Ready Nation
 
 Cooperative Observers
 
