@@ -4,7 +4,7 @@ GitHub repository catalog and automated push/pull for the Pacific desk.
 
 ---
 
-## Status (2026-09-29 HST) — Phase 1 LIVE
+## Status (2026-09-30 02:00 HST) — Phase 1 LIVE
 
 | Item | State |
 | --- | --- |
@@ -24,9 +24,9 @@ GitHub repository catalog and automated push/pull for the Pacific desk.
 | pacific | 1 | mirror | Live folder inside the ecosystem tree. Published to `RootRecord-Pacific-Solar-Server` from `Database/GITHUB/worktrees/pacific`. |
 | database | 1 | mirror | Live folder inside the ecosystem tree. Published to `RootRecord-Database` from `Database/GITHUB/worktrees/database`. |
 | library | 1 | mirror | Live folder inside the ecosystem tree. Published to `RootRecord-Library` from `Database/GITHUB/worktrees/library`. |
-| skills | 1 | inplace | `~/.ollama/skills` → legacy Solar-Pacific remote; restore commit `1dcee66` verified intact |
-| website | 0 | mirror | enable when worktree under `Database/GITHUB/worktrees/website` exists |
-| mainland | 0 | inplace | enable when path is a real git clone |
+| skills | 1 | inplace | `~/.ollama/skills` → legacy Solar-Pacific remote. Still enabled, inplace. Desk sync has moved past restore commit `1dcee66` (HEAD `87ec9ac`, 2026-09-30 01:50 HST) |
+| website | 0 | mirror | Disabled. Still points at `~/.ollama/skills/website/site`. Leave it off |
+| mainland | 0 | inplace | Disabled. Still points at `~/.ollama/skills/us-mainland-server`. Leave it off |
 
 ### Policy
 
@@ -36,4 +36,4 @@ Same automation as G2; home is **`Github/`**. No parallel `github/` folder. Quot
 
 ---
 
-*Updated 2026-09-29 HST — ecosystem stays the one git root. Pacific, Database, and Library publish from mirror worktrees so the live folders are not nested git checkouts.*
+*Updated 2026-09-30 02:00 HST — skills stays enabled and inplace; sync is past `1dcee66`. Website and mainland stay disabled at `~/.ollama/skills/website/site` and `~/.ollama/skills/us-mainland-server`.*

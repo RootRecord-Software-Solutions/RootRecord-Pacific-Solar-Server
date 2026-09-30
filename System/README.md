@@ -4,7 +4,7 @@ Host operating-system integration, system sampling, and desk host services.
 
 ---
 
-## Status (2026-09-29 HST)
+## Status (2026-09-30 02:00 HST)
 
 | Item | State |
 | --- | --- |
@@ -19,8 +19,8 @@ Host operating-system integration, system sampling, and desk host services.
 | Ollama model store | **Service-owned**; not `/home/rootrecord/.ollama/models` |
 | Ollama logs | **systemd journal**; `Database/Logs/AI/Ollama/` is reserved for deliberate RootRecord AI logs |
 | Ollama RootRecord layout | `/home/rootrecord/.ollama/modelfiles` and `logs` point into Database-controlled AI paths; these are organizational symlinks and do not relocate the service model store |
-| G2 skills | `/home/rootrecord/.ollama/skills` remains intact at restore commit `1dcee66` |
-| Plumbing / telegram / a-eyes | Still G2 until imported |
+| G2 skills | `/home/rootrecord/.ollama/skills` is not intact at restore commit `1dcee66`. Desk sync has published the identical-file removals. HEAD `87ec9ac` (2026-09-30 01:50 HST) |
+| Plumbing / telegram / a-eyes | Live commands are Pacific `System/scripts/plumbing/`, `Communications/telegram/`, and `Security/Cameras/` |
 
 ### Naming
 
@@ -28,4 +28,4 @@ Use this folder name only. Do not create a parallel `system` or `system-stats` p
 
 ---
 
-*Updated 2026-09-29 HST — Ollama service/storage boundary documented.*
+*Updated 2026-09-30 02:00 HST — skills checkout is past restore commit `1dcee66` (HEAD `87ec9ac`). Plumbing, telegram, and a-eyes run from Pacific paths.*

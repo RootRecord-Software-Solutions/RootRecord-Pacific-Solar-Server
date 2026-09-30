@@ -4,42 +4,39 @@ Telegram communication integration, alerts, and council-relay services.
 
 ---
 
-## Status (2026-09-28)
+## Status (2026-09-30 02:00 HST)
 
 | Item | State |
 | --- | --- |
-| Folder in this repo | **Shell only** |
-| Live relay today | Pacific `Communications/telegram/` (poller boot job `council_relay`); G2 copy kept dormant |
+| Folder in this repo | Live relay scripts under `Communications/telegram/` |
+| Live relay today | Poller boot job `council_relay` runs `Communications/telegram/scripts/ensure-relay.sh`. Replies stay off (`RR_RELAY_REPLIES=0`) |
 | Standing rule | **One** getUpdates owner (council-relay) |
 
 ---
 
-## jobs.py references (residual)
+## jobs.py
 
-| Job id | Legacy path |
-| --- | --- |
-| `council_relay` | `…/skills/coms/telegram/scripts/ensure-relay.sh` |
-| cwd | `…/skills/coms/telegram` |
+`council_relay` runs Pacific `Communications/telegram/scripts/ensure-relay.sh` (cwd `Communications/telegram`). Replies stay off (`RR_RELAY_REPLIES=0`).
 
 Do not run a second Telegram poller against the same bot token.
 
 ---
 
-## Expected layout after import (docs only)
+## Layout
 
 ```text
 Communications/telegram/
   README.md
   scripts/
     ensure-relay.sh
-    council-relay.py   # if packaged here
+    council-relay.py
 ```
 
 Secrets / bot tokens stay local.
 
 ---
 
-*Docs-only update 2026-09-28 HST.*
+*Updated 2026-09-30 02:00 HST — `council_relay` runs Pacific `scripts/ensure-relay.sh`. Replies stay off.*
 
 ---
 

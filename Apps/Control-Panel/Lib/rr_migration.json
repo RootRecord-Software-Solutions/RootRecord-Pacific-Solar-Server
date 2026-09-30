@@ -7,7 +7,7 @@
       "name": "Telegram council replies",
       "wo": "WO-SRV-2026-09-27 \u00b7 G3 checklist A",
       "state": "BLOCKED",
-      "note": "Login/polling PASS on Pacific; replies BLOCKED (`*-telegram` models missing). Quiet mode default RR_RELAY_REPLIES=0.",
+      "note": "Login/polling PASS on Pacific. Models are present (`ava-telegram`, `bruce-telegram`, `carly-telegram`, and the `rr-council-*` models). Replies stay BLOCKED because `RR_RELAY_REPLIES=0`; Alexander has not turned that flag on.",
       "settings": "messaging",
       "sources": [
         "5 - RootRecord-Library/Documentation/00-architecture/G3-Runtime-Verification-Checklist-2026-09-28.md",
