@@ -148,8 +148,6 @@ if desk_path and os.path.isfile(desk_path):  # info: if
     desk_lines = "\n".join(ln for ln in raw if ln.strip() and not ln.strip().startswith("#"))
   except OSError:  # info: except
     desk_lines = ""  # info: desk_lines
-if desk_lines:  # info: if
-  user = "[desk: measured — cite only these lines]\n" + desk_lines + "\nUser: " + user  # info: user
 generic = (  # info: generic
   f"You are RootRecord {voice}. Be brief. "  # info: f
   "Do not invent live watts, SOC, or kWh. "  # info: command
@@ -162,6 +160,11 @@ persona_path = (os.environ.get("RR_NPU_PERSONA_FILE") or "").strip()  # info: se
 persona = json.loads(open(persona_path, encoding="utf-8").read()) if persona_path else None  # info: set persona
 if persona and not (persona.get("system") or "").strip():  # info: if
   raise SystemExit(2)  # info: raise
+if desk_lines:  # info: if
+  if persona:  # info: if
+    user = "DESK_LIVE:\n" + desk_lines + "\nUser: " + user  # info: user
+  else:  # info: else
+    user = "[desk: measured — cite only these lines]\n" + desk_lines + "\nUser: " + user  # info: user
 system = (persona.get("system") if persona else None) or os.environ.get("RR_SPEC_SYS") or generic  # info: set system
 temperature = float(persona["temperature"]) if persona and persona.get("temperature") is not None else float(os.environ.get("RR_SPEC_TEMP") or 0.3)  # info: set temperature
 max_tokens = int(persona["max_tokens"]) if persona and persona.get("max_tokens") is not None else int(os.environ.get("RR_SPEC_MAXTOK") or 180)  # info: set max_tokens
@@ -178,11 +181,13 @@ body = {  # info: body
 }  # info: command
 if persona and persona.get("top_p") is not None:  # info: if
   body["top_p"] = float(persona["top_p"])  # info: body [ "top_p" ] = float ( persona . get ( "top_p" ) )
+if persona and persona.get("stop"):  # info: if
+  body["stop"] = list(persona["stop"])  # info: body [ "stop" ] = list ( persona . get ( "stop" ) )
 req = urllib.request.Request(  # info: req
   url, data=json.dumps(body).encode(),  # info: url
   headers={"Content-Type": "application/json"}, method="POST",  # info: set headers
 )  # info: command
-with urllib.request.urlopen(req, timeout=120) as r:  # info: with
+with urllib.request.urlopen(req, timeout=180) as r:  # info: with
   obj = json.loads(r.read().decode())  # info: obj
 text = (obj["choices"][0]["message"]["content"] or "").strip()  # info: text
 if not text:  # info: if
@@ -231,7 +236,7 @@ if ! flm_up && [[ "${FLM_ON_DEMAND:-1}" == "1" ]] && command -v flm >/dev/null 2
   fi  # info: fi
   FLM_STARTED=$!  # info: set FLM_STARTED
   FLM_COLD=1  # info: set FLM_COLD
-  echo "[ok] FLM on-demand start $FLM_MODEL pid=$FLM_STARTED" >&2  # info: echo
+  echo "[ok] FLM on-demand start $FLM_MODEL pmode=${FLM_PMODE:-balanced} ctx=${FLM_CTX_LEN:-4096} pid=$FLM_STARTED" >&2  # info: echo
   for _ in $(seq 1 45); do flm_up && break; kill -0 "$FLM_STARTED" 2>/dev/null || break; sleep 1; done  # info: for
 fi  # info: fi
 
