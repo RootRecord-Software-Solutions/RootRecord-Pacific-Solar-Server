@@ -78,6 +78,8 @@ The corresponding database tree is:
 
 This directory is inside the umbrella git root. It does not have its own `.git`. Desk publish uses the `ecosystem` row and the `pacific` mirror row in `Github/scripts/repos.conf`.
 
+**2026-09-30 01:24 HST:** this path was the live poller cwd after boot. River 2 Pro BLE reads are the live energy path. Delta 2 is dead and does not transmit. What still needs Alexander: [What's left for Alexander](../../5%20-%20RootRecord-Library/Documentation/01-operations/2026-09-30-whats-left-for-alexander.md).
+
 ---
 
 ## 🛡️ Runtime discipline
