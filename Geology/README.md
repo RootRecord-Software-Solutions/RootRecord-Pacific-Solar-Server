@@ -24,6 +24,7 @@
 | `scripts/geology_collect.py [all\|quakes\|volcanoes] [--dry-run]` | G1 `earthquakes/earthquake-hourly` (fetch + M≥2 detection), G1 `kilauea/rr-kilauea` (alert level, headline, erupting, multiplier, ≤150 km count), G0 `operations/…/every-5-minutes/quakes.py`, G0 `operations/earthquakes/global/poller.py` (nearest-location tag) | USGS FDSN query (Hawaiʻi bbox, M≥1, 24 h), USGS summary `2.5_day.geojson`, HANS `getMonitoredVolcanoes`, HANS `getNewestOrRecent` | `Earthquakes/{hawaii,global}-last.json`, `Earthquakes/Daily/*.jsonl`, `Volcanoes/{hvo,kilauea,mauna-loa}-last.json`, `Volcanoes/Daily/hvo-notices-*.jsonl`, `collector-last.json` |
 | `scripts/kilauea_cams.py [--keep-dated]` | G1 `kilauea/kilauea-cams` (DEFAULT_CAMS + USGS still fallback) | USGS HVO V1/V2/V3 `M.jpg` (conditional GET) | `Volcanoes/Cams/cams-last.json`, `Volcanoes/Cams/v{1,2,3}cam-last.jpg` |
 | `scripts/earthquakes_backfill.py [--days N]` | G0 `old/operations/backfillquakes.py` | USGS FDSN `count` + `query` | `Earthquakes/quakes.db` (git-ignored) — on demand only |
+| `Earthquake-Discord/scripts/earthquake_discord_post.py` | G1 `earthquake-hourly` Discord post only | Database `Earthquakes/{hawaii,global}-last.json` (no USGS fetch) | Dry-run prints. `Earthquake-Discord/posted-last.json` only after a signed-off `--send` |
 
 Light by design: stdlib only, every HTTP call ≤ 10 s (`RR_GEOLOGY_TIMEOUT`), no retries, one failed source never overwrites its last good file.
 

@@ -88,11 +88,19 @@ def build_message(hawaii: dict | None, global_: dict | None, seen: set[str]) -> 
     return "\n".join(lines).strip() + "\n"
 
 
-def digest(text: str) -> str:
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+def source_digest(hawaii: dict | None, global_: dict | None) -> str:
+    """Digest the collector snapshot, not the rendered 'new since last post' lines."""
+    payload = {
+        "hawaii_ids": [str(e["id"]) for e in events(hawaii)],
+        "global_ids": [str(e["id"]) for e in events(global_)],
+        "hawaii_count": None if not hawaii else hawaii.get("count"),
+        "global_count": None if not global_ else global_.get("count"),
+    }
+    raw = json.dumps(payload, separators=(",", ":"), sort_keys=True)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
-def remember(hawaii: dict | None, global_: dict | None, text: str) -> dict:
+def remember(hawaii: dict | None, global_: dict | None, snap: str) -> dict:
     ids = [str(e["id"]) for e in events(hawaii) + events(global_)]
     prev = seen_ids(load_json(POSTED))
     merged = list(prev)
@@ -100,7 +108,7 @@ def remember(hawaii: dict | None, global_: dict | None, text: str) -> dict:
         if i not in prev:
             merged.append(i)
     return {
-        "digest": digest(text),
+        "digest": snap,
         "seen_ids": merged[-400:],
         "updated_at": datetime.now(HST).isoformat(timespec="seconds"),
         "posted": False,
@@ -148,8 +156,9 @@ def main() -> int:
     hawaii = load_json(QUAKES / "hawaii-last.json")
     global_ = load_json(QUAKES / "global-last.json")
     posted = load_json(POSTED)
+    snap = source_digest(hawaii, global_)
     text = build_message(hawaii, global_, seen_ids(posted))
-    if posted and posted.get("digest") == digest(text):
+    if posted and posted.get("digest") == snap:
         print("unchanged")
         return 0
     if not send:
@@ -158,7 +167,7 @@ def main() -> int:
     outcome = handoff(text)
     print(outcome)
     if outcome == "handed":
-        payload = remember(hawaii, global_, text)
+        payload = remember(hawaii, global_, snap)
         payload["posted"] = True
         write_json(POSTED, payload)
         LOG_DIR.mkdir(parents=True, exist_ok=True)
