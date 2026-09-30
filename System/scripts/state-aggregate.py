@@ -402,6 +402,201 @@ def brief_text(doc: dict) -> str:  # info: def brief_text
     return text[:4000]  # info: return text [ : 4000 ]
 
 # ====================================================
+# SECTION: function freshness
+# What it does: Map a measurement timestamp to observed, stale, or dead. Dead means not transmitting. Does not treat that as a collector crash.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def freshness(stamp: str):  # info: def freshness
+    if not stamp:  # info: if not stamp
+        return "unknown", None  # info: return "unknown" , None
+    try:  # info: try
+        age = int((datetime.now().astimezone() - datetime.fromisoformat(stamp)).total_seconds() // 60)  # info: set age
+    except (TypeError, ValueError):  # info: except
+        return "unknown", None  # info: return "unknown" , None
+    age = max(0, age)  # info: set age
+    if age <= 15:  # info: if age <= 15
+        return "observed", age  # info: return "observed" , age
+    if age <= 60:  # info: if age <= 60
+        return "stale", age  # info: return "stale" , age
+    return "dead", age  # info: return "dead" , age
+
+# ====================================================
+# SECTION: function inference_drift
+# What it does: Compare the jobs.py model note with the relay's measured model. Does not pick a winner.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def inference_drift() -> dict:  # info: def inference_drift
+    try:  # info: try
+        jobs_text = JOBS.read_text(encoding="utf-8")  # info: set jobs_text
+    except OSError:  # info: except
+        jobs_text = ""  # info: set jobs_text
+    try:  # info: try
+        relay_text = ENSURE.read_text(encoding="utf-8")  # info: set relay_text
+    except OSError:  # info: except
+        relay_text = ""  # info: set relay_text
+    configured_model = "llama3.2:1b" if "llama3.2:1b" in jobs_text else "unknown"  # info: set configured_model
+    observed_model = "llama3.2:3b" if "llama3.2:3b" in relay_text else "unknown"  # info: set observed_model
+    fallback_configured = "Ollama" in jobs_text and "fallback" in jobs_text  # info: set fallback_configured
+    fallback_observed = "disabled" if "RR_NPU_ONLY=1" in relay_text else "unknown"  # info: set fallback_observed
+    drifted = configured_model != observed_model or (fallback_configured and fallback_observed == "disabled")  # info: set drifted
+    return {  # info: return
+        "id": "ai.inference",  # info: "id" : "ai.inference" ,
+        "state": "configuration_drift" if drifted else "aligned",  # info: "state" : "configuration_drift" if drifted else "aligned" ,
+        "configured_model": configured_model,  # info: "configured_model" : configured_model ,
+        "configured_source": "Automations/scripts/jobs.py",  # info: "configured_source" : "Automations/scripts/jobs.py" ,
+        "observed_model": observed_model,  # info: "observed_model" : observed_model ,
+        "observed_source": "Communications/telegram/scripts/ensure-relay.sh",  # info: "observed_source" : "Communications/telegram/scripts/ensure-relay.sh" ,
+        "fallback_configured": "ollama" if fallback_configured else "unknown",  # info: "fallback_configured" : "ollama" if fallback_configured else "unknown" ,
+        "fallback_observed": fallback_observed,  # info: "fallback_observed" : fallback_observed ,
+        "action": "documentation review required" if drifted else "none",  # info: "action" : "documentation review required" if drifted else "none" ,
+        "confidence": "configured",  # info: "confidence" : "configured" ,
+        "visibility": "agent",  # info: "visibility" : "agent" ,
+        "observed_at": now_local(),  # info: "observed_at" : now_local ( ) ,
+    }  # info: }
+
+# ====================================================
+# SECTION: function migration_counts
+# What it does: Read the summary counts from the migration matrix. A document is not live runtime.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def migration_counts() -> dict:  # info: def migration_counts
+    try:  # info: try
+        text = MATRIX.read_text(encoding="utf-8")  # info: set text
+    except OSError:  # info: except
+        return {"state": "unknown", "source": "Old-Repo-Migration-Matrix.md", "confidence": "unknown", "visibility": "agent"}  # info: return { "state" : "unknown"
+    found = re.search(r"\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|", text)  # info: set found
+    if not found:  # info: if not found
+        return {"state": "unknown", "source": "Old-Repo-Migration-Matrix.md", "confidence": "unknown", "visibility": "agent"}  # info: return { "state" : "unknown"
+    rows, migrated, partial, missing, touched = (int(x) for x in found.groups())  # info: rows , migrated , partial , missing , touched = ( int ( x ) for x in found . groups ( ) )
+    return {"state": "configured", "rows": rows, "migrated": migrated, "partial": partial, "missing": missing, "touched": touched, "source": "Old-Repo-Migration-Matrix.md", "confidence": "configured", "visibility": "agent", "note": "Document counts. Not a live deploy check. Do not retire legacy without operator sign-off.", "observed_at": now_local()}  # info: return { "state" : "configured" , "rows" : rows
+
+# ====================================================
+# SECTION: function recent_commits
+# What it does: Last five ecosystem commit subjects. A commit is not a deploy. Does not push.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def recent_commits() -> dict:  # info: def recent_commits
+    try:  # info: try
+        text = subprocess.check_output(["git", "-C", str(ECOSYSTEM), "log", "-5", "--pretty=%h %s"], text=True, timeout=8, stderr=subprocess.DEVNULL)  # info: set text
+    except (OSError, subprocess.SubprocessError):  # info: except
+        return {"state": "unknown", "items": [], "confidence": "unknown", "visibility": "internal", "note": "commit is not deploy"}  # info: return { "state" : "unknown"
+    items = [ln.strip() for ln in text.splitlines() if ln.strip()]  # info: set items
+    return {"state": "observed", "items": items, "source": "git log", "confidence": "live", "visibility": "internal", "note": "A commit means the code is in git. It does not mean that code is deployed.", "observed_at": now_local()}  # info: return { "state" : "observed" , "items" : items
+
+# ====================================================
+# SECTION: function host_extra
+# What it does: Disk and uptime from the local machine. Hostname stays out of this block.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def host_extra() -> dict:  # info: def host_extra
+    try:  # info: try
+        usage = shutil.disk_usage("/")  # info: set usage
+        disk = {"used_percent": round(100 * (1 - usage.free / usage.total), 1)}  # info: set disk
+        disk_state = "observed"  # info: set disk_state
+    except OSError:  # info: except
+        disk, disk_state = None, "unknown"  # info: disk , disk_state = None , "unknown"
+    try:  # info: try
+        uptime_sec = int(float(Path("/proc/uptime").read_text().split()[0]))  # info: set uptime_sec
+    except (OSError, ValueError):  # info: except
+        uptime_sec = None  # info: set uptime_sec
+    return {  # info: return
+        "disk": {"state": disk_state, "value": disk, "source": "shutil.disk_usage", "confidence": "live" if disk else "unknown", "visibility": "operator", "observed_at": now_local()},  # info: "disk" : { "state" : disk_state , "value" : disk
+        "uptime_sec": {"state": "observed" if uptime_sec is not None else "unknown", "value": uptime_sec, "source": "/proc/uptime", "confidence": "live" if uptime_sec is not None else "unknown", "visibility": "operator", "observed_at": now_local()},  # info: "uptime_sec" : { "state" : "observed" if uptime_sec is not None else "unknown"
+        "npu": {"state": "available" if Path("/dev/accel/accel0").exists() else "missing", "source": "/dev/accel/accel0", "confidence": "live", "visibility": "agent", "observed_at": now_local()},  # info: "npu" : { "state" : "available" if Path ( "/dev/accel/accel0" ) . exists ( ) else "missing"
+    }  # info: }
+
+# ====================================================
+# SECTION: function energy_domain
+# What it does: Pack freshness beside the SOC. Does not open Bluetooth.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def energy_domain(power: dict) -> dict:  # info: def energy_domain
+    out = {}  # info: set out
+    for key, row in power.items():  # info: for key , row in power . items ( )
+        val = row.get("value") or {}  # info: set val
+        state, age = freshness(val.get("at"))  # info: state , age = freshness ( val . get ( "at" ) )
+        if row.get("confidence") == "unknown":  # info: if row . get ( "confidence" ) == "unknown"
+            state = "unknown"  # info: set state
+        out[key] = {"state": state, "soc_percent": val.get("soc_percent"), "age_min": age, "at": val.get("at"), "reason": "not transmitting" if state == "dead" else "", "source": row.get("source"), "confidence": row.get("confidence"), "visibility": "operator"}  # info: out [ key ] = { "state" : state , "soc_percent" : val . get ( "soc_percent" )
+    return out  # info: return out
+
+# ====================================================
+# SECTION: function slices_for
+# What it does: Compact lines for a 3B context window. Does not include hostname or secrets.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def slices_for(doc: dict) -> dict:  # info: def slices_for
+    energy = doc.get("domains", {}).get("energy") or {}  # info: set energy
+    drift = (doc.get("drift") or [{}])[0]  # info: set drift
+    health = doc.get("health") or {}  # info: set health
+    services = doc.get("services") or {}  # info: set services
+    energy_lines = [f"{key} state={row.get('state')} soc={row.get('soc_percent')} age_min={row.get('age_min')}" for key, row in energy.items()]  # info: set energy_lines
+    run_lines = [f"{name}={row.get('status')}" for name, row in services.items()]  # info: set run_lines
+    safety = "can_launch=false do_not=enable gates,launch programs,restart poller,start a second relay,invent numbers,treat a commit as a deploy"  # info: set safety
+    scope = "\n".join([  # info: set scope
+        safety,  # info: safety ,
+        "drift=" + str(drift.get("state")),  # info: "drift=" + str ( drift . get ( "state" ) ) ,
+        f"configured_model={drift.get('configured_model')} observed_model={drift.get('observed_model')}",  # info: f" configured_model=
+        f"fallback_configured={drift.get('fallback_configured')} fallback_observed={drift.get('fallback_observed')}",  # info: f" fallback_configured=
+        "services=" + " ".join(run_lines),  # info: "services=" + " " . join ( run_lines ) ,
+        f"health_failed={','.join(health.get('failed') or []) or 'none'}",  # info: f" health_failed=
+        f"health_unknown={','.join(health.get('unknown') or []) or 'none'}",  # info: f" health_unknown=
+        "agent_launchable=none execution_broker=not_built",  # info: "agent_launchable=none execution_broker=not_built" ,
+        "unknown_is_not_broken=true",  # info: "unknown_is_not_broken=true" ,
+    ])  # info: ]
+    return {"safety": safety, "energy": "\n".join(energy_lines), "scope": scope, "index": f"generated_at={doc.get('generated_at')} health_failed={','.join(health.get('failed') or []) or 'none'}"}  # info: return { "safety" : safety , "energy" : "\n" . join ( energy_lines ) , "scope" : scope , "index" : f" generated_at=
+
+# ====================================================
+# SECTION: function attach_canonical
+# What it does: Add domains, drift, and the context policy onto the snapshot. Does not launch anything.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def attach_canonical(doc: dict, rows: list[tuple[int, str]]) -> dict:  # info: def attach_canonical
+    jobs = doc.get("automation", {}).get("scheduled") or []  # info: set jobs
+    enabled = [j["id"] for j in jobs if j.get("enabled")]  # info: set enabled
+    gated = [j["id"] for j in jobs if not j.get("enabled") and (j.get("why_not") or {}).get("kind") == "gated"]  # info: set gated
+    disabled = [j["id"] for j in jobs if not j.get("enabled") and (j.get("why_not") or {}).get("kind") != "gated"]  # info: set disabled
+    doc["schema_version"] = SCHEMA  # info: doc [ "schema_version" ] = SCHEMA
+    doc["execution_broker"] = {"state": "not_built", "visibility": "agent", "reason": "Agents do not execute programs yet."}  # info: doc [ "execution_broker" ] = { "state" : "not_built"
+    doc["context_policy"] = {"max_tokens": 3000, "priority": ["task", "safety", "live_state", "capabilities", "recent_changes", "history"], "visibility": "agent"}  # info: doc [ "context_policy" ] = { "max_tokens" : 3000
+    doc["drift"] = [inference_drift()]  # info: doc [ "drift" ] = [ inference_drift ( ) ]
+    doc["domains"] = {  # info: doc [ "domains" ] = {
+        "host": host_extra(),  # info: "host" : host_extra ( ) ,
+        "energy": energy_domain(doc.get("system", {}).get("power") or {}),  # info: "energy" : energy_domain ( doc . get ( "system" , { } ) . get ( "power" ) or { } ) ,
+        "ai": {"inference": doc["drift"][0], "routing": {"specialist": "disabled", "council_model_observed": doc["drift"][0]["observed_model"], "visibility": "agent"}},  # info: "ai" : { "inference" : doc [ "drift" ] [ 0 ] , "routing" : { "specialist" : "disabled"
+        "automation": {"enabled_count": len(enabled), "gated_count": len(gated), "disabled_count": len(disabled), "enabled": enabled, "gated": gated, "disabled": disabled, "visibility": "agent"},  # info: "automation" : { "enabled_count" : len ( enabled ) , "gated_count" : len ( gated )
+        "migration": migration_counts(),  # info: "migration" : migration_counts ( ) ,
+        "operator": {"ledger_present": LEDGER.is_file(), "state": "configured" if LEDGER.is_file() else "unknown", "pending_decisions": "not_parsed", "reason": "The operator ledger is not permission to enable, send, spend, or delete.", "visibility": "agent", "source": "2026-09-30-whats-left-for-alexander.md"},  # info: "operator" : { "ledger_present" : LEDGER . is_file ( ) , "state" : "configured" if LEDGER . is_file ( ) else "unknown"
+        "changes": recent_commits(),  # info: "changes" : recent_commits ( ) ,
+    }  # info: }
+    doc["services"]["cloudflared"] = {"service": "cloudflared", "status": "running" if any(cmd.split() and cmd.split()[0].rsplit("/", 1)[-1] == "cloudflared" for _, cmd in rows) else "stopped", "source": "process_scan", "confidence": "live", "visibility": "operator", "observed_at": now_local()}  # info: doc [ "services" ] [ "cloudflared" ] = { "service" : "cloudflared" , "status" : "running" if any ( cmd . split ( ) and cmd . split ( ) [ 0 ] . rsplit ( "/" , 1 ) [ - 1 ] == "cloudflared" for _ , cmd in rows ) else "stopped"
+    doc["credential"] = {"telegram": {"configured": "not_checked", "value": None, "source": "policy", "visibility": "secret", "note": "Token values are never written."}}  # info: doc [ "credential" ] = { "telegram" : { "configured" : "not_checked" , "value" : None
+    doc["recent_changes"] = doc["domains"]["changes"]  # info: doc [ "recent_changes" ] = doc [ "domains" ] [ "changes" ]
+    return doc  # info: return doc
+
+# ====================================================
+# SECTION: function write_projections
+# What it does: Write the agent, public, and slice views. Does not send them anywhere.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def write_projections(doc: dict, slices: dict) -> None:  # info: def write_projections
+    agent_dir = PROJ / "agent"  # info: set agent_dir
+    agent_dir.mkdir(parents=True, exist_ok=True)  # info: agent_dir . mkdir ( parents = True , exist_ok = True )
+    roles = {"ava": "default voice and the only getUpdates owner", "bruce": "replies when addressed or in a room round", "carly": "replies when addressed or in a room round"}  # info: set roles
+    public = {"schema_version": SCHEMA, "execution_broker": "not_built", "telemetry": "none_marked_public", "visibility": "public"}  # info: set public
+    for voice, role in roles.items():  # info: for voice , role in roles . items ( )
+        packet = {"voice": voice, "role": role, "can_launch": False, "visibility": "agent", "slices": slices, "drift": doc.get("drift")}  # info: set packet
+        path = agent_dir / f"{voice}.json"  # info: set path
+        path.write_text(json.dumps(packet, indent=2) + "\n", encoding="utf-8")  # info: path . write_text ( json . dumps ( packet , indent = 2 ) + "\n" , encoding = "utf-8" )
+        os.chmod(path, 0o600)  # info: os . chmod ( path , 0o600 )
+    pub = PROJ / "public.json"  # info: set pub
+    pub.write_text(json.dumps(public, indent=2) + "\n", encoding="utf-8")  # info: pub . write_text ( json . dumps ( public , indent = 2 ) + "\n" , encoding = "utf-8" )
+    os.chmod(pub, 0o600)  # info: os . chmod ( pub , 0o600 )
+    slice_path = PROJ / "slices.json"  # info: set slice_path
+    slice_path.write_text(json.dumps(slices, indent=2) + "\n", encoding="utf-8")  # info: slice_path . write_text ( json . dumps ( slices , indent = 2 ) + "\n" , encoding = "utf-8" )
+    os.chmod(slice_path, 0o600)  # info: os . chmod ( slice_path , 0o600 )
+
+# ====================================================
 # SECTION: function build
 # What it does: Assemble the snapshot. Does not send or launch.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -504,7 +699,7 @@ def build() -> dict:  # info: def build
         ],  # info: ] ,
         "npu_device_present": obs(npu, "/dev/accel/accel0", "live"),  # info: "npu_device_present" : obs ( npu , "/dev/accel/accel0" , "live" ) ,
     }  # info: }
-    return doc  # info: return doc
+    return attach_canonical(doc, rows)  # info: return attach_canonical ( doc , rows )
 
 # ====================================================
 # SECTION: function write_out
@@ -513,14 +708,16 @@ def build() -> dict:  # info: def build
 # ====================================================
 def write_out(doc: dict) -> None:  # info: def write_out
     OUT.parent.mkdir(parents=True, exist_ok=True)  # info: OUT . parent . mkdir ( parents = True , exist_ok = True )
+    slices = slices_for(doc)  # info: set slices
     text = json.dumps(doc, indent=2) + "\n"  # info: set text
-    brief = brief_text(doc)  # info: set brief
+    brief = slices["scope"] + "\n"  # info: set brief
     for path, body in ((OUT, text), (BRIEF, brief)):  # info: for path , body in ( ( OUT , text ) , ( BRIEF , brief ) )
         tmp = path.with_suffix(path.suffix + ".tmp")  # info: set tmp
         tmp.write_text(body, encoding="utf-8")  # info: tmp . write_text ( body , encoding = "utf-8" )
         os.chmod(tmp, 0o600)  # info: os . chmod ( tmp , 0o600 )
         os.replace(tmp, path)  # info: os . replace ( tmp , path )
         os.chmod(path, 0o600)  # info: os . chmod ( path , 0o600 )
+    write_projections(doc, slices)  # info: call write_projections
 
 # ====================================================
 # SECTION: function main

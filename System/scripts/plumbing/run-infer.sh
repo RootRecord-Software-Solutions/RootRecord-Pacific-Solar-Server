@@ -161,7 +161,7 @@ persona = json.loads(open(persona_path, encoding="utf-8").read()) if persona_pat
 if persona and not (persona.get("system") or "").strip():  # info: if
   raise SystemExit(2)  # info: raise
 list_desk = bool(re.search(r"\b(what (other |else )?data|what (else )?(do|can) you see|what readings|on (your|the) desk|list (the |your )?(data|readings|desk))\b", os.environ.get("RR_PROMPT") or "", re.I))  # info: set list_desk
-scope = bool(re.search(r"\b(what is running|whats running|what is broken|what exists|what changed|what can i|what programs|not allowed|system state|what is working|capabilities|what am i allowed)\b", os.environ.get("RR_PROMPT") or "", re.I))  # info: set scope
+scope = bool(re.search(r"\b(what is running|whats running|what is broken|what exists|what changed|what can i|what programs|not allowed|system state|what is working|capabilities|what am i allowed|what model|configured model|observed model|drift)\b", os.environ.get("RR_PROMPT") or "", re.I))  # info: set scope
 brief_path = os.environ.get("STATE_BRIEF_FILE") or "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/System/status/rootrecord-state-brief.txt"  # info: set brief_path
 brief = ""  # info: set brief
 if scope and os.path.isfile(brief_path):  # info: if scope and os . path . isfile ( brief_path )
@@ -188,7 +188,8 @@ if brief and scope:  # info: if brief and scope
   user = "STATE:\n" + brief + "\nUser: " + (os.environ.get("RR_PROMPT") or "")  # info: user
   system = (  # info: set system
     f"You are {voice}. Answer in one short paragraph from the STATE lines only. "  # info: f"You are { voice }
-    "Name the running services. health_failed none means nothing is broken. health_unknown is not broken. "  # info: command
+    "Name the running services. If drift=configuration_drift, say the configured model and the observed model. Do not pick one. "  # info: command
+    "health_failed none means nothing is broken. health_unknown is not broken. "  # info: command
     "agent_launchable none means you cannot launch programs. Do not list watts. Stop after one paragraph."  # info: command
   )  # info: command
 temperature = float(persona["temperature"]) if persona and persona.get("temperature") is not None else float(os.environ.get("RR_SPEC_TEMP") or 0.3)  # info: set temperature
