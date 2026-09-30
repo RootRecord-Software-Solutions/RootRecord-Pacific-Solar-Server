@@ -1,13 +1,13 @@
 {
-  "_info": "Root Monitor 'Not migrated' placeholders. Curated read-only from the Library Work-Orders README, Residual-Path-Retirement-Table (all G2 KEPT), G3-Runtime-Verification-Checklist and WO status lines on 2026-09-29 ~12:50 HST. Update this file when an item lands; the panel only displays it.",
-  "as_of": "2026-09-29 12:50 HST",
+  "_info": "Root Monitor 'Not migrated' placeholders. Closed work orders were removed 2026-09-30 02:35 HST: WO-RPT-001, WO-ARCH, WO-CF, WO-GH-001, WO-AGENT, WO-MAP, WO-SYS-001 (they live in Work-Orders/Complete/). The panel only displays this file.",
+  "as_of": "2026-09-30 02:35 HST",
   "items": [
     {
       "id": "telegram-replies",
       "name": "Telegram council replies",
-      "wo": "WO-SRV-2026-09-27 \u00b7 G3 checklist A",
+      "wo": "WO-SRV-2026-09-27 · G3 checklist A",
       "state": "BLOCKED",
-      "note": "Login/polling PASS on Pacific. Models are present (`ava-telegram`, `bruce-telegram`, `carly-telegram`, and the `rr-council-*` models). Replies stay BLOCKED because `RR_RELAY_REPLIES=0`; Alexander has not turned that flag on.",
+      "note": "Login and polling are up on Pacific after the 01:09 HST boot. Models are present. Replies stay off because RR_RELAY_REPLIES=0. Alexander has not turned that flag on.",
       "settings": "messaging",
       "sources": [
         "5 - RootRecord-Library/Documentation/00-architecture/G3-Runtime-Verification-Checklist-2026-09-28.md",
@@ -19,7 +19,7 @@
       "name": "Discord bot",
       "wo": "WO-COM-002",
       "state": "BLOCKED",
-      "note": "Credential rotation is the migration gate; no Discord runtime on Pacific.",
+      "note": "Still the migration gate. No Discord runtime on Pacific. A fresh token is required before any enable. Do not load a token from archive history.",
       "settings": "messaging",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-COM-002-Discord-Bot-Credential-Rotation.md"
@@ -30,7 +30,7 @@
       "name": "Slack / communications surface",
       "wo": "WO-COM-001",
       "state": "VERIFY PENDING",
-      "note": "Draft work order \u2014 Telegram residual first; Slack not wired on Pacific.",
+      "note": "Draft. Tunnel, globe, and the quiet relay are on Pacific. Slack is not wired. Notify policy is still unsealed.",
       "settings": "messaging",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-COM-001-Communications-Surface.md"
@@ -39,9 +39,9 @@
     {
       "id": "timelapse",
       "name": "Security timelapse compile",
-      "wo": "WO-SRV \u00b7 WO-AEYES-2026-09-27",
+      "wo": "WO-SRV · WO-AEYES-2026-09-27",
       "state": "VERIFY PENDING",
-      "note": "Hourly/catch-up ran from Pacific but only skipped (outside 05:00\u201319:00 HST window / no frames); no compile observed.",
+      "note": "Grabs pass. Timelapse folders stay empty until the 05:00–19:00 HST window. Capture interval is still 1 second. The 5-second proposal was not applied.",
       "settings": "cameras",
       "sources": [
         "5 - RootRecord-Library/Documentation/00-architecture/Residual-Path-Retirement-Table-2026-09-28.md"
@@ -52,7 +52,7 @@
       "name": "Energy actuating actions (arm/disarm, AC)",
       "wo": "WO-ECO-001",
       "state": "VERIFY PENDING",
-      "note": "Read-only solar-gate-status PASS; actuating actions need approval; B1 needs a physical check.",
+      "note": "River 2 Pro reads are live. Delta 2 is dead and does not transmit; do not schedule a Delta 2 actuation test. River arm/disarm and AC always-on still need Alexander to name the action.",
       "settings": "services",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-ECO-001-Energy-Domain-Import.md"
@@ -63,32 +63,10 @@
       "name": "FLM / NPU own-session fix",
       "wo": "WO-SRV (NPU record)",
       "state": "VERIFY PENDING",
-      "note": "Install/validate PASS and on-demand llama3.2:1b route PASS; the own-session fix is still VERIFY PENDING.",
+      "note": "Install and the on-demand llama3.2:1b route passed. The own-session fix is still unverified.",
       "settings": "ai",
       "sources": [
         "5 - RootRecord-Library/Documentation/07-testing/2026-09-29-npu-flm-install-validate.md"
-      ]
-    },
-    {
-      "id": "reports-rollup",
-      "name": "Reports daily roll-up",
-      "wo": "WO-RPT-001",
-      "state": "VERIFY PENDING",
-      "note": "worklog_scan PASS; roll-up still VERIFY PENDING.",
-      "settings": "services",
-      "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-RPT-001-Reports-Worklog-Domain-Import.md"
-      ]
-    },
-    {
-      "id": "weekly-archive",
-      "name": "Weekly operations log archive",
-      "wo": "WO-ARCH-2026-09-27",
-      "state": "VERIFY PENDING",
-      "note": "OPEN \u2014 to be implemented under WO-RPT-001 Phase D.",
-      "settings": "services",
-      "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/Ops_Weekly_Archive_Work_Order_WO-ARCH-2026-09-27.md"
       ]
     },
     {
@@ -96,7 +74,7 @@
       "name": "Geology (earthquake) domain",
       "wo": "WO-WXG-001",
       "state": "VERIFY PENDING",
-      "note": "Weather imported and PASS; the Geology half of WO-WXG-001 is still Draft.",
+      "note": "Manual collect passed earlier. The poller job stays off (RR_GEOLOGY=0). The weather poller was recycled at 02:24:58 HST. The new cycle has not cleared NOAA: noaa_homepage failed a bot-check at 02:33.",
       "settings": "weather",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-WXG-001-Weather-Geology-Import.md"
@@ -107,7 +85,7 @@
       "name": "Weather retention apply",
       "wo": "weather_retention job",
       "state": "VERIFY PENDING",
-      "note": "Job gated OFF (RR_WEATHER_RETENTION) until a dry run is reviewed.",
+      "note": "Dry run around 02:02 HST would have moved 0 files. The job stays gated. Nothing was applied.",
       "settings": "weather",
       "sources": []
     },
@@ -116,7 +94,7 @@
       "name": "Public status / solar board",
       "wo": "WO-WEB-001",
       "state": "VERIFY PENDING",
-      "note": "Draft \u2014 alignment of the public board with Pacific data.",
+      "note": "Draft. Public board alignment with Pacific data is not built.",
       "settings": "network",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-WEB-001-Public-Status-Solar-Board.md"
@@ -125,9 +103,9 @@
     {
       "id": "public-site",
       "name": "Public site foundation + website repo sync",
-      "wo": "WO-WEB-002 \u00b7 WO-GH-2026-09-27",
+      "wo": "WO-WEB-002 · WO-GH-2026-09-27",
       "state": "BLOCKED",
-      "note": "Website sync disabled in repos.conf; site foundation pass is Draft.",
+      "note": "Local folder 3 - RootRecord-Website was removed 2026-09-30. Do not recreate it or bind port 3001. The website sync row stays disabled. https://rootserver.rootrecord.cloud/ is the poller, not a site.",
       "settings": "services",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-WEB-002-Public-Site-Foundation.md"
@@ -136,29 +114,20 @@
     {
       "id": "mainland",
       "name": "US-Mainland-Server (continuity node)",
-      "wo": "WO-ECO-2026-09-27 \u00b7 WO-GH-2026-09-27",
+      "wo": "WO-ECO-2026-09-27 · WO-GH-2026-09-27",
       "state": "BLOCKED",
-      "note": "Stub repo only; mainland sync disabled; no SSH Host alias on this desk.",
+      "note": "Mainland sync row stays disabled. No SSH Host alias for it on this desk. Stub only.",
       "settings": "network",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/Ecosystem_Migration_Work_Order_WO-ECO-2026-09-27.md"
       ]
     },
     {
-      "id": "cloudflare-tunnel",
-      "name": "Cloudflare tunnel credential recovery",
-      "wo": "WO-CF-2026-09-27",
-      "state": "BLOCKED",
-      "note": "OPEN. The tunnel itself runs as a poller child from Pacific Communications/network/cloudflare/bin/cloudflared; the rr-aws SSH ProxyCommand still points at ~/.local/bin/cloudflared, which is missing on this desk.",
-      "settings": "network",
-      "sources": []
-    },
-    {
       "id": "g1-recovery",
-      "name": "G1 selective recovery packets (Solar-Pacific-\u2026-Old)",
+      "name": "G1 selective recovery packets (Solar-Pacific-…-Old)",
       "wo": "WO-OLD-2026-09-28",
       "state": "BLOCKED",
-      "note": "Scheduler trio MIGRATED; other packets blocked until G2 residual domains land in G3.",
+      "note": "Scheduler trio is migrated. Other G1 packets stay blocked. Do not retire G1 without Alexander naming the tree.",
       "settings": "services",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/Old_Server_Selective_Recovery_Work_Order_WO-OLD-2026-09-28.md"
@@ -169,7 +138,7 @@
       "name": "G2 residual paths (27 dormant files)",
       "wo": "Residual-Path-Retirement-Table",
       "state": "VERIFY PENDING",
-      "note": "All G2 entries are KEPT (retire only with Alexander's sign-off). Nothing is RETIRED.",
+      "note": "Not a full retirement. On 2026-09-30 Alexander allowed removal of skills files that were byte-identical to Pacific. Unique and diverged skills files stayed. Dangerous leftover skills scripts were fail-closed. The 27 GB old-skills tree was not touched.",
       "settings": "services",
       "sources": [
         "5 - RootRecord-Library/Documentation/00-architecture/Residual-Path-Retirement-Table-2026-09-28.md"
@@ -180,32 +149,10 @@
       "name": "Residual jobs path rewire",
       "wo": "WO-SRV-001",
       "state": "BLOCKED",
-      "note": "Draft \u2014 blocked on WO-ECO-001 and later domain imports; WO-SRV-2026-09-27 carries the active cutover.",
+      "note": "Draft. jobs.py has no ~/.ollama/skills/ job path and the script paths in it exist. Not closed. Cutover stays on WO-SRV-2026-09-27.",
       "settings": "services",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-SRV-001-Residual-Jobs-Path-Rewire.md"
-      ]
-    },
-    {
-      "id": "poller-observability",
-      "name": "Poller observability & FAIL handling",
-      "wo": "WO-SYS-001",
-      "state": "VERIFY PENDING",
-      "note": "Draft (System Phase 1 live).",
-      "settings": "services",
-      "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-SYS-001-Poller-Observability.md"
-      ]
-    },
-    {
-      "id": "gh-pull-authority",
-      "name": "GitHub pull authority & timer policy",
-      "wo": "WO-GH-001",
-      "state": "VERIFY PENDING",
-      "note": "Draft.",
-      "settings": "services",
-      "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-GH-001-Github-Pull-Authority.md"
       ]
     },
     {
@@ -213,36 +160,16 @@
       "name": "Database boundary & publication policy",
       "wo": "WO-DATA-2026-09-27",
       "state": "VERIFY PENDING",
-      "note": "OPEN.",
+      "note": "The canonical Database path is in use. Publication choices (geology last-files, users/PII, timelapse masters, the cloudflared binary) are still Alexander's.",
       "settings": "environment",
       "sources": []
-    },
-    {
-      "id": "agent-context",
-      "name": "Agent context canonical home",
-      "wo": "WO-AGENT-2026-09-27",
-      "state": "VERIFY PENDING",
-      "note": "OPEN.",
-      "settings": "environment",
-      "sources": []
-    },
-    {
-      "id": "repo-map",
-      "name": "Master-Prompt repository ownership map",
-      "wo": "WO-MAP-2026-09-27",
-      "state": "VERIFY PENDING",
-      "note": "OPEN.",
-      "settings": "environment",
-      "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/MasterPrompt_RepoMap_Work_Order_WO-MAP-2026-09-27.md"
-      ]
     },
     {
       "id": "wogen",
       "name": "Work order generator",
       "wo": "WO-WOGEN-001",
       "state": "BLOCKED",
-      "note": "Architecture only \u2014 Carly seal + operator accept before implementing.",
+      "note": "Architecture only. Carly seal and operator accept are still required before any implementation.",
       "settings": "environment",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-WOGEN-001-Work-Order-Generator.md"
