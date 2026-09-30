@@ -24,6 +24,7 @@ SILENCE_RE = re.compile(  # info: set SILENCE_RE
     re.I,  # info: re . I ,
 )  # info: )
 LEAK_RE = re.compile(r"DESK_LIVE:|HARD RULES FOR THIS TURN|Do NOT state watts|standing envelopes|\[desk:", re.I)  # info: set LEAK_RE
+GROUP_HELLO_RE = re.compile(r"^(hi|hey|hello|yo)( guys| all| everyone| team)?[.!?]*$", re.I)  # info: set GROUP_HELLO_RE
 
 # Replies are OPT-IN (Alexander 2026-09-29): RR_RELAY_REPLIES=1 enables infer+post.
 # Default 0 = quiet: login + getUpdates polling only, messages consumed, nothing posted.
@@ -128,6 +129,14 @@ def api(token, method, payload=None):  # info: def api
     if not body.get("ok"):  # info: if not body . get ( "ok" )
         raise RuntimeError(f"{method} failed")  # info: raise RuntimeError ( f" { method } failed
     return body  # info: return body
+
+# ====================================================
+# SECTION: function group_hello
+# What it does: True when the message is only a greeting to the group, such as hi guys.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def group_hello(text):  # info: def group_hello
+    return bool(GROUP_HELLO_RE.match(text.strip()))  # info: return bool ( GROUP_HELLO_RE . match ( text . strip ( ) ) )
 
 # ====================================================
 # SECTION: function wants_pipeline
@@ -383,6 +392,16 @@ def main():  # info: def main
                 reply = run_infer(cfg, poll_voice, text)  # info: set reply
                 if reply:  # info: if reply :
                     post_as(poll_voice, voices, ch, reply, max_text, allow=True)  # info: call post_as
+                continue  # info: continue
+
+            if group_hello(text):  # info: if group_hello ( text ) :
+                for hop in ("ava", "bruce", "carly"):  # info: for hop in ( "ava" , "bruce" , "carly" ) :
+                    if hop not in voices:  # info: if hop not in voices :
+                        continue  # info: continue
+                    reply = run_infer(cfg, hop, "Greet the room in one or two sentences. User said: " + text)  # info: set reply
+                    if reply:  # info: if reply :
+                        post_as(hop, voices, ch, reply, max_text, allow=True)  # info: call post_as
+                    time.sleep(0.4)  # info: time . sleep ( 0.4 )
                 continue  # info: continue
 
             if wants_pipeline(text, triggers):  # info: if wants_pipeline ( text , triggers ) :
