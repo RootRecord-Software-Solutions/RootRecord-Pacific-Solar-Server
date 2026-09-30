@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T19:05:51-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T19:14:51-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -2876,7 +2876,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-29T18:51:08.854659-10:00 HST |
+| **Collected** | 2026-09-29T19:08:08.758456-10:00 HST |
 
 ```text
 802
@@ -3148,7 +3148,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T18:59:09.522898-10:00 HST |
+| **Collected** | 2026-09-29T19:08:11.325604-10:00 HST |
 
 ```text
                         
@@ -7818,7 +7818,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-29T18:50:53.601693-10:00 HST |
+| **Collected** | 2026-09-29T19:07:53.501924-10:00 HST |
 
 ```text
 National Weather Service
