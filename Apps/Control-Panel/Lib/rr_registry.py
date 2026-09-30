@@ -443,11 +443,9 @@ class Registry:
         if not s.editable:
             raise ValueError(s.ro_reason or "read-only")
         if s.file_id.startswith("env:"):
-            # RR_* flags -> poller drop-in (Environment=RR_X=v); file created by commit if missing
-            path = FLAGS_DROPIN
-            if not path.exists():
-                raise ValueError(f"{path.name} does not exist yet — creating the flags drop-in is a sign-off item")
-            return io.plan_edit(path, "ini", f"Service.Environment.{s.key}", new_raw, s.kind, secret_keys=set(),
+            # RR_* flags -> poller drop-in (Environment=RR_X=v). The file is created on the first confirmed save.
+            # Nothing is restarted; the running poller keeps its current environment until it is restarted by hand.
+            return io.plan_edit(FLAGS_DROPIN, "ini", f"Service.Environment.{s.key}", new_raw, s.kind, secret_keys=set(),
                                 whole_file_secret=False, restart_note=R_POLLER, create=True)
         spec = self.spec(s.file_id)
         secret_keys = {x.key for x in self.file_settings(spec) if x.secret}

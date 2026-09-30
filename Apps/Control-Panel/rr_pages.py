@@ -441,7 +441,8 @@ class ExtraPages:
         if page in getattr(self, "set_boxes", {}):
             self.set_stack.set_visible_child_name(page)
 
-    GROUP_MAX, GROUP_HEAD = 20, 12   # big files render their first 12 rows; the rest are built on demand
+    # Every setting of a file is built when that page is opened. Big files (weather resources, specialist routes)
+    # are long scrolls, not a hidden tail.
 
     def ensure_redact(self):
         """Fill rr_ui.REDACT once (first visit of a page that shows config / process text)."""
@@ -472,8 +473,9 @@ class ExtraPages:
             first = ss[0]
             if gk == "env-vars":
                 title = "Environment variables read by Pacific scripts" if pid != "flags" else "RR_* feature flags (poller environment)"
-                desc = ("Flags are set in the poller drop-in rr-flags.conf (Environment=RR_X=0/1) — takes effect after "
-                        "rr-rootserver-poller.service restart (never restarted here)." if pid == "flags" else
+                desc = ("Each flag is a toggle. Saving writes rr-flags.conf (created on the first save). "
+                        "The poller is not restarted; the new value is used the next time that service starts."
+                        if pid == "flags" else
                         "Reference view: default in code + where it is set on this desk.")
             else:
                 spec = self.reg.spec(gk)
@@ -483,19 +485,8 @@ class ExtraPages:
             box.append(lbl(title, "heading", wrap=True))
             box.append(lbl(redact(desc), "dim-label", wrap=True))
             g = boxed_list()
-            shown = ss if len(ss) <= self.GROUP_MAX else ss[:self.GROUP_HEAD]
-            for s in shown:
+            for s in ss:
                 g.append(self._setting_row(s))
-            if len(ss) > len(shown):
-                more = Gtk.Button(label=f"Show the other {len(ss) - len(shown)} settings of this file", halign=Gtk.Align.START)
-                more.add_css_class("flat")
-
-                def expand(btn, g=g, rest=ss[len(shown):]):
-                    g.remove(btn.get_parent())
-                    for s in rest:
-                        g.append(self._setting_row(s))
-                more.connect("clicked", expand)
-                g.append(more)
             box.append(g)
         self.report.setdefault("settings_pages", {})[pid] = {"settings": len(sets), "editable": n_edit, "secret": n_sec,
                                                              "build_ms": round(1000 * (time.process_time() - t0))}
@@ -503,6 +494,13 @@ class ExtraPages:
     def _setting_row(self, s):
         sub = f"{s.display} · {s.kind}" + (f" · {s.restart}" if s.editable else f" · read-only: {s.ro_reason}")
         r, l = light_row(s.key, sub)
+        if s.editable and s.kind == "bool01":
+            on = str(s._value or "").strip() in ("1", "true", "True", "yes")
+            r.append(rr_ui.state_toggle(
+                s.key, on,
+                on_change=lambda btn, active, s=s, row=l: self._toggle_bool(s, active, row, btn),
+                tooltip="Writes 0 or 1 after you confirm. Nothing is restarted."))
+            return r
         if s.editable and s.secret:
             for text, mode in (("Replace…", "replace"), ("Clear", "clear")):
                 b = Gtk.Button(label=text, valign=Gtk.Align.CENTER)
@@ -532,10 +530,17 @@ class ExtraPages:
         self.confirm(f"{'Replace secret' if s.secret else 'Edit'} {s.key}", f"{s.path}", "Next", lambda: self._plan_confirm(s, e.get_text(), row),
                      extra=box)
 
-    def _plan_confirm(self, s, new, row):
+    def _toggle_bool(self, s, active, row, btn):
+        def revert():
+            btn.rr_set(not active)
+        self._plan_confirm(s, "1" if active else "0", row, on_cancel=revert, on_fail=revert)
+
+    def _plan_confirm(self, s, new, row, on_cancel=None, on_fail=None):
         try:
             plan = self.reg.plan(s, new)
         except (ValueError, OSError) as ex:
+            if on_fail:
+                on_fail()
             self.toast(f"Not saved: {ex}")
             return
         if plan.diff == "(no change)":

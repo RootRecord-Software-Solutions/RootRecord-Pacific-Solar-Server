@@ -529,7 +529,13 @@ class Plan:
 
 def plan_edit(path: Path, fmt: str, key: str, new_raw: str, kind: str, *, secret_keys: set[str], whole_file_secret: bool,
               restart_note: str, columns=None, create=False) -> Plan:
-    old = Path(path).read_text(encoding="utf-8", errors="surrogateescape")
+    p = Path(path)
+    if p.exists():
+        old = p.read_text(encoding="utf-8", errors="surrogateescape")
+    elif create:
+        old = ""
+    else:
+        raise FileNotFoundError(path)
     ok, norm = validate(kind, new_raw)
     if not ok:
         raise ValueError(norm)
@@ -563,6 +569,25 @@ def backup_copy(path: Path, secret: bool, root: Path | None = None) -> Path:
 def commit(plan: Plan, backup_root: Path | None = None) -> dict:
     """Backup + atomic write. Refuses if the file changed since plan_edit()."""
     p = plan.path
+    if not p.exists():
+        if plan.old_sha != sha(""):
+            raise RuntimeError(f"{p.name} appeared on disk since the diff was built — re-open and try again")
+        p.parent.mkdir(parents=True, exist_ok=True)
+        fd, tmp = tempfile.mkstemp(prefix=f".{p.name}.", suffix=".tmp", dir=str(p.parent))
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8", errors="surrogateescape", newline="") as f:
+                f.write(plan.new_text)
+                f.flush()
+                os.fsync(f.fileno())
+            os.chmod(tmp, 0o644)
+            os.replace(tmp, p)
+        except Exception:
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
+            raise
+        return {"backup": "(new file, no prior copy)", "mode": "0o644", "note": plan.restart_note}
     cur = p.read_text(encoding="utf-8", errors="surrogateescape")
     if sha(cur) != plan.old_sha:
         raise RuntimeError(f"{p.name} changed on disk since the diff was built — re-open and try again")
