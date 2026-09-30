@@ -72,6 +72,53 @@ def spawn(argv: list[str], on_done=None, capture=False):
     return proc
 
 
+TOGGLE_CSS = """
+button.rr-toggle { min-width: 150px; min-height: 30px; padding: 2px 14px; font-weight: bold; border-radius: 8px;
+                   border: 2px solid transparent; background-image: none; }
+button.rr-toggle.rr-on { background-color: #2e7d32; color: #ffffff; border-color: #66bb6a; }
+button.rr-toggle.rr-on:hover { background-color: #388e3c; }
+button.rr-toggle.rr-off { background-color: alpha(#dc322f, 0.16); border-color: alpha(#dc322f, 0.70); }
+button.rr-toggle.rr-off:hover { background-color: alpha(#dc322f, 0.28); }
+button.rr-toggle.rr-big { min-width: 260px; min-height: 40px; font-size: 12pt; }
+"""
+
+
+def state_toggle(name: str, active: bool, on_change=None, on_text: str = "On", off_text: str = "Off",
+                 tooltip: str | None = None, big: bool = False) -> Gtk.ToggleButton:
+    """Labelled on/off button (replaces Gtk.Switch / Adw.SwitchRow, 2026-09-29): reads "<name>: On" (green) or
+    "<name>: Off" (red outline). on_change(btn, active) runs after a user click. btn.rr_set(active) changes the
+    state WITHOUT calling on_change (reverts, status reads)."""
+    b = Gtk.ToggleButton(valign=Gtk.Align.CENTER, halign=Gtk.Align.START)
+    b.add_css_class("rr-toggle")
+    if big:
+        b.add_css_class("rr-big")
+    if tooltip:
+        b.set_tooltip_text(tooltip)
+
+    def paint():
+        on = b.get_active()
+        b.set_label(f"{name}: {on_text if on else off_text}")
+        b.add_css_class("rr-on" if on else "rr-off")
+        b.remove_css_class("rr-off" if on else "rr-on")
+
+    def toggled(_b):
+        paint()
+        if on_change is not None:
+            on_change(b, b.get_active())
+
+    b.set_active(bool(active))
+    paint()
+    hid = b.connect("toggled", toggled)
+
+    def rr_set(value: bool):
+        b.handler_block(hid)
+        b.set_active(bool(value))
+        paint()
+        b.handler_unblock(hid)
+    b.rr_set = rr_set
+    return b
+
+
 def action_row(title: str, subtitle: str = "", lines: int = 2):
     """Plain-text Adw.ActionRow (markup OFF, so file names / commands render literally)."""
     if Adw is None:

@@ -20,6 +20,10 @@ INFO — MUST HAVE (future agents), added 2026-09-29:
 - Renamed "Root Monitor" 2026-09-29 (file paths + APP_ID unchanged so the existing launcher keeps working).
   New pages (rr_pages.py): Running, Network (+ Starlink), SSH, Not migrated, and the Settings hub
   (Lib/rr_registry.py + Lib/rr_config_io.py). Every page does nothing unless it is visible.
+- 2026-09-29 16:10 HST: NO switches. Every on/off control is a labelled Gtk.ToggleButton ("Camera viewer: Off" /
+  "On", green = on, red outline = off) from rr_ui.state_toggle. The camera viewer button sits at the top of the
+  Cameras page AND first on Settings → Panel (both stay in sync). Before this the only camera control was an
+  Adw.SwitchRow at the bottom of Settings → Panel (below the fold) and the Cameras page pointed at the wrong sub-page.
 """
 from __future__ import annotations
 
@@ -79,7 +83,9 @@ def now_hst() -> str:
     return datetime.now(src.TZ).strftime("%a %d %b %Y  %H:%M:%S HST")
 
 
-from rr_ui import badge_css, esc, lbl, section, spawn, widget_texts  # noqa: E402
+from rr_ui import TOGGLE_CSS, badge_css, esc, lbl, section, spawn, state_toggle, widget_texts  # noqa: E402
+
+CSS += TOGGLE_CSS.encode()
 from rr_pages import ExtraPages  # noqa: E402
 from rr_aws_page import AwsFallbackPage  # noqa: E402
 
@@ -132,6 +138,7 @@ class Panel(ExtraPages, AwsFallbackPage):
         self.win = None
         self.report: dict = {}
         self._argvs = None
+        self.cam_toggles: list = []   # every "Camera viewer: On/Off" button (Cameras page + Settings → Panel)
         self.build()
 
     # ----------------------------------------------------------- settings helpers
@@ -433,7 +440,12 @@ class Panel(ExtraPages, AwsFallbackPage):
     # ----------------------------------------------------------- cameras
     def b_cameras(self, box):
         self.cam_box = box
-        self.cam_off = lbl("Camera viewer is OFF (default). Turn it on in Settings → Cameras.\n"
+        bar = Gtk.Box(spacing=10)
+        bar.append(self.cam_toggle_btn(big=True))
+        bar.append(lbl("click to turn the camera viewer on / off (this session; Settings → Panel → Save settings keeps it)",
+                       "dim-label", wrap=True))
+        box.append(bar)
+        self.cam_off = lbl("Camera viewer is OFF (default). Press the button above (also first on Settings → Panel).\n"
                            "While off the panel does no camera work: no timer, no image loading, no streams.",
                            "dim-label", wrap=True)
         box.append(self.cam_off)
@@ -457,6 +469,9 @@ class Panel(ExtraPages, AwsFallbackPage):
     def r_cameras(self):
         """Called only when the Cameras page is visible (or once in --check with the viewer ON)."""
         on = self.camera_viewer_on
+        for b in self.cam_toggles:
+            if b.get_active() != on:
+                b.rr_set(on)
         self.cam_off.set_visible(not on)
         self.cam_flow.set_visible(on)
         if not on:
@@ -545,6 +560,20 @@ class Panel(ExtraPages, AwsFallbackPage):
             if self.stack.get_visible_child_name() == "cameras":
                 self.r_cameras()
 
+    def cam_toggle_btn(self, big=False):
+        b = state_toggle("Camera viewer", self.camera_viewer_on, lambda _b, on: self.set_camera_viewer(on), big=big,
+                         tooltip="Off = zero camera work (no timer, no images, no streams). Only changes what this panel shows.")
+        self.cam_toggles.append(b)
+        return b
+
+    def set_camera_viewer(self, on: bool):
+        self.s["camera_viewer_enabled"] = bool(on)
+        self.camera_override = None
+        for b in self.cam_toggles:
+            if b.get_active() != bool(on):
+                b.rr_set(on)
+        self.cam_timer_update()
+
     def _cam_tick(self):
         self.safe(self.r_cameras)
         return True
@@ -608,6 +637,25 @@ class Panel(ExtraPages, AwsFallbackPage):
             box.append(lbl("libadwaita not available — edit settings.json directly.", wrap=True))
             return
         page = Adw.PreferencesPage()
+        g = Adw.PreferencesGroup(title="Cameras",
+                                 description="Buttons only change what THIS PANEL shows. Collectors, grab jobs and the poller are not touched. "
+                                             "Changes apply now; press Save settings (bottom) to keep them after a restart.")
+        row = Adw.ActionRow(title="Camera viewer page", subtitle="Off = zero camera work (no timer, no images, no streams)")
+        b = self.cam_toggle_btn()
+        row.add_suffix(b)
+        row.set_activatable_widget(b)
+        g.add(row)
+        self._spin(g, "camera_refresh_sec", "Camera still refresh (s, only while visible)", 5, 120)
+        self._switch(g, "camera_live_fallback", "Local still fallback", "Only when a camera has no still on disk, only while visible",
+                     "Still fallback")
+        for c in self.cams:
+            row = Adw.ActionRow(title=f"Show {c}", subtitle="discovered from Security/Cameras/grab_all.sh")
+            b = state_toggle(f"Show {c}", bool(s["cameras"].get(c, {}).get("enabled", True)),
+                             lambda _b, on, c=c: s["cameras"].setdefault(c, {}).update(enabled=on))
+            row.add_suffix(b)
+            row.set_activatable_widget(b)
+            g.add(row)
+        page.add(g)
         g = Adw.PreferencesGroup(title="General", description=f"All settings live in {rr_settings.SETTINGS_FILE}")
         self._spin(g, "refresh_sec", "Refresh interval (s)", 2, 60)
         self._spin(g, "stale_after_sec", "Mark SOC stale after (s)", 60, 7200)
@@ -615,7 +663,8 @@ class Panel(ExtraPages, AwsFallbackPage):
         self._entry(g, "weather_zone", "Weather zone (ZFP name)")
         self._entry(g, "start_page", "Start page (energy, weather, system, npu, ai, poller, running, network, ssh, controls, migration, settings)")
         self._entry(g, "gsk_renderer", "GTK renderer (cairo = lightest; applies on next start)")
-        self._switch(g, "starlink_enabled", "Starlink status on the Network page", "helper runs only while that page is visible")
+        self._switch(g, "starlink_enabled", "Starlink status on the Network page", "helper runs only while that page is visible",
+                     "Starlink")
         self._spin(g, "starlink_poll_sec", "Starlink poll interval (s, minimum 10)", 10, 300)
         self._entry(g, "ssh_mainland_alias", "Mainland SSH Host alias (empty = placeholder)")
         page.add(g)
@@ -623,23 +672,13 @@ class Panel(ExtraPages, AwsFallbackPage):
         self._entry(g, "database_root", "Database root")
         self._entry(g, "pacific_root", "Pacific repo root")
         page.add(g)
-        g = Adw.PreferencesGroup(title="Cameras",
-                                 description="Toggles only change what THIS PANEL shows. Collectors, grab jobs and the poller are not touched.")
-        self._switch(g, "camera_viewer_enabled", "Camera viewer page", "Off = zero camera work (no timer, no images, no streams)")
-        self._spin(g, "camera_refresh_sec", "Camera still refresh (s, only while visible)", 5, 120)
-        self._switch(g, "camera_live_fallback", "Local still fallback", "Only when a camera has no still on disk, only while visible")
-        for c in self.cams:
-            row = Adw.SwitchRow(title=f"Show {c}", subtitle="discovered from Security/Cameras/grab_all.sh")
-            row.set_active(bool(s["cameras"].get(c, {}).get("enabled", True)))
-            row.connect("notify::active", lambda r, _p, c=c: s["cameras"].setdefault(c, {}).update(enabled=r.get_active()))
-            g.add(row)
-        page.add(g)
         g = Adw.PreferencesGroup(title="Safety — NEEDS SIGN-OFF",
                                  description="Risky actions stay disabled unless this is on AND the action is signed_off in settings.json.")
-        row = Adw.SwitchRow(title="Allow risky actions (needs sign-off)")
-        row.set_active(bool(s.get("risky_actions_enabled")))
-        row.connect("notify::active", self._risky_toggled)
-        self.risky_row = row
+        row = Adw.ActionRow(title="Allow risky actions (needs sign-off)", subtitle="confirm dialog before it turns on")
+        b = state_toggle("Risky actions", bool(s.get("risky_actions_enabled")), self._risky_toggled)
+        row.add_suffix(b)
+        row.set_activatable_widget(b)
+        self.risky_row = b
         g.add(row)
         page.add(g)
         self.url_group = Adw.PreferencesGroup(title="Known URLs", description="Name + URL only. No credentials or tokens are stored. Click to open with xdg-open.")
@@ -672,29 +711,34 @@ class Panel(ExtraPages, AwsFallbackPage):
         row.connect("changed", lambda r: self.s.__setitem__(key, r.get_text()))
         g.add(row)
 
-    def _switch(self, g, key, title, sub=""):
-        row = Adw.SwitchRow(title=title, subtitle=sub)
-        row.set_active(bool(self.s.get(key)))
+    def _switch(self, g, key, title, sub="", name=None):
+        """On/off setting row: labelled toggle button ("<name>: On/Off"), no Gtk.Switch."""
+        row = Adw.ActionRow(title=title, subtitle=sub)
 
-        def ch(r, _p):
-            self.s[key] = r.get_active()
+        def ch(_b, on):
+            self.s[key] = on
             if key == "camera_viewer_enabled":
-                self.camera_override = None
-                self.cam_timer_update()
-        row.connect("notify::active", ch)
+                self.set_camera_viewer(on)
+        b = state_toggle(name or title, bool(self.s.get(key)), ch)
+        row.add_suffix(b)
+        row.set_activatable_widget(b)
         g.add(row)
 
-    def _risky_toggled(self, row, _p):
-        if row.get_active() and not self.s.get("risky_actions_enabled"):
+    def _risky_toggled(self, btn, active):
+        if active and not self.s.get("risky_actions_enabled"):
+            if self.win is None:
+                btn.rr_set(False)   # no window = no confirm dialog = stays off
+                return
+
             def yes():
                 self.s["risky_actions_enabled"] = True
                 self.r_controls()
 
             def no():
-                row.set_active(False)
+                btn.rr_set(False)
             self.confirm("Allow risky actions?", "Poller restart, Telegram/voice sends and RR_* flags need Alexander's sign-off.",
                          "Allow", yes, no)
-        elif not row.get_active():
+        elif not active:
             self.s["risky_actions_enabled"] = False
             self.r_controls()
 

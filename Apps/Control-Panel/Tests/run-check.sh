@@ -27,4 +27,6 @@ for mode in off on; do
 done
 echo "=== settings editor unit tests (temporary copies only) ==="
 nice -n 10 /usr/bin/python3 "$HERE/Tests/test_settings_io.py" | tee "$OUT/test-settings-io.txt" || rc=1
+echo "=== toggle-button tests (no window; AWS ssh stubbed, nothing written) ==="
+nice -n 10 /usr/bin/python3 "$HERE/Tests/test_toggle_buttons.py" | tee "$OUT/test-toggle-buttons.txt" || rc=1
 exit $rc

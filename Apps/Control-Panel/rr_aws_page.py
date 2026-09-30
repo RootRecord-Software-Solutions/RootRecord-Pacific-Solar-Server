@@ -4,8 +4,9 @@ INFO — MUST HAVE (future agents):
 - Built on visit and RELEASED on leave (window); NO timer, NO background SSH. The only network action is the "Status" button
   (read-only) and — in "write" mode only — a confirmed toggle. Default mode is dry-run (settings.json
   "aws_fallback_mode"): the confirm dialog shows the exact change, then nothing is written.
-- Switch state = desired default from the catalog until a Status read returns the real AWS flags.
-- Locked rows (core/no-fit) have no switch. Rows marked needs_signoff/decision_pending are labelled.
+- Button state = desired default from the catalog until a Status read returns the real AWS flags. Each row has a labelled
+  toggle button ("AWS: On" / "AWS: Off", rr_ui.state_toggle; was a Gtk.Switch until 2026-09-29 16:10 HST).
+- Locked rows (core/no-fit) have no button. Rows marked needs_signoff/decision_pending are labelled.
 """
 from __future__ import annotations
 
@@ -14,7 +15,7 @@ import time
 from gi.repository import Gtk
 
 import rr_aws_fallback as awf
-from rr_ui import Adw, action_row, esc, lbl, section, spawn
+from rr_ui import Adw, action_row, esc, lbl, section, spawn, state_toggle
 
 
 class AwsFallbackPage:
@@ -73,8 +74,7 @@ class AwsFallbackPage:
                        + (f" · {', '.join(tags)}" if tags else "") + f"\nAWS: not read · measured: {f.get('measured', '')}")
                 r = action_row(f"{f['label']}  ({f['id']})", sub, 3)
                 if Adw is not None and not f.get("locked"):
-                    sw = Gtk.Switch(valign=Gtk.Align.CENTER, active=bool(f.get("default_on")))
-                    sw.connect("state-set", self.awf_on_toggle, f)
+                    sw = state_toggle("AWS", bool(f.get("default_on")), lambda b, on, f=f: self.awf_on_toggle(b, on, f))
                     r.add_suffix(sw)
                     self.awf_switches[f["id"]] = sw
                 lb.append(r)
@@ -124,10 +124,7 @@ class AwsFallbackPage:
                         self.awf_state[fid] = real
                         sw = self.awf_switches.get(fid)
                         if sw is not None:
-                            sw.handler_block_by_func(self.awf_on_toggle)
-                            sw.set_active(real)
-                            sw.set_state(real)
-                            sw.handler_unblock_by_func(self.awf_on_toggle)
+                            sw.rr_set(real)
                 else:
                     txt = "runtime not deployed"
                 if Adw is not None:
@@ -151,10 +148,7 @@ class AwsFallbackPage:
                 + ("\nDRY-RUN: nothing will be written." if self.awf_mode == "dry-run" else "\nThis writes the flag on AWS now."))
 
         def revert():
-            sw.handler_block_by_func(self.awf_on_toggle)
-            sw.set_active(old)
-            sw.set_state(old)
-            sw.handler_unblock_by_func(self.awf_on_toggle)
+            sw.rr_set(old)
 
         def ok():
             if self.awf_mode != "write":
@@ -165,7 +159,7 @@ class AwsFallbackPage:
             def done(out, rc):
                 if rc == 0:
                     self.awf_state[fid] = new_state
-                    sw.set_state(new_state)
+                    sw.rr_set(new_state)
                     self.toast(f"AWS {fid} → {'ON' if new_state else 'OFF'} (backup taken)")
                     self.awf_budget_refresh()
                 else:
@@ -173,7 +167,7 @@ class AwsFallbackPage:
                     self.toast(f"AWS write failed rc {rc}: {(out or '').strip()[:80]}")
             spawn(awf.write_argv(self.awf_alias, fid, new_state, self.awf_root), done, capture=True)
         self.confirm("AWS Fallback — confirm", body, "Apply" if self.awf_mode == "write" else "Dry-run", ok, revert)
-        return True  # keep the switch where it was until confirmed
+        return True  # dry-run / cancel / failed write -> revert() puts the button back
 
     def awf_maybe_release(self):
         """Release the page's widgets when another page is shown (window only), so it costs RAM only while visible."""
