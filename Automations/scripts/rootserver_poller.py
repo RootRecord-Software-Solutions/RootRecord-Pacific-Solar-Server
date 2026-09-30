@@ -39,6 +39,27 @@ CLOUDFLARED_BIN = os.environ.get(
 )
 ENABLE_TUNNEL = os.environ.get("POLLER_ENABLE_TUNNEL", "1") != "0"
 TUNNEL_READY_TIMEOUT_SEC = float(os.environ.get("POLLER_TUNNEL_READY_TIMEOUT_SEC", "45"))
+# Read once at process start, same moment as jobs.py. Default off: every enabled job still runs.
+NIGHT_SLEEP_GATE = os.environ.get("RR_NIGHT_SLEEP", "0").strip() == "1"
+
+
+def _load_night_sleep():
+    """Load System/NightSleep by file path. Fail open if the module is missing."""
+    import importlib.util
+
+    path = REPO_ROOT / "System" / "NightSleep" / "scripts" / "night_sleep.py"
+    spec = importlib.util.spec_from_file_location("NightSleep", path)
+    if spec is None or spec.loader is None:
+        return None
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+try:
+    _night_sleep = _load_night_sleep() if NIGHT_SLEEP_GATE else None
+except Exception:
+    _night_sleep = None
 
 _latest = "starting"
 _lock = threading.Lock()
@@ -538,6 +559,15 @@ def run_job(job: dict) -> None:
     if job.get("needs_internet") and not internet_ok(force=True):
         log(f"{full_timestamp()}job:{job.get('id', '?')} SKIP — offline (will retry when internet is up)")
         return
+    if NIGHT_SLEEP_GATE and _night_sleep is not None:
+        jid = str(job.get("id") or "")
+        try:
+            allowed = _night_sleep.should_run(jid, enabled=True)
+        except Exception:
+            allowed = True
+        if not allowed:
+            log(f"{full_timestamp()}job:{jid} SKIP — night sleep")
+            return
     builtin = (job.get("builtin") or "").strip()
     if builtin:
         run_builtin(job)

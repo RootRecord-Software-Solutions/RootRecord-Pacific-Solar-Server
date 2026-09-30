@@ -28,14 +28,14 @@ Also confirmed:
 - `/hfo/TCSNP`, `/hfo/TCSSP` — satellite-fix summaries (Central/South Pacific)
 - `https://www.weather.gov/cphc/` — CPHC landing page
 
-## RAMMB / JTWC — reserved, not yet confirmed
-`config/hosts.yaml` (parent skill) has placeholder rate-floor entries for
-`www.cpc.ncep.noaa.gov` and `www.metoc.navy.mil` (JTWC) — hosts and exact
-paths are not yet confirmed for these. Do not enable `scripts/sources.py`
-calls to either until a specific, tested URL is added here. RAMMB imagery in
-particular would likely belong in `fetch/satellite.py`-style handling rather
-than this sub-skill, if it turns out to be per-sector imagery rather than
-storm-specific data — revisit once confirmed.
+## RAMMB / JTWC
+`scripts/global_board.py` fetches the public RAMMB realtime index, then each
+kept storm's page at
+`https://rammb-data.cira.colostate.edu/tc_realtime/storm.asp?storm_identifier={id}`
+(IR gif URL plus Forecast Hour and Track History tables), and the JTWC
+`abpwweb.txt` / `abioweb.txt` products. It stores the board under
+`Database/Weather/Hawai'i/hurricanes/global/`. It does not download gif bytes.
+`scripts/sources.py` still does not call RAMMB or JTWC.
 
 ## The 800nmi relevance rule
 A storm anywhere in the world is *tracked* (`CurrentStorms.json` sees it),

@@ -596,6 +596,20 @@ ON_AT = [
         "env": {},
     },
     {
+        # 23:30 late-final (WO-MIG-02). Second fire of the optional late slot. OFF unless
+        # RR_VOICE_LATE_FINAL=1 at poller start. Text only. Skips when that slot is already done.
+        # No delivery. Night-sleep skip is System/NightSleep when that Folder exists.
+        "id": "voice_late_final_report",
+        "enabled": os.environ.get("RR_VOICE_LATE_FINAL", "0") == "1",
+        "description": "23:30 second chance for the optional late roll-up if that board slot is not done. Text only. No delivery.",
+        "at_times": ["23:30"],
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Reports/Late-Final/scripts/late_final.py"',
+        "timeout_sec": 600,
+        "cwd": f"{PACIFIC}/Reports/Late-Final/scripts",
+        "env": {},
+    },
+    {
         # Hurricane desk voice report (2026-09-29, old-repo migration): G1 weather/hurricane-desk Hawaii block, Carly, at the
         # G1 times. OFF unless RR_VOICE_HURRICANE=1 at poller start. Reads Database Weather/Hawai'i/hurricanes/tracking
         # (weather poller) + NWS HI alerts. No delivery, no OBS/radio.
