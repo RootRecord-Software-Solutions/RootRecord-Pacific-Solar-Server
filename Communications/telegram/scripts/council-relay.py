@@ -226,6 +226,46 @@ def post_as(voice_id, voices, chat_id, text, max_text, allow=None):  # info: def
     print(f"[ok] posted as {voice_id}")  # info: call print
     return True  # info: return True
 
+# ====================================================
+# SECTION: function bot_call
+# What it does: One Telegram method as a voice. Failures are logged by type. Never prints the token.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def bot_call(voice_id, voices, method, payload):  # info: def bot_call
+    tok = token_for(voices[voice_id])  # info: set tok
+    if not tok:  # info: if not tok :
+        return False  # info: return False
+    try:  # info: try :
+        api(tok, method, payload)  # info: call api
+        return True  # info: return True
+    except Exception as e:  # info: except Exception as e :
+        print(f"[warn] {method} {voice_id} {type(e).__name__}", file=sys.stderr)  # info: call print
+        return False  # info: return False
+
+# ====================================================
+# SECTION: function mark_seen
+# What it does: React with eyes on the user message so the room can see it was read. Does not send text.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def mark_seen(voice_id, voices, chat_id, message_id):  # info: def mark_seen
+    if not message_id:  # info: if not message_id :
+        return False  # info: return False
+    ok = bot_call(voice_id, voices, "setMessageReaction", {  # info: set ok
+        "chat_id": chat_id, "message_id": message_id,  # info: "chat_id" : chat_id , "message_id" : message_id
+        "reaction": [{"type": "emoji", "emoji": "👀"}],  # info: "reaction" : [ { "type" : "emoji" , "emoji" : "👀" } ]
+    })  # info: )
+    if ok:  # info: if ok :
+        print(f"[ok] seen as {voice_id}")  # info: call print
+    return ok  # info: return ok
+
+# ====================================================
+# SECTION: function mark_typing
+# What it does: Show the Telegram typing indicator for one voice. Does not send text.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def mark_typing(voice_id, voices, chat_id):  # info: def mark_typing
+    return bot_call(voice_id, voices, "sendChatAction", {"chat_id": chat_id, "action": "typing"})  # info: return bot_call ( voice_id , voices , "sendChatAction"
+
 # Quiet-mode inbox (Alexander 2026-09-29, Library 08-ideas relay-quiet-mode-message-hold): while replies are
 # OFF, each consumed message (metadata + text) is appended to a git-ignored JSONL so it can be answered later
 # with relay-inbox-replay.py. Cut hourly into Archive/YYYY-MM-DD/. Local file only; never sends anything.
@@ -388,18 +428,23 @@ def main():  # info: def main
                 print(f"[quiet] update {offset - 1} consumed — replies OFF (RR_RELAY_REPLIES=0): no infer, no post; {held}")  # info: call print
                 continue  # info: continue
 
+            mid = msg.get("message_id")  # info: set mid
             if is_private:  # info: if is_private :
+                mark_seen(poll_voice, voices, ch, mid)  # info: call mark_seen
                 reply = run_infer(cfg, poll_voice, text)  # info: set reply
                 if reply:  # info: if reply :
+                    mark_typing(poll_voice, voices, ch)  # info: call mark_typing
                     post_as(poll_voice, voices, ch, reply, max_text, allow=True)  # info: call post_as
                 continue  # info: continue
 
             if group_hello(text):  # info: if group_hello ( text ) :
-                for hop in ("ava", "bruce", "carly"):  # info: for hop in ( "ava" , "bruce" , "carly" ) :
-                    if hop not in voices:  # info: if hop not in voices :
-                        continue  # info: continue
+                hellos = [hop for hop in ("ava", "bruce", "carly") if hop in voices]  # info: set hellos
+                for hop in hellos:  # info: for hop in hellos :
+                    mark_seen(hop, voices, ch, mid)  # info: call mark_seen
+                for hop in hellos:  # info: for hop in hellos :
                     reply = run_infer(cfg, hop, "Greet the room in one or two sentences. User said: " + text)  # info: set reply
                     if reply:  # info: if reply :
+                        mark_typing(hop, voices, ch)  # info: call mark_typing
                         post_as(hop, voices, ch, reply, max_text, allow=True)  # info: call post_as
                     time.sleep(0.4)  # info: time . sleep ( 0.4 )
                 continue  # info: continue
@@ -409,16 +454,20 @@ def main():  # info: def main
                 for hop in PIPELINE_ORDER:  # info: for hop in PIPELINE_ORDER :
                     if hop not in voices:  # info: if hop not in voices :
                         continue  # info: continue
+                    mark_seen(hop, voices, ch, mid)  # info: call mark_seen
                     reply = run_infer(cfg, hop, text, prior=prior)  # info: set reply
                     if reply:  # info: if reply :
+                        mark_typing(hop, voices, ch)  # info: call mark_typing
                         post_as(hop, voices, ch, reply, max_text, allow=True)  # info: call post_as
                         prior += f"\n[{hop}]: {reply}\n"  # info: set prior
                     time.sleep(0.4)  # info: time . sleep ( 0.4 )
                 continue  # info: continue
 
             voice = mentioned_voice(text, voices) or default_voice  # info: set voice
+            mark_seen(voice, voices, ch, mid)  # info: call mark_seen
             reply = run_infer(cfg, voice, text)  # info: set reply
             if reply:  # info: if reply :
+                mark_typing(voice, voices, ch)  # info: call mark_typing
                 post_as(voice, voices, ch, reply, max_text, allow=True)  # info: call post_as
         time.sleep(0.2)  # info: time . sleep ( 0.2 )
 
