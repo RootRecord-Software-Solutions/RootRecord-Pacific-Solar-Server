@@ -144,6 +144,8 @@ def spoken_clock(hour: int, minute: int) -> str:
     name = _HOURS[h12]
     if minute == 0:
         return f"{name} {ampm}"
+    if minute < 10:  # 2026-09-29: "two oh one p.m.", not "two one p.m." (clip cache only uses :00 / :30)
+        return f"{name} oh {_ONES[minute]} {ampm}"
     return f"{name} {_minute_words(minute)} {ampm}"
 
 

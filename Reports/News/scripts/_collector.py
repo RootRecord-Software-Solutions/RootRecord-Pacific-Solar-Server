@@ -9,6 +9,8 @@ failed state is visible instead of silently looking like an empty state.
 G3 port (2026-09-29, old-repo migration) of G0 `old/operations/news/_collector.py`. Logic unchanged except:
 every HTTP timeout is capped at RR_NEWS_TIMEOUT (default 10 s) and the crawl limits can be lowered with
 RR_NEWS_MAX_FEEDS / _PAGES / _SITEMAPS / _ARTICLES (defaults = G0 values).
+2026-09-29 (breadth 2): run() takes optional seed_feeds (explicit, operator-confirmed feed URLs, fetched first and
+not subject to host_ok); RR_NEWS_SEEDS_ONLY=1 skips portal discovery / sitemap / page crawl entirely.
 """
 from __future__ import annotations
 
@@ -458,10 +460,14 @@ def store_items(c, state_slug, homepage, feed_url, items, now, backfill, checkpo
     return new_posts, new_events
 
 
-def run(state_slug, homepage, db_path, backfill=False, checkpoint=CHECKPOINT):
+def run(state_slug, homepage, db_path, backfill=False, checkpoint=CHECKPOINT, seed_feeds=()):
     c = init_db(db_path)
     now = now_iso()
-    feeds, pages, sitemaps, discovery_errors = discover(homepage, state_slug)
+    if os.environ.get('RR_NEWS_SEEDS_ONLY') == '1' and seed_feeds:
+        feeds, pages, sitemaps, discovery_errors = [], [], [], []
+    else:
+        feeds, pages, sitemaps, discovery_errors = discover(homepage, state_slug)
+    feeds = list(dict.fromkeys(list(seed_feeds) + list(feeds)))  # seeds first; G0 discovery order kept after
     new_posts = new_events = 0
     attempted = set()
 

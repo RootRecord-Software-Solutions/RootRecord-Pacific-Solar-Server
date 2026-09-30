@@ -228,10 +228,10 @@ def b_energy_report(t: datetime):
         md.append(f"| {f['name']} | {f['soc']}% | {f['solar_w']} W | {f['ac_out_w']} W | {f['usbc_out_w']} W | {f['at']} | {f['age_min']} min |")
         s = f"{f['name']} battery {f['soc']}%"
         if f["solar_w"] is not None:
-            s += f", solar input {f['solar_w']} watts"
+            s += f", solar input {spoken_watts(f['solar_w'])}"
         out = sum(x for x in (f["ac_out_w"], f["usbc_out_w"]) if isinstance(x, (int, float)))
         if f["ac_out_w"] is not None or f["usbc_out_w"] is not None:
-            s += f", output {out} watts"
+            s += f", output {spoken_watts(out)}"
         sp.append(s + ".")
         if f["age_min"] is not None and f["age_min"] > STALE_MIN:
             sp.append(f"That {f['name']} reading is {f['age_min']} minutes old.")
@@ -478,32 +478,56 @@ def _host_desks():
     return host_desks
 
 
+def spoken_watts(v) -> str:
+    """Spoken power: whole watts; 0 (or 0.0 from the cloud read) -> "zero watts" (2026-09-29 text fix)."""
+    w = int(round(float(v)))
+    return "zero watts" if w == 0 else ("one watt" if w == 1 else f"{w} watts")
+
+
+def spoken_hhmm(hhmm) -> str:
+    """"06:11" -> "six eleven a.m." (sun times spoken as words; 2026-09-29 text fix). Non-HH:MM passes through."""
+    try:
+        h, m = (int(x) for x in str(hhmm).split(":")[:2])
+    except (TypeError, ValueError):
+        return str(hhmm)
+    return spoken_clock(h, m)
+
+
 def b_solar_desk(t: datetime):
     """G1 hourly-clip-reports solar_spoken ("Solar desk at <clock>. <EcoFlow line>") + G1 hourly-solar-weather sun times."""
     facts = energy_facts(t)
     sun = jload(ENERGY / "sun" / "sun-times-last.json") or {}
     sp = [f"Solar desk at {clock(t)} Hawaiian Standard Time.".replace("..", ".")]
-    lines = []
+    lines, spoken_lines = [], []
     for f in facts:
         if not f["ok"]:
             lines.append(f"{f['name']}: offline")
+            spoken_lines.append(f"{f['name']}: offline")
             continue
-        bits = [f"state of charge {f['soc']}%"]
-        if f.get("solar_w") is not None:
-            bits.append(f"solar input {f['solar_w']} watts")
-        if f.get("ac_out_w") is not None:
-            bits.append(f"AC out {f['ac_out_w']} watts")
+        bits, sbits = [f"state of charge {f['soc']}%"], [f"state of charge {f['soc']}%"]
+        power = [(k, f.get(k)) for k in ("solar_w", "ac_out_w") if f.get(k) is not None]
+        for k, v in power:
+            bits.append(f"{'solar input' if k == 'solar_w' else 'AC out'} {v} W")
+        if power and all(int(round(float(v))) == 0 for _, v in power):
+            sbits.append("idle")  # no solar in, no AC out
+        else:
+            sbits += [f"{'solar input' if k == 'solar_w' else 'AC out'} {spoken_watts(v)}" for k, v in power]
         lines.append(f"{f['name']}: " + ", ".join(bits))
+        spoken_lines.append(f"{f['name']}: " + ", ".join(sbits))
     if not any(f["ok"] for f in facts):
         sp.append("EcoFlow is offline.")
     else:
-        sp += [x + "." for x in lines]
+        sp += [x + "." for x in spoken_lines]
         for f in facts:
             if f["ok"] and f.get("age_min") is not None and f["age_min"] > STALE_MIN:
                 sp.append(f"That {f['name']} reading is {f['age_min']} minutes old.")
     if sun.get("date") == t.date().isoformat() and sun.get("sunset"):
-        sp.append(f"Sunrise was {sun['sunrise']}, sunset is {sun['sunset']}." if t.strftime("%H:%M") < sun["sunset"]
-                  else f"Sunset was {sun['sunset']}; next sunrise {sun.get('next_sunrise', 'n/a')}.")
+        if t.strftime("%H:%M") < sun["sunset"]:
+            sp.append(f"Sunrise was {spoken_hhmm(sun['sunrise'])}, sunset is {spoken_hhmm(sun['sunset'])}.".replace("..", "."))
+        elif sun.get("next_sunrise"):
+            sp.append(f"Sunset was {spoken_hhmm(sun['sunset'])}; next sunrise {spoken_hhmm(sun['next_sunrise'])}.".replace("..", "."))
+        else:
+            sp.append(f"Sunset was {spoken_hhmm(sun['sunset'])}.".replace("..", "."))
     md = [f"# Solar desk — {t.isoformat()}", ""] + [f"- {x}" for x in lines] + [
         f"- Sun: {sun.get('sunrise', 'n/a')} / {sun.get('sunset', 'n/a')} ({sun.get('date', 'n/a')}, Open-Meteo)", "",
         "## Spoken", "", " ".join(sp), "",
@@ -593,7 +617,7 @@ def _rollup(t: datetime, slot: str):
         s = "Batteries: " + ", ".join(f"{f['name']} {f['soc']}%" for f in ok)
         solar = sum(f["solar_w"] or 0 for f in ok)
         # spoken form says "at": "Delta 2 36%" would hit the G1 clock rule ("two thirty six a.m.")
-        sp.append("Battery levels: " + ", ".join(f"{f['name']} at {f['soc']}%" for f in ok) + f". Solar input {solar} watts.")
+        sp.append("Battery levels: " + ", ".join(f"{f['name']} at {f['soc']}%" for f in ok) + f". Solar input {spoken_watts(solar)}.")
         lines.append(s + f"; solar input {solar} W")
     else:
         sp.append("EcoFlow is offline.")
