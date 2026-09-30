@@ -161,6 +161,9 @@ def arm() -> dict:
     st = _load()
     st.update({
         "enabled": True,
+        "ok": True,
+        "played": False,
+        "detail": "armed",
         "day": today,
         "until": _noon(now).isoformat(),
         "play_once": False,
@@ -263,6 +266,10 @@ def run(dry_run: bool = True) -> dict:
         return result
 
     st["play_once"] = False
+    st["ok"] = True
+    st["played"] = True
+    st["detail"] = "dry_run"
+    st["speaker"] = False
     st["last_played_at"] = now.isoformat()
     st["last_played"] = str(path)
     _save(st)

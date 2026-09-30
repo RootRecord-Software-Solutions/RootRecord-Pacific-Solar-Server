@@ -7,6 +7,7 @@ Does not call Kokoro, speakers, or report writers.
 from __future__ import annotations
 
 import json
+import os
 import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
@@ -198,6 +199,3 @@ def tts(text: str, out_path: Path, *, voice: str = "ara", language: str = "en", 
         note="report audio clip metered after bytes landed",
     )
     return dest
-
-
-import os  # noqa: E402  — used only for the key read inside _headers
