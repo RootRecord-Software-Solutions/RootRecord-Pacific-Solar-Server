@@ -12,7 +12,7 @@ Desk runtime for the Stripe snapshot, Vercel failed-build records, and live-data
 | `jobs.py` | `stripe_poll` every 1800 s behind `RR_STRIPE=1`. `vercel_builds` every 300 s behind `RR_VERCEL_BUILDS=1`. Both **gated off** |
 | Data | `2 - RootRecord-Database/Website/` — `stripe-snapshot.json`, `pages/{power,weather,kilauea}.json` |
 | Logs | `2 - RootRecord-Database/Logs/Website/` — failed-build JSON only. Empty until a token exists. No prune |
-| Public pages | Staged at `staged/live-data.html` and `staged/cards.css`. Not deployed. Folder 3 is still empty for the RootRecord-Cloud checkout |
+| Public pages | In the one Vercel app at `3 - RootRecord-Website/src/app/data/` (`/data`, `/data/power`, `/data/weather`, `/data/kilauea`). Glass cards. They read Database `Website/pages/*.json`. On a host without those files they say the snapshot is not mounted. Not deployed |
 | Holding skin | Unchanged copy in `5 - RootRecord-Library/Archive/Website-Themes/holding/`. Out of the Vercel build |
 
 ### Scripts

@@ -265,11 +265,12 @@ def self_test() -> int:
         if first["count"] != 1 or first["posted"] != ["hv-test-1"] or first["sent"]:
             print("FAIL first run", file=sys.stderr)
             return 1
-        text = (seen_path.parent / LAST_NAME).read_text(encoding="utf-8")
-        if "M 2.4 · 5 km SSW of Pahala, Hawaii" not in text:
+        last = json.loads((seen_path.parent / LAST_NAME).read_text(encoding="utf-8"))
+        notice = "\n".join(last.get("notices") or [])
+        if "M 2.4 · 5 km SSW of Pahala, Hawaii" not in notice:
             print("FAIL notice body", file=sys.stderr)
             return 1
-        if "hv-small" in text:
+        if "hv-small" in notice:
             print("FAIL below-M2 included", file=sys.stderr)
             return 1
         second = run(feed_path, seen_path, log_path, seed_first=False)

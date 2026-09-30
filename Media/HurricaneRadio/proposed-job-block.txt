@@ -1,0 +1,16 @@
+# Staged because Automations/scripts/jobs.py was already being edited.
+# Paste inside the at_times list, after voice_hurricane_desk. Do not enable.
+# Speaker playback stays off. This command never passes --play.
+{
+    # Hurricane radio (2026-09-30, WO-MIG-19). OFF unless RR_HURRICANE_RADIO=1 at poller start.
+    # Hands hurricane_desk to Report playback --dry-run. Does not call aplay.
+    "id": "media_hurricane_radio",
+    "enabled": os.environ.get("RR_HURRICANE_RADIO", "0") == "1",
+    "description": "Request hurricane desk WAV through Report playback. No speaker.",
+    "at_times": ["06:35", "13:12", "17:02"],
+    "builtin": "",
+    "command": f'python3 "{PACIFIC}/Media/HurricaneRadio/scripts/radio.py" run',
+    "timeout_sec": 60,
+    "cwd": f"{PACIFIC}/Media/HurricaneRadio",
+    "env": {},
+},

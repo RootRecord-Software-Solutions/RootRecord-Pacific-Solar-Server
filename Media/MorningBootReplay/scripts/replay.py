@@ -56,8 +56,21 @@ def _load() -> dict:
 
 
 def _save(data: dict) -> None:
+    """Write replay-last.json in the active last-file shape (same keys as last-play.json, plus arm fields)."""
     body = dict(data)
     body["at"] = now_hst().isoformat()
+    body["report"] = "boot_brief"
+    body["clip"] = None
+    body["speaker"] = False
+    wav = body.get("wav") or body.get("path") or str(default_wav())
+    body["wav"] = str(wav)
+    body["path"] = str(wav)
+    if "ok" not in body:
+        body["ok"] = bool(body.get("played") or body.get("enabled"))
+    if "played" not in body:
+        body["played"] = False
+    if "detail" not in body:
+        body["detail"] = "armed" if body.get("enabled") else "idle"
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     tmp = STATE_PATH.with_suffix(".json.tmp")
     tmp.write_text(json.dumps(body, indent=2) + "\n", encoding="utf-8")
