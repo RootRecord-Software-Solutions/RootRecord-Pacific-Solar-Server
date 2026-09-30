@@ -36,6 +36,17 @@ def replies_enabled() -> bool:  # info: def replies_enabled
     return os.environ.get("RR_RELAY_REPLIES", "0").strip() == "1"  # info: return os . environ . get ( "RR_RELAY_REPLIES"
 
 # ====================================================
+# SECTION: function replies_for_chat
+# What it does: Live council stays quiet unless RR_RELAY_REPLIES=1. The sandbox chat answers when SANDBOX_REPLIES=1.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def replies_for_chat(cfg, chat: str) -> bool:  # info: def replies_for_chat
+    sandbox = (cfg.get("SANDBOX_CHAT_ID") or "").strip()  # info: set sandbox
+    if sandbox and str(chat) == sandbox and (cfg.get("SANDBOX_REPLIES") or "0").strip() == "1":  # info: if sandbox and str ( chat ) == sandbox
+        return True  # info: return True
+    return replies_enabled()  # info: return replies_enabled ( )
+
+# ====================================================
 # SECTION: function load_kv
 # What it does: load kv.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -185,12 +196,14 @@ def run_infer(cfg, voice, prompt, prior=""):  # info: def run_infer
 
 # ====================================================
 # SECTION: function post_as
-# What it does: post as.
+# What it does: Post one reply. allow=False keeps a chat quiet. Never prints the token.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def post_as(voice_id, voices, chat_id, text, max_text):  # info: def post_as
-    if not replies_enabled():  # info: if not replies_enabled ( ) :
-        print(f"[quiet] RR_RELAY_REPLIES=0 — not posting as {voice_id}")  # info: call print
+def post_as(voice_id, voices, chat_id, text, max_text, allow=None):  # info: def post_as
+    if allow is None:  # info: if allow is None :
+        allow = replies_enabled()  # info: set allow
+    if not allow:  # info: if not allow :
+        print(f"[quiet] replies off — not posting as {voice_id}")  # info: call print
         return False  # info: return False
     text = clean_reply(text)  # info: set text
     if not text:  # info: if not text :
@@ -283,7 +296,7 @@ def inbox_hold(upd, msg, text, target, inbox_dir=None):  # info: def inbox_hold
 
 # ====================================================
 # SECTION: function main
-# What it does: main.
+# What it does: Poll one getUpdates. Answer the sandbox when SANDBOX_REPLIES=1. Keep the live council quiet unless RR_RELAY_REPLIES=1.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def main():  # info: def main
@@ -306,6 +319,10 @@ def main():  # info: def main
     chat_id = cfg.get("COUNCIL_CHAT_ID", "").strip()  # info: set chat_id
     if not chat_id:  # info: if not chat_id :
         print("No data: COUNCIL_CHAT_ID", file=sys.stderr); return 4  # info: call print
+    sandbox_id = cfg.get("SANDBOX_CHAT_ID", "").strip()  # info: set sandbox_id
+    allowed = {str(chat_id)}  # info: set allowed
+    if sandbox_id:  # info: if sandbox_id :
+        allowed.add(str(sandbox_id))  # info: allowed . add ( str ( sandbox_id ) )
     triggers = [x.strip().lower() for x in cfg.get("PIPELINE_TRIGGERS", "").split(",") if x.strip()]  # info: set triggers
     default_voice = cfg.get("DEFAULT_SINGLE_VOICE", "ava")  # info: set default_voice
     max_text = int(cfg.get("MAX_TEXT", "3900") or 3900)  # info: set max_text
@@ -314,7 +331,8 @@ def main():  # info: def main
     offset_file = state_dir / "offset.txt"  # info: set offset_file
     offset = int(offset_file.read_text().strip() or "0") if offset_file.is_file() else 0  # info: set offset
     timeout = int(cfg.get("POLL_TIMEOUT", "20") or "20")  # info: set timeout
-    print(f"[ok] relay chat={chat_id} poll={poll_voice} infer=FLM-prefer replies={'ON' if replies_enabled() else 'OFF (quiet; set RR_RELAY_REPLIES=1 to opt in)'}")  # info: call print
+    sandbox_note = f" sandbox={sandbox_id} sandbox_replies={'ON' if replies_for_chat(cfg, sandbox_id) else 'OFF'}" if sandbox_id else ""  # info: set sandbox_note
+    print(f"[ok] relay chat={chat_id}{sandbox_note} poll={poll_voice} infer=FLM-prefer replies={'ON' if replies_enabled() else 'OFF (quiet; set RR_RELAY_REPLIES=1 to opt in)'}")  # info: call print
 
     last_rotate = 0.0  # info: set last_rotate
     while True:  # info: while True :
@@ -345,13 +363,14 @@ def main():  # info: def main
             chat = msg.get("chat") or {}  # info: set chat
             ch = str(chat.get("id", ""))  # info: set ch
             is_private = chat.get("type") == "private"  # info: set is_private
-            if not is_private and ch != str(chat_id):  # info: if not is_private and ch != str (
+            if not is_private and ch not in allowed:  # info: if not is_private and ch not in allowed :
                 continue  # info: continue
             # Operator silence / not ready
             if SILENCE_RE.search(text):  # info: if SILENCE_RE . search ( text ) :
                 print("[ok] silence cue — no post")  # info: call print
                 continue  # info: continue
-            if not replies_enabled():  # info: if not replies_enabled ( ) :
+            allow_reply = replies_enabled() if is_private else replies_for_chat(cfg, ch)  # info: set allow_reply
+            if not allow_reply:  # info: if not allow_reply :
                 try:  # info: try :
                     inbox_hold(upd, msg, text, persona_target(text, is_private, poll_voice, voices, triggers, default_voice))  # info: call inbox_hold
                     held = "held in Relay-Inbox"  # info: set held
@@ -363,7 +382,7 @@ def main():  # info: def main
             if is_private:  # info: if is_private :
                 reply = run_infer(cfg, poll_voice, text)  # info: set reply
                 if reply:  # info: if reply :
-                    post_as(poll_voice, voices, ch, reply, max_text)  # info: call post_as
+                    post_as(poll_voice, voices, ch, reply, max_text, allow=True)  # info: call post_as
                 continue  # info: continue
 
             if wants_pipeline(text, triggers):  # info: if wants_pipeline ( text , triggers ) :
@@ -373,7 +392,7 @@ def main():  # info: def main
                         continue  # info: continue
                     reply = run_infer(cfg, hop, text, prior=prior)  # info: set reply
                     if reply:  # info: if reply :
-                        post_as(hop, voices, chat_id, reply, max_text)  # info: call post_as
+                        post_as(hop, voices, ch, reply, max_text, allow=True)  # info: call post_as
                         prior += f"\n[{hop}]: {reply}\n"  # info: set prior
                     time.sleep(0.4)  # info: time . sleep ( 0.4 )
                 continue  # info: continue
@@ -381,7 +400,7 @@ def main():  # info: def main
             voice = mentioned_voice(text, voices) or default_voice  # info: set voice
             reply = run_infer(cfg, voice, text)  # info: set reply
             if reply:  # info: if reply :
-                post_as(voice, voices, chat_id, reply, max_text)  # info: call post_as
+                post_as(voice, voices, ch, reply, max_text, allow=True)  # info: call post_as
         time.sleep(0.2)  # info: time . sleep ( 0.2 )
 
 if __name__ == "__main__":  # info: if __name__ == "__main__" :

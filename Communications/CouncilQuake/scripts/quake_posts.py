@@ -244,6 +244,32 @@ def council_chat_id() -> str:  # info: def council_chat_id
 
 
 # ====================================================
+# SECTION: function sandbox_chat_id
+# What it does: Read SANDBOX_CHAT_ID from relay.conf. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def sandbox_chat_id() -> str:  # info: def sandbox_chat_id
+    if not RELAY_CONF.is_file():  # info: if not RELAY_CONF . is_file ( ) :
+        return ""  # info: return ""
+    for line in RELAY_CONF.read_text(encoding="utf-8").splitlines():  # info: for line in RELAY_CONF . read_text ( encoding
+        s = line.strip()  # info: set s
+        if s.startswith("SANDBOX_CHAT_ID="):  # info: if s . startswith ( "SANDBOX_CHAT_ID=" ) :
+            return s.split("=", 1)[1].strip()  # info: return s . split ( "=" , 1
+    return ""  # info: return ""
+
+
+# ====================================================
+# SECTION: function dest_chat_id
+# What it does: Live council chat, or the sandbox when RR_TELEGRAM_DEST=sandbox. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def dest_chat_id() -> str:  # info: def dest_chat_id
+    if os.environ.get("RR_TELEGRAM_DEST", "").strip().lower() == "sandbox":  # info: if os . environ . get ( "RR_TELEGRAM_DEST"
+        return sandbox_chat_id()  # info: return sandbox_chat_id ( )
+    return council_chat_id()  # info: return council_chat_id ( )
+
+
+# ====================================================
 # SECTION: function maybe_send
 # What it does: Telegram send stays off unless RR_COUNCIL_QUAKE_SEND=1. Never prints the token.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -255,7 +281,7 @@ def maybe_send(text: str) -> dict:  # info: def maybe_send
     from envload import carly_token  # info: from envload import carly_token
 
     token = carly_token()  # info: set token
-    chat = council_chat_id()  # info: set chat
+    chat = dest_chat_id()  # info: set chat
     if not token or not chat or not text.strip():  # info: if not token or not chat or not
         return {"ok": False, "sent": False, "detail": "missing token, chat, or text"}  # info: return { "ok" : False , "sent" :
     body = json.dumps(  # info: set body
