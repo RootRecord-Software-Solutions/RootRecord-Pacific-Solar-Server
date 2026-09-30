@@ -729,7 +729,8 @@ def generate(base_dir: str) -> list[Path]:  # info: def generate
             "# Hawai'i State Weather Database\n\n"
             "{{CURRENT_CONDITIONS}}\n\n{{REPORT_SECTIONS}}\n"  # info: "{{CURRENT_CONDITIONS}}\n\n{{REPORT_SECTIONS}}\n"
         )  # info: )
-    # Generated text stays in the Database weather tree (gitignored). Do not write this folder's README.md.
+    reports_readme = reports_root / "README.md"  # info: set reports_readme
+    reports_readme.write_text(_render_readme(template, replacements), encoding="utf-8")  # info: reports_readme . write_text
 
     database_root = base.parent.parent  # info: set database_root
     database_readme = database_root / "README.md"  # info: set database_readme
@@ -748,4 +749,4 @@ def generate(base_dir: str) -> list[Path]:  # info: def generate
     return [  # info: return [
         reports_dir / "{}_current.md".format(resource_id)  # info: reports_dir / "{}_current.md" . format ( resource_id )
         for resource_id, *_ in sections  # info: for resource_id , * _ in sections
-    ] + [aggregate_path, REPORTING_README, database_readme]  # info: ] + [ aggregate_path , REPORTING_README , database_readme
+    ] + [aggregate_path, reports_readme, database_readme]  # info: return the database report paths

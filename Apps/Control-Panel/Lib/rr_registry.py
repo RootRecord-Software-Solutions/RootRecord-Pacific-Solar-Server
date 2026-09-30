@@ -162,7 +162,7 @@ FILES: list[FileSpec] = [  # info: set FILES
              "read at each grab; cam_server after restart", secret_file=True,  # info: "read at each grab; cam_server after restart" , secret_file = True ,
              kinds=((r"crop_right_pct$", "float"),)),  # info: set kinds
     # ---- Panel
-    FileSpec("panel-settings", PAC / "Apps/Control-Panel/settings.json", "json", "panel", "Root Monitor (rr_control_panel.py)", "applies on Save / next start",  # info: call FileSpec
+    FileSpec("panel-settings", DBR / "System/control-panel/settings.json", "json", "panel", "Root Monitor (rr_control_panel.py)", "applies on Save / next start",  # info: call FileSpec
              note="edited on the Panel page (dedicated controls)", read_only="edit with the Panel page controls"),  # info: set note
 ]  # info: ]
 

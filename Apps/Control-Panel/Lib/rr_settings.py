@@ -104,6 +104,9 @@ def url_is_clean(url: str) -> bool:  # info: def url_is_clean
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def load(path: Path = SETTINGS_FILE) -> dict:  # info: def load
+    if path == SETTINGS_FILE and not path.exists() and SEED_FILE.is_file():  # info: if path == SETTINGS_FILE and not path . exists ( ) and SEED_FILE . is_file ( ) :
+        path.parent.mkdir(parents=True, exist_ok=True)  # info: path . parent . mkdir ( parents = True , exist_ok = True )
+        path.write_text(SEED_FILE.read_text(encoding="utf-8"), encoding="utf-8")  # info: path . write_text ( SEED_FILE . read_text ( encoding = "utf-8" ) , encoding = "utf-8" )
     s = copy.deepcopy(DEFAULTS)  # info: set s
     try:  # info: try :
         data = json.loads(path.read_text(encoding="utf-8"))  # info: set data

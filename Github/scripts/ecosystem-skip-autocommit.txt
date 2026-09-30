@@ -12,6 +12,7 @@
 2 - RootRecord-Database/System/last
 2 - RootRecord-Database/System/status
 2 - RootRecord-Database/System/system.db
+2 - RootRecord-Database/System/control-panel
 2 - RootRecord-Database/Worklog
 2 - RootRecord-Database/Logs
 
