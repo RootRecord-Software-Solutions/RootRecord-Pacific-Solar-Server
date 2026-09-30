@@ -13,6 +13,7 @@ Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messagin
 | telegram / discord / slack | Shells; relay still G2 `coms/telegram` |
 | discord | Shell only — **WO-COM-002** token rotation required before LIVE |
 | G1 | `communications/*`, `network-globe`, `local-data-globe`, `council/council-telegram` |
+| `web-facts/` | G1 `websites/web-facts` port (allowlisted HTTPS GET), on demand only — LANDED, smoke PASS 2026-09-29 13:58 HST; not wired to the council relay |
 
 ---
 

@@ -12,6 +12,7 @@ Host operating-system integration, system sampling, and desk host services.
 | jobs.py | `sys_stats_cycle` → `System/scripts/sys-sample.sh` |
 | Sample writes | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/System/` |
 | Uptime log | `scripts/uptime_log.py tick\|facts\|recent` (G1 `uptime-log` port, stdlib) → Database `System/uptime/` (events JSONL, KEEP 400; GAP 180 s; boot_id). Job `system_uptime_log` (60 s) **gated OFF** (`RR_UPTIME_LOG=1`). LANDED · PASS one tick 2026-09-29 13:26 HST |
+| Host desks | `scripts/host_desks.py net-sample\|net-usage\|security` (G1 `host-metrics` net + security port) → Database `System/network/` (`net-last.json`; `Daily/net-*.jsonl` git-ignored) and `System/security/security-last.json` (counts/booleans only). LANDED · smoke PASS 2026-09-29 14:00 HST (temp root). Sampler job **PROPOSED, not registered** (`system_net_sample`, 300 s, `RR_NET_SAMPLES=1`; block in Library `00-architecture/Pending-Job-Registrations-2026-09-29.md`) |
 | Worklog | **Reports/** (WO-RPT-001) — no longer System residual |
 | Ollama | **Active system service** — `ollama.service`, running as the `ollama` user |
 | Ollama model store | **Service-owned**; not `/home/rootrecord/.ollama/models` |

@@ -42,3 +42,7 @@ Energy/Smart-Devices/**/devices.json
 Energy/Smart-Devices/**/tuya-raw.json
 Energy/Smart-Devices/**/snapshot.json
 Energy/Smart-Devices/.venv/
+
+# Communications/website (2026-09-29): RootRecord-Cloud Vercel site staged as its OWN clone (own repo + Vercel git deploy).
+# Only Communications/website/README.md is tracked by Pacific. Never let Pacific auto-sync add the nested .git as a gitlink.
+Communications/website/RootRecord-Cloud/

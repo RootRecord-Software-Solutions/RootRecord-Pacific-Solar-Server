@@ -3,6 +3,7 @@
 Worklog and operational reporting for the Pacific desk — **and the structured intake spine for future radio / live-stream automation**.
 
 **Machine SOT:** `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Worklog/`  
+**News (2026-09-29):** `News/` — G0 Hawaiʻi state news collector port (on demand; job PROPOSED; smoke rc 0 but 0 posts, see `News/README.md`)  
 **Human narrative:** Library `Documentation/01-operations/` (templates + session logs)  
 **Work order:** [WO-RPT-001](https://github.com/RootRecord-Software-Solutions/RootRecord-Library/blob/main/Documentation/06-development/Work-Orders/WO-RPT-001-Reports-Worklog-Domain-Import.md)
 
