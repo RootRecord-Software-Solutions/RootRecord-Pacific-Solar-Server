@@ -161,6 +161,14 @@ persona = json.loads(open(persona_path, encoding="utf-8").read()) if persona_pat
 if persona and not (persona.get("system") or "").strip():  # info: if
   raise SystemExit(2)  # info: raise
 list_desk = bool(re.search(r"\b(what (other |else )?data|what (else )?(do|can) you see|what readings|on (your|the) desk|list (the |your )?(data|readings|desk))\b", os.environ.get("RR_PROMPT") or "", re.I))  # info: set list_desk
+scope = bool(re.search(r"\b(what is running|whats running|what is broken|what exists|what changed|what can i|what programs|not allowed|system state|what is working|capabilities|what am i allowed)\b", os.environ.get("RR_PROMPT") or "", re.I))  # info: set scope
+brief_path = os.environ.get("STATE_BRIEF_FILE") or "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/System/status/rootrecord-state-brief.txt"  # info: set brief_path
+brief = ""  # info: set brief
+if scope and os.path.isfile(brief_path):  # info: if scope and os . path . isfile ( brief_path )
+  try:  # info: try
+    brief = open(brief_path, encoding="utf-8").read().strip()  # info: set brief
+  except OSError:  # info: except
+    brief = ""  # info: set brief
 if desk_lines:  # info: if
   if persona:  # info: if
     user = "DESK_LIVE:\n" + desk_lines + "\nUser: " + user  # info: user
@@ -175,6 +183,14 @@ if desk_lines and list_desk:  # info: if desk_lines and list_desk
     "SOC_percent is percent full. solar_input_w is watts in. ac_output_w and usbc_output_w are watts out. "  # info: command
     "charge_source none means not charging. Do not mention a device or disk that is not listed. "  # info: command
     "Do not answer No data. Do not invent numbers. Do not write the label DESK_LIVE. Do not repeat these instructions."  # info: command
+  )  # info: command
+if brief and scope:  # info: if brief and scope
+  user = "STATE:\n" + brief + "\n" + user  # info: user
+  system = (  # info: set system
+    f"You are {voice}. The STATE lines are the system snapshot. Answer only from those lines. "  # info: f"You are { voice }
+    "agent_launchable none means you cannot launch programs. Gated items stay gated. "  # info: command
+    "Do not offer to enable flags, restart the poller, or start a second relay. "  # info: command
+    "Do not write the label STATE. Do not invent."  # info: command
   )  # info: command
 temperature = float(persona["temperature"]) if persona and persona.get("temperature") is not None else float(os.environ.get("RR_SPEC_TEMP") or 0.3)  # info: set temperature
 max_tokens = int(persona["max_tokens"]) if persona and persona.get("max_tokens") is not None else int(os.environ.get("RR_SPEC_MAXTOK") or 180)  # info: set max_tokens

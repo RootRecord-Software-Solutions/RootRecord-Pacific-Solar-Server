@@ -128,6 +128,7 @@ def poller_flags(rows: list[tuple[int, str]]) -> tuple[dict, str]:  # info: def 
         if not item.startswith(b"RR_") or b"=" not in item:  # info: if not item . startswith ( b"RR_" ) or b"=" not in item
             continue  # info: continue
         k, v = item.split(b"=", 1)  # info: k , v = item . split ( b"=" , 1 )
+        os.environ[k.decode()] = v.decode("utf-8", "replace")  # info: os . environ [ k . decode ( ) ] = v . decode
         flags[k.decode()] = "set" if v else "empty"  # info: flags [ k . decode ( ) ] = "set" if v else "empty"
     return flags, "process_environ"  # info: return flags , "process_environ"
 
@@ -381,6 +382,9 @@ def build() -> dict:  # info: def build
             if isinstance(job, dict) and job.get("id"):  # info: if isinstance ( job , dict ) and job . get ( "id" )
                 jobs.append(job_row(bucket, job))  # info: jobs . append ( job_row ( bucket , job ) )
     by_id = {j["id"]: j for j in jobs}  # info: set by_id
+    if flag_source != "process_environ":  # info: if flag_source != "process_environ"
+        for j in jobs:  # info: for j in jobs :
+            j["confidence"] = "unknown"  # info: j [ "confidence" ] = "unknown"
     relay = kv_file(RELAY_CONF)  # info: set relay
     relay_pids = match_procs(rows, "council-relay.py")  # info: set relay_pids
     ollama_pids = match_procs(rows, "ollama serve")  # info: set ollama_pids

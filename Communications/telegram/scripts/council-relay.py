@@ -202,18 +202,23 @@ def clean_reply(text: str) -> str | None:  # info: def clean_reply
 
 # ====================================================
 # SECTION: function refresh_desk
-# What it does: Rewrite desk-live.txt from measured pack and host files before a reply. Does not send.
+# What it does: Rewrite desk-live.txt and the system state snapshot before a reply. Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def refresh_desk(cfg):  # info: def refresh_desk
     dest = (cfg.get("DESK_LIVE_FILE") or "").strip()  # info: set dest
     script = ROOT / "scripts" / "desk-live.py"  # info: set script
-    if not dest or not script.is_file():  # info: if not dest or not script . is_file
-        return  # info: return
-    try:  # info: try :
-        subprocess.run([sys.executable, str(script), "--out", dest], timeout=20, check=False)  # info: call subprocess . run
-    except (OSError, subprocess.TimeoutExpired) as e:  # info: except ( OSError , subprocess . TimeoutExpired )
-        print(f"[warn] desk refresh failed: {type(e).__name__}", file=sys.stderr)  # info: call print
+    state = ROOT.parents[1] / "System" / "scripts" / "state-aggregate.py"  # info: set state
+    if dest and script.is_file():  # info: if dest and script . is_file
+        try:  # info: try :
+            subprocess.run([sys.executable, str(script), "--out", dest], timeout=20, check=False)  # info: call subprocess . run
+        except (OSError, subprocess.TimeoutExpired) as e:  # info: except ( OSError , subprocess . TimeoutExpired )
+            print(f"[warn] desk refresh failed: {type(e).__name__}", file=sys.stderr)  # info: call print
+    if state.is_file():  # info: if state . is_file
+        try:  # info: try :
+            subprocess.run([sys.executable, str(state)], timeout=90, check=False)  # info: call subprocess . run
+        except (OSError, subprocess.TimeoutExpired) as e:  # info: except ( OSError , subprocess . TimeoutExpired )
+            print(f"[warn] state refresh failed: {type(e).__name__}", file=sys.stderr)  # info: call print
 
 # ====================================================
 # SECTION: function run_infer
