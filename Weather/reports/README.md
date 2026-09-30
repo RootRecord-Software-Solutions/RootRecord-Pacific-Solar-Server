@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T15:07:30-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T15:16:30-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -67,185 +67,183 @@ The report below is generated from the same current product sections as `Hawaii_
 |---|---|
 | **Resource ID** | zfp_zone_forecast |
 | **Official source** | https://api.weather.gov/products/types/ZFP/locations/HFO |
-| **Collected** | 2026-09-29T03:50:32.078020-10:00 HST |
+| **Collected** | 2026-09-29T15:10:32.846391-10:00 HST |
 
 ```text
 000
-FPHW50 PHFO 291341
+FPHW50 PHFO 300105
 ZFPHFO
 
 Zone Forecast Product for Hawaii
 National Weather Service Honolulu HI
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-HIZ001-300715-
+HIZ001-302015-
 Niihau-
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-...HIGH SURF ADVISORY IN EFFECT UNTIL 6 PM HST THIS EVENING...
-
-.TODAY...Windy. Cloudy with frequent showers. Highs 80 to 85.
-Southeast winds 15 to 30 mph. Chance of rain 90 percent. 
 .TONIGHT...Windy. Frequent showers. Lows 71 to 77. Southeast
 winds 15 to 30 mph. Chance of rain near 100 percent. 
-.WEDNESDAY...Breezy. Cloudy with frequent showers. Highs 79 to
-85. South winds 15 to 25 mph. Chance of rain 90 percent. 
+.WEDNESDAY...Breezy. Mostly cloudy with frequent showers. Highs
+80 to 86. South winds 15 to 25 mph. Chance of rain 90 percent. 
 .WEDNESDAY NIGHT...Breezy. Mostly cloudy with frequent showers.
 Lows 71 to 78. Southeast winds 20 to 25 mph. Chance of rain
 80 percent. 
-.THURSDAY...Mostly cloudy. Breezy. Numerous showers in the
-morning, then scattered showers in the afternoon. Highs 80 to 85.
-Southeast winds 15 to 25 mph. Chance of rain 70 percent. 
-.THURSDAY NIGHT...Mostly cloudy. Breezy. Scattered showers in the
-evening, then numerous showers after midnight. Lows 71 to 78.
-Southeast winds 15 to 20 mph. Chance of rain 60 percent. 
+.THURSDAY...Partly sunny. Breezy. Numerous showers in the
+morning, then scattered showers in the afternoon. Highs 80 to 86.
+Southeast winds around 20 mph. Chance of rain 70 percent. 
+.THURSDAY NIGHT...Breezy. Mostly cloudy with numerous showers.
+Lows 71 to 77. Southeast winds 15 to 20 mph. Chance of rain
+70 percent. 
 .FRIDAY...Partly sunny in the morning then becoming mostly sunny.
 Breezy. Scattered showers. Highs 80 to 85. Southeast winds 15 to
-20 mph. Chance of rain 40 percent. 
-.FRIDAY NIGHT...Partly cloudy. Breezy. Isolated showers in the
-evening, then scattered showers after midnight. Lows 71 to 78.
-Southeast winds 10 to 20 mph. Chance of rain 30 percent. 
+20 mph. Chance of rain 50 percent. 
+.FRIDAY NIGHT...Partly cloudy. Scattered showers in the evening,
+then isolated showers after midnight. Lows 71 to 78. Southeast
+winds 10 to 15 mph. Chance of rain 30 percent. 
 .SATURDAY...Mostly sunny. Isolated showers in the morning. Highs
-79 to 85. East winds around 10 mph. Chance of rain 20 percent. 
-.SATURDAY NIGHT...Partly cloudy with isolated showers. Lows 71 to
-77. Northeast winds around 10 mph. Chance of rain 20 percent. 
-.SUNDAY...Mostly sunny. Breezy. Isolated showers in the morning.
-Highs 79 to 85. Northeast winds 10 to 20 mph. Chance of rain
+80 to 86. East winds 10 to 15 mph. Chance of rain 20 percent. 
+.SATURDAY NIGHT...Partly cloudy. Lows 71 to 77. East winds 10 to
+15 mph. 
+.SUNDAY...Sunny. Highs 79 to 86. Northeast winds 10 to 15 mph. 
+.SUNDAY NIGHT...Mostly clear. Isolated showers after midnight.
+Lows 71 to 77. Northeast winds 10 to 15 mph. Chance of rain
 20 percent. 
-.SUNDAY NIGHT...Breezy. Partly cloudy with isolated showers. Lows
-71 to 77. Northeast winds 10 to 20 mph. Chance of rain
+.MONDAY...Sunny and breezy. Highs 79 to 85. Northeast winds 10 to
+20 mph. 
+.MONDAY NIGHT...Breezy. Partly cloudy with isolated showers. Lows
+70 to 76. Northeast winds 10 to 20 mph. Chance of rain
 20 percent. 
-.MONDAY...Breezy. Mostly sunny with isolated showers. Highs 79 to
-85. Northeast winds 10 to 20 mph. Chance of rain 20 percent. 
+.TUESDAY...Mostly sunny with isolated showers. Highs 78 to 85.
+Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
 
-HIZ029-300715-
+HIZ029-302015-
 Kauai North-
 Including Princeville, Hanalei, Na Pali State Park
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly cloudy. Breezy. Scattered showers in the morning,
-then numerous showers in the afternoon. Highs 71 to 87. East
-winds up to 15 mph shifting to the southeast in the afternoon.
-Chance of rain 70 percent. 
 .TONIGHT...Mostly cloudy. Breezy. Numerous showers in the
 evening, then frequent showers after midnight. Lows 67 to 76.
 Southeast winds 10 to 25 mph with gusts to 45 mph. Chance of rain
 80 percent. 
-.WEDNESDAY...Partly sunny. Breezy. Numerous showers in the
+.WEDNESDAY...Mostly cloudy. Breezy. Numerous showers in the
 morning, then scattered showers in the afternoon. Highs 72 to 87.
 Southeast winds up to 20 mph. Chance of rain 70 percent. 
-.WEDNESDAY NIGHT...Mostly cloudy with scattered showers. Lows
+.WEDNESDAY NIGHT...Partly cloudy with scattered showers. Lows
 67 to 76. Southeast winds 10 to 15 mph. Chance of rain
 50 percent. 
-.THURSDAY...Partly sunny with scattered showers. Highs 72 to 87.
-Southeast winds around 10 mph. Chance of rain 50 percent. 
-.THURSDAY NIGHT...Partly cloudy with isolated showers. Lows 67 to
-76. Southeast winds around 10 mph. Chance of rain 20 percent. 
-.FRIDAY...Mostly sunny with isolated showers. Highs 72 to 87.
-Southeast winds up to 10 mph. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Mostly cloudy with scattered showers. Lows 66 to
-75. Light winds becoming southeast up to 10 mph after midnight.
-Chance of rain 50 percent. 
-.SATURDAY...Partly sunny with scattered showers. Highs 72 to 87.
-East winds around 10 mph. Chance of rain 40 percent. 
-.SATURDAY NIGHT...Mostly cloudy with scattered showers. Lows
-66 to 75. East winds around 10 mph. Chance of rain 40 percent. 
-.SUNDAY...Partly sunny with scattered showers. Highs 71 to 87.
-Northeast winds around 10 mph. Chance of rain 40 percent. 
-.SUNDAY NIGHT...Mostly cloudy with scattered showers. Lows 65 to
-75. Northeast winds around 10 mph. Chance of rain 40 percent. 
-.MONDAY...Partly sunny with scattered showers. Highs 70 to 86.
-Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
+.THURSDAY...Mostly sunny with scattered showers. Highs 72 to 88.
+Southeast winds 10 to 15 mph. Chance of rain 50 percent. 
+.THURSDAY NIGHT...Partly cloudy with scattered showers. Lows
+67 to 76. Southeast winds around 10 mph. Chance of rain
+40 percent. 
+.FRIDAY...Mostly sunny with scattered showers. Highs 72 to 87.
+Southeast winds around 10 mph. Chance of rain 40 percent. 
+.FRIDAY NIGHT...Partly cloudy. Scattered showers in the evening,
+then isolated showers after midnight. Lows 66 to 76. East winds
+around 10 mph. Chance of rain 40 percent. 
+.SATURDAY...Mostly sunny with isolated showers. Highs 72 to 88.
+East winds 10 to 15 mph. Chance of rain 20 percent. 
+.SATURDAY NIGHT...Partly cloudy with isolated showers. Lows 65 to
+75. East winds 10 to 15 mph. Chance of rain 20 percent. 
+.SUNDAY...Mostly sunny with isolated showers. Highs 71 to 87.
+East winds 10 to 15 mph. Chance of rain 20 percent. 
+.SUNDAY NIGHT...Partly cloudy. Isolated showers in the evening,
+then scattered showers after midnight. Lows 65 to 75. Northeast
+winds around 10 mph. Chance of rain 30 percent. 
+.MONDAY...Mostly sunny with scattered showers. Highs 70 to 86.
+Northeast winds 10 to 15 mph. Chance of rain 40 percent. 
+.MONDAY NIGHT...Partly cloudy with scattered showers. Lows 65 to
+74. Northeast winds 10 to 15 mph. Chance of rain 30 percent. 
+.TUESDAY...Mostly sunny with scattered showers. Highs 69 to 86.
+Northeast winds 10 to 15 mph. Chance of rain 40 percent. 
 
-HIZ030-300715-
+HIZ030-302015-
 Kauai East-
 Including Lihue, Kapaa, Anahola
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Cloudy and breezy. Scattered showers in the morning,
-then frequent showers in the afternoon. Highs 77 to 86. Southeast
-winds 10 to 15 mph increasing to 15 to 25 mph in the afternoon.
-Chance of rain 90 percent. 
 .TONIGHT...Breezy. Frequent showers. Lows 68 to 77. Southeast
 winds 15 to 25 mph. Chance of rain near 100 percent. 
 .WEDNESDAY...Breezy. Mostly cloudy with frequent showers. Highs
-77 to 86. South winds 10 to 20 mph. Chance of rain 90 percent. 
+76 to 86. South winds 10 to 20 mph. Chance of rain 90 percent. 
 .WEDNESDAY NIGHT...Mostly cloudy with frequent showers. Lows
 68 to 77. South winds 10 to 15 mph. Chance of rain 90 percent. 
-.THURSDAY...Mostly cloudy with numerous showers. Highs 77 to 86.
-Southeast winds around 10 mph. Chance of rain 70 percent. 
-.THURSDAY NIGHT...Mostly cloudy. Scattered showers in the
-evening, then numerous showers after midnight. Lows 68 to 77.
-Southeast winds around 10 mph. Chance of rain 70 percent. 
-.FRIDAY...Partly sunny in the morning then becoming mostly sunny.
-Scattered showers. Highs 78 to 86. Southeast winds around 10 mph.
-Chance of rain 50 percent. 
-.FRIDAY NIGHT...Mostly cloudy with scattered showers. Lows 67 to
-77. Light winds becoming east around 10 mph after midnight.
-Chance of rain 50 percent. 
-.SATURDAY...Partly sunny with scattered showers. Highs 78 to 87.
-East winds around 10 mph. Chance of rain 50 percent. 
-.SATURDAY NIGHT...Mostly cloudy with scattered showers. Lows
-66 to 77. Northeast winds around 10 mph. Chance of rain
-50 percent. 
-.SUNDAY...Partly sunny with scattered showers. Highs 78 to 86.
+.THURSDAY...Partly sunny with numerous showers. Highs 77 to 86.
+Southeast winds 10 to 15 mph. Chance of rain 70 percent. 
+.THURSDAY NIGHT...Mostly cloudy. Numerous showers in the evening,
+then frequent showers after midnight. Lows 68 to 77. Southeast
+winds around 10 mph. Chance of rain 80 percent. 
+.FRIDAY...Mostly sunny. Numerous showers in the morning, then
+scattered showers in the afternoon. Highs 77 to 86. Southeast
+winds around 10 mph. Chance of rain 70 percent. 
+.FRIDAY NIGHT...Partly cloudy in the evening then becoming mostly
+cloudy. Scattered showers. Lows 67 to 77. East winds around
+10 mph. Chance of rain 50 percent. 
+.SATURDAY...Partly sunny with scattered showers in the morning,
+then mostly sunny with isolated showers in the afternoon. Highs
+78 to 86. East winds 10 to 15 mph. Chance of rain 50 percent. 
+.SATURDAY NIGHT...Partly cloudy. Isolated showers in the evening,
+then scattered showers after midnight. Lows 66 to 77. Northeast
+winds 10 to 15 mph. Chance of rain 50 percent. 
+.SUNDAY...Mostly sunny. Scattered showers in the morning, then
+isolated showers in the afternoon. Highs 78 to 86. Northeast
+winds 10 to 15 mph. Chance of rain 50 percent. 
+.SUNDAY NIGHT...Partly cloudy. Isolated showers in the evening,
+then scattered showers after midnight. Lows 66 to 76. Northeast
+winds around 10 mph. Chance of rain 50 percent. 
+.MONDAY...Mostly sunny with scattered showers. Highs 77 to 85.
 Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
-.SUNDAY NIGHT...Mostly cloudy with scattered showers. Lows 66 to
-76. Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
-.MONDAY...Partly sunny with scattered showers. Highs 77 to 85.
-Northeast winds around 10 mph. Chance of rain 50 percent. 
+.MONDAY NIGHT...Partly cloudy with scattered showers. Lows 66 to
+75. Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
+.TUESDAY...Mostly sunny with scattered showers. Highs 76 to 85.
+Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
 
-HIZ031-300715-
+HIZ031-302015-
 Kauai South-
 Including Poipu, Kalaheo, Koloa
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-...HIGH SURF ADVISORY IN EFFECT UNTIL 6 PM HST THIS EVENING...
-
-.TODAY...Mostly cloudy. Breezy. Scattered showers in the morning,
-then frequent showers in the afternoon. Highs 80 to 88. Southeast
-winds 10 to 20 mph. Chance of rain 80 percent. 
 .TONIGHT...Breezy. Frequent showers. Lows 72 to 77. Southeast
 winds 15 to 20 mph. Chance of rain near 100 percent. 
-.WEDNESDAY...Breezy. Cloudy with frequent showers. Highs 79 to
-87. South winds 10 to 20 mph. Chance of rain 90 percent. 
-.WEDNESDAY NIGHT...Cloudy with frequent showers. Lows 72 to 77.
-Southeast winds 10 to 15 mph. Chance of rain 90 percent. 
+.WEDNESDAY...Breezy. Mostly cloudy with frequent showers. Highs
+79 to 87. South winds 10 to 20 mph. Chance of rain 90 percent. 
+.WEDNESDAY NIGHT...Mostly cloudy with frequent showers. Lows
+72 to 77. Southeast winds around 10 mph. Chance of rain
+90 percent. 
 .THURSDAY...Mostly cloudy. Frequent showers in the morning, then
 numerous showers in the afternoon. Highs 79 to 88. Southeast
 winds around 10 mph. Chance of rain 80 percent. 
 .THURSDAY NIGHT...Mostly cloudy with numerous showers. Lows 72 to
 77. Southeast winds around 10 mph. Chance of rain 70 percent. 
-.FRIDAY...Partly sunny with scattered showers. Highs 79 to 89.
-Southeast winds around 10 mph. Chance of rain 50 percent. 
-.FRIDAY NIGHT...Mostly cloudy with scattered showers. Lows 71 to
-77. Light winds becoming east around 10 mph after midnight.
-Chance of rain 50 percent. 
-.SATURDAY...Partly sunny with scattered showers. Highs 79 to 89.
-East winds around 10 mph. Chance of rain 50 percent. 
-.SATURDAY NIGHT...Mostly cloudy with scattered showers. Lows
-70 to 77. Northeast winds 10 to 15 mph. Chance of rain
-50 percent. 
-.SUNDAY...Partly sunny with scattered showers. Highs 79 to 89.
-Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
-.SUNDAY NIGHT...Mostly cloudy with scattered showers. Lows 70 to
-76. Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
-.MONDAY...Partly sunny with scattered showers. Highs 78 to 88.
-Northeast winds around 10 mph. Chance of rain 50 percent. 
+.FRIDAY...Partly sunny with numerous showers in the morning, then
+mostly sunny with scattered showers in the afternoon. Highs 79 to
+88. Southeast winds around 10 mph. Chance of rain 70 percent. 
+.FRIDAY NIGHT...Partly cloudy with scattered showers. Lows 71 to
+77. East winds around 10 mph. Chance of rain 40 percent. 
+.SATURDAY...Mostly sunny. Scattered showers in the morning, then
+isolated showers in the afternoon. Highs 79 to 89. East winds
+10 to 15 mph. Chance of rain 30 percent. 
+.SATURDAY NIGHT...Partly cloudy with isolated showers. Lows 70 to
+77. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.SUNDAY...Sunny with isolated showers. Highs 79 to 89. Northeast
+winds 10 to 15 mph. Chance of rain 20 percent. 
+.SUNDAY NIGHT...Mostly clear with isolated showers. Lows 70 to
+76. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.MONDAY...Mostly sunny with scattered showers. Highs 79 to 88.
+Northeast winds 10 to 15 mph. Chance of rain 40 percent. 
+.MONDAY NIGHT...Partly cloudy. Isolated showers in the evening,
+then scattered showers after midnight. Lows 70 to 76. Northeast
+winds 10 to 15 mph. Chance of rain 40 percent. 
+.TUESDAY...Mostly sunny with scattered showers. Highs 78 to 87.
+Northeast winds 10 to 15 mph. Chance of rain 40 percent. 
 
-HIZ003-300715-
+HIZ003-302015-
 Kauai Southwest-
 Including Waimea, Waimea Canyon State Park, Hanapepe, Kekaha, 
 Barking Sands
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-...HIGH SURF ADVISORY IN EFFECT UNTIL 6 PM HST THIS EVENING...
-
-.TODAY...Mostly cloudy. Windy. Numerous showers in the morning,
-then frequent showers in the afternoon. Highs around 87 near the
-shore to around 77 above 3000 feet. East winds 10 to 25 mph
-shifting to the southeast 20 to 30 mph in the afternoon. Chance
-of rain 90 percent. 
 .TONIGHT...Windy. Frequent showers. Lows around 75 near the shore
 to around 66 above 3000 feet. Southeast winds 15 to 30 mph with
 gusts to 50 mph. Chance of rain near 100 percent. 
@@ -254,165 +252,168 @@ morning, then numerous showers in the afternoon. Highs around
 86 near the shore to around 77 above 3000 feet. Southeast winds
 10 to 20 mph. Chance of rain 90 percent. 
 .WEDNESDAY NIGHT...Mostly cloudy with numerous showers. Lows
-65 to 77. Southeast winds 10 to 15 mph. Chance of rain
-70 percent. 
-.THURSDAY...Mostly cloudy with numerous showers. Highs 76 to 89.
+around 75 near the shore to around 66 above 3000 feet. Southeast
+winds 10 to 15 mph. Chance of rain 70 percent. 
+.THURSDAY...Partly sunny with numerous showers. Highs 76 to 89.
 Southeast winds 10 to 15 mph. Chance of rain 70 percent. 
-.THURSDAY NIGHT...Mostly cloudy. Scattered showers in the
-evening, then numerous showers after midnight. Lows 65 to 77.
-Southeast winds around 10 mph. Chance of rain 70 percent. 
-.FRIDAY...Partly sunny in the morning then becoming mostly sunny.
-Scattered showers. Highs 76 to 89. Southeast winds around 10 mph.
-Chance of rain 50 percent. 
-.FRIDAY NIGHT...Mostly cloudy in the evening then becoming partly
-cloudy. Scattered showers. Lows 64 to 76. Southeast winds around
-10 mph. Chance of rain 50 percent. 
-.SATURDAY...Mostly sunny with scattered showers. Highs 76 to 90.
-East winds around 10 mph in the morning becoming light. Chance of
-rain 50 percent. 
-.SATURDAY NIGHT...Partly cloudy with isolated showers. Lows 64 to
-76. Light winds becoming northeast up to 10 mph after midnight.
-Chance of rain 20 percent. 
-.SUNDAY...Mostly sunny. Isolated showers in the morning, then
-scattered showers in the afternoon. Highs 76 to 90. Northeast
-winds up to 10 mph. Chance of rain 50 percent. 
-.SUNDAY NIGHT...Partly cloudy with isolated showers. Lows 63 to
-76. Northeast winds up to 10 mph. Chance of rain 20 percent. 
-.MONDAY...Mostly sunny with isolated showers in the morning, then
-partly sunny with scattered showers in the afternoon. Highs 75 to
-89. Northeast winds up to 10 mph. Chance of rain 40 percent. 
+.THURSDAY NIGHT...Mostly cloudy with scattered showers. Lows
+65 to 76. Southeast winds 10 to 15 mph. Chance of rain
+50 percent. 
+.FRIDAY...Mostly sunny. Scattered showers in the morning, then
+isolated showers in the afternoon. Highs 76 to 89. Southeast
+winds 10 to 15 mph. Chance of rain 50 percent. 
+.FRIDAY NIGHT...Partly cloudy. Isolated showers in the evening.
+Lows 64 to 76. East winds around 10 mph. Chance of rain
+20 percent. 
+.SATURDAY...Mostly sunny in the morning then becoming partly
+sunny. Highs 77 to 90. East winds up to 10 mph. 
+.SATURDAY NIGHT...Partly cloudy. Lows 64 to 76. Northeast winds
+up to 10 mph. 
+.SUNDAY...Sunny. Highs 77 to 90. Northeast winds up to 10 mph. 
+.SUNDAY NIGHT...Partly cloudy. Lows 63 to 76. Northeast winds
+around 10 mph. 
+.MONDAY...Mostly sunny. Isolated showers in the afternoon. Highs
+75 to 89. Northeast winds up to 10 mph. Chance of rain
+20 percent. 
+.MONDAY NIGHT...Partly cloudy. Lows 63 to 75. Northeast winds up
+to 10 mph. 
+.TUESDAY...Mostly sunny in the morning then becoming partly
+sunny. Isolated showers. Highs 74 to 88. Northeast winds up to
+10 mph shifting to the southeast in the afternoon. Chance of rain
+20 percent. 
 
-HIZ004-300715-
+HIZ004-302015-
 Kauai Mountains-
 Including Kokee State Park
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Cloudy and windy. Numerous showers in the morning, then
-frequent showers in the afternoon. Highs 74 to 82 in the valleys
-to around 68 above 4000 feet. Southeast winds 10 to 20 mph
-increasing to 15 to 30 mph in the afternoon. Chance of rain
-90 percent. 
 .TONIGHT...Windy. Frequent showers. Lows around 71 in the valleys
 to around 63 above 4000 feet. South winds 10 to 30 mph with gusts
 to 50 mph. Chance of rain near 100 percent. 
-.WEDNESDAY...Mostly cloudy. Breezy. Frequent showers in the
-morning, then scattered showers in the afternoon. Highs 75 to
-83 in the valleys to around 68 above 4000 feet. Southeast winds
-10 to 20 mph. Chance of rain 90 percent. 
+.WEDNESDAY...Cloudy and breezy. Frequent showers in the morning,
+then scattered showers in the afternoon. Highs 75 to 83 in the
+valleys to around 68 above 4000 feet. Southeast winds 10 to
+20 mph. Chance of rain 90 percent. 
 .WEDNESDAY NIGHT...Mostly cloudy with scattered showers. Lows
-62 to 73. South winds 10 to 15 mph. Chance of rain 50 percent. 
-.THURSDAY...Mostly cloudy with scattered showers. Highs 66 to 83.
+around 71 in the valleys to around 63 above 4000 feet. Southeast
+winds 10 to 15 mph. Chance of rain 50 percent. 
+.THURSDAY...Partly sunny with scattered showers. Highs 66 to 83.
 Southeast winds 10 to 15 mph. Chance of rain 50 percent. 
 .THURSDAY NIGHT...Mostly cloudy with scattered showers. Lows
-61 to 73. Southeast winds around 10 mph. Chance of rain
+61 to 73. Southeast winds 10 to 15 mph. Chance of rain
 50 percent. 
-.FRIDAY...Partly sunny with scattered showers. Highs 67 to 83.
-Southeast winds up to 10 mph. Chance of rain 50 percent. 
-.FRIDAY NIGHT...Mostly cloudy with scattered showers. Lows 61 to
-72. Light winds becoming southeast up to 10 mph after midnight.
+.FRIDAY...Mostly sunny in the morning then becoming partly sunny.
+Scattered showers. Highs 66 to 83. Southeast winds 10 to 15 mph.
 Chance of rain 50 percent. 
-.SATURDAY...Mostly cloudy with scattered showers. Highs 67 to 83.
-East winds around 10 mph. Chance of rain 50 percent. 
-.SATURDAY NIGHT...Mostly cloudy with scattered showers. Lows
-60 to 72. Northeast winds around 10 mph. Chance of rain
+.FRIDAY NIGHT...Mostly cloudy with scattered showers. Lows 61 to
+72. East winds around 10 mph. Chance of rain 50 percent. 
+.SATURDAY...Mostly sunny with scattered showers. Highs 67 to 83.
+East winds 10 to 15 mph. Chance of rain 50 percent. 
+.SATURDAY NIGHT...Partly cloudy with scattered showers. Lows
+60 to 72. Northeast winds 10 to 15 mph. Chance of rain
 50 percent. 
-.SUNDAY...Mostly cloudy with scattered showers. Highs 67 to 83.
+.SUNDAY...Mostly sunny with scattered showers. Highs 66 to 84.
 Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
-.SUNDAY NIGHT...Mostly cloudy with scattered showers. Lows 60 to
+.SUNDAY NIGHT...Partly cloudy with scattered showers. Lows 60 to
 71. Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
-.MONDAY...Mostly cloudy with scattered showers. Highs 65 to 82.
-Northeast winds around 10 mph. Chance of rain 50 percent. 
+.MONDAY...Mostly sunny in the morning then becoming partly sunny.
+Scattered showers. Highs 65 to 82. Northeast winds 10 to 15 mph.
+Chance of rain 50 percent. 
+.MONDAY NIGHT...Mostly cloudy in the evening then becoming partly
+cloudy. Scattered showers. Lows 59 to 71. Northeast winds 10 to
+15 mph. Chance of rain 50 percent. 
+.TUESDAY...Mostly sunny in the morning then becoming partly
+sunny. Scattered showers. Highs 65 to 81. Northeast winds 10 to
+15 mph. Chance of rain 50 percent. 
 
-HIZ032-300715-
+HIZ032-302015-
 East Honolulu-
 Including Hawaii Kai, Aina Haina, Kahala
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Highs 83 to 89. Southeast winds 10 to
-15 mph. 
 .TONIGHT...Mostly cloudy. Breezy. Scattered showers in the
 evening, then numerous showers after midnight. Lows around 78.
 Southeast winds 10 to 20 mph. Chance of rain 70 percent. 
-.WEDNESDAY...Mostly cloudy. Breezy. Scattered showers in the
-morning, then numerous showers in the afternoon. Highs 82 to 88.
-South winds 15 to 20 mph. Chance of rain 70 percent. 
+.WEDNESDAY...Partly sunny. Breezy. Scattered showers in the
+morning, then numerous showers in the afternoon. Highs 81 to 88.
+Southeast winds 10 to 20 mph. Chance of rain 70 percent. 
 .WEDNESDAY NIGHT...Mostly cloudy with numerous showers. Lows
 around 77. Southeast winds 10 to 15 mph. Chance of rain
 70 percent. 
-.THURSDAY...Partly sunny. Numerous showers in the morning, then
-scattered showers in the afternoon. Highs 81 to 88. Southeast
-winds around 10 mph. Chance of rain 70 percent. 
-.THURSDAY NIGHT...Mostly cloudy in the evening then becoming
-partly cloudy. Scattered showers. Lows around 77. East winds
-around 10 mph. Chance of rain 30 percent. 
-.FRIDAY...Mostly sunny with isolated showers. Highs 81 to 88.
-Southeast winds around 10 mph. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Partly cloudy in the evening then becoming mostly
-cloudy. Scattered showers. Lows around 77. East winds 10 to
-15 mph. Chance of rain 30 percent. 
-.SATURDAY...Mostly sunny with scattered showers. Highs 81 to 87.
-Northeast winds 10 to 15 mph. Chance of rain 30 percent. 
-.SATURDAY NIGHT...Partly cloudy with scattered showers. Lows
-around 77. Northeast winds around 15 mph. Chance of rain
-30 percent. 
-.SUNDAY...Mostly sunny with scattered showers. Highs 81 to 87.
-Northeast winds around 15 mph. Chance of rain 30 percent. 
-.SUNDAY NIGHT...Partly cloudy. Isolated showers in the evening,
-then scattered showers after midnight. Lows around 76. Northeast
-winds 10 to 15 mph. Chance of rain 30 percent. 
-.MONDAY...Partly sunny with scattered showers. Highs 80 to 87.
-Northeast winds around 10 mph. Chance of rain 40 percent. 
+.THURSDAY...Partly sunny with numerous showers in the morning,
+then mostly sunny with scattered showers in the afternoon. Highs
+81 to 87. Southeast winds around 10 mph. Chance of rain
+70 percent. 
+.THURSDAY NIGHT...Partly cloudy with scattered showers. Lows
+around 77. East winds around 10 mph. Chance of rain 40 percent. 
+.FRIDAY...Mostly sunny with isolated showers. Highs 81 to 87.
+East winds around 10 mph. Chance of rain 20 percent. 
+.FRIDAY NIGHT...Mostly clear with isolated showers. Lows around
+77. East winds 10 to 15 mph. Chance of rain 20 percent. 
+.SATURDAY...Sunny. Isolated showers in the morning. Highs 81 to
+87. Northeast winds around 15 mph. Chance of rain 20 percent. 
+.SATURDAY NIGHT...Partly cloudy. Isolated showers after midnight.
+Lows around 77. Northeast winds around 15 mph. Chance of rain
+20 percent. 
+.SUNDAY...Breezy. Sunny with isolated showers. Highs 80 to 87.
+Northeast winds 15 to 20 mph. Chance of rain 20 percent. 
+.SUNDAY NIGHT...Mostly clear. Isolated showers after midnight.
+Lows around 76. Northeast winds 10 to 15 mph. Chance of rain
+20 percent. 
+.MONDAY...Sunny with isolated showers. Highs 80 to 86. Northeast
+winds 10 to 15 mph. Chance of rain 20 percent. 
+.MONDAY NIGHT...Partly cloudy with isolated showers. Lows around
+76. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.TUESDAY...Mostly sunny with isolated showers. Highs 80 to 86.
+Northeast winds around 15 mph. Chance of rain 20 percent. 
 
-HIZ033-300715-
+HIZ033-302015-
 Honolulu Metro-
 Including Honolulu, Waikiki
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Highs 85 to 90. Southeast winds 10 to
-15 mph. 
 .TONIGHT...Mostly cloudy. Breezy. Scattered showers in the
-evening, then numerous showers after midnight. Lows around 77.
+evening, then numerous showers after midnight. Lows around 78.
 Southeast winds 15 to 20 mph. Chance of rain 70 percent. 
 .WEDNESDAY...Breezy. Mostly cloudy with numerous showers. Highs
 83 to 88. Southeast winds 10 to 20 mph. Chance of rain
 70 percent. 
 .WEDNESDAY NIGHT...Mostly cloudy with numerous showers. Lows
-around 76. Southeast winds 10 to 15 mph. Chance of rain
+around 76. Southeast winds around 10 mph. Chance of rain
 70 percent. 
-.THURSDAY...Mostly cloudy. Numerous showers in the morning, then
-scattered showers in the afternoon. Highs around 86. Southeast
-winds around 10 mph. Chance of rain 70 percent. 
+.THURSDAY...Partly sunny with numerous showers in the morning,
+then mostly sunny with scattered showers in the afternoon. Highs
+83 to 88. Southeast winds around 10 mph. Chance of rain
+70 percent. 
 .THURSDAY NIGHT...Partly cloudy. Scattered showers in the
 evening, then isolated showers after midnight. Lows around 76.
-East winds around 10 mph in the evening becoming light. Chance of
-rain 30 percent. 
-.FRIDAY...Mostly sunny with isolated showers. Highs around 86.
-Southeast winds around 10 mph. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Partly cloudy with isolated showers. Lows around
-76. East winds 10 to 15 mph. Chance of rain 20 percent. 
-.SATURDAY...Mostly sunny with isolated showers. Highs around 86.
-East winds 10 to 15 mph. Chance of rain 20 percent. 
-.SATURDAY NIGHT...Partly cloudy with isolated showers. Lows
-around 76. Northeast winds 10 to 15 mph. Chance of rain
+East winds around 10 mph. Chance of rain 40 percent. 
+.FRIDAY...Mostly sunny. Isolated showers in the morning. Highs
+83 to 88. East winds around 10 mph. Chance of rain 20 percent. 
+.FRIDAY NIGHT...Mostly clear. Lows around 76. East winds around
+10 mph. 
+.SATURDAY...Sunny. Highs around 86. East winds 10 to 15 mph. 
+.SATURDAY NIGHT...Partly cloudy. Lows around 76. Northeast winds
+10 to 15 mph. 
+.SUNDAY...Sunny. Highs 83 to 88. Northeast winds around 15 mph. 
+.SUNDAY NIGHT...Mostly clear. Isolated showers after midnight.
+Lows around 76. Northeast winds 10 to 15 mph. Chance of rain
 20 percent. 
-.SUNDAY...Mostly sunny with isolated showers. Highs 83 to 88.
+.MONDAY...Sunny. Isolated showers in the morning. Highs 82 to 87.
+Northeast winds around 10 mph. Chance of rain 20 percent. 
+.MONDAY NIGHT...Partly cloudy. Isolated showers after midnight.
+Lows around 75. Northeast winds 10 to 15 mph. Chance of rain
+20 percent. 
+.TUESDAY...Mostly sunny with isolated showers. Highs 82 to 87.
 Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
-.SUNDAY NIGHT...Partly cloudy with isolated showers. Lows around
-76. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
-.MONDAY...Mostly sunny with scattered showers. Highs 83 to 88.
-Light winds becoming north up to 10 mph in the afternoon. Chance
-of rain 30 percent. 
 
-HIZ034-300715-
+HIZ034-302015-
 Ewa Plain-
 Including Kapolei
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Isolated showers in the afternoon. Highs
-around 88. Southeast winds 10 to 15 mph. Chance of rain
-20 percent. 
 .TONIGHT...Mostly cloudy. Breezy. Scattered showers in the
-evening, then numerous showers after midnight. Lows around 76.
+evening, then numerous showers after midnight. Lows around 77.
 Southeast winds 15 to 20 mph. Chance of rain 70 percent. 
 .WEDNESDAY...Mostly cloudy. Breezy. Scattered showers in the
 morning, then numerous showers in the afternoon. Highs 83 to 88.
@@ -420,113 +421,112 @@ Southeast winds 10 to 20 mph. Chance of rain 70 percent.
 .WEDNESDAY NIGHT...Mostly cloudy with numerous showers. Lows
 around 76. Southeast winds 10 to 15 mph. Chance of rain
 70 percent. 
-.THURSDAY...Partly sunny with scattered showers. Highs 84 to 89.
-Southeast winds 10 to 15 mph. Chance of rain 50 percent. 
+.THURSDAY...Partly sunny in the morning then becoming mostly
+sunny. Scattered showers. Highs 83 to 88. Southeast winds 10 to
+15 mph. Chance of rain 50 percent. 
 .THURSDAY NIGHT...Partly cloudy with isolated showers. Lows
 around 76. East winds around 10 mph. Chance of rain 20 percent. 
-.FRIDAY...Mostly sunny. Isolated showers in the morning. Highs
-84 to 89. Southeast winds around 10 mph. Chance of rain
+.FRIDAY...Mostly sunny with isolated showers in the morning, then
+partly sunny in the afternoon. Highs 83 to 88. East winds around
+10 mph in the morning becoming light. Chance of rain 20 percent. 
+.FRIDAY NIGHT...Partly cloudy. Lows around 75. East winds around
+10 mph. 
+.SATURDAY...Sunny. Highs 84 to 89. East winds 10 to 15 mph. 
+.SATURDAY NIGHT...Partly cloudy. Lows around 75. Northeast winds
+10 to 15 mph. 
+.SUNDAY...Sunny. Highs 83 to 89. Northeast winds 10 to 15 mph. 
+.SUNDAY NIGHT...Mostly clear. Lows around 75. Northeast winds
+10 to 15 mph. 
+.MONDAY...Mostly sunny. Isolated showers in the morning. Highs
+83 to 88. Northeast winds around 10 mph. Chance of rain
 20 percent. 
-.FRIDAY NIGHT...Partly cloudy with isolated showers. Lows around
-75. East winds around 10 mph. Chance of rain 20 percent. 
-.SATURDAY...Mostly sunny. Isolated showers in the morning. Highs
-84 to 89. East winds around 10 mph. Chance of rain 20 percent. 
-.SATURDAY NIGHT...Partly cloudy. Isolated showers after midnight.
-Lows around 75. Northeast winds around 10 mph. Chance of rain
-20 percent. 
-.SUNDAY...Mostly sunny. Isolated showers in the morning. Highs
-84 to 89. Northeast winds around 10 mph. Chance of rain
-20 percent. 
-.SUNDAY NIGHT...Partly cloudy. Isolated showers after midnight.
-Lows around 75. Northeast winds around 10 mph in the evening
-becoming light. Chance of rain 20 percent. 
-.MONDAY...Mostly sunny with isolated showers. Highs 83 to 88.
-Light winds. Chance of rain 20 percent. 
+.MONDAY NIGHT...Partly cloudy. Lows around 74. Northeast winds
+around 10 mph. 
+.TUESDAY...Mostly sunny with isolated showers. Highs 82 to 87.
+Northeast winds around 10 mph. Chance of rain 20 percent. 
 
-HIZ006-300715-
+HIZ006-302015-
 Waianae Coast-
 Including Nanakuli, Waianae, Makaha
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Breezy. Isolated showers in the afternoon.
-Highs 86 to 93. Southeast winds 10 to 20 mph. Chance of rain
-20 percent. 
 .TONIGHT...Breezy. Mostly cloudy with scattered showers. Lows
-71 to 79. Southeast winds 15 to 25 mph. Chance of rain
+72 to 79. Southeast winds 15 to 25 mph. Chance of rain
 50 percent. 
-.WEDNESDAY...Mostly cloudy. Breezy. Scattered showers in the
-morning, then numerous showers in the afternoon. Highs 84 to 91.
-Southeast winds 15 to 20 mph. Chance of rain 70 percent. 
+.WEDNESDAY...Partly sunny. Breezy. Scattered showers in the
+morning, then numerous showers in the afternoon. Highs 84 to 90.
+Southeast winds 10 to 20 mph. Chance of rain 70 percent. 
 .WEDNESDAY NIGHT...Mostly cloudy with numerous showers. Lows
-72 to 78. Southeast winds 10 to 15 mph. Chance of rain
+71 to 78. Southeast winds 10 to 15 mph. Chance of rain
 70 percent. 
-.THURSDAY...Partly sunny with scattered showers. Highs 84 to 91.
-Southeast winds 10 to 15 mph. Chance of rain 50 percent. 
-.THURSDAY NIGHT...Partly cloudy. Scattered showers in the
-evening, then isolated showers after midnight. Lows 71 to 78.
-Southeast winds around 10 mph. Chance of rain 30 percent. 
-.FRIDAY...Mostly sunny. Isolated showers in the afternoon. Highs
-84 to 91. Southeast winds around 10 mph. Chance of rain
+.THURSDAY...Partly sunny in the morning then becoming mostly
+sunny. Scattered showers. Highs 84 to 91. Southeast winds 10 to
+15 mph. Chance of rain 50 percent. 
+.THURSDAY NIGHT...Partly cloudy with isolated showers. Lows 71 to
+78. Southeast winds around 10 mph. Chance of rain 20 percent. 
+.FRIDAY...Sunny in the morning then becoming partly sunny. Highs
+84 to 91. Southeast winds around 10 mph in the morning becoming
+light. 
+.FRIDAY NIGHT...Mostly cloudy in the evening then becoming mostly
+clear. Lows 70 to 77. East winds around 10 mph. 
+.SATURDAY...Sunny. Highs 84 to 92. Northeast winds 10 to 15 mph. 
+.SATURDAY NIGHT...Mostly clear. Lows 70 to 77. Northeast winds
+10 to 15 mph. 
+.SUNDAY...Sunny. Highs 84 to 91. Northeast winds 10 to 15 mph. 
+.SUNDAY NIGHT...Mostly clear. Lows 70 to 77. Northeast winds
+10 to 15 mph. 
+.MONDAY...Sunny with isolated showers. Highs 83 to 91. Northeast
+winds 10 to 15 mph. Chance of rain 20 percent. 
+.MONDAY NIGHT...Mostly clear. Isolated showers after midnight.
+Lows 70 to 76. Northeast winds 10 to 15 mph. Chance of rain
 20 percent. 
-.FRIDAY NIGHT...Partly cloudy with isolated showers. Lows 70 to
-77. Light winds becoming northeast around 10 mph after midnight.
-Chance of rain 20 percent. 
-.SATURDAY...Mostly sunny with isolated showers. Highs 84 to 91.
-Northeast winds up to 10 mph. Chance of rain 20 percent. 
-.SATURDAY NIGHT...Partly cloudy with isolated showers. Lows 70 to
-77. East winds 10 to 15 mph. Chance of rain 20 percent. 
-.SUNDAY...Mostly sunny with isolated showers. Highs 84 to 91.
-Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
-.SUNDAY NIGHT...Partly cloudy with isolated showers. Lows 70 to
-77. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
-.MONDAY...Mostly sunny with isolated showers. Highs 83 to 91.
+.TUESDAY...Mostly sunny with isolated showers. Highs 83 to 90.
 Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
 
-HIZ007-300715-
+HIZ007-302015-
 Oahu North Shore-
 Including Waialua, Haleiwa, Pupukea
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny in the morning, then partly sunny with
-isolated showers in the afternoon. Highs 83 to 90. Southeast
-winds 10 to 15 mph. Chance of rain 20 percent. 
 .TONIGHT...Breezy. Mostly cloudy with scattered showers. Lows
-71 to 77. Southeast winds 10 to 20 mph. Chance of rain
+71 to 78. Southeast winds 10 to 20 mph. Chance of rain
 50 percent. 
-.WEDNESDAY...Mostly cloudy. Breezy. Scattered showers in the
+.WEDNESDAY...Partly sunny. Breezy. Scattered showers in the
 morning, then numerous showers in the afternoon. Highs 81 to 88.
 Southeast winds 10 to 20 mph. Chance of rain 70 percent. 
-.WEDNESDAY NIGHT...Mostly cloudy with scattered showers. Lows
-71 to 77. Southeast winds 10 to 15 mph. Chance of rain
-50 percent. 
-.THURSDAY...Partly sunny with scattered showers. Highs 81 to 88.
+.WEDNESDAY NIGHT...Partly cloudy in the evening then becoming
+mostly cloudy. Scattered showers. Lows 71 to 77. Southeast winds
+10 to 15 mph. Chance of rain 50 percent. 
+.THURSDAY...Partly sunny with scattered showers. Highs 80 to 87.
 Southeast winds around 10 mph. Chance of rain 50 percent. 
-.THURSDAY NIGHT...Partly cloudy with isolated showers. Lows 70 to
-77. Southeast winds around 10 mph. Chance of rain 20 percent. 
-.FRIDAY...Mostly sunny with isolated showers. Highs 81 to 88.
-Southeast winds around 10 mph. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Partly cloudy with scattered showers. Lows 70 to
-77. East winds around 10 mph. Chance of rain 40 percent. 
-.SATURDAY...Mostly sunny with scattered showers. Highs 81 to 87.
-East winds around 10 mph. Chance of rain 40 percent. 
-.SATURDAY NIGHT...Partly cloudy with scattered showers. Lows
-70 to 76. East winds 10 to 15 mph. Chance of rain 40 percent. 
-.SUNDAY...Mostly sunny with scattered showers. Highs 80 to 87.
-Northeast winds 10 to 15 mph. Chance of rain 40 percent. 
-.SUNDAY NIGHT...Partly cloudy. Isolated showers in the evening,
-then scattered showers after midnight. Lows 70 to 76. Northeast
-winds 10 to 15 mph. Chance of rain 40 percent. 
-.MONDAY...Partly sunny in the morning then becoming mostly sunny.
-Scattered showers. Highs 79 to 86. Northeast winds around 10 mph.
-Chance of rain 50 percent. 
+.THURSDAY NIGHT...Mostly clear with scattered showers. Lows 70 to
+77. East winds around 10 mph. Chance of rain 50 percent. 
+.FRIDAY...Sunny in the morning then becoming partly sunny.
+Isolated showers. Highs 80 to 87. East winds around 10 mph.
+Chance of rain 20 percent. 
+.FRIDAY NIGHT...Partly cloudy. Isolated showers in the evening.
+Lows 70 to 77. East winds around 10 mph. Chance of rain
+20 percent. 
+.SATURDAY...Sunny with isolated showers. Highs 80 to 87. East
+winds 10 to 15 mph. Chance of rain 20 percent. 
+.SATURDAY NIGHT...Mostly clear with isolated showers. Lows 70 to
+76. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.SUNDAY...Sunny with isolated showers. Highs 79 to 87. Northeast
+winds 10 to 15 mph. Chance of rain 20 percent. 
+.SUNDAY NIGHT...Mostly clear with isolated showers. Lows 70 to
+76. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.MONDAY...Sunny with isolated showers. Highs 78 to 86. Northeast
+winds 10 to 15 mph. Chance of rain 20 percent. 
+.MONDAY NIGHT...Partly cloudy with isolated showers. Lows 69 to
+76. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.TUESDAY...Mostly sunny with isolated showers. Highs 79 to 86.
+Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
 
-HIZ035-300715-
+HIZ035-302015-
 Koolau Windward-
 Including Kahuku, Laie, Punaluu, Kahaluu, Ahuimanu
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Partly sunny with isolated showers. Highs 77 to 88.
-Southeast winds 10 to 15 mph. Chance of rain 20 percent. 
 .TONIGHT...Breezy. Mostly cloudy with scattered showers. Lows
 69 to 79. Southeast winds 10 to 20 mph. Chance of rain
 50 percent. 
@@ -534,1185 +534,1252 @@ Southeast winds 10 to 15 mph. Chance of rain 20 percent.
 76 to 86. Southeast winds 10 to 20 mph. Chance of rain
 70 percent. 
 .WEDNESDAY NIGHT...Mostly cloudy with numerous showers. Lows
-69 to 79. Southeast winds 10 to 15 mph. Chance of rain
+69 to 78. Southeast winds 10 to 15 mph. Chance of rain
 70 percent. 
-.THURSDAY...Mostly cloudy. Numerous showers in the morning, then
-scattered showers in the afternoon. Highs 76 to 86. Southeast
+.THURSDAY...Partly sunny. Numerous showers in the morning, then
+scattered showers in the afternoon. Highs 75 to 86. Southeast
 winds 10 to 15 mph. Chance of rain 70 percent. 
-.THURSDAY NIGHT...Mostly cloudy with scattered showers in the
-evening, then partly cloudy with isolated showers after midnight.
-Lows 69 to 78. East winds 10 to 15 mph. Chance of rain
-40 percent. 
-.FRIDAY...Mostly sunny with isolated showers. Highs 76 to 86.
-Southeast winds around 10 mph. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Mostly cloudy with scattered showers. Lows 68 to
-78. East winds 10 to 15 mph. Chance of rain 50 percent. 
-.SATURDAY...Partly sunny with scattered showers. Highs 75 to 86.
-East winds 10 to 15 mph. Chance of rain 50 percent. 
-.SATURDAY NIGHT...Mostly cloudy with scattered showers. Lows
+.THURSDAY NIGHT...Partly cloudy with scattered showers. Lows
 68 to 78. East winds 10 to 15 mph. Chance of rain 50 percent. 
-.SUNDAY...Partly sunny with scattered showers. Highs 75 to 85.
+.FRIDAY...Mostly sunny with scattered showers. Highs 75 to 86.
+East winds 10 to 15 mph. Chance of rain 50 percent. 
+.FRIDAY NIGHT...Partly cloudy with scattered showers. Lows 68 to
+78. East winds 10 to 15 mph. Chance of rain 50 percent. 
+.SATURDAY...Mostly sunny with scattered showers. Highs 75 to 86.
+East winds 10 to 15 mph. Chance of rain 50 percent. 
+.SATURDAY NIGHT...Partly cloudy with scattered showers. Lows
+68 to 78. East winds 10 to 15 mph. Chance of rain 50 percent. 
+.SUNDAY...Mostly sunny with scattered showers. Highs 74 to 85.
 Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
-.SUNDAY NIGHT...Mostly cloudy with scattered showers. Lows 68 to
+.SUNDAY NIGHT...Partly cloudy with scattered showers. Lows 68 to
 78. Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
-.MONDAY...Partly sunny with scattered showers. Highs 74 to 85.
-Light winds becoming northeast around 10 mph in the afternoon.
-Chance of rain 50 percent. 
+.MONDAY...Mostly sunny with scattered showers. Highs 73 to 84.
+Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
+.MONDAY NIGHT...Partly cloudy in the evening then becoming mostly
+cloudy. Scattered showers. Lows 67 to 77. Northeast winds 10 to
+15 mph. Chance of rain 50 percent. 
+.TUESDAY...Mostly sunny with scattered showers. Highs 73 to 84.
+Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
 
-HIZ036-300715-
+HIZ036-302015-
 Koolau Leeward-
 Including Nuuanu, Manoa, Palolo
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Partly sunny with isolated showers. Highs 76 to 88. East
-winds around 10 mph shifting to the southeast in the afternoon.
-Chance of rain 20 percent. 
 .TONIGHT...Breezy. Mostly cloudy with numerous showers. Lows
 68 to 77. Southeast winds 10 to 25 mph. Chance of rain
 70 percent. 
 .WEDNESDAY...Mostly cloudy. Breezy. Numerous showers in the
-morning, then frequent showers in the afternoon. Highs 74 to 86.
-South winds 10 to 25 mph. Chance of rain 80 percent. 
+morning, then frequent showers in the afternoon. Highs 73 to 86.
+Southeast winds 10 to 25 mph. Chance of rain 80 percent. 
 .WEDNESDAY NIGHT...Mostly cloudy. Frequent showers in the
-evening, then numerous showers after midnight. Lows 68 to 76.
+evening, then numerous showers after midnight. Lows 67 to 76.
 Southeast winds 10 to 15 mph. Chance of rain 80 percent. 
-.THURSDAY...Mostly cloudy with numerous showers. Highs 73 to 86.
+.THURSDAY...Partly sunny with numerous showers. Highs 73 to 86.
 Southeast winds 10 to 15 mph. Chance of rain 70 percent. 
-.THURSDAY NIGHT...Partly cloudy. Scattered showers in the
-evening, then isolated showers after midnight. Lows 67 to 76.
-East winds around 10 mph. Chance of rain 30 percent. 
-.FRIDAY...Mostly sunny with isolated showers. Highs 73 to 86.
-Southeast winds around 10 mph. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Mostly cloudy with scattered showers. Lows 66 to
-76. East winds 10 to 15 mph. Chance of rain 50 percent. 
-.SATURDAY...Partly sunny with scattered showers. Highs 73 to 86.
-East winds 10 to 15 mph. Chance of rain 50 percent. 
-.SATURDAY NIGHT...Mostly cloudy with scattered showers. Lows
-67 to 76. Northeast winds 10 to 15 mph. Chance of rain
+.THURSDAY NIGHT...Partly cloudy with scattered showers. Lows
+67 to 76. East winds around 10 mph. Chance of rain 50 percent. 
+.FRIDAY...Mostly sunny in the morning then becoming partly sunny.
+Scattered showers. Highs 73 to 86. East winds around 10 mph.
+Chance of rain 40 percent. 
+.FRIDAY NIGHT...Partly cloudy. Scattered showers in the evening,
+then isolated showers after midnight. Lows 66 to 76. East winds
+10 to 15 mph. Chance of rain 40 percent. 
+.SATURDAY...Breezy. Mostly sunny with scattered showers. Highs
+73 to 86. East winds 10 to 20 mph. Chance of rain 40 percent. 
+.SATURDAY NIGHT...Breezy. Partly cloudy with scattered showers.
+Lows 66 to 75. Northeast winds 10 to 20 mph. Chance of rain
 50 percent. 
-.SUNDAY...Partly sunny with scattered showers. Highs 73 to 86.
+.SUNDAY...Breezy. Mostly sunny with scattered showers. Highs
+72 to 85. Northeast winds 10 to 20 mph. Chance of rain
+50 percent. 
+.SUNDAY NIGHT...Partly cloudy with scattered showers. Lows 66 to
+75. Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
+.MONDAY...Mostly sunny with scattered showers. Highs 71 to 85.
 Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
-.SUNDAY NIGHT...Partly cloudy in the evening then becoming mostly
-cloudy. Scattered showers. Lows 67 to 75. Northeast winds 10 to
+.MONDAY NIGHT...Partly cloudy with scattered showers. Lows 66 to
+75. Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
+.TUESDAY...Mostly sunny in the morning then becoming partly
+sunny. Scattered showers. Highs 71 to 84. Northeast winds 10 to
 15 mph. Chance of rain 50 percent. 
-.MONDAY...Partly sunny with scattered showers. Highs 72 to 85.
-Northeast winds up to 10 mph. Chance of rain 50 percent. 
 
-HIZ009-300715-
+HIZ009-302015-
 Olomana-
 Including Kailua, Kaneohe, Waimanalo
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Isolated showers in the morning. Highs
-80 to 87. Southeast winds 10 to 15 mph. Chance of rain
-20 percent. 
 .TONIGHT...Breezy. Mostly cloudy with scattered showers. Lows
-72 to 78. Southeast winds 10 to 20 mph. Chance of rain
+73 to 79. Southeast winds 10 to 20 mph. Chance of rain
 50 percent. 
-.WEDNESDAY...Mostly cloudy. Breezy. Scattered showers in the
-morning, then numerous showers in the afternoon. Highs 79 to 85.
+.WEDNESDAY...Partly sunny. Breezy. Scattered showers in the
+morning, then numerous showers in the afternoon. Highs 78 to 85.
 South winds 10 to 20 mph. Chance of rain 70 percent. 
 .WEDNESDAY NIGHT...Mostly cloudy with numerous showers. Lows
-72 to 78. South winds 10 to 15 mph. Chance of rain 70 percent. 
-.THURSDAY...Partly sunny with scattered showers. Highs 78 to 85.
-Southeast winds around 10 mph. Chance of rain 50 percent. 
-.THURSDAY NIGHT...Mostly cloudy in the evening then becoming
-partly cloudy. Scattered showers. Lows 72 to 78. East winds
-around 10 mph. Chance of rain 40 percent. 
-.FRIDAY...Mostly sunny with isolated showers. Highs 78 to 85.
-Southeast winds around 10 mph. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Mostly cloudy with scattered showers. Lows 72 to
+72 to 78. Southeast winds around 10 mph. Chance of rain
+70 percent. 
+.THURSDAY...Partly sunny in the morning then becoming mostly
+sunny. Scattered showers. Highs 78 to 85. Southeast winds around
+10 mph. Chance of rain 50 percent. 
+.THURSDAY NIGHT...Partly cloudy with scattered showers. Lows
+72 to 78. East winds around 10 mph. Chance of rain 50 percent. 
+.FRIDAY...Mostly sunny with scattered showers. Highs 78 to 85.
+East winds around 10 mph. Chance of rain 50 percent. 
+.FRIDAY NIGHT...Partly cloudy with scattered showers. Lows 72 to
 78. East winds 10 to 15 mph. Chance of rain 40 percent. 
-.SATURDAY...Partly sunny in the morning then becoming mostly
-sunny. Scattered showers. Highs 78 to 85. Northeast winds 10 to
-15 mph. Chance of rain 40 percent. 
-.SATURDAY NIGHT...Mostly cloudy with scattered showers. Lows
-72 to 77. Northeast winds 10 to 15 mph. Chance of rain
-40 percent. 
-.SUNDAY...Partly sunny with scattered showers. Highs 78 to 84.
-Northeast winds 10 to 15 mph. Chance of rain 40 percent. 
-.SUNDAY NIGHT...Partly cloudy in the evening then becoming mostly
-cloudy. Scattered showers. Lows 71 to 77. Northeast winds 10 to
-15 mph. Chance of rain 40 percent. 
-.MONDAY...Partly sunny with scattered showers. Highs 77 to 84.
-Northeast winds around 10 mph. Chance of rain 50 percent. 
+.SATURDAY...Mostly sunny with scattered showers. Highs 78 to 84.
+East winds 10 to 15 mph. Chance of rain 40 percent. 
+.SATURDAY NIGHT...Partly cloudy with scattered showers. Lows
+72 to 77. Northeast winds around 15 mph. Chance of rain
+50 percent. 
+.SUNDAY...Mostly sunny with scattered showers. Highs 77 to 84.
+Northeast winds around 15 mph. Chance of rain 50 percent. 
+.SUNDAY NIGHT...Partly cloudy with scattered showers. Lows 71 to
+77. Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
+.MONDAY...Mostly sunny with scattered showers. Highs 77 to 83.
+Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
+.MONDAY NIGHT...Partly cloudy with scattered showers. Lows 71 to
+76. Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
+.TUESDAY...Mostly sunny in the morning then becoming partly
+sunny. Scattered showers. Highs 77 to 83. Northeast winds 10 to
+15 mph. Chance of rain 50 percent. 
 
-HIZ010-300715-
+HIZ010-302015-
 Central Oahu-
 Including Mililani, Wahiawa, Pearl City
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Partly sunny. Breezy. Isolated showers in the afternoon.
-Highs 82 to 89. Southeast winds 10 to 20 mph. Chance of rain
-20 percent. 
 .TONIGHT...Breezy. Mostly cloudy with numerous showers. Lows
-around 73. Southeast winds 15 to 25 mph. Chance of rain
+71 to 76. Southeast winds 15 to 25 mph. Chance of rain
 70 percent. 
 .WEDNESDAY...Breezy. Mostly cloudy with numerous showers. Highs
-79 to 86. Southeast winds 10 to 20 mph. Chance of rain
+79 to 85. Southeast winds 10 to 20 mph. Chance of rain
 70 percent. 
 .WEDNESDAY NIGHT...Mostly cloudy. Numerous showers in the
 evening, then scattered showers after midnight. Lows 70 to 75.
 Southeast winds 10 to 15 mph. Chance of rain 70 percent. 
-.THURSDAY...Mostly cloudy with scattered showers. Highs 80 to 86.
+.THURSDAY...Partly sunny with scattered showers. Highs 79 to 86.
 Southeast winds around 10 mph. Chance of rain 50 percent. 
-.THURSDAY NIGHT...Partly cloudy. Isolated showers in the evening.
-Lows around 72. East winds around 10 mph. Chance of rain
+.THURSDAY NIGHT...Partly cloudy. Scattered showers in the
+evening, then isolated showers after midnight. Lows around 72.
+East winds around 10 mph. Chance of rain 50 percent. 
+.FRIDAY...Mostly sunny in the morning then becoming partly sunny.
+Isolated showers. Highs 79 to 86. East winds around 10 mph.
+Chance of rain 20 percent. 
+.FRIDAY NIGHT...Partly cloudy. Isolated showers in the evening.
+Lows 69 to 74. East winds around 10 mph. Chance of rain
 20 percent. 
-.FRIDAY...Mostly sunny. Isolated showers in the afternoon. Highs
-80 to 86. Southeast winds around 10 mph in the morning becoming
-light. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Partly cloudy. Scattered showers in the evening,
-then isolated showers after midnight. Lows 69 to 74. Light winds
-becoming east around 10 mph after midnight. Chance of rain
-40 percent. 
 .SATURDAY...Mostly sunny with isolated showers. Highs 79 to 86.
-East winds around 10 mph. Chance of rain 20 percent. 
-.SATURDAY NIGHT...Partly cloudy. Isolated showers in the evening,
-then scattered showers after midnight. Lows around 71. Northeast
-winds around 10 mph. Chance of rain 40 percent. 
-.SUNDAY...Mostly sunny. Scattered showers in the morning, then
-isolated showers in the afternoon. Highs 79 to 86. Northeast
-winds 10 to 15 mph. Chance of rain 40 percent. 
-.SUNDAY NIGHT...Partly cloudy with isolated showers. Lows around
-71. Northeast winds around 10 mph. Chance of rain 20 percent. 
-.MONDAY...Mostly sunny in the morning then becoming partly sunny.
-Scattered showers. Highs 78 to 85. Light winds becoming northeast
-up to 10 mph in the afternoon. Chance of rain 40 percent. 
+East winds 10 to 15 mph. Chance of rain 20 percent. 
+.SATURDAY NIGHT...Partly cloudy with isolated showers. Lows
+around 71. Northeast winds 10 to 15 mph. Chance of rain
+20 percent. 
+.SUNDAY...Sunny with isolated showers. Highs 78 to 85. Northeast
+winds 10 to 15 mph. Chance of rain 20 percent. 
+.SUNDAY NIGHT...Mostly clear with isolated showers. Lows around
+71. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.MONDAY...Mostly sunny with isolated showers. Highs 77 to 85.
+Northeast winds around 10 mph. Chance of rain 20 percent. 
+.MONDAY NIGHT...Partly cloudy with isolated showers. Lows 68 to
+73. Northeast winds around 10 mph. Chance of rain 20 percent. 
+.TUESDAY...Mostly sunny with isolated showers. Highs 77 to 85.
+Northeast winds around 10 mph. Chance of rain 20 percent. 
 
-HIZ011-300715-
+HIZ011-302015-
 Waianae Mountains-
 Including Makakilo
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Breezy. Partly sunny in the morning, then mostly sunny
-with isolated showers in the afternoon. Highs 78 to 93. Southeast
-winds 10 to 20 mph. Chance of rain 20 percent. 
 .TONIGHT...Mostly cloudy. Breezy. Scattered showers in the
-evening, then numerous showers after midnight. Lows 66 to 76.
+evening, then numerous showers after midnight. Lows 66 to 77.
 Southeast winds 15 to 25 mph. Chance of rain 70 percent. 
 .WEDNESDAY...Breezy. Mostly cloudy with numerous showers. Highs
-76 to 91. Southeast winds 20 to 25 mph shifting to the south
-10 to 25 mph in the afternoon. Chance of rain 70 percent. 
-.WEDNESDAY NIGHT...Mostly cloudy with numerous showers. Lows
-66 to 75. Southeast winds 10 to 15 mph. Chance of rain
+75 to 90. Southeast winds 20 to 25 mph decreasing to 10 to 25 mph
+in the afternoon. Chance of rain 70 percent. 
+.WEDNESDAY NIGHT...Breezy. Mostly cloudy with numerous showers.
+Lows 65 to 75. Southeast winds 10 to 20 mph. Chance of rain
 70 percent. 
-.THURSDAY...Mostly cloudy with numerous showers. Highs 76 to 91.
+.THURSDAY...Partly sunny with numerous showers. Highs 76 to 91.
 Southeast winds 10 to 15 mph. Chance of rain 70 percent. 
-.THURSDAY NIGHT...Mostly cloudy with scattered showers in the
-evening, then partly cloudy with isolated showers after midnight.
-Lows 66 to 75. Southeast winds around 10 mph. Chance of rain
-40 percent. 
-.FRIDAY...Mostly sunny. Isolated showers in the afternoon. Highs
-76 to 91. Southeast winds around 10 mph in the morning becoming
-light. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Mostly cloudy with scattered showers. Lows 65 to
-75. Light winds becoming east around 10 mph after midnight.
-Chance of rain 40 percent. 
-.SATURDAY...Partly sunny with scattered showers. Highs 76 to 91.
-Northeast winds around 10 mph. Chance of rain 40 percent. 
-.SATURDAY NIGHT...Mostly cloudy with scattered showers. Lows
-65 to 74. East winds 10 to 15 mph. Chance of rain 40 percent. 
-.SUNDAY...Partly sunny with scattered showers. Highs 76 to 91.
+.THURSDAY NIGHT...Partly cloudy. Scattered showers in the
+evening, then isolated showers after midnight. Lows 65 to 75.
+Southeast winds around 10 mph. Chance of rain 40 percent. 
+.FRIDAY...Mostly sunny in the morning, then partly sunny with
+isolated showers in the afternoon. Highs 76 to 91. Southeast
+winds around 10 mph. Chance of rain 20 percent. 
+.FRIDAY NIGHT...Mostly cloudy with isolated showers in the
+evening, then mostly clear after midnight. Lows 64 to 75. East
+winds around 10 mph. Chance of rain 20 percent. 
+.SATURDAY...Sunny with isolated showers. Highs 76 to 91.
+Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.SATURDAY NIGHT...Breezy. Mostly clear with isolated showers.
+Lows 65 to 74. Northeast winds 10 to 20 mph. Chance of rain
+20 percent. 
+.SUNDAY...Breezy. Sunny with isolated showers. Highs 76 to 91.
+Northeast winds 10 to 20 mph. Chance of rain 20 percent. 
+.SUNDAY NIGHT...Breezy. Mostly clear with isolated showers. Lows
+65 to 74. Northeast winds 10 to 20 mph. Chance of rain
+20 percent. 
+.MONDAY...Sunny. Scattered showers in the morning, then isolated
+showers in the afternoon. Highs 76 to 90. Northeast winds 10 to
+15 mph. Chance of rain 40 percent. 
+.MONDAY NIGHT...Partly cloudy with isolated showers. Lows 64 to
+73. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.TUESDAY...Mostly sunny with scattered showers. Highs 75 to 90.
 Northeast winds 10 to 15 mph. Chance of rain 40 percent. 
-.SUNDAY NIGHT...Partly cloudy. Isolated showers in the evening,
-then scattered showers after midnight. Lows 65 to 74. Northeast
-winds 10 to 15 mph. Chance of rain 40 percent. 
-.MONDAY...Partly sunny with scattered showers. Highs 76 to 90.
-Northeast winds around 10 mph. Chance of rain 40 percent. 
 
-HIZ037-300715-
+HIZ037-302015-
 Molokai Windward-
 Including Kalaupapa, Halawa Valley
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Isolated showers in the morning. Highs
-69 to 86. Southeast winds up to 15 mph shifting to the east in
-the afternoon. Chance of rain 20 percent. 
-.TONIGHT...Mostly cloudy in the evening then becoming partly
-cloudy. Isolated showers. Lows 62 to 77. Southeast winds 10 to
-15 mph. Chance of rain 20 percent. 
+.TONIGHT...Partly cloudy with isolated showers. Lows 61 to 77.
+Southeast winds 10 to 15 mph. Chance of rain 20 percent. 
 .WEDNESDAY...Mostly sunny in the morning then becoming partly
 sunny. Scattered showers. Highs 69 to 85. Southeast winds 10 to
 15 mph. Chance of rain 50 percent. 
-.WEDNESDAY NIGHT...Mostly cloudy with scattered showers. Lows
-62 to 77. Southeast winds 10 to 15 mph. Chance of rain
+.WEDNESDAY NIGHT...Partly cloudy with scattered showers. Lows
+61 to 77. East winds 10 to 15 mph. Chance of rain 40 percent. 
+.THURSDAY...Mostly sunny with scattered showers. Highs 68 to 84.
+East winds 10 to 15 mph. Chance of rain 30 percent. 
+.THURSDAY NIGHT...Mostly clear. Scattered showers in the evening,
+then isolated showers after midnight. Lows 60 to 77. East winds
+10 to 15 mph. Chance of rain 30 percent. 
+.FRIDAY...Mostly sunny. Isolated showers in the morning, then
+scattered showers in the afternoon. Highs 68 to 84. East winds
+10 to 15 mph. Chance of rain 30 percent. 
+.FRIDAY NIGHT...Mostly clear with scattered showers. Lows 59 to
+77. East winds 10 to 15 mph. Chance of rain 40 percent. 
+.SATURDAY...Sunny and breezy. Scattered showers in the morning,
+then isolated showers in the afternoon. Highs 67 to 83. East
+winds 15 to 20 mph. Chance of rain 40 percent. 
+.SATURDAY NIGHT...Breezy. Partly cloudy with scattered showers.
+Lows 59 to 76. East winds 15 to 20 mph. Chance of rain
 40 percent. 
-.THURSDAY...Mostly sunny with scattered showers. Highs 68 to 85.
-East winds up to 15 mph. Chance of rain 30 percent. 
-.THURSDAY NIGHT...Partly cloudy with isolated showers. Lows 61 to
-77. East winds 10 to 15 mph. Chance of rain 20 percent. 
-.FRIDAY...Mostly sunny with isolated showers. Highs 68 to 84.
-East winds up to 15 mph. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Mostly cloudy with scattered showers. Lows 61 to
-76. East winds 10 to 15 mph. Chance of rain 40 percent. 
-.SATURDAY...Partly sunny with scattered showers. Highs 67 to 83.
-East winds 10 to 15 mph. Chance of rain 40 percent. 
-.SATURDAY NIGHT...Mostly cloudy with scattered showers. Lows
-60 to 76. East winds around 15 mph. Chance of rain 40 percent. 
-.SUNDAY...Partly sunny with scattered showers. Highs 67 to 83.
+.SUNDAY...Breezy. Sunny with scattered showers. Highs 67 to 83.
+East winds 15 to 20 mph. Chance of rain 40 percent. 
+.SUNDAY NIGHT...Breezy. Partly cloudy with scattered showers.
+Lows 58 to 76. Northeast winds 10 to 20 mph. Chance of rain
+40 percent. 
+.MONDAY...Sunny with scattered showers. Highs 66 to 82. Northeast
+winds 10 to 15 mph. Chance of rain 40 percent. 
+.MONDAY NIGHT...Partly cloudy with scattered showers. Lows 58 to
+76. Northeast winds 10 to 15 mph. Chance of rain 40 percent. 
+.TUESDAY...Mostly sunny with scattered showers. Highs 66 to 82.
 Northeast winds 10 to 15 mph. Chance of rain 40 percent. 
-.SUNDAY NIGHT...Mostly cloudy with scattered showers. Lows 60 to
-76. Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
-.MONDAY...Partly sunny with scattered showers. Highs 67 to 83.
-Northeast winds around 10 mph. Chance of rain 50 percent. 
 
-HIZ038-300715-
+HIZ038-302015-
 Molokai Southeast-
 Including Pukoo
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Isolated showers in the morning. Highs
-68 to 86. East winds 10 to 15 mph. Chance of rain 20 percent. 
-.TONIGHT...Partly cloudy with isolated showers. Lows 62 to 78.
+.TONIGHT...Partly cloudy with isolated showers. Lows 61 to 78.
 East winds 10 to 15 mph. Chance of rain 20 percent. 
 .WEDNESDAY...Mostly sunny with isolated showers in the morning,
 then partly sunny with scattered showers in the afternoon. Highs
-68 to 86. Southeast winds 10 to 15 mph. Chance of rain
+68 to 85. Southeast winds 10 to 15 mph. Chance of rain
 40 percent. 
 .WEDNESDAY NIGHT...Partly cloudy with scattered showers. Lows
-62 to 77. Southeast winds 10 to 15 mph. Chance of rain
-30 percent. 
-.THURSDAY...Mostly sunny with scattered showers. Highs 67 to 85.
-East winds 10 to 15 mph. Chance of rain 30 percent. 
-.THURSDAY NIGHT...Partly cloudy with isolated showers. Lows 61 to
-77. East winds around 10 mph. Chance of rain 20 percent. 
+61 to 77. East winds around 10 mph. Chance of rain 30 percent. 
+.THURSDAY...Sunny with scattered showers. Highs 67 to 85. East
+winds 10 to 15 mph. Chance of rain 30 percent. 
+.THURSDAY NIGHT...Mostly clear with isolated showers. Lows 60 to
+77. East winds 10 to 15 mph. Chance of rain 20 percent. 
 .FRIDAY...Mostly sunny with isolated showers. Highs 67 to 84.
-East winds up to 15 mph. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Mostly cloudy with scattered showers. Lows 60 to
-77. East winds 10 to 15 mph. Chance of rain 40 percent. 
-.SATURDAY...Partly sunny with scattered showers. Highs 66 to 84.
-East winds 10 to 15 mph. Chance of rain 40 percent. 
-.SATURDAY NIGHT...Mostly cloudy with scattered showers. Lows
-60 to 77. East winds 10 to 15 mph. Chance of rain 40 percent. 
-.SUNDAY...Partly sunny with scattered showers. Highs 66 to 84.
-Northeast winds 10 to 15 mph. Chance of rain 40 percent. 
-.SUNDAY NIGHT...Partly cloudy in the evening then becoming mostly
-cloudy. Scattered showers. Lows 60 to 76. Northeast winds 10 to
-15 mph. Chance of rain 40 percent. 
-.MONDAY...Partly sunny with scattered showers. Highs 66 to 83.
-Northeast winds around 10 mph. Chance of rain 40 percent. 
+East winds 10 to 15 mph. Chance of rain 20 percent. 
+.FRIDAY NIGHT...Mostly clear with isolated showers. Lows 60 to
+77. East winds 10 to 15 mph. Chance of rain 20 percent. 
+.SATURDAY...Sunny with isolated showers. Highs 66 to 84. East
+winds 10 to 15 mph. Chance of rain 20 percent. 
+.SATURDAY NIGHT...Breezy. Partly cloudy with isolated showers.
+Lows 59 to 77. East winds 15 to 20 mph. Chance of rain
+20 percent. 
+.SUNDAY...Breezy. Sunny with isolated showers. Highs 66 to 83.
+Northeast winds 15 to 20 mph. Chance of rain 20 percent. 
+.SUNDAY NIGHT...Mostly clear with isolated showers. Lows 59 to
+76. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.MONDAY...Sunny with isolated showers. Highs 66 to 83. Northeast
+winds 10 to 15 mph. Chance of rain 20 percent. 
+.MONDAY NIGHT...Partly cloudy. Isolated showers in the evening,
+then scattered showers after midnight. Lows 59 to 76. Northeast
+winds 10 to 15 mph. Chance of rain 30 percent. 
+.TUESDAY...Mostly sunny with scattered showers. Highs 65 to 83.
+Northeast winds 10 to 15 mph. Chance of rain 30 percent. 
 
-HIZ039-300715-
+HIZ039-302015-
 Molokai North-
 Including Hoolehua
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Highs 76 to 88. Southeast winds 10 to
-15 mph. 
-.TONIGHT...Partly cloudy with isolated showers. Lows 67 to 78.
+.TONIGHT...Partly cloudy with isolated showers. Lows 67 to 79.
 Southeast winds 10 to 15 mph. Chance of rain 20 percent. 
-.WEDNESDAY...Partly sunny with scattered showers. Highs 76 to 87.
-Southeast winds 10 to 15 mph. Chance of rain 50 percent. 
-.WEDNESDAY NIGHT...Mostly cloudy with scattered showers. Lows
-67 to 78. Southeast winds around 10 mph. Chance of rain
+.WEDNESDAY...Mostly sunny in the morning then becoming partly
+sunny. Scattered showers. Highs 75 to 87. Southeast winds 10 to
+15 mph. Chance of rain 50 percent. 
+.WEDNESDAY NIGHT...Partly cloudy with scattered showers. Lows
+66 to 78. Southeast winds around 10 mph. Chance of rain
 40 percent. 
-.THURSDAY...Partly sunny with scattered showers. Highs 74 to 86.
-East winds around 10 mph. Chance of rain 30 percent. 
+.THURSDAY...Mostly sunny with scattered showers. Highs 74 to 86.
+East winds 10 to 15 mph. Chance of rain 30 percent. 
 .THURSDAY NIGHT...Partly cloudy with isolated showers. Lows 67 to
-78. East winds 10 to 15 mph. Chance of rain 20 percent. 
-.FRIDAY...Mostly sunny. Isolated showers in the morning. Highs
-74 to 85. East winds 10 to 15 mph. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Partly cloudy with isolated showers. Lows 67 to
 77. East winds 10 to 15 mph. Chance of rain 20 percent. 
-.SATURDAY...Mostly sunny with isolated showers. Highs 73 to 85.
-East winds 10 to 15 mph. Chance of rain 20 percent. 
-.SATURDAY NIGHT...Partly cloudy with isolated showers. Lows 66 to
-77. East winds around 15 mph. Chance of rain 20 percent. 
-.SUNDAY...Mostly sunny with isolated showers. Highs 72 to 84.
-Northeast winds around 15 mph. Chance of rain 20 percent. 
-.SUNDAY NIGHT...Partly cloudy with isolated showers. Lows 66 to
+.FRIDAY...Mostly sunny. Isolated showers in the morning, then
+scattered showers in the afternoon. Highs 74 to 85. East winds
+10 to 15 mph. Chance of rain 30 percent. 
+.FRIDAY NIGHT...Mostly clear with isolated showers. Lows 66 to
+77. East winds 10 to 15 mph. Chance of rain 20 percent. 
+.SATURDAY...Breezy. Sunny with isolated showers. Highs 73 to 85.
+East winds 10 to 20 mph. Chance of rain 20 percent. 
+.SATURDAY NIGHT...Breezy. Mostly clear with isolated showers.
+Lows 66 to 77. East winds 15 to 20 mph. Chance of rain
+20 percent. 
+.SUNDAY...Breezy. Sunny with isolated showers. Highs 72 to 84.
+East winds 15 to 20 mph. Chance of rain 20 percent. 
+.SUNDAY NIGHT...Breezy. Mostly clear with isolated showers. Lows
+66 to 77. Northeast winds 10 to 20 mph. Chance of rain
+20 percent. 
+.MONDAY...Sunny with isolated showers. Highs 72 to 84. Northeast
+winds 10 to 15 mph. Chance of rain 20 percent. 
+.MONDAY NIGHT...Mostly clear with isolated showers. Lows 65 to
 77. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
-.MONDAY...Mostly sunny with isolated showers. Highs 72 to 84.
-Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.TUESDAY...Mostly sunny. Isolated showers in the morning, then
+scattered showers in the afternoon. Highs 72 to 84. Northeast
+winds 10 to 15 mph. Chance of rain 30 percent. 
 
-HIZ040-300715-
+HIZ040-302015-
 Molokai West-
 Including Kepuhi
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Highs 84 to 89. Light winds becoming
-southeast up to 10 mph in the afternoon. 
-.TONIGHT...Partly cloudy with isolated showers in the evening,
-then mostly cloudy with scattered showers after midnight. Lows
-around 77. Southeast winds 10 to 15 mph. Chance of rain
-40 percent. 
-.WEDNESDAY...Partly sunny with scattered showers. Highs 82 to 88.
-Southeast winds 10 to 15 mph. Chance of rain 50 percent. 
-.WEDNESDAY NIGHT...Mostly cloudy with scattered showers. Lows
-around 77. Southeast winds 10 to 15 mph. Chance of rain
-40 percent. 
-.THURSDAY...Partly sunny with scattered showers. Highs 82 to 88.
-Southeast winds around 10 mph. Chance of rain 30 percent. 
-.THURSDAY NIGHT...Partly cloudy with isolated showers. Lows
-around 76. East winds around 10 mph. Chance of rain 20 percent. 
-.FRIDAY...Mostly sunny. Isolated showers in the morning. Highs
-81 to 87. Southeast winds up to 10 mph. Chance of rain
+.TONIGHT...Partly cloudy. Isolated showers in the evening, then
+scattered showers after midnight. Lows around 77. Southeast winds
+10 to 15 mph. Chance of rain 40 percent. 
+.WEDNESDAY...Mostly sunny in the morning then becoming partly
+sunny. Scattered showers. Highs 82 to 88. Southeast winds 10 to
+15 mph. Chance of rain 50 percent. 
+.WEDNESDAY NIGHT...Mostly cloudy in the evening then becoming
+partly cloudy. Scattered showers. Lows around 77. Southeast winds
+around 10 mph. Chance of rain 40 percent. 
+.THURSDAY...Mostly sunny with scattered showers. Highs 82 to 88.
+East winds around 10 mph. Chance of rain 30 percent. 
+.THURSDAY NIGHT...Partly cloudy. Isolated showers in the evening.
+Lows around 76. East winds around 10 mph. Chance of rain
 20 percent. 
-.FRIDAY NIGHT...Partly cloudy with isolated showers. Lows around
-76. East winds 10 to 15 mph. Chance of rain 20 percent. 
-.SATURDAY...Mostly sunny with isolated showers. Highs 81 to 87.
-Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
-.SATURDAY NIGHT...Mostly clear with isolated showers. Lows around
-76. East winds around 15 mph. Chance of rain 20 percent. 
-.SUNDAY...Sunny with isolated showers. Highs 80 to 86. Northeast
-winds around 15 mph. Chance of rain 20 percent. 
-.SUNDAY NIGHT...Mostly clear. Lows around 76. Northeast winds
+.FRIDAY...Mostly sunny. Highs 82 to 87. East winds around 10 mph.
+.FRIDAY NIGHT...Partly cloudy. Lows around 76. East winds 10 to
+15 mph. 
+.SATURDAY...Sunny. Highs 81 to 87. East winds 10 to 15 mph. 
+.SATURDAY NIGHT...Mostly clear. Lows around 76. East winds 10 to
+15 mph. 
+.SUNDAY...Sunny and breezy. Highs 80 to 86. Northeast winds 15 to
+20 mph. 
+.SUNDAY NIGHT...Mostly clear. Breezy. Lows around 76. Northeast
+winds 10 to 20 mph. 
+.MONDAY...Sunny. Highs 80 to 86. Northeast winds 10 to 15 mph. 
+.MONDAY NIGHT...Mostly clear. Lows around 75. Northeast winds
 10 to 15 mph. 
-.MONDAY...Mostly sunny with isolated showers. Highs 80 to 86.
-Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.TUESDAY...Mostly sunny. Highs 80 to 86. Northeast winds 10 to
+15 mph. 
 
-HIZ041-300715-
+HIZ041-302015-
 Molokai Leeward South-
 Including Kaunakakai, Maunaloa
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Highs 72 to 92. Light winds becoming south
-around 10 mph in the afternoon. 
-.TONIGHT...Partly cloudy with isolated showers. Lows 64 to 78.
+.TONIGHT...Partly cloudy with isolated showers. Lows 63 to 78.
 Southeast winds around 10 mph. Chance of rain 20 percent. 
-.WEDNESDAY...Partly sunny with scattered showers. Highs 72 to 91.
-Southeast winds 10 to 15 mph. Chance of rain 50 percent. 
-.WEDNESDAY NIGHT...Mostly cloudy with scattered showers. Lows
-64 to 78. Southeast winds 10 to 15 mph. Chance of rain
+.WEDNESDAY...Mostly sunny in the morning then becoming partly
+sunny. Scattered showers. Highs 71 to 91. Southeast winds 10 to
+15 mph. Chance of rain 50 percent. 
+.WEDNESDAY NIGHT...Partly cloudy with scattered showers. Lows
+63 to 78. Southeast winds around 10 mph. Chance of rain
 40 percent. 
-.THURSDAY...Mostly sunny in the morning then becoming partly
-sunny. Scattered showers. Highs 71 to 91. East winds around
-10 mph. Chance of rain 40 percent. 
-.THURSDAY NIGHT...Partly cloudy with isolated showers. Lows 63 to
+.THURSDAY...Mostly sunny with scattered showers. Highs 71 to 91.
+East winds around 10 mph. Chance of rain 40 percent. 
+.THURSDAY NIGHT...Partly cloudy with isolated showers. Lows 62 to
 77. East winds around 10 mph. Chance of rain 20 percent. 
-.FRIDAY...Mostly sunny. Highs 71 to 90. East winds up to 15 mph. 
-.FRIDAY NIGHT...Partly cloudy with isolated showers. Lows 63 to
-77. East winds 10 to 15 mph. Chance of rain 20 percent. 
-.SATURDAY...Mostly sunny with isolated showers. Highs 70 to 90.
-East winds 10 to 15 mph. Chance of rain 20 percent. 
-.SATURDAY NIGHT...Partly cloudy with isolated showers. Lows 63 to
-77. East winds 10 to 15 mph. Chance of rain 20 percent. 
-.SUNDAY...Sunny with isolated showers. Highs 70 to 89. Northeast
+.FRIDAY...Mostly sunny with isolated showers. Highs 70 to 90.
+East winds up to 10 mph. Chance of rain 20 percent. 
+.FRIDAY NIGHT...Partly cloudy with isolated showers. Lows 62 to
+77. East winds around 10 mph. Chance of rain 20 percent. 
+.SATURDAY...Sunny with isolated showers. Highs 70 to 90. East
 winds 10 to 15 mph. Chance of rain 20 percent. 
-.SUNDAY NIGHT...Mostly clear. Isolated showers after midnight.
-Lows 62 to 77. Northeast winds 10 to 15 mph. Chance of rain
-20 percent. 
-.MONDAY...Mostly sunny with isolated showers. Highs 69 to 89.
+.SATURDAY NIGHT...Mostly clear with isolated showers. Lows 61 to
+77. East winds 10 to 15 mph. Chance of rain 20 percent. 
+.SUNDAY...Sunny with isolated showers. Highs 69 to 89. East winds
+10 to 15 mph. Chance of rain 20 percent. 
+.SUNDAY NIGHT...Mostly clear with isolated showers. Lows 61 to
+77. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.MONDAY...Sunny with isolated showers. Highs 69 to 89. Northeast
+winds around 10 mph. Chance of rain 20 percent. 
+.MONDAY NIGHT...Mostly clear with isolated showers. Lows 61 to
+76. Northeast winds around 10 mph. Chance of rain 20 percent. 
+.TUESDAY...Mostly sunny with isolated showers. Highs 68 to 89.
 Northeast winds around 10 mph. Chance of rain 20 percent. 
 
-HIZ042-300715-
+HIZ042-302015-
 Lanai Windward-
 Including Shipwreck Beach
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Highs 78 to 87. Northeast winds up to
-10 mph. 
 .TONIGHT...Partly cloudy. Isolated showers in the evening, then
 scattered showers after midnight. Lows 67 to 78. Southeast winds
 10 to 15 mph. Chance of rain 30 percent. 
-.WEDNESDAY...Mostly sunny with isolated showers. Highs 77 to 85.
-South winds 10 to 15 mph. Chance of rain 20 percent. 
-.WEDNESDAY NIGHT...Partly cloudy in the evening then becoming
-mostly cloudy. Scattered showers. Lows 67 to 78. Southeast winds
-around 10 mph. Chance of rain 40 percent. 
-.THURSDAY...Partly sunny in the morning then becoming mostly
-sunny. Scattered showers. Highs 77 to 85. East winds up to
-10 mph. Chance of rain 30 percent. 
-.THURSDAY NIGHT...Mostly clear. Lows 67 to 77. Light winds. 
-.FRIDAY...Sunny. Highs 76 to 85. Light winds becoming east up to
-10 mph in the afternoon. 
-.FRIDAY NIGHT...Partly cloudy. Lows 66 to 77. Northeast winds up
-to 10 mph. 
-.SATURDAY...Mostly sunny. Highs 76 to 84. Northeast winds up to
-10 mph. 
+.WEDNESDAY...Mostly sunny in the morning then becoming partly
+sunny. Isolated showers. Highs 77 to 85. Southeast winds 10 to
+15 mph. Chance of rain 20 percent. 
+.WEDNESDAY NIGHT...Partly cloudy with scattered showers. Lows
+67 to 77. Southeast winds around 10 mph. Chance of rain
+40 percent. 
+.THURSDAY...Mostly sunny with scattered showers. Highs 76 to 85.
+Light winds becoming east around 10 mph in the afternoon. Chance
+of rain 30 percent. 
+.THURSDAY NIGHT...Mostly clear. Lows 66 to 77. East winds around
+10 mph in the evening becoming light. 
+.FRIDAY...Mostly sunny. Isolated showers in the afternoon. Highs
+76 to 85. East winds around 10 mph. Chance of rain 20 percent. 
+.FRIDAY NIGHT...Partly cloudy. Lows 66 to 77. Northeast winds
+around 10 mph. 
+.SATURDAY...Sunny. Isolated showers in the afternoon. Highs 76 to
+84. East winds 10 to 15 mph. Chance of rain 20 percent. 
 .SATURDAY NIGHT...Mostly clear. Lows 66 to 77. Northeast winds
-around 10 mph. 
-.SUNDAY...Sunny. Highs 76 to 84. Northeast winds around 10 mph. 
+10 to 15 mph. 
+.SUNDAY...Sunny. Highs 76 to 84. East winds 10 to 15 mph. 
 .SUNDAY NIGHT...Mostly clear. Lows 66 to 77. Northeast winds
+10 to 15 mph. 
+.MONDAY...Sunny. Highs 75 to 84. Northeast winds around 10 mph. 
+.MONDAY NIGHT...Mostly clear. Lows 66 to 76. Northeast winds
 around 10 mph. 
-.MONDAY...Sunny. Highs 76 to 84. Light winds. 
+.TUESDAY...Mostly sunny. Highs 75 to 83. Northeast winds around
+10 mph. 
 
-HIZ043-300715-
+HIZ043-302015-
 Lanai Leeward-
 Including Kaumalapau Harbor
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Highs 82 to 88. Light winds becoming
-southwest 10 to 15 mph in the afternoon. 
-.TONIGHT...Partly cloudy with isolated showers in the evening,
-then mostly cloudy with scattered showers after midnight. Lows
-73 to 78. Southeast winds 10 to 15 mph. Chance of rain
-30 percent. 
-.WEDNESDAY...Mostly sunny with isolated showers. Highs 81 to 87.
+.TONIGHT...Partly cloudy. Isolated showers in the evening, then
+scattered showers after midnight. Lows 73 to 78. Southeast winds
+10 to 15 mph. Chance of rain 30 percent. 
+.WEDNESDAY...Mostly sunny with isolated showers. Highs 80 to 87.
 South winds 10 to 15 mph. Chance of rain 20 percent. 
-.WEDNESDAY NIGHT...Partly cloudy in the evening then becoming
-mostly cloudy. Scattered showers. Lows 72 to 78. Southeast winds
-around 10 mph. Chance of rain 40 percent. 
-.THURSDAY...Partly sunny in the morning then becoming mostly
-sunny. Scattered showers. Highs 80 to 86. Southeast winds around
-10 mph. Chance of rain 30 percent. 
+.WEDNESDAY NIGHT...Partly cloudy with scattered showers. Lows
+72 to 78. Southeast winds 10 to 15 mph. Chance of rain
+40 percent. 
+.THURSDAY...Mostly sunny with scattered showers. Highs 80 to 86.
+Southeast winds around 10 mph. Chance of rain 30 percent. 
 .THURSDAY NIGHT...Mostly clear. Isolated showers in the evening.
-Lows 72 to 77. Light winds. Chance of rain 20 percent. 
-.FRIDAY...Sunny. Highs 80 to 86. Light winds. 
-.FRIDAY NIGHT...Partly cloudy. Lows 71 to 77. Light winds
-becoming northeast around 10 mph after midnight. 
-.SATURDAY...Mostly sunny. Isolated showers in the afternoon.
-Highs 80 to 86. Northeast winds up to 10 mph. Chance of rain
-20 percent. 
+Lows 71 to 77. Light winds. Chance of rain 20 percent. 
+.FRIDAY...Mostly sunny with isolated showers. Highs 80 to 86.
+Light winds becoming southeast around 10 mph in the afternoon.
+Chance of rain 20 percent. 
+.FRIDAY NIGHT...Partly cloudy. Lows 71 to 77. East winds around
+10 mph. 
+.SATURDAY...Sunny with isolated showers. Highs 80 to 86. East
+winds up to 15 mph. Chance of rain 20 percent. 
 .SATURDAY NIGHT...Mostly clear. Lows 71 to 77. Northeast winds
-around 10 mph. 
-.SUNDAY...Sunny. Isolated showers in the afternoon. Highs 80 to
-86. Northeast winds up to 10 mph. Chance of rain 20 percent. 
+10 to 15 mph shifting to the east after midnight. 
+.SUNDAY...Sunny. Isolated showers in the morning. Highs 80 to 86.
+East winds up to 15 mph increasing to 10 to 15 mph in the
+afternoon. Chance of rain 20 percent. 
 .SUNDAY NIGHT...Mostly clear. Lows 71 to 77. Northeast winds
-around 10 mph. 
-.MONDAY...Sunny. Highs 79 to 85. Light winds. 
+10 to 15 mph. 
+.MONDAY...Sunny. Highs 79 to 85. Northeast winds up to 10 mph. 
+.MONDAY NIGHT...Mostly clear with isolated showers. Lows 71 to
+76. Northeast winds around 10 mph. Chance of rain 20 percent. 
+.TUESDAY...Mostly sunny. Isolated showers in the afternoon. Highs
+78 to 85. East winds around 10 mph in the morning becoming light.
+Chance of rain 20 percent. 
 
-HIZ044-300715-
+HIZ044-302015-
 Lanai South-
 Including Manele
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Highs around 82. Light winds becoming
-southeast 10 to 15 mph in the afternoon. 
 .TONIGHT...Partly cloudy. Isolated showers in the evening, then
 scattered showers after midnight. Lows around 76. Southeast winds
 10 to 15 mph. Chance of rain 30 percent. 
 .WEDNESDAY...Mostly sunny with isolated showers. Highs 79 to 84.
 South winds 10 to 15 mph. Chance of rain 20 percent. 
-.WEDNESDAY NIGHT...Partly cloudy in the evening then becoming
-mostly cloudy. Scattered showers. Lows around 76. Southeast winds
-around 10 mph. Chance of rain 40 percent. 
-.THURSDAY...Partly sunny with scattered showers in the morning,
-then mostly sunny with isolated showers in the afternoon. Highs
-around 81. Southeast winds up to 10 mph. Chance of rain
-30 percent. 
+.WEDNESDAY NIGHT...Partly cloudy with scattered showers. Lows
+around 76. Southeast winds 10 to 15 mph. Chance of rain
+40 percent. 
+.THURSDAY...Mostly sunny. Scattered showers in the morning, then
+isolated showers in the afternoon. Highs around 81. Southeast
+winds around 10 mph. Chance of rain 30 percent. 
 .THURSDAY NIGHT...Mostly clear. Lows 73 to 78. Light winds. 
-.FRIDAY...Sunny. Highs around 81. Light winds. 
-.FRIDAY NIGHT...Mostly clear. Lows around 75. Light winds. 
-.SATURDAY...Mostly sunny. Highs around 81. Light winds. 
-.SATURDAY NIGHT...Mostly clear. Lows around 75. Light winds
-becoming northeast around 10 mph after midnight. 
-.SUNDAY...Sunny. Highs around 81. Northeast winds up to 10 mph. 
+.FRIDAY...Mostly sunny. Highs 78 to 83. Light winds. 
+.FRIDAY NIGHT...Mostly clear. Lows 73 to 78. Light winds. 
+.SATURDAY...Sunny. Highs 78 to 83. Light winds becoming southeast
+up to 15 mph in the afternoon. 
+.SATURDAY NIGHT...Mostly clear. Lows 72 to 77. Northeast winds
+10 to 15 mph shifting to the east after midnight. 
+.SUNDAY...Sunny. Highs around 81. Light winds becoming east
+around 10 mph in the afternoon. 
 .SUNDAY NIGHT...Mostly clear. Lows 72 to 77. Northeast winds
-around 10 mph in the evening becoming light. 
-.MONDAY...Sunny. Highs around 80. Light winds. 
+around 10 mph. 
+.MONDAY...Sunny. Highs 78 to 83. North winds up to 10 mph. 
+.MONDAY NIGHT...Mostly clear. Lows around 74. Northeast winds
+around 10 mph. 
+.TUESDAY...Mostly sunny. Highs 77 to 82. Light winds. 
 
-HIZ015-300715-
+HIZ015-302015-
 Lanai Mauka-
 Including Lanai City
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Highs 74 to 83. Light winds becoming south
-around 10 mph in the afternoon. 
-.TONIGHT...Partly cloudy with isolated showers in the evening,
-then mostly cloudy with scattered showers after midnight. Lows
-69 to 74. Southeast winds 10 to 15 mph. Chance of rain
-30 percent. 
-.WEDNESDAY...Mostly sunny with isolated showers. Highs 73 to 82.
-South winds 10 to 15 mph. Chance of rain 20 percent. 
-.WEDNESDAY NIGHT...Partly cloudy in the evening then becoming
-mostly cloudy. Scattered showers. Lows 69 to 74. Southeast winds
-around 10 mph. Chance of rain 40 percent. 
-.THURSDAY...Partly sunny in the morning then becoming mostly
-sunny. Scattered showers. Highs 73 to 82. Southeast winds up to
-10 mph. Chance of rain 30 percent. 
-.THURSDAY NIGHT...Mostly clear. Lows 68 to 73. Light winds. 
-.FRIDAY...Sunny. Highs 72 to 82. Light winds. 
-.FRIDAY NIGHT...Partly cloudy. Lows 68 to 73. Light winds
+.TONIGHT...Partly cloudy. Isolated showers in the evening, then
+scattered showers after midnight. Lows 68 to 74. Southeast winds
+10 to 15 mph. Chance of rain 30 percent. 
+.WEDNESDAY...Mostly sunny in the morning then becoming partly
+sunny. Isolated showers. Highs 73 to 82. South winds 10 to
+15 mph. Chance of rain 20 percent. 
+.WEDNESDAY NIGHT...Partly cloudy with scattered showers. Lows
+68 to 74. Southeast winds 10 to 15 mph. Chance of rain
+40 percent. 
+.THURSDAY...Mostly sunny with scattered showers. Highs 72 to 82.
+Light winds. Chance of rain 30 percent. 
+.THURSDAY NIGHT...Mostly clear. Isolated showers in the evening.
+Lows 67 to 73. Light winds. Chance of rain 20 percent. 
+.FRIDAY...Mostly sunny with isolated showers. Highs 72 to 81.
+Light winds. Chance of rain 20 percent. 
+.FRIDAY NIGHT...Partly cloudy. Lows 67 to 73. Light winds
 becoming northeast around 10 mph after midnight. 
-.SATURDAY...Mostly sunny with isolated showers. Highs 72 to 81.
-Northeast winds up to 10 mph. Chance of rain 20 percent. 
-.SATURDAY NIGHT...Mostly clear. Lows 68 to 73. Northeast winds
-around 10 mph. 
-.SUNDAY...Mostly sunny with isolated showers. Highs 72 to 82.
+.SATURDAY...Sunny with isolated showers. Highs 72 to 82. East
+winds 10 to 15 mph. Chance of rain 20 percent. 
+.SATURDAY NIGHT...Mostly clear. Lows 67 to 73. Northeast winds
+10 to 15 mph. 
+.SUNDAY...Sunny. Isolated showers in the morning. Highs 72 to 82.
+East winds 10 to 15 mph. Chance of rain 20 percent. 
+.SUNDAY NIGHT...Mostly clear. Lows 66 to 73. Northeast winds
+10 to 15 mph. 
+.MONDAY...Sunny. Highs 72 to 81. Northeast winds up to 15 mph. 
+.MONDAY NIGHT...Mostly clear with isolated showers. Lows 66 to
+72. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.TUESDAY...Mostly sunny with isolated showers. Highs 71 to 80.
 Northeast winds around 10 mph. Chance of rain 20 percent. 
-.SUNDAY NIGHT...Mostly clear. Lows 68 to 73. Northeast winds
-around 10 mph. 
-.MONDAY...Sunny. Isolated showers in the afternoon. Highs 72 to
-81. Light winds. Chance of rain 20 percent. 
 
-HIZ016-300715-
+HIZ016-302015-
 Kahoolawe-
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Breezy. Highs 80 to 86. East winds 10 to
-25 mph. 
-.TONIGHT...Mostly cloudy in the evening then becoming partly
-cloudy. Breezy. Lows 72 to 77. East winds 10 to 20 mph. 
-.WEDNESDAY...Sunny. Isolated showers in the afternoon. Highs
-80 to 86. Southeast winds 10 to 15 mph. Chance of rain
+.TONIGHT...Partly cloudy. Breezy. Lows 72 to 77. East winds 10 to
+20 mph. 
+.WEDNESDAY...Mostly sunny. Isolated showers in the afternoon.
+Highs 80 to 86. Southeast winds 10 to 15 mph. Chance of rain
 20 percent. 
 .WEDNESDAY NIGHT...Partly cloudy with isolated showers. Lows
 72 to 77. East winds 10 to 15 mph. Chance of rain 20 percent. 
 .THURSDAY...Sunny. Highs 79 to 85. East winds 10 to 15 mph. 
-.THURSDAY NIGHT...Mostly clear. Lows 71 to 76. East winds 10 to
+.THURSDAY NIGHT...Mostly clear. Lows 71 to 77. East winds 10 to
 15 mph. 
 .FRIDAY...Sunny. Highs 79 to 85. East winds 10 to 15 mph. 
 .FRIDAY NIGHT...Mostly clear. Lows 71 to 76. East winds 10 to
 15 mph. 
 .SATURDAY...Sunny. Highs 79 to 85. East winds 10 to 15 mph. 
-.SATURDAY NIGHT...Mostly clear. Lows 70 to 75. Northeast winds
+.SATURDAY NIGHT...Partly cloudy. Lows 70 to 75. Northeast winds
 10 to 15 mph. 
-.SUNDAY...Sunny. Highs 79 to 85. Northeast winds around 10 mph. 
-.SUNDAY NIGHT...Mostly clear. Lows 70 to 75. Northeast winds
+.SUNDAY...Sunny. Highs 79 to 85. Northeast winds 10 to 15 mph. 
+.SUNDAY NIGHT...Mostly clear. Lows 70 to 75. North winds around
+10 mph. 
+.MONDAY...Sunny. Highs 79 to 85. Northeast winds around 10 mph. 
+.MONDAY NIGHT...Partly cloudy. Lows 70 to 75. Northeast winds
 around 10 mph. 
-.MONDAY...Sunny. Highs 79 to 84. Light winds. 
+.TUESDAY...Sunny. Highs 79 to 84. Northeast winds around 10 mph. 
 
-HIZ017-300715-
+HIZ017-302015-
 Maui Windward West-
 Including Wailuku
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Isolated showers in the afternoon. Highs
-around 84 makai to around 66 mauka. Northwest winds up to 10 mph
-shifting to the northeast in the afternoon. Chance of rain
-20 percent. 
-.TONIGHT...Partly cloudy. Lows 70 to 76 makai to around 60 mauka.
+.TONIGHT...Partly cloudy. Lows 69 to 76 makai to around 60 mauka.
 North winds up to 10 mph shifting to the south after midnight. 
-.WEDNESDAY...Mostly sunny. Isolated showers in the morning, then
-scattered showers in the afternoon. Highs around 83 makai to
-around 65 mauka. Southeast winds up to 15 mph increasing to 10 to
-15 mph in the afternoon. Chance of rain 30 percent. 
+.WEDNESDAY...Mostly sunny with isolated showers in the morning,
+then partly sunny with scattered showers in the afternoon. Highs
+around 83 makai to around 65 mauka. Southeast winds up to 15 mph
+increasing to 10 to 15 mph in the afternoon. Chance of rain
+30 percent. 
 .WEDNESDAY NIGHT...Partly cloudy with isolated showers. Lows
-60 to 76. Southeast winds up to 10 mph. Chance of rain
-20 percent. 
+69 to 76 makai to around 59 mauka. East winds up to 10 mph.
+Chance of rain 20 percent. 
 .THURSDAY...Mostly sunny with isolated showers. Highs 64 to 86.
 East winds up to 15 mph. Chance of rain 20 percent. 
-.THURSDAY NIGHT...Partly cloudy. Isolated showers in the evening.
-Lows 60 to 76. East winds up to 10 mph. Chance of rain
-20 percent. 
-.FRIDAY...Mostly sunny. Highs 64 to 85. East winds up to 15 mph. 
-.FRIDAY NIGHT...Mostly cloudy in the evening then becoming partly
-cloudy. Scattered showers. Lows 59 to 75. East winds up to 15 mph
-increasing to 10 to 15 mph after midnight. Chance of rain
-40 percent. 
-.SATURDAY...Mostly sunny with scattered showers. Highs 66 to 85.
-Northeast winds 10 to 15 mph. Chance of rain 40 percent. 
-.SATURDAY NIGHT...Partly cloudy with scattered showers. Lows
-59 to 75. Northeast winds 10 to 15 mph. Chance of rain
-40 percent. 
-.SUNDAY...Mostly sunny with scattered showers. Highs 63 to 85.
-Northeast winds 10 to 15 mph. Chance of rain 40 percent. 
-.SUNDAY NIGHT...Partly cloudy. Isolated showers in the evening,
-then scattered showers after midnight. Lows 59 to 75. Northeast
+.THURSDAY NIGHT...Mostly clear with isolated showers. Lows 59 to
+76. East winds around 10 mph. Chance of rain 20 percent. 
+.FRIDAY...Mostly sunny with isolated showers. Highs 64 to 85.
+East winds up to 15 mph. Chance of rain 20 percent. 
+.FRIDAY NIGHT...Mostly clear. Scattered showers in the evening,
+then isolated showers after midnight. Lows 58 to 75. East winds
+10 to 15 mph. Chance of rain 40 percent. 
+.SATURDAY...Sunny. Scattered showers in the morning, then
+isolated showers in the afternoon. Highs 64 to 85. Northeast
 winds 10 to 15 mph. Chance of rain 40 percent. 
-.MONDAY...Partly sunny with scattered showers. Highs 62 to 84.
-Northeast winds around 10 mph. Chance of rain 50 percent. 
+.SATURDAY NIGHT...Partly cloudy. Breezy. Scattered showers in the
+evening, then isolated showers after midnight. Lows 58 to 75.
+Northeast winds 10 to 20 mph. Chance of rain 50 percent. 
+.SUNDAY...Sunny and breezy. Scattered showers in the morning,
+then isolated showers in the afternoon. Highs 63 to 85. Northeast
+winds 10 to 20 mph. Chance of rain 50 percent. 
+.SUNDAY NIGHT...Partly cloudy with isolated showers. Lows 57 to
+75. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.MONDAY...Mostly sunny. Scattered showers in the morning, then
+isolated showers in the afternoon. Highs 62 to 84. Northeast
+winds 10 to 15 mph. Chance of rain 50 percent. 
+.MONDAY NIGHT...Partly cloudy with scattered showers. Lows 57 to
+75. Northeast winds 10 to 15 mph. Chance of rain 50 percent. 
+.TUESDAY...Mostly sunny in the morning then becoming partly
+sunny. Scattered showers. Highs 62 to 84. Northeast winds around
+10 mph. Chance of rain 50 percent. 
 
-HIZ018-300715-
+HIZ018-302015-
 Maui Leeward West-
 Including Lahaina, Kaanapali
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Highs 82 to 89. West winds up to 10 mph. 
-.TONIGHT...Partly cloudy. Lows 72 to 79. Southwest winds up to
+.TONIGHT...Partly cloudy. Lows 71 to 79. Southwest winds up to
 10 mph shifting to the southeast after midnight. 
 .WEDNESDAY...Mostly sunny. Isolated showers in the afternoon.
-Highs 81 to 87. Southeast winds up to 10 mph. Chance of rain
+Highs 80 to 87. Southeast winds up to 10 mph. Chance of rain
 20 percent. 
 .WEDNESDAY NIGHT...Partly cloudy with isolated showers. Lows
-71 to 78. Southeast winds around 10 mph. Chance of rain
-20 percent. 
+71 to 78. East winds up to 10 mph. Chance of rain 20 percent. 
 .THURSDAY...Mostly sunny with isolated showers. Highs 80 to 87.
-East winds up to 10 mph. Chance of rain 20 percent. 
-.THURSDAY NIGHT...Partly cloudy. Lows 71 to 77. East winds up to
-10 mph. 
-.FRIDAY...Mostly sunny. Highs 79 to 86. East winds up to 15 mph. 
-.FRIDAY NIGHT...Partly cloudy with isolated showers. Lows 70 to
-77. Northeast winds up to 10 mph. Chance of rain 20 percent. 
-.SATURDAY...Mostly sunny with isolated showers. Highs 79 to 86.
-Northeast winds around 10 mph. Chance of rain 20 percent. 
+East winds around 10 mph. Chance of rain 20 percent. 
+.THURSDAY NIGHT...Mostly clear. Isolated showers in the evening.
+Lows 70 to 77. Northeast winds around 10 mph. Chance of rain
+20 percent. 
+.FRIDAY...Mostly sunny. Isolated showers in the morning. Highs
+80 to 87. East winds around 10 mph. Chance of rain 20 percent. 
+.FRIDAY NIGHT...Mostly clear with isolated showers. Lows 70 to
+77. Northeast winds around 10 mph. Chance of rain 20 percent. 
+.SATURDAY...Sunny with isolated showers. Highs 79 to 87.
+Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
 .SATURDAY NIGHT...Partly cloudy with isolated showers. Lows 70 to
-76. Northeast winds around 10 mph. Chance of rain 20 percent. 
-.SUNDAY...Mostly sunny with isolated showers. Highs 78 to 86.
-Northeast winds around 10 mph. Chance of rain 20 percent. 
+76. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.SUNDAY...Sunny with isolated showers. Highs 78 to 86. Northeast
+winds 10 to 15 mph. Chance of rain 20 percent. 
 .SUNDAY NIGHT...Mostly clear with isolated showers. Lows 70 to
+76. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
+.MONDAY...Sunny with isolated showers. Highs 78 to 86. Northeast
+winds around 10 mph. Chance of rain 20 percent. 
+.MONDAY NIGHT...Mostly clear with isolated showers. Lows 70 to
 76. Northeast winds around 10 mph. Chance of rain 20 percent. 
-.MONDAY...Mostly sunny with isolated showers. Highs 78 to 85.
-Northeast winds around 10 mph. Chance of rain 20 percent. 
+.TUESDAY...Mostly sunny with isolated showers. Highs 78 to 85.
+Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
 
-HIZ045-300715-
+HIZ045-302015-
 Maui Central Valley North-
 Including Kahului
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Highs 83 to 90. Southwest winds up to
-10 mph shifting to the north around 10 mph in the afternoon. 
 .TONIGHT...Partly cloudy. Lows around 74. Northwest winds up to
 10 mph shifting to the east after midnight. 
 .WEDNESDAY...Mostly sunny. Isolated showers in the afternoon.
-Highs 83 to 89. Southeast winds 10 to 15 mph. Chance of rain
+Highs 82 to 89. Southeast winds 10 to 15 mph. Chance of rain
 20 percent. 
-.WEDNESDAY NIGHT...Partly cloudy. Lows around 74. East winds
+.WEDNESDAY NIGHT...Partly cloudy. Lows around 74. Northeast winds
 around 10 mph. 
-.THURSDAY...Mostly sunny in the morning then becoming partly
-sunny. Highs 82 to 88. East winds around 10 mph. 
-.THURSDAY NIGHT...Partly cloudy. Lows around 73. East winds
+.THURSDAY...Mostly sunny. Highs 82 to 89. Northeast winds around
+10 mph. 
+.THURSDAY NIGHT...Partly cloudy. Lows around 73. Northeast winds
 around 10 mph. 
-.FRIDAY...Mostly sunny. Highs 82 to 88. East winds 10 to 15 mph. 
-.FRIDAY NIGHT...Partly cloudy with isolated showers. Lows 70 to
-75. East winds around 10 mph. Chance of rain 20 percent. 
-.SATURDAY...Mostly sunny with isolated showers. Highs 82 to 88.
-Northeast winds around 10 mph. Chance of rain 20 percent. 
-.SATURDAY NIGHT...Mostly clear with isolated showers. Lows around
-73. Northeast winds around 10 mph. Chance of rain 20 percent. 
-.SUNDAY...Sunny with isolated showers. Highs 81 to 88. Northeast
-winds around 10 mph. Chance of rain 20 percent. 
-.SUNDAY NIGHT...Mostly clear. Lows 70 to 75. Northeast winds
+.FRIDAY...Mostly sunny in the morning then becoming partly sunny.
+Highs 82 to 88. Northeast winds 10 to 15 mph. 
+.FRIDAY NIGHT...Partly cloudy. Lows 70 to 75. Northeast winds
+around 10 mph. 
+.SATURDAY...Sunny. Highs 81 to 88. Northeast winds around 10 mph.
+.SATURDAY NIGHT...Partly cloudy. Lows 70 to 75. Northeast winds
+around 10 mph. 
+.SUNDAY...Sunny. Highs 81 to 88. Northeast winds around 10 mph. 
+.SUNDAY NIGHT...Partly cloudy. Lows 70 to 75. Northeast winds
+around 10 mph. 
+.MONDAY...Mostly sunny. Highs 81 to 87. Northeast winds around
+10 mph. 
+.MONDAY NIGHT...Partly cloudy. Lows around 72. Northeast winds
 around 10 mph in the evening becoming light. 
-.MONDAY...Mostly sunny with isolated showers. Highs 81 to 87.
-Light winds. Chance of rain 20 percent. 
+.TUESDAY...Mostly sunny with isolated showers in the morning,
+then partly sunny in the afternoon. Highs 80 to 86. Northeast
+winds around 10 mph. Chance of rain 20 percent. 
 
-HIZ046-300715-
+HIZ046-302015-
 Maui Central Valley South-
 Including Maalaea
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Highs 88 to 93. West winds up to 10 mph. 
-.TONIGHT...Partly cloudy. Lows 73 to 81. North winds up to
+.TONIGHT...Partly cloudy. Lows 72 to 81. North winds up to
 10 mph. 
 .WEDNESDAY...Mostly sunny. Isolated showers in the afternoon.
 Highs 87 to 92. Southeast winds 10 to 15 mph. Chance of rain
 20 percent. 
-.WEDNESDAY NIGHT...Partly cloudy. Lows 73 to 81. East winds 10 to
-15 mph. 
+.WEDNESDAY NIGHT...Partly cloudy. Lows 72 to 81. North winds
+10 to 15 mph. 
 .THURSDAY...Mostly sunny in the morning then becoming partly
-sunny. Highs 86 to 91. East winds 10 to 15 mph decreasing to up
-to 15 mph in the afternoon. 
-.THURSDAY NIGHT...Partly cloudy. Lows 71 to 80. Northeast winds
-up to 15 mph. 
-.FRIDAY...Mostly sunny. Highs around 88. East winds up to 15 mph
-increasing to 10 to 15 mph in the afternoon. 
-.FRIDAY NIGHT...Partly cloudy. Lows 71 to 79. Northeast winds
-10 to 15 mph. 
-.SATURDAY...Mostly sunny. Highs around 88. Northeast winds 10 to
+sunny. Highs 86 to 91. North winds 10 to 15 mph. 
+.THURSDAY NIGHT...Partly cloudy. Lows 71 to 80. North winds 10 to
 15 mph. 
-.SATURDAY NIGHT...Mostly clear. Lows 71 to 79. Northeast winds
-10 to 15 mph. 
-.SUNDAY...Sunny. Highs around 88. Northeast winds 10 to 15 mph. 
-.SUNDAY NIGHT...Mostly clear. Lows 71 to 79. North winds 10 to
+.FRIDAY...Mostly sunny in the morning then becoming partly sunny.
+Highs around 88. North winds 10 to 15 mph. 
+.FRIDAY NIGHT...Partly cloudy. Lows 71 to 79. North winds 10 to
 15 mph. 
-.MONDAY...Mostly sunny. Highs 85 to 90. North winds up to 15 mph.
+.SATURDAY...Sunny and breezy. Highs around 88. North winds 10 to
+20 mph. 
+.SATURDAY NIGHT...Partly cloudy. Breezy. Lows 70 to 79. North
+winds 10 to 20 mph. 
+.SUNDAY...Sunny and breezy. Highs around 88. North winds 10 to
+20 mph. 
+.SUNDAY NIGHT...Mostly clear. Breezy. Lows 70 to 79. North winds
+10 to 20 mph. 
+.MONDAY...Mostly sunny. Highs 85 to 90. North winds 10 to 15 mph.
+.MONDAY NIGHT...Mostly clear. Lows 70 to 79. North winds 10 to
+15 mph. 
+.TUESDAY...Mostly sunny in the morning then becoming partly
+sunny. Highs 84 to 89. Northeast winds 10 to 15 mph. 
 
-HIZ047-300715-
+HIZ047-302015-
 Windward Haleakala-
 Including Haiku, Makawao, Hana
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny with isolated showers. Highs 80 to 85 near
-the shore to around 69 near 5000 feet. Southeast winds up to
-15 mph shifting to the east in the afternoon. Chance of rain
-20 percent. 
-.TONIGHT...Mostly cloudy in the evening, then partly cloudy with
-isolated showers after midnight. Lows around 74 near the shore to
-around 58 near 5000 feet. Southeast winds up to 15 mph. Chance of
-rain 20 percent. 
-.WEDNESDAY...Mostly sunny with isolated showers in the morning,
-then partly sunny with scattered showers in the afternoon. Highs
-around 82 near the shore to around 69 near 5000 feet. Southeast
-winds 10 to 15 mph decreasing to up to 15 mph in the afternoon.
-Chance of rain 40 percent. 
-.WEDNESDAY NIGHT...Mostly cloudy in the evening then becoming
-partly cloudy. Isolated showers. Lows 57 to 76. Southeast winds
-up to 15 mph increasing to 10 to 15 mph after midnight. Chance of
-rain 20 percent. 
-.THURSDAY...Mostly sunny with isolated showers. Highs 67 to 84.
-Southeast winds up to 15 mph. Chance of rain 20 percent. 
-.THURSDAY NIGHT...Partly cloudy. Lows 56 to 76. Southeast winds
-10 to 15 mph. 
-.FRIDAY...Mostly sunny. Highs 66 to 83. East winds 10 to 15 mph. 
-.FRIDAY NIGHT...Mostly cloudy with scattered showers. Lows 56 to
-76. East winds around 10 mph. Chance of rain 40 percent. 
-.SATURDAY...Partly sunny with scattered showers. Highs 66 to 83.
+.TONIGHT...Partly cloudy. Isolated showers after midnight. Lows
+around 74 near the shore to around 58 near 5000 feet. Southeast
+winds up to 15 mph. Chance of rain 20 percent. 
+.WEDNESDAY...Partly sunny. Isolated showers in the morning, then
+scattered showers in the afternoon. Highs 79 to 84 near the shore
+to around 68 near 5000 feet. Southeast winds 10 to 15 mph. Chance
+of rain 40 percent. 
+.WEDNESDAY NIGHT...Mostly cloudy with isolated showers. Lows
+around 74 near the shore to around 59 near 5000 feet. East winds
+10 to 15 mph. Chance of rain 20 percent. 
+.THURSDAY...Mostly sunny with isolated showers. Highs 66 to 84.
+East winds up to 15 mph. Chance of rain 20 percent. 
+.THURSDAY NIGHT...Partly cloudy with isolated showers. Lows 56 to
+76. East winds 10 to 15 mph. Chance of rain 20 percent. 
+.FRIDAY...Mostly sunny with isolated showers. Highs 66 to 83.
+East winds 10 to 15 mph. Chance of rain 20 percent. 
+.FRIDAY NIGHT...Partly cloudy with isolated showers. Lows 56 to
+76. East winds 10 to 15 mph. Chance of rain 20 percent. 
+.SATURDAY...Mostly sunny. Scattered showers in the morning, then
+isolated showers in the afternoon. Highs 66 to 83. East winds
+10 to 15 mph. Chance of rain 40 percent. 
+.SATURDAY NIGHT...Partly cloudy. Scattered showers in the
+evening, then isolated showers after midnight. Lows 55 to 75.
 East winds 10 to 15 mph. Chance of rain 40 percent. 
-.SATURDAY NIGHT...Mostly cloudy with scattered showers. Lows
-55 to 75. East winds 10 to 15 mph. Chance of rain 40 percent. 
-.SUNDAY...Partly sunny with scattered showers. Highs 66 to 83.
-Northeast winds around 10 mph. Chance of rain 40 percent. 
-.SUNDAY NIGHT...Partly cloudy. Isolated showers in the evening,
+.SUNDAY...Mostly sunny with scattered showers. Highs 66 to 83.
+Northeast winds 10 to 15 mph. Chance of rain 40 percent. 
+.SUNDAY NIGHT...Partly cloudy. Scattered showers in the evening,
+then isolated showers after midnight. Lows 55 to 75. Northeast
+winds around 10 mph. Chance of rain 40 percent. 
+.MONDAY...Mostly sunny with isolated showers. Highs 65 to 82.
+Northeast winds around 10 mph. Chance of rain 20 percent. 
+.MONDAY NIGHT...Partly cloudy. Isolated showers in the evening,
 then scattered showers after midnight. Lows 55 to 75. Northeast
-winds around 10 mph in the evening becoming light. Chance of rain
-50 percent. 
-.MONDAY...Mostly sunny with scattered showers. Highs 65 to 83.
-Light winds. Chance of rain 40 percent. 
+winds around 10 mph. Chance of rain 40 percent. 
+.TUESDAY...Mostly sunny. Isolated showers in the morning, then
+scattered showers in the afternoon. Highs 64 to 82. Northeast
+winds around 10 mph. Chance of rain 40 percent. 
 
-HIZ048-300715-
+HIZ048-302015-
 Kipahulu-
 Including Hamoa
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny with scattered showers in the morning, then
-partly sunny with isolated showers in the afternoon. Highs 70 to
-84. East winds around 10 mph. Chance of rain 30 percent. 
 .TONIGHT...Mostly cloudy. Isolated showers in the evening, then
 scattered showers after midnight. Lows 65 to 77. East winds 10 to
 15 mph. Chance of rain 30 percent. 
-.WEDNESDAY...Mostly sunny with isolated showers in the morning,
-then partly sunny with scattered showers in the afternoon. Highs
-70 to 84. Southeast winds 10 to 15 mph. Chance of rain
-40 percent. 
+.WEDNESDAY...Partly sunny. Isolated showers in the morning, then
+scattered showers in the afternoon. Highs 69 to 83. Southeast
+winds 10 to 15 mph. Chance of rain 40 percent. 
 .WEDNESDAY NIGHT...Mostly cloudy with isolated showers. Lows
-65 to 76. East winds 10 to 15 mph. Chance of rain 20 percent. 
+64 to 76. East winds 10 to 15 mph. Chance of rain 20 percent. 
 .THURSDAY...Partly sunny in the morning then becoming mostly
-sunny. Isolated showers. Highs 69 to 84. East winds 10 to 15 mph.
+sunny. Isolated showers. Highs 69 to 83. East winds 10 to 15 mph.
 Chance of rain 20 percent. 
-.THURSDAY NIGHT...Partly cloudy. Lows 64 to 76. East winds 10 to
-15 mph. 
-.FRIDAY...Mostly sunny. Highs 69 to 83. East winds 10 to 15 mph. 
-.FRIDAY NIGHT...Mostly cloudy with scattered showers. Lows 64 to
-76. East winds 10 to 15 mph. Chance of rain 40 percent. 
-.SATURDAY...Partly sunny with scattered showers. Highs 69 to 83.
-East winds 10 to 15 mph. Chance of rain 40 percent. 
+.THURSDAY NIGHT...Partly cloudy in the evening then becoming
+mostly cloudy. Isolated showers. Lows 64 to 76. East winds 10 to
+15 mph. Chance of rain 20 percent. 
+.FRIDAY...Mostly sunny with isolated showers. Highs 69 to 83.
+East winds 10 to 15 mph. Chance of rain 20 percent. 
+.FRIDAY NIGHT...Partly cloudy in the evening then becoming mostly
+cloudy. Isolated showers. Lows 64 to 76. East winds 10 to 15 mph.
+Chance of rain 20 percent. 
+.SATURDAY...Mostly sunny. Scattered showers in the morning, then
+isolated showers in the afternoon. Highs 69 to 83. East winds
+10 to 15 mph. Chance of rain 30 percent. 
 .SATURDAY NIGHT...Mostly cloudy with scattered showers. Lows
-64 to 76. Northeast winds 10 to 15 mph. Chance of rain
-40 percent. 
-.SUNDAY...Partly sunny with scattered showers. Highs 69 to 83.
+63 to 76. Northeast winds 10 to 15 mph. Chance of rain
+30 percent. 
+.SUNDAY...Mostly sunny with scattered showers. Highs 69 to 83.
 Northeast winds 10 to 15 mph. Chance of rain 40 percent. 
-.SUNDAY NIGHT...Mostly cloudy with scattered showers. Lows 64 to
-75. Northeast winds around 10 mph. Chance of rain 50 percent. 
-.MONDAY...Partly sunny with scattered showers. Highs 68 to 83.
-Northeast winds around 10 mph. Chance of rain 50 percent. 
+.SUNDAY NIGHT...Partly cloudy with scattered showers. Lows 63 to
+75. Northeast winds 10 to 15 mph. Chance of rain 40 percent. 
+.MONDAY...Mostly sunny with scattered showers. Highs 68 to 83.
+Northeast winds 10 to 15 mph. Chance of rain 40 percent. 
+.MONDAY NIGHT...Partly cloudy in the evening then becoming mostly
+cloudy. Scattered showers. Lows 63 to 75. Northeast winds 10 to
+15 mph. Chance of rain 40 percent. 
+.TUESDAY...Mostly sunny with scattered showers. Highs 68 to 82.
+Northeast winds around 10 mph. Chance of rain 40 percent. 
 
-HIZ049-300715-
+HIZ049-302015-
 South Maui/Upcountry-
 Including Kihei, Makena, Pukalani, Kula, Ulupalakua
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Scattered showers in the afternoon. Highs
-around 89 near the shore to around 78 near 4000 feet. Light winds
-becoming west around 10 mph in the afternoon. Chance of rain
-30 percent. 
-.TONIGHT...Mostly cloudy in the evening then becoming partly
-cloudy. Lows around 74 near the shore to around 61 near
-4000 feet. Northwest winds up to 10 mph shifting to the northeast
-after midnight. 
+.TONIGHT...Partly cloudy. Lows around 74 near the shore to around
+61 near 4000 feet. Northwest winds up to 10 mph shifting to the
+northeast after midnight. 
 .WEDNESDAY...Mostly sunny with isolated showers in the morning,
 then partly sunny with scattered showers in the afternoon. Highs
-86 to 91 near the shore to around 77 near 4000 feet. Southeast
+around 88 near the shore to around 77 near 4000 feet. Southeast
 winds up to 10 mph. Chance of rain 50 percent. 
 .WEDNESDAY NIGHT...Partly cloudy. Isolated showers in the
-evening. Lows 58 to 76. East winds up to 10 mph. Chance of rain
+evening. Lows around 74 near the shore to around 61 near
+4000 feet. Northeast winds up to 10 mph. Chance of rain
 20 percent. 
 .THURSDAY...Mostly sunny in the morning then becoming partly
-sunny. Isolated showers. Highs 71 to 89. East winds up to 10 mph
-in the morning becoming light. Chance of rain 20 percent. 
-.THURSDAY NIGHT...Partly cloudy. Lows 57 to 76. Light winds
-becoming east around 10 mph after midnight. 
-.FRIDAY...Sunny in the morning, then partly sunny with isolated
-showers in the afternoon. Highs 70 to 89. East winds up to
+sunny. Isolated showers. Highs 72 to 90. Northeast winds up to
 10 mph. Chance of rain 20 percent. 
+.THURSDAY NIGHT...Partly cloudy. Isolated showers in the evening.
+Lows 57 to 76. Northeast winds up to 10 mph. Chance of rain
+20 percent. 
+.FRIDAY...Mostly sunny in the morning, then partly sunny with
+isolated showers in the afternoon. Highs 71 to 89. Northeast
+winds up to 10 mph. Chance of rain 20 percent. 
 .FRIDAY NIGHT...Mostly cloudy in the evening then becoming partly
-cloudy. Lows 56 to 75. East winds around 10 mph. 
-.SATURDAY...Mostly sunny in the morning, then partly sunny with
-isolated showers in the afternoon. Highs 70 to 89. Northeast
-winds up to 15 mph. Chance of rain 20 percent. 
-.SATURDAY NIGHT...Partly cloudy. Lows 56 to 75. Northeast winds
+cloudy. Lows 56 to 75. Northeast winds around 10 mph. 
+.SATURDAY...Mostly sunny. Isolated showers in the afternoon.
+Highs 71 to 89. Northeast winds around 10 mph. Chance of rain
+20 percent. 
+.SATURDAY NIGHT...Partly cloudy. Lows 55 to 75. Northeast winds
 10 to 15 mph. 
-.SUNDAY...Sunny. Isolated showers in the afternoon. Highs 70 to
-89. Northeast winds around 10 mph. Chance of rain 20 percent. 
+.SUNDAY...Sunny. Isolated showers in the afternoon. Highs 71 to
+89. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
 .SUNDAY NIGHT...Mostly clear. Lows 55 to 74. Northeast winds
 around 10 mph. 
 .MONDAY...Mostly sunny. Isolated showers in the afternoon. Highs
-70 to 89. Light winds. Chance of rain 20 percent. 
+70 to 89. Northeast winds around 10 mph. Chance of rain
+20 percent. 
+.MONDAY NIGHT...Partly cloudy. Lows 55 to 74. Northeast winds
+around 10 mph. 
+.TUESDAY...Mostly sunny in the morning, then partly sunny with
+isolated showers in the afternoon. Highs 69 to 88. Northeast
+winds around 10 mph. Chance of rain 20 percent. 
 
-HIZ050-300715-
+HIZ050-302015-
 South Haleakala-
 Including Kipahulu, Kaupo
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Breezy. Mostly sunny with isolated showers. Highs 77 to
-86. East winds 10 to 20 mph. Chance of rain 20 percent. 
-.TONIGHT...Mostly cloudy in the evening then becoming partly
+.TONIGHT...Partly cloudy in the evening then becoming mostly
 cloudy. Breezy. Isolated showers. Lows 59 to 77. East winds 10 to
 20 mph. Chance of rain 20 percent. 
 .WEDNESDAY...Mostly sunny with isolated showers in the morning,
 then partly sunny with scattered showers in the afternoon. Highs
-77 to 86. East winds 10 to 15 mph shifting to the southeast in
-the afternoon. Chance of rain 50 percent. 
+76 to 86. Southeast winds 10 to 15 mph. Chance of rain
+50 percent. 
 .WEDNESDAY NIGHT...Partly cloudy with isolated showers. Lows
-59 to 76. East winds up to 15 mph increasing to 10 to 15 mph
-after midnight. Chance of rain 20 percent. 
+58 to 76. East winds 10 to 15 mph. Chance of rain 20 percent. 
 .THURSDAY...Mostly sunny with isolated showers. Highs 76 to 85.
 East winds 10 to 15 mph. Chance of rain 20 percent. 
-.THURSDAY NIGHT...Partly cloudy. Lows 58 to 76. East winds 10 to
-15 mph. 
+.THURSDAY NIGHT...Partly cloudy. Isolated showers in the evening.
+Lows 58 to 76. East winds 10 to 15 mph. Chance of rain
+20 percent. 
 .FRIDAY...Mostly sunny. Isolated showers in the afternoon. Highs
+76 to 85. East winds 10 to 15 mph. Chance of rain 20 percent. 
+.FRIDAY NIGHT...Partly cloudy. Lows 57 to 75. East winds 10 to
+15 mph. 
+.SATURDAY...Mostly sunny. Isolated showers in the afternoon.
+Highs 76 to 85. East winds 10 to 15 mph. Chance of rain
+20 percent. 
+.SATURDAY NIGHT...Mostly cloudy in the evening then becoming
+partly cloudy. Lows 57 to 75. East winds 10 to 15 mph. 
+.SUNDAY...Mostly sunny. Isolated showers in the afternoon. Highs
 75 to 84. East winds 10 to 15 mph. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Mostly cloudy with isolated showers. Lows 57 to
-75. East winds 10 to 15 mph. Chance of rain 20 percent. 
-.SATURDAY...Mostly sunny with isolated showers. Highs 75 to 84.
-East winds 10 to 15 mph. Chance of rain 20 percent. 
-.SATURDAY NIGHT...Partly cloudy with isolated showers. Lows 58 to
-75. Northeast winds 10 to 15 mph. Chance of rain 20 percent. 
-.SUNDAY...Mostly sunny with isolated showers. Highs 75 to 84.
+.SUNDAY NIGHT...Partly cloudy. Lows 56 to 75. Northeast winds
+10 to 15 mph. 
+.MONDAY...Mostly sunny. Isolated showers in the afternoon. Highs
+75 to 84. Northeast winds around 10 mph. Chance of rain
+20 percent. 
+.MONDAY NIGHT...Mostly cloudy in the evening, then partly cloudy
+with isolated showers after midnight. Lows 57 to 74. East winds
+around 10 mph. Chance of rain 20 percent. 
+.TUESDAY...Mostly sunny with isolated showers. Highs 74 to 84.
 Northeast winds around 10 mph. Chance of rain 20 percent. 
-.SUNDAY NIGHT...Partly cloudy with isolated showers. Lows 56 to
-75. Northeast winds around 10 mph. Chance of rain 20 percent. 
-.MONDAY...Mostly sunny with isolated showers. Highs 75 to 84.
-Light winds. Chance of rain 20 percent. 
 
-HIZ022-300715-
+HIZ022-302015-
 Haleakala Summit-
 Including Haleakala National Park Above 6000 feet
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Partly sunny with isolated showers. Highs 62 to 83.
-Light winds. Chance of rain 20 percent. 
 .TONIGHT...Mostly cloudy with isolated showers. Lows around 55 at
 the visitor center to around 47 at the summit. South winds up to
 10 mph. Chance of rain 20 percent. 
-.WEDNESDAY...Mostly sunny in the morning then becoming partly
-sunny. Isolated showers. Highs around 67 at the visitor center to
-around 69 at the summit. Southwest winds up to 10 mph. Chance of
-rain 20 percent. 
+.WEDNESDAY...Mostly cloudy with isolated showers. Highs around
+66 at the visitor center to around 69 at the summit. Southwest
+winds up to 10 mph. Chance of rain 20 percent. 
 .WEDNESDAY NIGHT...Mostly cloudy with isolated showers. Lows
-49 to 66. Light winds. Chance of rain 20 percent. 
+around 55 at the visitor center to around 47 at the summit. Light
+winds. Chance of rain 20 percent. 
 .THURSDAY...Partly sunny with isolated showers. Highs 61 to 81.
 Light winds. Chance of rain 20 percent. 
-.THURSDAY NIGHT...Mostly cloudy. Lows 48 to 64. Light winds
+.THURSDAY NIGHT...Mostly cloudy. Lows 48 to 63. Light winds
 becoming east up to 10 mph after midnight. 
-.FRIDAY...Mostly sunny in the morning then becoming partly sunny.
-Highs 59 to 81. East winds up to 10 mph in the morning becoming
-light. 
-.FRIDAY NIGHT...Mostly cloudy with isolated showers. Lows 47 to
-64. Light winds becoming northeast around 10 mph after midnight.
-Chance of rain 20 percent. 
-.SATURDAY...Partly sunny with isolated showers. Highs 59 to 81.
-Northeast winds up to 10 mph. Chance of rain 20 percent. 
-.SATURDAY NIGHT...Mostly cloudy in the evening then becoming
-partly cloudy. Breezy. Isolated showers. Lows 47 to 63. Northeast
-winds 10 to 20 mph. Chance of rain 20 percent. 
-.SUNDAY...Mostly sunny. Breezy. Scattered showers in the morning,
-then isolated showers in the afternoon. Highs 61 to 81. Northeast
-winds 10 to 20 mph. Chance of rain 40 percent. 
-.SUNDAY NIGHT...Partly cloudy. Breezy. Scattered showers in the
-evening, then isolated showers after midnight. Lows 47 to 63.
-Northeast winds 10 to 20 mph. Chance of rain 40 percent. 
-.MONDAY...Mostly sunny with isolated showers. Highs 60 to 80.
-Northeast winds around 10 mph in the morning becoming light.
-Chance of rain 20 percent. 
+.FRIDAY...Partly sunny. Highs 61 to 81. East winds up to 10 mph. 
+.FRIDAY NIGHT...Mostly cloudy. Lows 48 to 63. East winds around
+10 mph. 
+.SATURDAY...Mostly sunny. Highs 61 to 81. Northeast winds 10 to
+15 mph decreasing to up to 15 mph in the afternoon. 
+.SATURDAY NIGHT...Mostly cloudy. Breezy. Lows 47 to 63. East
+winds up to 20 mph increasing to 10 to 20 mph after midnight. 
+.SUNDAY...Mostly sunny. Breezy. Highs 60 to 80. Northeast winds
+10 to 20 mph. 
+.SUNDAY NIGHT...Partly cloudy. Lows 47 to 63. Northeast winds
+10 to 15 mph. 
+.MONDAY...Mostly sunny in the morning then becoming partly sunny.
+Highs 60 to 81. Northeast winds around 10 mph. 
+.MONDAY NIGHT...Mostly cloudy. Lows 47 to 63. Northeast winds
+around 10 mph. 
+.TUESDAY...Mostly sunny in the morning then becoming partly
+sunny. Highs 59 to 78. Light winds. 
 
-HIZ023-300715-
+HIZ023-302015-
 Kona-
 Including Kailua-Kona, Kealakekua, Milolii
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny in the morning, then partly sunny with
-isolated showers in the afternoon. Highs 85 to 90 near the shore
-to around 72 near 5000 feet. Light winds. Chance of rain
-20 percent. 
-.TONIGHT...Partly cloudy. Lows 69 to 76 near the shore to around
+.TONIGHT...Partly cloudy. Lows 70 to 77 near the shore to around
 56 near 5000 feet. Light winds becoming east up to 10 mph after
 midnight. 
-.WEDNESDAY...Mostly sunny. Isolated showers in the afternoon.
-Highs 84 to 90 near the shore to around 71 near 5000 feet.
-Southwest winds up to 10 mph. Chance of rain 20 percent. 
-.WEDNESDAY NIGHT...Partly cloudy. Lows 54 to 79. Light winds. 
+.WEDNESDAY...Mostly sunny in the morning, then partly sunny with
+isolated showers in the afternoon. Highs 84 to 90 near the shore
+to around 71 near 5000 feet. Southwest winds up to 10 mph. Chance
+of rain 20 percent. 
+.WEDNESDAY NIGHT...Partly cloudy. Lows 69 to 76 near the shore to
+around 56 near 5000 feet. Light winds. 
 .THURSDAY...Mostly sunny in the morning, then partly sunny with
 isolated showers in the afternoon. Highs 68 to 89. Light winds.
 Chance of rain 20 percent. 
 .THURSDAY NIGHT...Mostly cloudy. Lows 55 to 78. Light winds. 
-.FRIDAY...Mostly sunny in the morning, then partly sunny with
-isolated showers in the afternoon. Highs 67 to 89. North winds up
-to 10 mph. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Mostly cloudy. Isolated showers in the evening.
-Lows 54 to 78. Northwest winds up to 10 mph in the evening
-becoming light. Chance of rain 20 percent. 
+.FRIDAY...Partly sunny. Isolated showers in the afternoon. Highs
+67 to 89. Light winds. Chance of rain 20 percent. 
+.FRIDAY NIGHT...Mostly cloudy. Lows 54 to 78. Light winds. 
 .SATURDAY...Mostly sunny in the morning, then partly sunny with
-isolated showers in the afternoon. Highs 67 to 89. Light winds.
+isolated showers in the afternoon. Highs 68 to 89. Light winds.
 Chance of rain 20 percent. 
-.SATURDAY NIGHT...Mostly cloudy in the evening then becoming
-partly cloudy. Lows 53 to 78. Light winds. 
+.SATURDAY NIGHT...Mostly cloudy. Lows 54 to 78. Light winds. 
 .SUNDAY...Mostly sunny. Isolated showers in the afternoon. Highs
 68 to 89. Light winds. Chance of rain 20 percent. 
-.SUNDAY NIGHT...Mostly cloudy with isolated showers in the
-evening, then partly cloudy after midnight. Lows 53 to 78. Light
-winds. Chance of rain 20 percent. 
-.MONDAY...Mostly sunny. Isolated showers in the afternoon. Highs
-68 to 89. Light winds. Chance of rain 20 percent. 
+.SUNDAY NIGHT...Partly cloudy. Lows 53 to 78. Light winds. 
+.MONDAY...Mostly sunny in the morning, then partly sunny with
+isolated showers in the afternoon. Highs 67 to 89. Light winds.
+Chance of rain 20 percent. 
+.MONDAY NIGHT...Mostly cloudy. Isolated showers in the evening.
+Lows 52 to 78. Light winds. Chance of rain 20 percent. 
+.TUESDAY...Mostly sunny. Isolated showers in the afternoon. Highs
+67 to 89. Light winds. Chance of rain 20 percent. 
 
-HIZ051-300715-
+HIZ051-302015-
 Big Island South-
 Including Ocean View
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny. Breezy. Isolated showers in the afternoon.
-Highs around 84 near the shore to around 70 near 5000 feet. East
-winds up to 20 mph increasing to 10 to 20 mph in the afternoon.
-Chance of rain 20 percent. 
 .TONIGHT...Breezy. Partly cloudy with isolated showers. Lows
 around 76 near the shore to around 60 near 5000 feet. East winds
 up to 20 mph. Chance of rain 20 percent. 
-.WEDNESDAY...Breezy. Mostly sunny with isolated showers in the
-morning, then partly sunny with scattered showers in the
-afternoon. Highs around 84 near the shore to around 70 near
-5000 feet. East winds 10 to 20 mph. Chance of rain 40 percent. 
+.WEDNESDAY...Mostly sunny. Breezy. Isolated showers in the
+morning, then scattered showers in the afternoon. Highs around
+83 near the shore to around 69 near 5000 feet. East winds 10 to
+20 mph. Chance of rain 40 percent. 
 .WEDNESDAY NIGHT...Partly cloudy. Isolated showers in the
-evening, then scattered showers after midnight. Lows 60 to 79.
-East winds 10 to 15 mph. Chance of rain 30 percent. 
+evening, then scattered showers after midnight. Lows around
+76 near the shore to around 59 near 5000 feet. East winds 10 to
+15 mph. Chance of rain 30 percent. 
 .THURSDAY...Mostly sunny in the morning then becoming partly
-sunny. Scattered showers. Highs 68 to 85. East winds up to
+sunny. Scattered showers. Highs 67 to 85. East winds up to
 15 mph. Chance of rain 50 percent. 
 .THURSDAY NIGHT...Mostly cloudy in the evening then becoming
-partly cloudy. Lows 60 to 78. East winds up to 15 mph increasing
-to 10 to 15 mph after midnight. 
+partly cloudy. Lows 60 to 78. East winds 10 to 15 mph. 
 .FRIDAY...Mostly sunny in the morning, then partly sunny with
-isolated showers in the afternoon. Highs 68 to 84. East winds
+isolated showers in the afternoon. Highs 67 to 85. East winds
 10 to 15 mph. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Mostly cloudy. Isolated showers in the evening.
-Lows 59 to 78. East winds up to 15 mph. Chance of rain
+.FRIDAY NIGHT...Mostly cloudy. Lows 60 to 78. Northeast winds
+10 to 15 mph. 
+.SATURDAY...Mostly sunny. Isolated showers in the afternoon.
+Highs 67 to 85. East winds 10 to 15 mph. Chance of rain
 20 percent. 
-.SATURDAY...Mostly sunny in the morning, then partly sunny with
-isolated showers in the afternoon. Highs 68 to 85. East winds up
-to 15 mph. Chance of rain 20 percent. 
-.SATURDAY NIGHT...Partly cloudy. Lows 60 to 78. Northeast winds
-up to 10 mph. 
-.SUNDAY...Mostly sunny in the morning, then partly sunny with
-isolated showers in the afternoon. Highs 68 to 84. Light winds
-becoming southeast up to 10 mph in the afternoon. Chance of rain
+.SATURDAY NIGHT...Partly cloudy. Lows 59 to 78. Northeast winds
+up to 15 mph. 
+.SUNDAY...Mostly sunny. Isolated showers in the afternoon. Highs
+68 to 85. East winds up to 10 mph. Chance of rain 20 percent. 
+.SUNDAY NIGHT...Partly cloudy. Isolated showers in the evening.
+Lows 59 to 78. Northeast winds up to 10 mph. Chance of rain
 20 percent. 
-.SUNDAY NIGHT...Mostly cloudy with isolated showers in the
-evening, then partly cloudy after midnight. Lows 59 to 78. East
-winds up to 10 mph in the evening becoming light. Chance of rain
+.MONDAY...Mostly sunny in the morning, then partly sunny with
+isolated showers in the afternoon. Highs 67 to 84. Light winds
+becoming south up to 10 mph in the afternoon. Chance of rain
 20 percent. 
-.MONDAY...Mostly sunny. Scattered showers in the afternoon. Highs
-68 to 84. Light winds. Chance of rain 40 percent. 
+.MONDAY NIGHT...Mostly cloudy with isolated showers in the
+evening, then partly cloudy after midnight. Lows 60 to 78.
+Northeast winds up to 10 mph. Chance of rain 20 percent. 
+.TUESDAY...Mostly sunny. Isolated showers in the afternoon. Highs
+67 to 84. Light winds. Chance of rain 20 percent. 
 
-HIZ052-300715-
+HIZ052-302015-
 Big Island Southeast-
 Including South Point, Pahala
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Partly sunny. Isolated showers in the afternoon. Highs
-82 to 88 near the shore to 69 to 74 near 4000 feet. East winds up
-to 10 mph. Chance of rain 20 percent. 
-.TONIGHT...Mostly cloudy in the evening then becoming partly
-cloudy. Isolated showers. Lows 69 to 75 near the shore to around
-60 near 4000 feet. East winds up to 10 mph. Chance of rain
-20 percent. 
+.TONIGHT...Mostly cloudy with isolated showers. Lows 70 to
+75 near the shore to 58 to 63 near 4000 feet. East winds up to
+10 mph. Chance of rain 20 percent. 
 .WEDNESDAY...Partly sunny. Isolated showers in the morning, then
-scattered showers in the afternoon. Highs 81 to 88 near the shore
-to 69 to 74 near 4000 feet. East winds up to 10 mph. Chance of
+scattered showers in the afternoon. Highs 81 to 86 near the shore
+to 68 to 73 near 4000 feet. East winds up to 10 mph. Chance of
 rain 40 percent. 
 .WEDNESDAY NIGHT...Mostly cloudy with scattered showers. Lows
-58 to 78. Light winds. Chance of rain 40 percent. 
-.THURSDAY...Partly sunny with scattered showers. Highs 68 to 87.
+70 to 75 near the shore to around 60 near 4000 feet. Light winds
+becoming east up to 10 mph after midnight. Chance of rain
+40 percent. 
+.THURSDAY...Partly sunny with scattered showers. Highs 67 to 86.
 East winds up to 10 mph. Chance of rain 50 percent. 
 .THURSDAY NIGHT...Mostly cloudy in the evening then becoming
-partly cloudy. Lows 57 to 77. East winds up to 10 mph. 
-.FRIDAY...Mostly sunny in the morning then becoming partly sunny.
-Highs 68 to 88. East winds around 10 mph. 
+partly cloudy. Isolated showers. Lows 58 to 77. Northeast winds
+up to 10 mph. Chance of rain 20 percent. 
+.FRIDAY...Mostly sunny in the morning, then partly sunny with
+isolated showers in the afternoon. Highs 67 to 86. East winds
+around 10 mph. Chance of rain 20 percent. 
 .FRIDAY NIGHT...Mostly cloudy in the evening then becoming partly
-cloudy. Scattered showers. Lows 58 to 77. Northeast winds up to
-10 mph. Chance of rain 40 percent. 
-.SATURDAY...Mostly sunny in the morning then becoming partly
-sunny. Isolated showers. Highs 68 to 88. East winds 10 to 15 mph.
-Chance of rain 20 percent. 
+cloudy. Isolated showers. Lows 57 to 77. Northeast winds up to
+10 mph. Chance of rain 20 percent. 
+.SATURDAY...Mostly sunny. Isolated showers in the afternoon.
+Highs 68 to 88. East winds 10 to 15 mph. Chance of rain
+20 percent. 
 .SATURDAY NIGHT...Partly cloudy with scattered showers. Lows
 57 to 77. Northeast winds up to 15 mph. Chance of rain
 40 percent. 
-.SUNDAY...Mostly sunny in the morning then becoming partly sunny.
-Isolated showers. Highs 68 to 89. Northeast winds up to 15 mph.
-Chance of rain 20 percent. 
-.SUNDAY NIGHT...Mostly cloudy in the evening then becoming partly
-cloudy. Isolated showers. Lows 57 to 77. Northeast winds up to
-10 mph. Chance of rain 20 percent. 
-.MONDAY...Mostly sunny with isolated showers. Highs 69 to 88.
-Light winds. Chance of rain 20 percent. 
+.SUNDAY...Sunny. Isolated showers in the afternoon. Highs 68 to
+89. Northeast winds up to 15 mph. Chance of rain 20 percent. 
+.SUNDAY NIGHT...Partly cloudy. Isolated showers in the evening,
+then scattered showers after midnight. Lows 58 to 77. Northeast
+winds up to 15 mph. Chance of rain 40 percent. 
+.MONDAY...Mostly sunny. Isolated showers in the afternoon. Highs
+68 to 88. Northeast winds up to 10 mph shifting to the east in
+the afternoon. Chance of rain 20 percent. 
+.MONDAY NIGHT...Partly cloudy with isolated showers. Lows 57 to
+77. Northeast winds up to 10 mph. Chance of rain 20 percent. 
+.TUESDAY...Mostly sunny in the morning, then partly sunny with
+isolated showers in the afternoon. Highs 67 to 86. East winds up
+to 10 mph. Chance of rain 20 percent. 
 
-HIZ053-300715-
+HIZ053-302015-
 Big Island East-
 Including Hilo, Volcano, Pahoa, Mountain View, Laupahoehoe
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Partly sunny. Isolated showers in the afternoon. Highs
-around 84 near the shore to around 70 at 4000 feet. South winds
-up to 10 mph shifting to the southeast in the afternoon. Chance
-of rain 20 percent. 
-.TONIGHT...Mostly cloudy in the evening then becoming partly
-cloudy. Isolated showers. Lows 68 to 74 near the shore to around
-60 at 4000 feet. South winds up to 15 mph. Chance of rain
-20 percent. 
+.TONIGHT...Mostly cloudy with isolated showers. Lows 67 to
+74 near the shore to around 61 at 4000 feet. South winds up to
+15 mph. Chance of rain 20 percent. 
 .WEDNESDAY...Mostly sunny with isolated showers in the morning,
 then partly sunny with scattered showers in the afternoon. Highs
 around 83 near the shore to around 69 at 4000 feet. Southeast
-winds up to 15 mph. Chance of rain 30 percent. 
-.WEDNESDAY NIGHT...Mostly cloudy with isolated showers in the
-evening, then partly cloudy with scattered showers after
-midnight. Lows 57 to 78. Southeast winds up to 10 mph. Chance of
-rain 30 percent. 
+winds up to 15 mph increasing to 10 to 15 mph in the afternoon.
+Chance of rain 30 percent. 
+.WEDNESDAY NIGHT...Mostly cloudy. Isolated showers in the
+evening, then scattered showers after midnight. Lows 67 to
+74 near the shore to around 61 at 4000 feet. Southeast winds
+around 10 mph. Chance of rain 30 percent. 
 .THURSDAY...Partly sunny with scattered showers. Highs 66 to 84.
 East winds up to 10 mph. Chance of rain 30 percent. 
-.THURSDAY NIGHT...Mostly cloudy in the evening then becoming
-partly cloudy. Lows 56 to 77. Light winds becoming southeast up
-to 10 mph after midnight. 
+.THURSDAY NIGHT...Partly cloudy. Scattered showers in the
+evening, then isolated showers after midnight. Lows 56 to 77.
+Light winds becoming southeast up to 10 mph after midnight.
+Chance of rain 40 percent. 
 .FRIDAY...Mostly sunny in the morning then becoming partly sunny.
-Highs 66 to 84. Southeast winds up to 10 mph. 
-.FRIDAY NIGHT...Mostly cloudy with scattered showers. Lows 55 to
-77. Light winds. Chance of rain 50 percent. 
-.SATURDAY...Partly sunny with scattered showers. Highs 66 to 84.
-Northeast winds up to 10 mph. Chance of rain 50 percent. 
-.SATURDAY NIGHT...Mostly cloudy with scattered showers. Lows
-55 to 77. Northeast winds around 10 mph. Chance of rain
-50 percent. 
-.SUNDAY...Partly sunny with scattered showers. Highs 66 to 84.
-Northeast winds up to 10 mph. Chance of rain 50 percent. 
-.SUNDAY NIGHT...Mostly cloudy with scattered showers. Lows 55 to
-77. North winds up to 10 mph. Chance of rain 50 percent. 
-.MONDAY...Partly sunny with scattered showers in the morning,
-then mostly sunny with isolated showers in the afternoon. Highs
-66 to 84. Northeast winds up to 10 mph. Chance of rain
-50 percent. 
+Isolated showers. Highs 66 to 84. Southeast winds up to 10 mph.
+Chance of rain 20 percent. 
+.FRIDAY NIGHT...Mostly cloudy in the evening then becoming partly
+cloudy. Scattered showers. Lows 55 to 77. Light winds becoming
+northeast up to 10 mph after midnight. Chance of rain 40 percent.
+.SATURDAY...Mostly sunny. Scattered showers in the morning, then
+isolated showers in the afternoon. Highs 66 to 84. Northeast
+winds up to 15 mph increasing to 10 to 15 mph in the afternoon.
+Chance of rain 40 percent. 
+.SATURDAY NIGHT...Partly cloudy in the evening then becoming
+mostly cloudy. Scattered showers. Lows 55 to 77. Northeast winds
+up to 15 mph. Chance of rain 50 percent. 
+.SUNDAY...Mostly sunny. Scattered showers in the morning, then
+isolated showers in the afternoon. Highs 65 to 83. Northeast
+winds 10 to 15 mph decreasing to up to 15 mph in the afternoon.
+Chance of rain 50 percent. 
+.SUNDAY NIGHT...Partly cloudy with scattered showers. Lows 55 to
+77. North winds up to 15 mph. Chance of rain 50 percent. 
+.MONDAY...Mostly sunny. Scattered showers in the morning, then
+isolated showers in the afternoon. Highs 65 to 83. Northeast
+winds up to 10 mph. Chance of rain 40 percent. 
+.MONDAY NIGHT...Mostly cloudy in the evening then becoming partly
+cloudy. Scattered showers. Lows 55 to 77. Northwest winds up to
+10 mph. Chance of rain 50 percent. 
+.TUESDAY...Mostly sunny in the morning then becoming partly
+sunny. Scattered showers. Highs 64 to 83. Northeast winds up to
+10 mph. Chance of rain 40 percent. 
 
-HIZ054-300715-
+HIZ054-302015-
 Big Island North-
 Including Honokaa, Kamuela, Waipio Valley, Hawi
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny in the morning, then partly sunny with
-scattered showers in the afternoon. Highs around 83 near the
-shore to 72 to 81 near 3000 feet. East winds up to 15 mph. Chance
-of rain 40 percent. 
-.TONIGHT...Partly cloudy. Lows 68 to 75 near the shore to 62 to
+.TONIGHT...Partly cloudy. Lows 67 to 75 near the shore to 61 to
 69 near 3000 feet. Southeast winds up to 10 mph in the evening
 becoming light. 
-.WEDNESDAY...Sunny in the morning, then partly sunny with
+.WEDNESDAY...Mostly sunny in the morning, then partly sunny with
 isolated showers in the afternoon. Highs around 83 near the shore
 to 72 to 81 near 3000 feet. Southeast winds up to 10 mph shifting
-to the northeast in the afternoon. Chance of rain 20 percent. 
-.WEDNESDAY NIGHT...Partly cloudy. Lows 56 to 76. Southeast winds
-up to 10 mph. 
+to the east in the afternoon. Chance of rain 20 percent. 
+.WEDNESDAY NIGHT...Partly cloudy. Lows 67 to 75 near the shore to
+61 to 68 near 3000 feet. Southeast winds up to 10 mph. 
 .THURSDAY...Mostly sunny. Isolated showers in the afternoon.
-Highs 65 to 84. East winds up to 10 mph. Chance of rain
+Highs 66 to 85. East winds up to 10 mph. Chance of rain
 20 percent. 
-.THURSDAY NIGHT...Partly cloudy. Lows 54 to 75. East winds up to
-10 mph. 
-.FRIDAY...Mostly sunny. Isolated showers in the afternoon. Highs
-65 to 83. East winds up to 10 mph. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Mostly cloudy in the evening then becoming partly
-cloudy. Scattered showers. Lows 54 to 75. East winds up to
-10 mph. Chance of rain 50 percent. 
-.SATURDAY...Mostly sunny in the morning then becoming partly
-sunny. Scattered showers. Highs 64 to 83. East winds up to
-10 mph. Chance of rain 40 percent. 
-.SATURDAY NIGHT...Mostly cloudy with scattered showers. Lows
-53 to 74. East winds 10 to 15 mph. Chance of rain 50 percent. 
-.SUNDAY...Partly sunny in the morning then becoming mostly sunny.
-Scattered showers. Highs 64 to 84. Northeast winds 10 to 15 mph.
-Chance of rain 40 percent. 
-.SUNDAY NIGHT...Mostly cloudy with scattered showers. Lows 53 to
-74. Light winds becoming east up to 10 mph after midnight. Chance
-of rain 50 percent. 
-.MONDAY...Mostly sunny. Scattered showers in the morning, then
-isolated showers in the afternoon. Highs 64 to 83. Northeast
-winds up to 10 mph in the morning becoming light. Chance of rain
-40 percent. 
+.THURSDAY NIGHT...Mostly clear with isolated showers. Lows 54 to
+75. East winds up to 10 mph. Chance of rain 20 percent. 
+.FRIDAY...Sunny in the morning then becoming partly sunny.
+Isolated showers. Highs 65 to 84. East winds up to 10 mph. Chance
+of rain 20 percent. 
+.FRIDAY NIGHT...Partly cloudy. Scattered showers in the evening,
+then isolated showers after midnight. Lows 54 to 75. East winds
+up to 10 mph. Chance of rain 40 percent. 
+.SATURDAY...Sunny with isolated showers. Highs 65 to 84. East
+winds 10 to 15 mph. Chance of rain 20 percent. 
+.SATURDAY NIGHT...Partly cloudy. Scattered showers in the
+evening, then isolated showers after midnight. Lows 53 to 74.
+East winds 10 to 15 mph. Chance of rain 40 percent. 
+.SUNDAY...Mostly sunny with isolated showers. Highs 64 to 84.
+East winds 10 to 15 mph. Chance of rain 20 percent. 
+.SUNDAY NIGHT...Partly cloudy with scattered showers. Lows 53 to
+74. East winds up to 15 mph. Chance of rain 40 percent. 
+.MONDAY...Mostly sunny with isolated showers. Highs 63 to 84.
+Northeast winds around 10 mph. Chance of rain 20 percent. 
+.MONDAY NIGHT...Partly cloudy. Scattered showers in the evening,
+then isolated showers after midnight. Lows 53 to 74. Southeast
+winds up to 10 mph. Chance of rain 40 percent. 
+.TUESDAY...Mostly sunny in the morning then becoming partly
+sunny. Isolated showers. Highs 63 to 83. Light winds. Chance of
+rain 20 percent. 
 
-HIZ026-300715-
+HIZ026-302015-
 Kohala-
 Including Kawaihae, Waikoloa, Waikii, Puuanahulu
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly sunny in the morning, then partly sunny with
-scattered showers in the afternoon. Highs 85 to 91 near the shore
-to 69 to 76 above 4000 feet. Northeast winds up to 10 mph
-shifting to the northwest in the afternoon. Chance of rain
-40 percent. 
-.TONIGHT...Partly cloudy. Lows 72 to 77 near the shore to around
-58 above 4000 feet. Light winds. 
-.WEDNESDAY...Mostly sunny. Isolated showers in the afternoon.
-Highs 85 to 91 near the shore to 69 to 76 above 4000 feet.
-Northwest winds up to 10 mph. Chance of rain 20 percent. 
-.WEDNESDAY NIGHT...Partly cloudy. Lows 55 to 77. Light winds. 
+.TONIGHT...Partly cloudy. Lows 72 to 77 near the shore to 56 to
+61 above 4000 feet. Light winds. 
+.WEDNESDAY...Mostly sunny in the morning, then partly sunny with
+isolated showers in the afternoon. Highs 85 to 91 near the shore
+to 70 to 76 above 4000 feet. Northwest winds up to 10 mph. Chance
+of rain 20 percent. 
+.WEDNESDAY NIGHT...Partly cloudy. Lows 72 to 77 near the shore to
+56 to 61 above 4000 feet. Light winds. 
 .THURSDAY...Mostly sunny. Isolated showers in the afternoon.
-Highs 68 to 91. Light winds. Chance of rain 20 percent. 
-.THURSDAY NIGHT...Mostly cloudy in the evening then becoming
-partly cloudy. Lows 55 to 77. Light winds. 
-.FRIDAY...Mostly sunny. Isolated showers in the afternoon. Highs
-67 to 90. Light winds. Chance of rain 20 percent. 
-.FRIDAY NIGHT...Mostly cloudy with isolated showers in the
-evening, then partly cloudy after midnight. Lows 54 to 76. Light
-winds. Chance of rain 20 percent. 
+Highs 68 to 92. Light winds. Chance of rain 20 percent. 
+.THURSDAY NIGHT...Partly cloudy. Lows 55 to 77. Light winds. 
+.FRIDAY...Mostly sunny in the morning then becoming partly sunny.
+Highs 67 to 91. Light winds. 
+.FRIDAY NIGHT...Mostly cloudy in the evening then becoming partly
+cloudy. Lows 55 to 77. Light winds. 
 .SATURDAY...Mostly sunny. Isolated showers in the afternoon.
-Highs 67 to 91. Light winds. Chance of rain 20 percent. 
-.SATURDAY NIGHT...Partly cloudy. Lows 53 to 76. Light winds
-becoming northeast up to 10 mph after midnight. 
-.SUNDAY...Sunny with isolated showers. Highs 67 to 91. Northeast
-winds up to 10 mph in the morning becoming light. Chance of rain
+Highs 67 to 91. North winds up to 10 mph. Chance of rain
 20 percent. 
-.SUNDAY NIGHT...Partly cloudy. Isolated showers in the evening.
-Lows 53 to 76. Light winds. Chance of rain 20 percent. 
-.MONDAY...Sunny. Isolated showers in the afternoon. Highs 67 to
-90. Light winds. Chance of rain 20 percent. 
+.SATURDAY NIGHT...Partly cloudy. Lows 54 to 76. Northeast winds
+up to 10 mph. 
+.SUNDAY...Sunny. Isolated showers in the afternoon. Highs 68 to
+92. North winds up to 10 mph. Chance of rain 20 percent. 
+.SUNDAY NIGHT...Mostly clear. Lows 53 to 76. Northeast winds up
+to 10 mph in the evening becoming light. 
+.MONDAY...Mostly sunny. Isolated showers in the afternoon. Highs
+67 to 91. Light winds. Chance of rain 20 percent. 
+.MONDAY NIGHT...Partly cloudy. Lows 53 to 75. Light winds. 
+.TUESDAY...Mostly sunny. Isolated showers in the afternoon. Highs
+67 to 90. Light winds. Chance of rain 20 percent. 
 
-HIZ027-300715-
+HIZ027-302015-
 Big Island Interior-
 Including Bradshaw Field, Saddle Road Above 5000 feet
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly cloudy. Isolated showers in the afternoon. Highs
-67 to 75 near 5000 feet to 62 to 68 near 8000 feet. West winds up
+.TONIGHT...Partly cloudy. Lows 53 to 60 near 5000 feet to 49 to
+54 near 8000 feet. Light winds becoming southwest up to 10 mph
+after midnight. 
+.WEDNESDAY...Mostly cloudy with isolated showers. Highs 66 to
+75 near 5000 feet to 61 to 69 near 8000 feet. Southwest winds up
 to 10 mph. Chance of rain 20 percent. 
-.TONIGHT...Mostly cloudy in the evening then becoming partly
-cloudy. Lows 52 to 60 near 5000 feet to 49 to 54 near 8000 feet.
-Light winds becoming southwest up to 10 mph after midnight. 
-.WEDNESDAY...Mostly sunny in the morning then becoming mostly
-cloudy. Isolated showers. Highs 67 to 75 near 5000 feet to 61 to
-68 near 8000 feet. West winds up to 10 mph. Chance of rain
+.WEDNESDAY NIGHT...Mostly cloudy in the evening, then partly
+cloudy with isolated showers after midnight. Lows 53 to 60 near
+5000 feet to 49 to 55 near 8000 feet. Light winds. Chance of rain
 20 percent. 
-.WEDNESDAY NIGHT...Mostly cloudy. Isolated showers after
-midnight. Lows 49 to 60. Light winds. Chance of rain 20 percent. 
 .THURSDAY...Mostly sunny with scattered showers in the morning,
 then mostly cloudy with isolated showers in the afternoon. Highs
-60 to 74. Light winds. Chance of rain 40 percent. 
-.THURSDAY NIGHT...Mostly cloudy. Lows 48 to 60. Light winds. 
-.FRIDAY...Mostly sunny in the morning, then partly sunny with
-isolated showers in the afternoon. Highs 59 to 75. Light winds.
-Chance of rain 20 percent. 
-.FRIDAY NIGHT...Mostly cloudy. Isolated showers in the evening.
-Lows 47 to 59. Light winds. Chance of rain 20 percent. 
+60 to 75. Light winds. Chance of rain 40 percent. 
+.THURSDAY NIGHT...Mostly cloudy in the evening then becoming
+partly cloudy. Lows 48 to 60. Light winds. 
+.FRIDAY...Mostly sunny in the morning then becoming mostly
+cloudy. Highs 59 to 75. Light winds. 
+.FRIDAY NIGHT...Mostly cloudy. Lows 48 to 59. Light winds. 
 .SATURDAY...Mostly sunny in the morning, then partly sunny with
-isolated showers in the afternoon. Highs 60 to 75. Light winds.
-Chance of rain 20 percent. 
+isolated showers in the afternoon. Highs 60 to 75. Northeast
+winds up to 10 mph. Chance of rain 20 percent. 
 .SATURDAY NIGHT...Mostly cloudy in the evening then becoming
-partly cloudy. Lows 46 to 59. Northeast winds up to 10 mph. 
-.SUNDAY...Sunny in the morning, then partly sunny with isolated
-showers in the afternoon. Highs 60 to 76. Northeast winds up to
-10 mph. Chance of rain 20 percent. 
-.SUNDAY NIGHT...Mostly cloudy with scattered showers in the
-evening, then partly cloudy after midnight. Lows 46 to 59.
-Northeast winds up to 10 mph. Chance of rain 40 percent. 
-.MONDAY...Mostly sunny. Isolated showers in the afternoon. Highs
-60 to 75. Light winds. Chance of rain 20 percent. 
+partly cloudy. Lows 47 to 59. Northeast winds up to 10 mph. 
+.SUNDAY...Mostly sunny. Isolated showers in the afternoon. Highs
+60 to 76. Northeast winds up to 10 mph. Chance of rain
+20 percent. 
+.SUNDAY NIGHT...Partly cloudy. Lows 46 to 60. Northeast winds up
+to 10 mph in the evening becoming light. 
+.MONDAY...Sunny in the morning, then partly sunny with isolated
+showers in the afternoon. Highs 60 to 75. Light winds. Chance of
+rain 20 percent. 
+.MONDAY NIGHT...Mostly cloudy in the evening then becoming partly
+cloudy. Lows 46 to 59. Light winds. 
+.TUESDAY...Mostly sunny in the morning, then partly sunny with
+isolated showers in the afternoon. Highs 59 to 74. Light winds.
+Chance of rain 20 percent. 
 
-HIZ028-300715-
+HIZ028-302015-
 Big Island Summits-
 Including Mauna Loa and Mauna Kea Above 8000 feet
-341 AM HST Tue Sep 29 2026
+305 PM HST Tue Sep 29 2026
 
-.TODAY...Mostly cloudy. Isolated showers in the afternoon. Highs
-around 60 at the visitor information station to around 50 near
-the summits. West winds up to 10 mph. Chance of rain 20 percent. 
-.TONIGHT...Mostly cloudy in the evening then becoming mostly
-clear. Lows around 45 at the visitor information station to
-around 39 near the summits. Southwest winds up to 10 mph. 
-.WEDNESDAY...Mostly sunny in the morning, then mostly cloudy with
-isolated showers in the afternoon. Highs around 61 at the visitor
-information station to around 49 near the summits. West winds up
-to 10 mph. Chance of rain 20 percent. 
-.WEDNESDAY NIGHT...Mostly cloudy. Lows 39 to 55. Light winds. 
+.TONIGHT...Partly cloudy. Lows around 45 at the visitor
+information station to around 39 near the summits. Southwest
+winds up to 10 mph. 
+.WEDNESDAY...Mostly cloudy. Isolated showers in the afternoon.
+Highs around 61 at the visitor information station to around
+49 near the summits. West winds up to 10 mph. Chance of rain
+20 percent. 
+.WEDNESDAY NIGHT...Mostly cloudy in the evening then becoming
+partly cloudy. Lows around 46 at the visitor information station
+to around 40 near the summits. Light winds. 
 .THURSDAY...Mostly sunny in the morning then becoming mostly
 cloudy. Highs 51 to 71. Light winds. 
-.THURSDAY NIGHT...Mostly cloudy. Lows 39 to 53. Light winds. 
-.FRIDAY...Mostly sunny in the morning then becoming partly sunny.
-Highs 47 to 71. Light winds. 
-.FRIDAY NIGHT...Mostly cloudy. Lows 41 to 53. Light winds. 
-.SATURDAY...Sunny in the morning then becoming partly sunny.
-Highs 48 to 71. Northeast winds 10 to 15 mph. 
-.SATURDAY NIGHT...Partly cloudy. Breezy. Lows 42 to 52. Northeast
-winds 10 to 20 mph. 
-.SUNDAY...Sunny in the morning then becoming partly sunny.
-Breezy. Highs 48 to 71. Northeast winds 10 to 20 mph. 
-.SUNDAY NIGHT...Mostly cloudy in the evening then becoming mostly
-clear. Breezy. Lows 41 to 52. Northeast winds 10 to 20 mph
-decreasing to up to 15 mph after midnight. 
-.MONDAY...Mostly sunny. Highs 49 to 71. Light winds.
+.THURSDAY NIGHT...Mostly cloudy in the evening then becoming
+partly cloudy. Lows 39 to 54. Light winds. 
+.FRIDAY...Mostly sunny in the morning then becoming mostly
+cloudy. Highs 51 to 71. Light winds. 
+.FRIDAY NIGHT...Mostly cloudy in the evening then becoming partly
+cloudy. Lows 42 to 53. Light winds. 
+.SATURDAY...Mostly sunny in the morning then becoming partly
+sunny. Highs 51 to 71. Northeast winds up to 10 mph. 
+.SATURDAY NIGHT...Mostly cloudy in the evening then becoming
+partly cloudy. Lows 43 to 52. East winds up to 15 mph shifting to
+the south after midnight. 
+.SUNDAY...Sunny. Highs 50 to 72. East winds up to 15 mph. 
+.SUNDAY NIGHT...Mostly clear. Lows 41 to 52. Northeast winds up
+to 15 mph. 
+.MONDAY...Sunny in the morning then becoming partly sunny. Highs
+50 to 71. Light winds becoming northwest up to 10 mph in the
+afternoon. 
+.MONDAY NIGHT...Mostly cloudy in the evening then becoming partly
+cloudy. Lows 42 to 52. West winds up to 10 mph. 
+.TUESDAY...Sunny in the morning then becoming partly sunny. Highs
+49 to 70. West winds around 10 mph in the morning becoming light.
 ```
 
 ---
@@ -1759,65 +1826,69 @@ FZLVL...153 PHLI SLOPING TO 169 PHTO.
 |---|---|
 | **Resource ID** | afd_area_forecast_discussion |
 | **Official source** | https://api.weather.gov/products/types/AFD/locations/HFO |
-| **Collected** | 2026-09-29T09:05:32.357654-10:00 HST |
+| **Collected** | 2026-09-29T15:12:32.466253-10:00 HST |
 
 ```text
 000
-FXHW60 PHFO 291859
+FXHW60 PHFO 300109
 AFDHFO
 
 Area Forecast Discussion
 National Weather Service Honolulu HI
-859 AM HST Tue Sep 29 2026
+309 PM HST Tue Sep 29 2026
 
 .SYNOPSIS...
-Hurricane Nolo will pass to the west of the state over the next
-couple of days bringing increasing showers across Kauai and Oahu.
-Breezy southeast winds will continue through Wednesday, then
+Hurricane Nolo will slowly pass to the west of the state over the
+next couple of days bringing increasing showers across Kauai and 
+Oahu. Breezy southeast winds will continue through Wednesday, then
 gradually weaken and become trade winds by this weekend.
 
 .DISCUSSION...
-Hurricane Nolo (cat. 2) is around 320 miles west southwest of 
-Lihue this morning tracking north at 9 mph. Nolo is expected to
-briefly stall west of the state tonight, then begin to move away
-to the west northwest. Breezy southeast winds will continue 
-across the state into Wednesday as Nolo remains close to the area.
+Hurricane Nolo is around 310 miles west of Lihue this afternoon 
+tracking north at 8 mph. Nolo is expected to briefly stall west of
+the state tonight, then begin to move away to the west northwest.
+Breezy southeast winds will continue across the state into 
+Wednesday as Nolo remains close to the area.
 
 While Nolo will not make direct impacts to the state, rain bands
 along the eastern periphery will move in the southeast flow and
 bring showers across Kauai and Oahu through Thursday. Expecting 
 to see 3 to 6 inches of additional rain on Kauai and Niihau, and 
-up to 4 inches on Oahu. Not considering a Flood Watch at this time
-with the anticipation these rainfall amounts will be spread out 
-over several days and showers should be moving along quickly. 
-However, southeast flow will direct showers across the populated 
-areas of both islands.
+up to 4 inches on Oahu. Not considering a Flood Watch with the 
+anticipation these rainfall amounts will be spread out over 
+several days and showers should be moving along quickly. However, 
+southeast flow will direct showers across the populated areas of 
+both islands. The rest of the state will be under a hybrid east
+southeast flow pattern where the Big Island will partially block
+Maui County resulting in localized nighttime land that will clear
+skies out and daytime sea breezes that will bring interior cloud 
+cover. Precipitation across Maui County and Big Island will be
+minimal.
 
 East southeasterly winds will continue, but gradually weaken, 
-through the second half of the week as Nolo tracks away. By this 
-weekend, trade winds are forecast to build in bringing drier and 
-more stable conditions again.
+through the second half of the week as Nolo tracks away. Winds
+will back to moderate trades by the weekend.
 
-By Monday a weak low pressure system drops into the region and deepens
-several hundred miles to the northeast. Northeasterly winds along
-the western flank of the surface low will drive a convergence 
-cloud band into the Hawaiian Islands from the north early next 
-week. This cloud band will likely bring a several day period of 
-enhanced shower trends to all islands from Monday into Wednesday. 
-These clouds and showers may linger near the Big Island through 
-the end of next week.
+On Monday and Tuesday, a weak front will push across the islands 
+and stall near the Big Island through the remainder of the week.
+Winds will taper off behind this front as a second front
+approaches much slower. Lingering clouds and showers near the Big
+Island and light winds statewide next week will result in a
+diurnal land and sea breeze weather pattern.
 
 .AVIATION...
-Moderate trade winds with locally gusty winds in the 
-afternoon/evening continue today with gradual weakening expected. 
-Winds are generally out of the east to southeast with winds 
-shifting more northeasterly overnight. Moisture from Hurricane 
-Nolo is expected to move into Kauai by late this morning with 
-showers becoming more widespread across the county. Showers 
-gradually spread eastward towards Oahu late Tuesday and continue 
-into Wednesday. Periods of MVFR conditions are likely as showers 
-move across the islands. A few showers may reach Molokai and Maui 
-but confidence is lower. 
+Moderate trade winds between 10 to 15 knots continue. Wind gusts 
+have been slower to materialize this afternoon but should pick up 
+briefly late afternoon into the early evening. Winds decrease 
+overnight with a return to a more normal diurnal wind pattern 
+expected tomorrow. Hurricane Nolo remains well to the west of the 
+state but it will bring another round of showers to Kauai and Oahu
+this evening into tomorrow. Light to moderate showers will reach 
+Kauai this evening and reach Oahu overnight/early Wednesday 
+morning. MVFR conditions are expected across Kauai, where the bulk
+of the rain will be concentrated, while temporary MVFR conditions
+may impact Oahu airports during heavier showers. Isolated showers
+may extend towards Molokai, Maui, and Lanai.
 
 AIRMET Tango remains in effect for moderate turbulence below 
 9,000 feet over and immediately downwind of island terrain. This 
@@ -1825,39 +1896,28 @@ AIRMET will be needed through at least Wednesday and potentially
 into Thursday.
 
 .MARINE...
-Moderate to fresh SE winds have established over area waters. 
-Strong to near-gale SE flow will develop tonight into Wednesday 
-around Kauai due to Hurricane Nolo's close proximity. The Small 
-Craft Advisory remains in effect for these waters. Moderate trades
-return early next week.
+Moderate to fresh SE winds prevails over area waters. Strong to 
+near-gale SE flow will develop tonight into Wednesday around Kauai
+due to Hurricane Nolo's close proximity. The Small Craft Advisory
+remains in effect for these waters. Moderate trades return early 
+next week.
 
-A moderate, medium period SW swell originating from Nolo is
-producing surf to the High Surf Advisory threshold for S shores of
-Kauai County today. Confidence that surf will hover at low end HSA
-thresholds is reasonably high for about 12 hours at a time, but
-the complex swell situation limits confidence thereafter. As such,
-the HSA remains in effect through today and will be evaluated
-again this afternoon with heavy emphasis placed on observational
-trends.
-
-Surf along E shores declines in response to developing SE flow. A
-slight bump can then be expected early next week as moderate
-trades return. Multiple rounds of tiny swell originating out of 
-the northwest quadrant will reach north and select west facing 
-exposures next week as the storm track in the vicinity of the 
-Aleutian Islands becomes increasingly active.
+The moderate, medium period SW swell originating from Nolo has
+eased slightly with the latest observations coming in below the
+High Surf Advisory (HSA). The HSA has therefore been allowed to
+expire. Surf along E shores has declined in response to emerging 
+SE flow. Surf will remain small until moderate trades return early
+next week providing a modest boost. Multiple rounds of tiny swell
+originating out of the northwest quadrant will reach north and 
+select west facing exposures next week as the storm track in the 
+vicinity of the Aleutian Islands becomes increasingly active.
 
 .FIRE WEATHER...
-A gradual increase in humidity expected through midweek. Moisture
-drawn northward along the eastern sides of Nolo will increase 
-rain chances across the western part of the state. Fire conditions
-will improve statewide over the next couple days as winds weaken 
-and humidity levels rise.
+Fire conditions improving through the remainder of the week to due
+an increase in moisture across the state and breezy southeast
+winds.
 
 .HFO WATCHES/WARNINGS/ADVISORIES...
-High Surf Advisory until 6 PM HST this evening for Niihau-Kauai 
-Leeward-Kauai South.
-
 Small Craft Advisory until 6 PM HST Wednesday for Kauai 
 Northwest Waters-Kauai Windward Waters-Kauai Leeward Waters-
 Kauai Channel.
@@ -2813,7 +2873,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-29T14:52:48.398669-10:00 HST |
+| **Collected** | 2026-09-29T15:09:48.275687-10:00 HST |
 
 ```text
 446
@@ -3086,7 +3146,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T15:00:51.107849-10:00 HST |
+| **Collected** | 2026-09-29T15:09:51.247897-10:00 HST |
 
 ```text
                         
@@ -3955,7 +4015,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-29T14:16:30.022045-10:00 HST |
+| **Collected** | 2026-09-29T15:16:29.782128-10:00 HST |
 
 ```text
 Home
@@ -4079,7 +4139,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Wed, 30 Sep 2026 00:15:23 UTC
+Last update Wed, 30 Sep 2026 01:09:44 UTC
 
 NHC issuing advisories for the Atlantic on
 
@@ -7862,7 +7922,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-29T14:52:34.062784-10:00 HST |
+| **Collected** | 2026-09-29T15:09:33.250162-10:00 HST |
 
 ```text
 National Weather Service
@@ -7911,9 +7971,9 @@ INFORMATION
 
 Wireless Emergency Alerts
 
-Weather-Ready Nation
-
 Brochures
+
+Weather-Ready Nation
 
 Cooperative Observers
 
