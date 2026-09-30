@@ -362,6 +362,20 @@ EVERY_SECONDS = [
         "env": {},
     },
     {
+        # Discord poller (WO-MIG-21). OFF. No token and no post.
+        # Gate RR_DISCORD_POLLER stays unset. Empty channels.json does not call Discord.
+        "id": "discord_poller",
+        "enabled": False,
+        "description": "Discord poller (WO-MIG-21). OFF. No token and no post. Gate RR_DISCORD_POLLER stays unset.",
+        "interval_sec": 60,
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Communications/Discord/scripts/poll.py"',
+        "timeout_sec": 30,
+        "needs_internet": True,
+        "cwd": f"{PACIFIC}/Communications/Discord",
+        "env": {},
+    },
+    {
         # Stripe snapshot (2026-09-29, WO-MIG-10). OFF unless RR_STRIPE=1 at poller start.
         # No key writes not_configured and does not call Stripe. No delivery.
         "id": "stripe_poll",

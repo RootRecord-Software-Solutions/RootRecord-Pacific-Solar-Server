@@ -11,7 +11,7 @@ Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messagin
 | `network/cloudflare/` | **Live.** `jobs.py` starts `Communications/network/cloudflare/bin/cloudflared` (token file `~/.cloudflared/rootserver.token`, public host `rootserver.rootrecord.cloud` → `127.0.0.1:8799`). The binary stays untracked and is on `Github/scripts/ecosystem-skip-autocommit.txt`. Do not commit it. |
 | `network/scripts/ensure-network-globe-hawaii.sh` | **Live.** Job cwd is Pacific `Communications/network`. Collector is `network/local-data-globe/collector.js`. |
 | telegram | **Live and quiet.** `council_relay` runs `Communications/telegram/scripts/ensure-relay.sh`. `RR_RELAY_REPLIES` stays `0` (poll and log only; no infer, no post). |
-| discord | Shell only — **WO-COM-002** token rotation required before LIVE |
+| discord | Poller at `Communications/Discord/` (WO-MIG-21). Job `discord_poller` is off. No token, no post. **WO-COM-002** before LIVE |
 | slack / email | Shells only. Not a second live relay. |
 | Notify policy | Still the unsealed draft under Library `Documentation/00-architecture/Communications-Notify-Policy-Draft-2026-09-28.md`. Do not add notify jobs from this page. |
 | `web-facts/` | G1 `websites/web-facts` port (allowlisted HTTPS GET), on demand only — LANDED, smoke PASS 2026-09-29 13:58 HST; not wired to the council relay |
@@ -52,7 +52,7 @@ Communications/
   network/cloudflare/{bin,config}/
   network/scripts/
   Cloudflare-Workers/{scripts,config}/
-  telegram/ discord/ email/ slack/
+  telegram/ Discord/ email/ slack/
   github/{api,messaging,notifications,webhooks}/
 ```
 
