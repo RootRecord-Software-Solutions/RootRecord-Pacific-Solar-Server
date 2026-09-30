@@ -40,6 +40,10 @@ if legacy_up; then  # info: if
 fi  # info: fi
 # Replies are opt-in: RR_RELAY_REPLIES=1 lets the relay infer+post; default 0 = quiet (poll/login only). 2026-09-29.
 export RR_RELAY_REPLIES="${RR_RELAY_REPLIES:-0}"  # info: export
+# Council chat stays on the NPU. RR_NPU_ONLY skips the Ollama fallback. RR_NPU_PERSONA sends the voice Modelfile
+# SYSTEM block to FLM (FLM cannot load the Modelfile itself). Image and speech stay off this process.
+export RR_NPU_ONLY=1  # info: export
+export RR_NPU_PERSONA=1  # info: export
 # PYTHONUNBUFFERED: log lines appear immediately (2026-09-29; argv unchanged so the pgrep matches still work).
 PYTHONUNBUFFERED=1 nohup python3 "$HERE/council-relay.py" >>"$LOG" 2>&1 &  # info: set PYTHONUNBUFFERED
 pid=$!  # info: set pid

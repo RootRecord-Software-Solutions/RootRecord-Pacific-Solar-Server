@@ -163,6 +163,7 @@ def _pipeline():  # info: def _pipeline
         weights, cfg = STORE / "kokoro-v1_0.pth", STORE / "config.json"  # info: weights , cfg = STORE / "kokoro-v1_0.pth" ,
         if not weights.is_file() or not cfg.is_file():  # info: if not weights . is_file ( ) or
             raise FileNotFoundError(f"Kokoro-82M missing under {STORE}")  # info: raise FileNotFoundError ( f" Kokoro-82M missing under { STORE }
+        # Kokoro has no FLM/NPU build. Speech stays on CPU so /dev/accel stays free for council chat.
         model = KModel(repo_id="hexgrad/Kokoro-82M", config=str(cfg), model=str(weights)).to("cpu").eval()  # info: set model
         _PIPELINE = KPipeline(lang_code="a", repo_id="hexgrad/Kokoro-82M", model=model, device="cpu")  # info: set _PIPELINE
         apply_lexicon(_PIPELINE)  # info: call apply_lexicon

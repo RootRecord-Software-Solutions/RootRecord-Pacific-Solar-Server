@@ -38,6 +38,28 @@ if [[ "${RR_SPECIALIST_ROUTING:-0}" == "1" && -x "$HERE/route-specialist.py" ]];
     c_=$(printf '%s' "$RR_SPEC_CONFIDENCE" | tr -cd '0-9.'); SPEC_LOG=$(printf ',"specialist":"%s","route_confidence":%s' "$(printf '%s' "$RR_SPEC_NAME" | tr -cd 'A-Za-z0-9._:@/+-' | cut -c1-64)" "${c_:-0}")  # info: set c_
   fi  # info: fi
 fi  # info: fi
+# Council voices on the NPU (RR_NPU_PERSONA=1, set by ensure-relay.sh). FLM cannot load a Modelfile,
+# so the SYSTEM block and its temperature / num_predict are sent as the chat request. Ollama stays the fallback
+# unless RR_NPU_ONLY=1, which the relay sets so this chat does not move onto CPU or the GPU.
+if [[ "${RR_NPU_PERSONA:-0}" == "1" && -z "$SPEC_SYS" && "$TARGET" =~ ^(ava|bruce|carly)$ ]]; then  # info: if
+  PERSONA_MF="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/AI/Ollama/Modelfiles/Production/${TARGET}-telegram.Modelfile"  # info: set PERSONA_MF
+  if [[ -r "$PERSONA_MF" ]]; then  # info: if
+    _persona=$(python3 -c 'import re,sys  # info: import
+from pathlib import Path  # info: from pathlib import Path
+p=Path(sys.argv[1])  # info: set p
+t=p.read_text(encoding="utf-8")  # info: set t
+m=re.search("(?s)^SYSTEM\\s+\"\"\"\\n?(.*?)\\n?\"\"\"", t)  # info: set m
+sys_text=(m.group(1).strip() if m else "")  # info: set sys_text
+temp, npred = "0.3", "180"  # info: set temp
+for k,v in re.findall(r"^PARAMETER\s+(temperature|num_predict)\s+(\S+)", t, re.M):  # info: for
+    if k=="temperature": temp=v  # info: if
+    if k=="num_predict": npred=v  # info: if
+print(temp); print(npred); print(sys_text)' "$PERSONA_MF" 2>/dev/null || true)  # info: set _persona
+    SPEC_TEMP=$(printf '%s\n' "$_persona" | sed -n '1p')  # info: set SPEC_TEMP
+    SPEC_MAXTOK=$(printf '%s\n' "$_persona" | sed -n '2p')  # info: set SPEC_MAXTOK
+    SPEC_SYS=$(printf '%s\n' "$_persona" | tail -n +3)  # info: set SPEC_SYS
+  fi  # info: fi
+fi  # info: fi
 JOB="infer:$TARGET:$(date +%Y%m%d-%H%M%S)"  # info: set JOB
 SF="$HERE/single-flight.sh"  # info: set SF
 
@@ -230,9 +252,14 @@ if flm_up; then  # info: if
     ailog npu-flm "$FLM_MODEL" 0 false "$(printf '%s\n' "$rep" | grep -v '^\[ok\] single-flight RUN ' | tr -d '\n' | wc -m)"  # info: ailog
     exit 0  # info: exit
   fi  # info: fi
-  echo "[warn] FLM chat failed — Ollama fallback" >&2  # info: echo
+  if [[ "${RR_NPU_ONLY:-0}" == "1" ]]; then echo "[warn] FLM chat failed — staying on NPU, no Ollama fallback" >&2; else echo "[warn] FLM chat failed — Ollama fallback" >&2; fi  # info: echo
 fi  # info: fi
 FLM_PEAK_MB=$(flm_peak); flm_stop  # info: set FLM_PEAK_MB
+if [[ "${RR_NPU_ONLY:-0}" == "1" ]]; then  # info: if
+  echo "[fail] NPU-only: FLM did not answer. No Ollama or GPU fallback for this chat." >&2  # info: echo
+  ailog npu-flm "$FLM_MODEL" 1 false 0  # info: ailog
+  exit 1  # info: exit
+fi  # info: fi
 set +e  # info: set
 oout=$(do_ollama)  # info: set oout
 set -e  # info: set
