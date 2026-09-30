@@ -603,7 +603,7 @@ class Panel(ExtraPages, AwsFallbackPage):
             i.append(row)
             self.risky_btns.append((b, a))
         box.append(o)
-        o, i = section("Gated RR_* job flags in jobs.py (read-only view; set in the poller environment at poller start)")
+        o, i = section("Gated RR_* job flags (current jobs.py view). Turn each one on or off under Settings → Feature Flags. Saving writes rr-flags.conf and does not restart the poller.")
         self.gated_lbl = lbl("", "rr-mono", wrap=True, select=True)
         i.append(self.gated_lbl)
         box.append(o)

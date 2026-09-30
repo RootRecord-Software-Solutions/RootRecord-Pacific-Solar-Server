@@ -31,6 +31,17 @@ MIGRATION_FILE = HERE / "Lib/rr_migration.json"
 REL_UNIT = r"^(rr-|ava-|network-globe|ollama|flm|cloudflared|rootrecord|council|cam|weather|conky|github|bluetooth|NetworkManager|ssh|cron)"
 
 
+def _bool_on(s) -> bool:
+    """Effective on/off: the saved value, or the code default when the flag file has no line yet."""
+    raw = s._value
+    if raw is None or str(raw).strip() == "":
+        disp = s.display or ""
+        blob = disp.split(" ·", 1)[0][len("default "):] if disp.startswith("default ") else "0"
+        bits = [b.strip().strip('"').strip("'") for b in blob.split("|") if b.strip()]
+        raw = bits[0] if bits else "0"
+    return str(raw).strip().strip('"').strip("'").lower() in ("1", "true", "yes")
+
+
 def _trim():
     """Return freed heap to the OS after releasing a sub-page (glibc malloc_trim; no-op elsewhere)."""
     import gc
@@ -495,7 +506,7 @@ class ExtraPages:
         sub = f"{s.display} · {s.kind}" + (f" · {s.restart}" if s.editable else f" · read-only: {s.ro_reason}")
         r, l = light_row(s.key, sub)
         if s.editable and s.kind == "bool01":
-            on = str(s._value or "").strip() in ("1", "true", "True", "yes")
+            on = _bool_on(s)
             r.append(rr_ui.state_toggle(
                 s.key, on,
                 on_change=lambda btn, active, s=s, row=l: self._toggle_bool(s, active, row, btn),
@@ -560,5 +571,8 @@ class ExtraPages:
                 if fresh is not None:
                     set_row_text(row, fresh.key, f"{fresh.display} · {fresh.kind} · saved — {plan.restart_note}")
             except Exception as ex:
+                if on_fail:
+                    on_fail()
                 self.toast(f"Save failed: {ex}")
-        self.confirm(f"Save {plan.path.name}?", f"Masked diff below. {plan.restart_note}. Nothing will be restarted.", "Save", ok, extra=sc)
+        self.confirm(f"Save {plan.path.name}?", f"Masked diff below. {plan.restart_note}. Nothing will be restarted.", "Save", ok,
+                     on_cancel=on_cancel, extra=sc)
