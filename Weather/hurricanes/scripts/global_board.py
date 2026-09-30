@@ -8,8 +8,9 @@ Standalone and additive: the weather poller's hurricanes/scripts/sources.py keep
 files; this adds the G1 global board (Atlantic / Pacific / West Pacific / Indian / Southern Hemisphere).
 Ported unchanged: _parse_latlon, _class_label, _basin_name, _windy, _enrich (Florida + Hawaiʻi distance, score, focus),
 _from_nhc, _from_rammb, _from_jtwc (+ storm_track.parse_jtwc_moving), _merge (max 14, invests only if close / al / cp).
-Not ported: RAMMB per-storm page fetch (IR gif + track tables), storm_track attach / persist, NWS radar links, OBS
-mode / scenes (OBS BLOCKED). One GET per source (4 total, 14 s timeout each). Current file only; nothing deleted.
+Also: RAMMB per-storm page (IR gif URL + track tables), storm_track attach / persist, storm_plot text file.
+Not ported: NWS radar links, OBS mode / scenes (OBS BLOCKED). Four source GETs plus one storm page per kept storm
+(14 s timeout each). Current files only; nothing deleted.
 """
 from __future__ import annotations
 
@@ -18,10 +19,17 @@ import logging
 import math
 import os
 import re
+import sys
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
+
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+import storm_plot  # noqa: E402
+import storm_track  # noqa: E402
 
 log = logging.getLogger("rr.hurricane_global")
 HST = ZoneInfo("Pacific/Honolulu")
@@ -300,7 +308,6 @@ def _from_rammb(html: str) -> list[dict]:
             "https://rammb-data.cira.colostate.edu/tc_realtime/products/storms/"
             f"{year}{basin}{num}/4kmirimg/{year}{basin}{num}_4kmirimg.gif"
         )
-        # RAMMB timestamps the gif; storm page first 4km IR is resolved later.
         out.append(
             {
                 "id": sid,
@@ -316,6 +323,43 @@ def _from_rammb(html: str) -> list[dict]:
             }
         )
     return out
+
+
+def _rammb_ir(sid: str, html: str) -> str | None:
+    if len(sid) < 8:
+        m = None
+    else:
+        m = re.search(
+            rf"/tc_realtime/products/storms/[^\"']+{re.escape(sid[4:8] + sid[:2] + sid[2:4])}?[^\"']*4kmirimg[^\"']+\.gif",
+            html,
+            re.I,
+        )
+    if not m:
+        m = re.search(r"/tc_realtime/products/storms/[^\"']+4kmirimg[^\"']+\.gif", html, re.I)
+    if not m:
+        return None
+    return "https://rammb-data.cira.colostate.edu" + m.group(0)
+
+
+def _fill_storm_page(storm: dict) -> None:
+    sid = str(storm.get("id") or "")
+    if not sid:
+        return
+    try:
+        html = _get(RAMMB_STORM.format(id=sid))
+    except Exception as e:  # noqa: BLE001
+        log.info("rammb storm page skip %s: %s", sid, e)
+        return
+    if not html:
+        return
+    if not storm.get("ir_url"):
+        ir = _rammb_ir(sid, html)
+        if ir:
+            storm["ir_url"] = ir
+    try:
+        storm_track.apply_rammb_page(storm, html)
+    except Exception as e:  # noqa: BLE001
+        log.info("rammb track parse skip %s: %s", sid, e)
 
 
 def _from_jtwc(text: str, default_basin: str) -> list[dict]:
@@ -434,9 +478,36 @@ def refresh() -> dict:
         except Exception as e:  # noqa: BLE001
             errors[key] = f"parse {type(e).__name__}: {e}"[:200]
     storms = _merge(rows)
+    storm_track.TRACKS_PATH = OUT / "storm-tracks.json"
+    for storm in storms[:14]:
+        _fill_storm_page(storm)
+    storms = [_enrich(s) for s in storms]
+    for storm in storms:
+        try:
+            storm_track.attach_track(storm, persist=True)
+        except Exception as e:  # noqa: BLE001
+            log.info("storm track persist skip %s: %s", storm.get("id"), e)
     return {"ok": bool(sources), "ts": datetime.now(timezone.utc).isoformat(),
             "at": datetime.now(HST).isoformat(timespec="seconds"), "sources": sources, "errors": errors,
             "count": len(storms), "storms": storms}
+
+
+def _append_log(payload: dict) -> None:
+    try:
+        log_dir = DB / "Logs" / "Weather" / "hurricanes"
+        log_dir.mkdir(parents=True, exist_ok=True)
+        tracked = sum(
+            1 for s in payload.get("storms") or []
+            if s.get("track_history") or s.get("forecast_track")
+        )
+        line = (
+            f"{payload.get('at')} ok={payload.get('ok')} storms={payload.get('count')} "
+            f"with_tracks={tracked} sources={','.join(payload.get('sources') or [])}\n"
+        )
+        with (log_dir / "global-board.log").open("a", encoding="utf-8") as fh:
+            fh.write(line)
+    except OSError as e:
+        log.info("hurricane log skip: %s", e)
 
 
 def main() -> int:
@@ -445,6 +516,9 @@ def main() -> int:
     tmp = OUT / "storms-last.json.tmp"
     tmp.write_text(json.dumps(payload, indent=2, default=str, ensure_ascii=False) + "\n", encoding="utf-8")
     os.replace(tmp, OUT / "storms-last.json")
+    storm_plot.BOARD_DIR = OUT
+    storm_plot.write_plot(payload)
+    _append_log(payload)
     print(json.dumps({"ok": payload["ok"], "sources": payload["sources"], "errors": payload["errors"], "count": payload["count"],
                       "storms": [f"{s.get('label')} {s.get('name')} ({s.get('basin')}, {s.get('knots')} kt, "
                                  f"nearest HI {s.get('nearest_hawaii_nm')} nm, src {s.get('source')})" for s in payload["storms"]]},

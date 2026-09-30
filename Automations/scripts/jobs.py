@@ -333,6 +333,20 @@ EVERY_SECONDS = [
         "cwd": f"{PACIFIC}/System",
         "env": {},
     },
+    {
+        # All-time radar zip (WO-MIG-05). Reads frames the weather poller already saved.
+        # OFF unless RR_RADAR_ZIP=1 is in the poller's environment at poller start. No fetch, no delete.
+        "id": "weather_radar_zip",
+        "enabled": os.environ.get("RR_RADAR_ZIP", "0") == "1",
+        "description": "Append HAWAII_loop archive GIFs into Database Weather/RadarZip/radar_archive.zip (all-time; loose folders stay on the 14-day rule).",
+        "interval_sec": 600,
+        "builtin": "",
+        "command": f'python3 "{PACIFIC}/Weather/RadarZip/scripts/radar_zip.py"',
+        "timeout_sec": 120,
+        "needs_internet": False,
+        "cwd": f"{PACIFIC}/Weather/RadarZip",
+        "env": {},
+    },
 ]
 
 EVERY_MINUTE = [
