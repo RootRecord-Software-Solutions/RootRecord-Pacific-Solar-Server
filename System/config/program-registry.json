@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "note": "Declared capability contract. Live status is filled by state-aggregate.py. Agents do not launch these yet.",
+  "programs": [
+    {
+      "program_id": "github_sync_all",
+      "name": "GitHub auto sync",
+      "entrypoint": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Github/scripts/sync-all.sh",
+      "owner_job": "github_sync_all",
+      "agent_launchable": false,
+      "agents_allowed": [],
+      "requires_confirmation": true,
+      "inputs": [],
+      "outputs": ["pushes enabled repos.conf rows"],
+      "side_effects": ["writes_repository_files", "creates_git_commits", "network_push"],
+      "why_not": {
+        "status": "not_implemented",
+        "kind": "not_implemented",
+        "reason": "The poller already runs this job. Agents have no execution layer and must not start a second sync.",
+        "blocked_by": "agent_execution_layer",
+        "enable_condition": "an execution layer that Alexander turns on"
+      }
+    },
+    {
+      "program_id": "desk_live_refresh",
+      "name": "Desk live refresh",
+      "entrypoint": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Communications/telegram/scripts/desk-live.py",
+      "owner_job": "",
+      "agent_launchable": false,
+      "agents_allowed": [],
+      "requires_confirmation": false,
+      "inputs": [],
+      "outputs": ["Intake/desk-live.txt"],
+      "side_effects": ["writes_desk_file"],
+      "why_not": {
+        "status": "not_implemented",
+        "kind": "not_implemented",
+        "reason": "The council relay refreshes the desk before each reply. Agents do not launch it themselves.",
+        "blocked_by": "agent_execution_layer",
+        "enable_condition": "an execution layer that Alexander turns on"
+      }
+    },
+    {
+      "program_id": "state_aggregate",
+      "name": "System state snapshot",
+      "entrypoint": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/System/scripts/state-aggregate.py",
+      "owner_job": "",
+      "agent_launchable": false,
+      "agents_allowed": [],
+      "requires_confirmation": false,
+      "inputs": [],
+      "outputs": ["System/status/rootrecord-state.json", "System/status/rootrecord-state-brief.txt"],
+      "side_effects": ["writes_state_snapshot"],
+      "why_not": {
+        "status": "not_implemented",
+        "kind": "not_implemented",
+        "reason": "The council relay refreshes this snapshot before each reply. Agents do not launch it themselves.",
+        "blocked_by": "agent_execution_layer",
+        "enable_condition": "an execution layer that Alexander turns on"
+      }
+    },
+    {
+      "program_id": "ecoflow_read",
+      "name": "EcoFlow BLE read",
+      "entrypoint": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/read/delta2-read.sh",
+      "owner_job": "ecoflow_read_cycle",
+      "agent_launchable": false,
+      "agents_allowed": [],
+      "requires_confirmation": true,
+      "inputs": [],
+      "outputs": ["Energy/soc/*-last.json", "Energy/watts/*-last.json"],
+      "side_effects": ["bluetooth_radio", "writes_energy_files"],
+      "why_not": {
+        "status": "gated",
+        "kind": "gated",
+        "reason": "Pack reads belong to the poller. A second BLE read collides on the radio lock.",
+        "blocked_by": "ecoflow-ble.lock",
+        "enable_condition": "an execution layer that Alexander turns on"
+      }
+    },
+    {
+      "program_id": "council_relay",
+      "name": "Council Telegram relay",
+      "entrypoint": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Communications/telegram/scripts/ensure-relay.sh",
+      "owner_job": "council_relay",
+      "agent_launchable": false,
+      "agents_allowed": [],
+      "requires_confirmation": true,
+      "inputs": [],
+      "outputs": ["sandbox replies when SANDBOX_REPLIES=1"],
+      "side_effects": ["telegram_getUpdates", "telegram_sendMessage"],
+      "why_not": {
+        "status": "gated",
+        "kind": "gated",
+        "reason": "Exactly one getUpdates owner. A second relay gets Telegram 409 and can double-post.",
+        "blocked_by": "single_getUpdates",
+        "enable_condition": "Alexander restarts the relay. Agents do not."
+      }
+    },
+    {
+      "program_id": "council_quake_telegram",
+      "name": "Quake Telegram notice",
+      "entrypoint": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Communications/CouncilQuake/scripts/quake_posts.py",
+      "owner_job": "council_quake_telegram",
+      "agent_launchable": false,
+      "agents_allowed": [],
+      "requires_confirmation": true,
+      "inputs": ["Geology/Earthquakes/hawaii-last.json"],
+      "outputs": ["Telegram post only when send gate is on"],
+      "side_effects": ["telegram_sendMessage"],
+      "why_not": {
+        "status": "gated",
+        "kind": "gated",
+        "reason": "Intentionally gated. Dry-run unless both the job and the send flag are on. Do not turn them on.",
+        "blocked_by": "RR_COUNCIL_QUAKE_SEND",
+        "enable_condition": "RR_COUNCIL_QUAKE=1 at poller start and RR_COUNCIL_QUAKE_SEND=1"
+      }
+    },
+    {
+      "program_id": "bruce_stats_posts",
+      "name": "Bruce stats Telegram post",
+      "entrypoint": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Communications/BruceStats/scripts/bruce_stats.py",
+      "owner_job": "bruce_stats_posts",
+      "agent_launchable": false,
+      "agents_allowed": [],
+      "requires_confirmation": true,
+      "inputs": [],
+      "outputs": ["Telegram post only when send gate is on"],
+      "side_effects": ["telegram_sendMessage"],
+      "why_not": {
+        "status": "gated",
+        "kind": "gated",
+        "reason": "Intentionally gated. Do not turn the send flag on.",
+        "blocked_by": "RR_BRUCE_STATS_SEND",
+        "enable_condition": "RR_BRUCE_STATS_SEND=1"
+      }
+    }
+  ]
+}
