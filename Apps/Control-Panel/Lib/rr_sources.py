@@ -688,7 +688,11 @@ def gated_jobs(paths: Paths) -> list[tuple[str, str, str]]:  # info: def gated_j
         text = paths.jobs_py.read_text(encoding="utf-8", errors="replace")  # info: set text
     except OSError:  # info: except OSError :
         return []  # info: return [ ]
-    pat = re.compile(r'"id":\s*"([^"]+)",\s*"enabled":\s*os\.environ\.get\("(RR_[A-Z0-9_]+)",\s*"([^"]*)"\)')  # info: set pat
+    # id and enabled are no longer on one line (comments sit between them). Stay inside one job dict.
+    pat = re.compile(
+        r'"id":\s*"([^"]+)"(?:(?!"id":).){0,600}?"enabled":\s*os\.environ\.get\(\s*"(RR_[A-Z0-9_]+)"\s*,\s*"([^"]*)"\s*\)',
+        re.S,
+    )
     return [(m.group(1), m.group(2), m.group(3)) for m in pat.finditer(text)]  # info: return [ ( m . group ( 1
 
 
