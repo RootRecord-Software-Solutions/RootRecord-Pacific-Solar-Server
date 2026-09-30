@@ -376,6 +376,20 @@ EVERY_SECONDS = [
         "env": {},
     },
     {
+        # Earthquake Discord post (WO-MIG-23). OFF unless RR_EARTHQUAKE_DISCORD=1
+        # is in the poller's environment at poller start. Dry-run by default. No send.
+        "id": "earthquake_discord_post",
+        "enabled": os.environ.get("RR_EARTHQUAKE_DISCORD", "0") == "1",
+        "description": "Format Database Geology/Earthquakes last files and hand text to the Discord send pipe. Dry-run unless a separate send sign-off is set.",
+        "interval_sec": 3600,
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Geology/Earthquake-Discord/scripts/earthquake_discord_post.py"',
+        "timeout_sec": 30,
+        "needs_internet": False,
+        "cwd": f"{PACIFIC}/Geology/Earthquake-Discord",
+        "env": {},
+    },
+    {
         # Slack poller (WO-MIG-22). OFF unless RR_SLACK=1 at poller start. No token and no post.
         "id": "communications_slack",
         "enabled": os.environ.get("RR_SLACK", "0") == "1",

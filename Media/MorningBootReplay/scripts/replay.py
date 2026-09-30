@@ -9,7 +9,7 @@ Hands the WAV to Media/Playback/scripts/play.py --report boot_brief --dry-run.
 This folder never passes --play and never calls aplay. Speaker playback stays
 off until Alexander signs off on the player.
 
-State: Database Media/MorningBootReplay/morning-boot-replay.json
+State: Database Media/MorningBootReplay/replay-last.json
 Logs:  Database Logs/Media/MorningBootReplay/replay.log
 """
 from __future__ import annotations
@@ -31,7 +31,8 @@ DB = Path(os.environ.get(
     "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database",
 ))
 STATE_DIR = DB / "Media" / "MorningBootReplay"
-STATE_PATH = STATE_DIR / "morning-boot-replay.json"
+STATE_PATH = STATE_DIR / "replay-last.json"
+OLD_STATE_PATH = STATE_DIR / "morning-boot-replay.json"
 LOG_DIR = DB / "Logs" / "Media" / "MorningBootReplay"
 VOICE = DB / "Media" / "Audio" / "Voice"
 WAV_NAME = "boot_brief_current.wav"
