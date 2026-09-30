@@ -55,7 +55,7 @@ _Source: locally collected NWS-HFO Regional Weather Roundup (RWR). Values are °
 
 | Status | Coverage | Updated | Sections |
 |---|---|---|---:|
-| 🟢 Active | Hawaiʻi statewide | 2026-09-29T19:39:51-10:00 HST | 29 |
+| 🟢 Active | Hawaiʻi statewide | 2026-09-29T19:48:51-10:00 HST | 29 |
 
 The report below is generated from the same current product sections as `Hawaii_State_Weather_Report_current.md`.
 
@@ -2880,7 +2880,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | hfo_rra_direct |
 | **Official source** | https://forecast.weather.gov/product.php?issuedby=HFO&product=RRA&site=hfo |
-| **Collected** | 2026-09-29T19:25:09.383965-10:00 HST |
+| **Collected** | 2026-09-29T19:42:08.675029-10:00 HST |
 
 ```text
 802
@@ -3152,7 +3152,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_surf_reports_direct |
 | **Official source** | https://www.weather.gov/hfo/surfreports |
-| **Collected** | 2026-09-29T19:33:08.616368-10:00 HST |
+| **Collected** | 2026-09-29T19:42:10.928164-10:00 HST |
 
 ```text
                         
@@ -3949,7 +3949,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_gtwo_atlc_7day |
 | **Official source** | https://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=7 |
-| **Collected** | 2026-09-29T18:47:50.778321-10:00 HST |
+| **Collected** | 2026-09-29T19:47:51.217351-10:00 HST |
 
 ```text
 223 ACCA62 KNHC 292307TWOSATPerspectiva de tiempo tropicalCentro Nacional de Huracanes del SNM Miami FL800 PM EDT martes 29 de septiembre de 2026Para el Atlántico Norte...Mar Caribe y el Golfo de AméricaSistemas activos: El Centro Nacional de Huracanes está emitiendoadvertencias sobre la Tormenta Tropical Hanna, ubicada al este delas Bermudas, y ha emitido la advertencia final sobre el CiclónPos-Tropical Fay, ubicado sobre el Atlántico subtropical central.No se espera la formación de ciclones tropicales durante lospróximos 7 días.$$Pronosticador Reinhart*** Este producto ha sido procesado automáticamente utilizando unprograma de traducción y puede contener omisiones y errores. ElServicio Nacional de Meteorología no puede garantizar la precisióndel texto convertido. De haber alguna duda, el texto en inglés essiempre la versión autorizada. ***
@@ -4019,7 +4019,7 @@ T  INDICATES TRACE AMOUNT.
 |---|---|
 | **Resource ID** | nhc_homepage |
 | **Official source** | https://www.nhc.noaa.gov/ |
-| **Collected** | 2026-09-29T19:39:50.765575-10:00 HST |
+| **Collected** | 2026-09-29T19:48:50.580921-10:00 HST |
 
 ```text
 Home
@@ -4143,7 +4143,7 @@ Search
 Top News of the Day...
 view past news
 
-Last update Wed, 30 Sep 2026 05:38:26 UTC
+Last update Wed, 30 Sep 2026 05:47:53 UTC
 
 NHC issuing advisories for the Atlantic on
 
@@ -4646,13 +4646,11 @@ Atlantic - Caribbean Sea - Gulf of America
 
 Tropical Weather Outlook
 
-(en Español*)
-
-800 PM EDT Tue Sep 29 2026
+200 AM EDT Wed Sep 30 2026
 
 Tropical Weather Discussion
 
-0015 UTC Wed Sep 30 2026
+0615 UTC Wed Sep 30 2026
 
 Tropical Storm Hanna
 
@@ -7822,7 +7820,7 @@ $$
 |---|---|
 | **Resource ID** | hfo_tib_reference |
 | **Official source** | https://forecast.weather.gov/product_types.php |
-| **Collected** | 2026-09-29T19:24:54.741020-10:00 HST |
+| **Collected** | 2026-09-29T19:41:53.627041-10:00 HST |
 
 ```text
 National Weather Service
