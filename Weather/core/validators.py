@@ -78,6 +78,11 @@ def looks_like_product(text: str) -> ValidationResult:
 
     lowered = stripped.lower()
     for marker in _HTML_ERROR_MARKERS:
+        if marker == "temporarily unavailable":
+            # Real HFO products mention a station that is temporarily
+            # unavailable. That sentence is not an error page.
+            if "national weather service" in lowered and len(stripped) > 400:
+                continue
         if marker in lowered:
             return ValidationResult(ok=False, reason=f"body looks like an HTML error/placeholder page (found {marker!r})")
 

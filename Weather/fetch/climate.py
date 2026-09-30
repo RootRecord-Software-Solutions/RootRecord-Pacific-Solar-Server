@@ -4,8 +4,36 @@ resource per station per product) rather than hand-listing each combination.
 """
 from __future__ import annotations
 
+from core import http_client
 from core.manifest import Manifest
 from fetch import _engine, text_products_fallback
+
+_CLI_STATIONS = ("HNL", "LIH", "OGG", "ITO")
+
+
+def extract_rtp_or_cli(page_bytes: bytes) -> str:
+    """Use the RTPHI product when HFO has issued one.
+
+    The regional table is often unpublished. The four daily climate
+    summaries are the current statewide temp and precip products.
+    """
+    try:
+        text = text_products_fallback.extract_pre_text(page_bytes)
+    except ValueError:
+        text = ""
+    if text and "none issued" not in text.lower():
+        return text
+    parts: list[str] = []
+    for station in _CLI_STATIONS:
+        url = (
+            "https://forecast.weather.gov/product.php?site=HFO"
+            f"&product=CLI&issuedby={station}"
+        )
+        result = http_client.get(url)
+        if result.not_modified or not result.content:
+            raise ValueError(f"CLI {station} returned no body")
+        parts.append(f"CLI{station}\n" + text_products_fallback.extract_pre_text(result.content))
+    return "\n\n".join(parts)
 
 
 def fetch_all(manifest: Manifest, base_dir: str) -> list[_engine.FetchOutcome]:
@@ -30,6 +58,26 @@ def fetch_all(manifest: Manifest, base_dir: str) -> list[_engine.FetchOutcome]:
         elif item["method"] == "image":
             outcomes.append(
                 _engine.run_resource(manifest, base_dir, item["id"], item["url"], method="image")
+            )
+        elif item["id"] == "rtp_temp_precip_summary":
+            outcomes.append(
+                _engine.run_resource(
+                    manifest, base_dir, item["id"], item["url"],
+                    method="text", clean_text_body=True,
+                    extract_text=extract_rtp_or_cli,
+                    expected_ext="txt",
+                    resource_id_hint=item["id"],
+                )
+            )
+        elif item["url"].endswith(".xml"):
+            outcomes.append(
+                _engine.run_resource(
+                    manifest, base_dir, item["id"], item["url"],
+                    method="text", clean_text_body=True,
+                    extract_text=text_products_fallback.extract_rss_descriptions,
+                    expected_ext="txt",
+                    resource_id_hint=item["id"],
+                )
             )
         elif "product.php" in item["url"]:
             outcomes.append(

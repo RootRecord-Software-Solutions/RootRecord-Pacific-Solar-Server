@@ -117,9 +117,20 @@ def get(url: str, *, etag: str | None = None, last_modified: str | None = None,
 
     headers = _headers_for(host, accept, etag, last_modified)
     timeout = float(settings.get("timeout_seconds", 20))
+    extra_tries = max(0, int(settings.get("max_retries", 0)))
+    backoff = float(settings.get("backoff_base_seconds", 5))
 
-    with httpx.Client(timeout=timeout, follow_redirects=True) as client:
-        resp = client.get(url, headers=headers)
+    resp = None
+    for attempt in range(extra_tries + 1):
+        with httpx.Client(timeout=timeout, follow_redirects=True) as client:
+            resp = client.get(url, headers=headers)
+        if resp.status_code in {502, 503, 504} and attempt < extra_tries:
+            time.sleep(min(backoff, 5.0))
+            continue
+        break
+
+    if resp is None:
+        raise RuntimeError(f"no response for {url}")
 
     if resp.status_code == 304:
         return FetchResult(status_code=304, headers=resp.headers, content=None, not_modified=True)
