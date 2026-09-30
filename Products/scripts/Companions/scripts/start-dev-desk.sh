@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+echo "target is not on this desk" >&2; exit 1
 # Dev-Desk — same job as Windows C:\Users\rootr\ava\windows\start_desk.py
 # This folder is the Electron window. Live origin is RootRecord/Ava-Core.
 # JSON/sqlite live in ~/.ollama/skills/{database,state,logs}/store. Media is $HOME/Media.

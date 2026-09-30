@@ -1,6 +1,6 @@
 # product-prices — hybrid notebook pointer
 
-Hybrid daily notebook: `/home/rootrecord/.ollama/skills/hybrid-reports/store/Reports/2026/September/September 19th, 2026/hybrid-manual-daily-report-2026-09-19.md`
+Note: the 2026-09-19 notebook is not on this desk. Do not recreate it.
 
 Same `> ◇ **HHMM** —` inserts as the hybrid report. Numbers only from those inserts.
 

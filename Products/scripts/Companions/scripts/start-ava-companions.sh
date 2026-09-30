@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+echo "target is not on this desk" >&2; exit 1
 # Companion processes that should be up whenever Ava is online.
 # Origin (:8787) is launch.sh. No Electron.
 # Do not launch OBS here.
