@@ -201,6 +201,21 @@ def clean_reply(text: str) -> str | None:  # info: def clean_reply
     return out or None  # info: return out or None
 
 # ====================================================
+# SECTION: function refresh_desk
+# What it does: Rewrite desk-live.txt from measured pack and host files before a reply. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def refresh_desk(cfg):  # info: def refresh_desk
+    dest = (cfg.get("DESK_LIVE_FILE") or "").strip()  # info: set dest
+    script = ROOT / "scripts" / "desk-live.py"  # info: set script
+    if not dest or not script.is_file():  # info: if not dest or not script . is_file
+        return  # info: return
+    try:  # info: try :
+        subprocess.run([sys.executable, str(script), "--out", dest], timeout=20, check=False)  # info: call subprocess . run
+    except (OSError, subprocess.TimeoutExpired) as e:  # info: except ( OSError , subprocess . TimeoutExpired )
+        print(f"[warn] desk refresh failed: {type(e).__name__}", file=sys.stderr)  # info: call print
+
+# ====================================================
 # SECTION: function run_infer
 # What it does: run infer.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -441,6 +456,7 @@ def main():  # info: def main
                 continue  # info: continue
 
             mid = msg.get("message_id")  # info: set mid
+            refresh_desk(cfg)  # info: call refresh_desk
             if is_private:  # info: if is_private :
                 mark_seen(poll_voice, voices, ch, mid)  # info: call mark_seen
                 reply = run_infer(cfg, poll_voice, text)  # info: set reply
