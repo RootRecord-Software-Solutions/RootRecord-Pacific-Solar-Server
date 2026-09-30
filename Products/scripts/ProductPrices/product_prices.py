@@ -7,17 +7,13 @@ with the image path + timestamp. Never wipe the item on a price change.
 from __future__ import annotations
 
 import json
-import os
 import re
 import time
 from pathlib import Path
 from typing import Any
 
 STORE_DIR = Path(
-    os.environ.get(
-        "PRODUCT_PRICES_DIR",
-        str(Path.home() / ".ollama" / "skills" / "product-prices" / "store"),
-    )
+    "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Products/ProductPrices"
 )
 PRICES_PATH = STORE_DIR / "prices.json"
 HISTORY_PATH = STORE_DIR / "sightings.jsonl"

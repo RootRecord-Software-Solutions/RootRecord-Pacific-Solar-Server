@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import os
 import re
 import sys
 import time
@@ -11,10 +10,7 @@ from pathlib import Path
 from typing import Any
 
 STORE = Path(
-    os.environ.get(
-        "PANTRY_STORE",
-        str(Path.home() / ".ollama" / "skills" / "pantry" / "store" / "stock.json"),
-    )
+    "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Products/Pantry/stock.json"
 )
 NAME_CAP = 80
 MAX_ITEMS = 400

@@ -1,0 +1,16 @@
+# Local route manifest for the one Vercel site.
+# This file does not call Cloudflare, does not start cloudflared, and does not change DNS.
+# www stays on the US-Mainland globe. The Home card stays off until a DNS change is signed off.
+
+home_card: off
+vercel_site: one
+home_url: https://rootrecord.cloud/home
+routes:
+  - hostname: www.rootrecord.cloud
+    keep: true
+    service: http://127.0.0.1:8090
+    role: globe
+  - hostname: ssh.rootrecord.cloud
+    keep: true
+    service: ssh://localhost:22
+    role: ssh

@@ -3,8 +3,8 @@
  * A private path returns 404. An allowlisted path is forwarded to the Vercel origin.
  */
 
-import { accountIdPresent } from "./envload.ts";
-import { handleRequest } from "./worker.ts";
+import { accountIdPresent } from "./envload.js";
+import { handleRequest } from "./worker.js";
 
 const ORIGIN = "https://root-record-cloud.vercel.app";
 

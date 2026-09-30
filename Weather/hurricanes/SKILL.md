@@ -2,7 +2,7 @@
 
 **What it is:** the tropical cyclone subsystem for CPHC's area of
 responsibility. Pulls NHC `CurrentStorms.json`, CPHC TCM/TCP/TCD/TCU
-advisories, and (once confirmed) RAMMB/JTWC sources; tracks each storm's
+advisories, and RAMMB/JTWC on the worldwide board (`scripts/global_board.py`); tracks each storm's
 position history and forecast cone under
 `Database/WEATHER/Hawai'i/hurricanes/tracking/`; and narrates plain-language
 storm summaries.

@@ -508,6 +508,20 @@ EVERY_HOUR = [
         "env": {},
     },
     {
+        # US all-states weather (2026-09-29, WO-MIG-11). OFF unless RR_US_STATES=1 at poller start.
+        # Does not replace the Hawaiʻi weather poller. NWS runs only when NWS_USER_AGENT is set. No delivery.
+        "id": "weather_us_states",
+        "enabled": os.environ.get("RR_US_STATES", "0") == "1",
+        "description": "US state weather (Open-Meteo; NWS if NWS_USER_AGENT) -> Database Weather/US-States/us-last.json.",
+        "only_at_hours": [],
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Weather/US-States/scripts/fetch_us_states.py"',
+        "timeout_sec": 900,
+        "needs_internet": True,
+        "cwd": f"{PACIFIC}/Weather/US-States",
+        "env": {},
+    },
+    {
         # AI processing report (2026-09-29, g3-voice-ailog). OFF unless RR_AI_REPORT=1 in the poller's environment
         # at poller start. Rotates Logs/AI/Inference/inference_current.jsonl daily, then rewrites the _current report.
         "id": "ai_processing_report_hourly",

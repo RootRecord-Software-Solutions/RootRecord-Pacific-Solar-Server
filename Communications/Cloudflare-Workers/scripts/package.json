@@ -6,9 +6,10 @@
   "description": "One Cloudflare Worker in front of the one Vercel site. No deploy from this package.",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "check": "node --experimental-strip-types src/check.ts"
+    "check": "tsc -p tsconfig.check.json && node dist/check.js"
   },
   "devDependencies": {
+    "@types/node": "^22.19.0",
     "typescript": "^5.9.2"
   }
 }

@@ -1,0 +1,16 @@
+# Staged because Automations/scripts/jobs.py was already being edited.
+# Paste inside EVERY_SECONDS. Do not enable. Speaker playback stays off.
+{
+    # Sunrise restore (2026-09-29, WO-MIG-17). OFF unless RR_SUNRISE_RESTORE=1 at poller start.
+    # Requests Ava reconnect clips through Report playback. Does not call aplay.
+    "id": "media_sunrise_restore",
+    "enabled": os.environ.get("RR_SUNRISE_RESTORE", "0") == "1",
+    "description": "If sunrise-restore pending is set, request reconnect clips. No speaker.",
+    "interval_sec": 60,
+    "builtin": "",
+    "command": f'python3 "{PACIFIC}/Media/SunriseRestore/scripts/sunrise_restore.py"',
+    "timeout_sec": 30,
+    "needs_internet": False,
+    "cwd": f"{PACIFIC}/Media/SunriseRestore",
+    "env": {},
+},

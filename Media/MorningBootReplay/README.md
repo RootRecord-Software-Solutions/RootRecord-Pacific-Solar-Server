@@ -1,0 +1,19 @@
+# MorningBootReplay
+
+Same-day replay of the morning `boot_brief` WAV until noon HST. It does not synthesize speech and it does not open a speaker.
+
+| | |
+| --- | --- |
+| Code | `1 - Servers/1 - RootRecord-Pacific-Solar-Server/Media/MorningBootReplay/scripts` |
+| Database | `2 - RootRecord-Database/Media/MorningBootReplay/` (`morning-boot-replay.json`, runtime only) |
+| Logs | `2 - RootRecord-Database/Logs/Media/MorningBootReplay/` |
+
+The WAV is `2 - RootRecord-Database/Media/Audio/Voice/boot_brief_current.wav`, written by `Media/Voice`. Replay hands that report to `Media/Playback/scripts/play.py --report boot_brief --dry-run`. This folder never passes `--play`.
+
+`RR_MORNING_BOOT_REPLAY` is the proposed job gate (default `0`). It is not registered in `jobs.py`. Speaker playback still needs Alexander's sign-off on the player (`RR_PLAYBACK` and `--play`).
+
+```text
+python3 scripts/replay.py arm
+python3 scripts/replay.py run --dry-run
+python3 scripts/replay.py disarm --reason operator
+```

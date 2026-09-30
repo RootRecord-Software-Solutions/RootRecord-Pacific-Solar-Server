@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>US states weather</title>
+  <style>
+    :root { color-scheme: dark; }
+    html, body { margin: 0; height: 100%; background: #070814; color: #e8e8ef; font-family: system-ui, sans-serif; }
+    body { display: grid; place-items: center; padding: 18px; box-sizing: border-box; }
+    .card {
+      width: min(420px, 100%);
+      background: rgba(8, 10, 28, .46);
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 16px;
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      box-shadow: 0 14px 44px rgba(0, 0, 0, .38);
+      padding: 16px 18px 14px;
+    }
+    h1 { margin: 0 0 6px; font-size: 12px; letter-spacing: 1.5px; font-weight: 700; text-transform: uppercase; }
+    p { margin: 0 0 12px; font-size: 12px; line-height: 1.45; color: #b9b9c6; }
+    ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    li { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; font-variant-numeric: tabular-nums; }
+    .name { color: #e8e8ef; }
+    .temp { color: #9d9dab; }
+    .empty { font-size: 13px; color: #9d9dab; }
+    .note { margin-top: 12px; font-size: 10.5px; color: #8b8b99; }
+  </style>
+</head>
+<body>
+  <section class="card" aria-labelledby="title">
+    <h1 id="title">US states</h1>
+    <p>Open-Meteo snapshot for state places. Numbers appear only from the dataset file.</p>
+    <div id="body" class="empty">No US weather snapshot yet.</div>
+    <p class="note">Staged for the one Vercel app. Not mounted while the website checkout is empty.</p>
+  </section>
+  <script>
+    (function () {
+      var body = document.getElementById("body");
+      fetch("us-last.json", { credentials: "omit" })
+        .then(function (res) { if (!res.ok) throw new Error("missing"); return res.json(); })
+        .then(function (data) {
+          var rows = (data && data.rows) || [];
+          var seen = {};
+          var items = [];
+          rows.forEach(function (row) {
+            if (!row || row.provider !== "open-meteo") return;
+            var key = (row.admin1_code || "") + "|" + (row.name || "");
+            if (seen[key]) return;
+            seen[key] = true;
+            var temp = typeof row.temp_c === "number" ? row.temp_c.toFixed(1) + "°C" : "—";
+            items.push(
+              "<li><span class=\"name\">" + text(row.admin1_code) + " · " + text(row.name) +
+              "</span><span class=\"temp\">" + text(temp) + "</span></li>"
+            );
+          });
+          if (!items.length) return;
+          body.className = "";
+          body.innerHTML = "<ul>" + items.join("") + "</ul>";
+        })
+        .catch(function () { /* empty state stays */ });
+      function text(value) {
+        return String(value == null ? "" : value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -4,8 +4,8 @@
  * No cron, no D1, no second site, no holding-page HTML.
  */
 
-import { isPrivatePath, isPublicRead, isPublicWrite, isReadMethod, normalisePath } from "./publicPaths";
-import { offlineJson, offlineText, proxyToOrigin } from "./proxy";
+import { isPrivatePath, isPublicRead, isPublicWrite, isReadMethod, normalisePath } from "./publicPaths.js";
+import { offlineJson, offlineText, proxyToOrigin } from "./proxy.js";
 
 export const DEFAULT_ORIGIN = "https://root-record-cloud.vercel.app";
 

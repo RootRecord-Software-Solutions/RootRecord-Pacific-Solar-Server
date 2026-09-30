@@ -41,7 +41,7 @@ Messaging bot tokens (Discord, Telegram, etc.): **local secrets only** — never
 | communications/telegram, discord, slack | Matching shells under this domain |
 | network-globe, local-data-globe | `network/` |
 | council-telegram | Policy + relay — one getUpdates only |
-| cloudflare-workers | Edge workers — separate from poller `cloudflared` binary |
+| cloudflare-workers | `Communications/Cloudflare-Workers/`. One local worker in front of the Vercel origin. Separate from the poller `cloudflared` binary. Route not attached. Deploy not signed off. |
 
 ---
 
@@ -51,6 +51,7 @@ Messaging bot tokens (Discord, Telegram, etc.): **local secrets only** — never
 Communications/
   network/cloudflare/{bin,config}/
   network/scripts/
+  Cloudflare-Workers/{scripts,config}/
   telegram/ discord/ email/ slack/
   github/{api,messaging,notifications,webhooks}/
 ```
