@@ -1,6 +1,6 @@
 # Communications
 
-Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messaging shells (discord, email, slack, telegram, github messaging).
+Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messaging (telegram live, Discord and Slack pollers gated off, email shell, github messaging).
 
 ---
 

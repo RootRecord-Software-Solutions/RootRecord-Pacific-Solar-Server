@@ -22,6 +22,7 @@ INF = DB / "Logs" / "AI" / "Inference"
 CUR = Path(os.environ.get("RR_INFER_LOG_FILE", str(INF / "inference_current.jsonl")))
 OUT_DIR = Path(os.environ.get("RR_AI_REPORT_OUT", str(DB.parent / "test-reports" / "AI-Processing")))
 OUT = OUT_DIR / "ai-processing-report_current.md"
+USAGE_SUMMARY = DB / "Reports" / "AI-Usage" / "last-summary.json"
 GEN_PREFIX = "Generated: "
 
 
@@ -66,6 +67,30 @@ def pct(vals: list[float], p: float):
 
 def fmt(v, unit=""):
     return "n/a" if v is None else f"{v:,}{unit}"
+
+
+def grok_spend_lines() -> list[str]:
+    """xAI rows from the local ledger summary. No network. Missing or empty -> no ledger rows."""
+    lines = ["", "## Grok spend", ""]
+    if not USAGE_SUMMARY.is_file():
+        lines.append("- no ledger rows")
+        return lines
+    try:
+        data = json.loads(USAGE_SUMMARY.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        lines.append("- no ledger rows")
+        return lines
+    detail = [d for d in (data.get("detail") or []) if str(d.get("provider", "")).lower() == "xai"]
+    if not detail:
+        lines.append("- no ledger rows")
+        return lines
+    calls = sum(int(d.get("calls") or 0) for d in detail)
+    tokens = sum(int(d.get("total_tokens") or 0) for d in detail)
+    cost = sum(float(d.get("cost_usd") or 0) for d in detail)
+    lines.append(f"- xAI calls: {calls}")
+    lines.append(f"- Tokens: {tokens:,}")
+    lines.append(f"- Estimated USD: {cost:.2f}")
+    return lines
 
 
 def build(rows: list[dict], bad: int, since: datetime, now: datetime, hours: float) -> str:
@@ -118,6 +143,7 @@ def build(rows: list[dict], bad: int, since: datetime, now: datetime, hours: flo
     if errors:
         L += ["", "## Errors", "", "| ts | caller | route | model | exit_code |", "|---|---|---|---|---|"]
         L += [f"| {r['ts']} | {r.get('caller', '')} | {r.get('route', '')} | {r.get('model', '')} | {r.get('exit_code')} |" for r in errors[-20:]]
+    L += grok_spend_lines()
     L += ["", "_Metadata only: prompt/reply lengths, never text._", ""]
     return "\n".join(L)
 

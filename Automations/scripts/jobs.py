@@ -604,6 +604,19 @@ EVERY_HOUR = [
         "env": {},
     },
     {
+        # Grok spend summary (2026-09-30, WO-MIG-37). OFF unless RR_AI_USAGE=1 at poller start.
+        # Local ledger only. Does not call xAI. Does not enable ai_processing_report_hourly.
+        "id": "ai_usage_report",
+        "enabled": os.environ.get("RR_AI_USAGE", "0") == "1",
+        "description": "Write Database Reports/AI-Usage/last-summary.json from the local token ledger. No network.",
+        "only_at_hours": [],
+        "builtin": "",
+        "command": f'nice -n 10 python3 "{PACIFIC}/Reports/AI-Usage/scripts/ai_usage_report.py"',
+        "timeout_sec": 60,
+        "cwd": f"{PACIFIC}/Reports/AI-Usage/scripts",
+        "env": {},
+    },
+    {
         "id": "automations_log_hourly_archive",
         "enabled": True,
         "description": "Cut and archive automations_current.log hourly into Database/Logs/Automations/Archive.",
