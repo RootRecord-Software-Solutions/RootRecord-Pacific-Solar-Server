@@ -53,6 +53,14 @@
     if (hawaii) points.push({ lat: hawaii.lat, lng: hawaii.lng, type: "hawaii", label: "Hawaiʻi" });
     if (mainland) points.push({ lat: mainland.lat, lng: mainland.lng, type: "mainland", label: "Mainland Server" });
 
+    var vercel = { lat: 37.7749, lng: -122.4194 };
+    points.push({
+      lat: vercel.lat,
+      lng: vercel.lng,
+      type: "vercel",
+      label: "Vercel · Transmitter / Receiver"
+    });
+
     (d.points || []).forEach(function (p) {
       if (!p || (p.type !== "dest" && p.type !== "remote")) return;
       var pos = finitePair(p.lat, p.lng);
@@ -88,6 +96,31 @@
         label: label
       });
     });
+
+    if (mainland) {
+      arcs.push({
+        startLat: mainland.lat,
+        startLng: mainland.lng,
+        endLat: vercel.lat,
+        endLng: vercel.lng,
+        color: "#7dd3fc",
+        altitude: 0.18,
+        stroke: 1.2,
+        label: "Vercel · Transmitter / Receiver"
+      });
+    }
+    if (hawaii) {
+      arcs.push({
+        startLat: hawaii.lat,
+        startLng: hawaii.lng,
+        endLat: vercel.lat,
+        endLng: vercel.lng,
+        color: "#22c55e",
+        altitude: 0.2,
+        stroke: 1.1,
+        label: "Vercel · Transmitter / Receiver"
+      });
+    }
 
     return { points: points, arcs: arcs };
   }
@@ -130,10 +163,14 @@
         .pointColor(function (d) {
           if (d.type === "hawaii") return "#ffffff";
           if (d.type === "mainland") return "#7dd3fc";
+          if (d.type === "vercel") return "#ffffff";
           return "#ff6b9d";
         })
         .pointAltitude(function (d) { return d.type === "endpoint" ? 0.012 : 0.02; })
-        .pointRadius(function (d) { return d.type === "endpoint" ? 0.18 : 0.42; })
+        .pointRadius(function (d) {
+          if (d.type === "vercel") return 0.48;
+          return d.type === "endpoint" ? 0.18 : 0.42;
+        })
         .pointLabel(function (d) { return d.label || ""; })
         .pointsMerge(false);
 
