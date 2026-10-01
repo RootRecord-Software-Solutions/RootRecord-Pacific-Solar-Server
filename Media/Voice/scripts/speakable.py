@@ -392,9 +392,9 @@ def _expand_units(text: str) -> str:  # info: def _expand_units
     out = re.sub(r"(?<=\d)\s*nm\b", " nautical miles", out)  # info: set out
     out = re.sub(r"\bNWS\b", "National Weather Service", out)  # info: set out
     out = _expand_states(out)  # info: set out
-    out = re.sub(r"\bU\. ?S\. ?G\. ?S\.?\b", "United States Geological Survey", out)  # info: set out
+    out = re.sub(r"\bU\. ?S\. ?G\. ?S\.?", "United States Geological Survey", out)  # info: set out
     out = re.sub(r"\bUSGS\b", "United States Geological Survey", out)  # info: set out
-    out = re.sub(r"\bU\. ?S\.?\b", "United States", out)  # info: set out
+    out = re.sub(r"\bU\. ?S\.", "United States", out)  # info: set out
     out = re.sub(r"\bHST\b", "Hawaiian Standard Time", out)  # info: set out
     out = re.sub(r"\bHI alerts\b", "Hawaii alerts", out)  # info: set out
     out = re.sub(r"(?i)\bH(?:\.|\s)*I\.?\b", "Hawaii", out)  # info: set out
