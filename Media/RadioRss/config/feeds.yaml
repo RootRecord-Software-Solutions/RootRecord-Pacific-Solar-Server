@@ -1097,11 +1097,12 @@ feeds:
     category: markets
     type: rss
     url: https://www.bls.gov/feed/bls_latest.rss
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
     directory: https://www.bls.gov/feed/bls_latest.rss
+    note: "The station client received HTTP 403 on 2026-10-01. Left off until that fetch succeeds."
 
   - id: bea_news
     name: Bureau of Economic Analysis
@@ -1139,17 +1140,29 @@ feeds:
     origin: external
     directory: https://www.cftc.gov/RSS/RSSGP/rssgp.xml
 
-  - id: marketwatch_pulse
-    name: MarketWatch Market Pulse
+  - id: marketwatch_top
+    name: MarketWatch Top Stories
     provider: MarketWatch
     category: markets
     type: rss
-    url: https://feeds.marketwatch.com/marketwatch/marketpulse/
+    url: https://feeds.marketwatch.com/marketwatch/topstories/
     enabled: true
     priority: high
     native_overlap: false
     origin: external
     directory: https://www.marketwatch.com/
+
+  - id: bbc_business
+    name: BBC Business
+    provider: BBC
+    category: markets
+    type: rss
+    url: https://feeds.bbci.co.uk/news/business/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.bbc.com/news/business
 
   - id: cnbc_markets
     name: CNBC Markets
@@ -1157,11 +1170,12 @@ feeds:
     category: markets
     type: rss
     url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15839069"
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
     directory: https://www.cnbc.com/markets/
+    note: "The station robots check disallowed this URL on 2026-10-01."
 
   - id: dod_news
     name: Department of War News
@@ -1238,40 +1252,56 @@ feeds:
     note: "spacex.com returned HTML on 2026-10-01 and did not expose an RSS or Atom link. Tag feeds from Space.com, SpaceNews, and Spaceflight Now cover the desk."
 
   - id: spacecom_spacex
-    name: Space.com SpaceX
+    name: Space.com
     provider: Space.com
     category: spacex
     type: rss
     url: https://www.space.com/feeds/tag/spacex
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
     directory: https://www.space.com/news/spacex
+    note: "The tag feed returned an empty channel on 2026-10-01. NASASpaceflight, SpaceNews, and Spaceflight Now cover SpaceX items."
+
+  - id: nasaspaceflight
+    name: NASASpaceflight
+    provider: NASASpaceflight
+    category: spacex
+    type: rss
+    url: https://www.nasaspaceflight.com/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    require_patterns: ["spacex", "starship", "falcon 9", "falcon heavy"]
+    origin: external
+    directory: https://www.nasaspaceflight.com/
 
   - id: spacenews_spacex
-    name: SpaceNews SpaceX
+    name: SpaceNews
     provider: SpaceNews
     category: spacex
     type: rss
-    url: https://spacenews.com/tag/spacex/feed/
+    url: https://spacenews.com/feed/
     enabled: true
     priority: high
     native_overlap: false
+    require_patterns: ["spacex", "starship", "falcon 9", "falcon heavy"]
     origin: external
-    directory: https://spacenews.com/tag/spacex/
+    directory: https://spacenews.com/
 
   - id: spaceflightnow_spacex
-    name: Spaceflight Now SpaceX
+    name: Spaceflight Now
     provider: Spaceflight Now
     category: spacex
     type: rss
-    url: https://spaceflightnow.com/category/spacex/feed/
+    url: https://spaceflightnow.com/feed/
     enabled: true
     priority: high
     native_overlap: false
+    require_patterns: ["spacex", "starship", "falcon 9", "falcon heavy"]
     origin: external
-    directory: https://spaceflightnow.com/category/spacex/
+    directory: https://spaceflightnow.com/
 
   - id: hawaii_governor
     name: Hawaii Governor

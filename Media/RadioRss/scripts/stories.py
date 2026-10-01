@@ -102,6 +102,19 @@ def violent(feed: dict, item: dict, registry: dict) -> bool:  # info: def violen
 
 
 # ====================================================
+# SECTION: function _required
+# What it does: Keep an item when the feed lists required phrases. A feed with no list keeps every item.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _required(feed: dict, item: dict) -> bool:  # info: def _required
+    patterns = feed.get("require_patterns") or []  # info: set patterns
+    if not patterns:  # info: if not patterns :
+        return True  # info: return True
+    text = f"{item.get('title') or ''} {item.get('summary') or ''}"  # info: set text
+    return _hit(text, patterns)  # info: return _hit ( text , patterns )
+
+
+# ====================================================
 # SECTION: function normalize
 # What it does: Turn one feed item into the story object. An empty title is invalid.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -115,6 +128,8 @@ def normalize(feed: dict, item: dict, registry: dict) -> dict | None:  # info: d
     if not url and not guid:  # info: if not url and not guid :
         return None  # info: return None
     if blocked(feed, item, registry) or violent(feed, item, registry):  # info: if blocked ( feed , item , registry ) or violent ( feed , item , registry ) :
+        return None  # info: return None
+    if not _required(feed, item):  # info: if not _required ( feed , item ) :
         return None  # info: return None
     category = classify(feed, item, registry)  # info: set category
     summary = plain(item.get("summary"), 1200)  # info: set summary

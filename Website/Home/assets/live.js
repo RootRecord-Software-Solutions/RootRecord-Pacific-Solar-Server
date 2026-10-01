@@ -164,6 +164,25 @@
     return { name: name, value: value, text: textValue, at: at };
   }
 
+  // Continuous port ratings. Bar length is watts divided by that unit's rating.
+  // River 2 Pro: 220 W solar, 800 W AC. Delta 2: 500 W solar, 1800 W AC.
+  var RATED = {
+    river: { solar: 220, ac: 800 },
+    delta: { solar: 500, ac: 1800 }
+  };
+
+  function ratedWatts(value, max) {
+    var shown = T.watts(value);
+    if (!shown || !Number.isFinite(max)) return shown;
+    return shown.replace(" W", " / " + max + " W");
+  }
+
+  function ratedBar(name, value, at, max) {
+    var item = bar(name, value, ratedWatts(value, max), at);
+    if (item && Number.isFinite(max) && max > 0) item.max = max;
+    return item;
+  }
+
   function paintCharts(r) {
     if (!window.RRCharts) return;
     window.RRCharts.bars(document.getElementById("chart-soc"), {
@@ -181,8 +200,8 @@
       question: "What solar input is each system reporting right now?",
       empty: "No public signal",
       bars: [
-        r.river ? bar("River", r.river.solar, T.watts(r.river.solar), r.river.at) : null,
-        r.delta ? bar("Delta", r.delta.solar, T.watts(r.delta.solar), r.delta.at) : null
+        r.river ? ratedBar("River", r.river.solar, r.river.at, RATED.river.solar) : null,
+        r.delta ? ratedBar("Delta", r.delta.solar, r.delta.at, RATED.delta.solar) : null
       ].filter(Boolean)
     });
     window.RRCharts.bars(document.getElementById("chart-output"), {
@@ -190,8 +209,8 @@
       question: "What AC output is each system reporting right now?",
       empty: "No public signal",
       bars: [
-        r.river ? bar("River", r.river.acOut, T.watts(r.river.acOut), r.river.at) : null,
-        r.delta ? bar("Delta", r.delta.acOut, T.watts(r.delta.acOut), r.delta.at) : null
+        r.river ? ratedBar("River", r.river.acOut, r.river.at, RATED.river.ac) : null,
+        r.delta ? ratedBar("Delta", r.delta.acOut, r.delta.at, RATED.delta.ac) : null
       ].filter(Boolean)
     });
   }

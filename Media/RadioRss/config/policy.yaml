@@ -40,6 +40,8 @@ overlap_patterns:
 
 # Item text that moves a story into another configured category.
 category_rules:
+  - category: spacex
+    patterns: ["spacex", "starship", "falcon 9", "falcon heavy"]
   - category: maritime
     patterns: ["coast guard", "maritime", "vessel", "shipping", "ship collision", "marine casualty", "imo "]
   - category: aviation
@@ -190,7 +192,7 @@ programs:
 news_update:
   report: news_update
   target_words: 750
-  desk_words: 150
+  desk_words: 170
   fresh_hours: 18
   backfill_hours: 36
   roster: [ava, bruce, carly]
@@ -245,6 +247,8 @@ publishers:
   SEC: "the Securities and Exchange Commission"
   CFTC: "the Commodity Futures Trading Commission"
   MarketWatch: "MarketWatch"
+  BBC: "the BBC"
+  NASASpaceflight: "NASASpaceflight"
   CNBC: "CNBC"
   "USNI News": "U.S. Naval Institute News"
   "Breaking Defense": "Breaking Defense"

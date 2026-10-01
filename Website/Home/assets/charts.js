@@ -85,15 +85,22 @@
       return;
     }
     clear(node);
-    var max = spec.max;
-    items.forEach(function (b) {
-      if (!Number.isFinite(max) || b.value > max) max = b.value;
-    });
+    // A caller-supplied ceiling stays fixed so one live reading cannot
+    // stretch every bar to full. Without one, the tallest reading is the ceiling.
+    var fixedMax = Number.isFinite(spec.max) && spec.max > 0 ? spec.max : null;
+    var max = fixedMax;
+    if (max === null) {
+      items.forEach(function (b) {
+        if (!Number.isFinite(max) || b.value > max) max = b.value;
+      });
+    }
     if (!Number.isFinite(max) || max <= 0) max = 1;
 
     var svgNs = "http://www.w3.org/2000/svg";
     var rowH = 28;
     var height = items.length * rowH + 8;
+    var trackX = 64;
+    var trackW = 132;
     var svg = document.createElementNS(svgNs, "svg");
     svg.setAttribute("viewBox", "0 0 320 " + height);
     svg.setAttribute("class", "chart-svg");
@@ -102,26 +109,32 @@
     title.textContent = spec.label || "Chart";
     svg.appendChild(title);
     var desc = document.createElementNS(svgNs, "desc");
+    var scaleNote = fixedMax ? " Full bar is " + fixedMax + "." : "";
     desc.textContent = items.map(function (b) {
-      return b.name + " " + (b.text || b.value);
-    }).join(". ");
+      var line = b.name + " " + (b.text || b.value);
+      if (!fixedMax && Number.isFinite(b.max) && b.max > 0) line += " of " + b.max;
+      return line;
+    }).join(". ") + scaleNote;
     svg.appendChild(desc);
 
     items.forEach(function (b, i) {
       var y = 8 + i * rowH;
-      var w = Math.max(0, Math.min(168, (b.value / max) * 168));
+      var ceiling = Number.isFinite(b.max) && b.max > 0 ? b.max : max;
+      var w = Math.max(0, Math.min(trackW, (b.value / ceiling) * trackW));
       var track = document.createElementNS(svgNs, "rect");
-      track.setAttribute("x", "108");
+      track.setAttribute("x", String(trackX));
       track.setAttribute("y", String(y));
-      track.setAttribute("width", "168");
+      track.setAttribute("width", String(trackW));
       track.setAttribute("height", "10");
+      track.setAttribute("rx", "2");
       track.setAttribute("class", "bar-track");
       svg.appendChild(track);
       var bar = document.createElementNS(svgNs, "rect");
-      bar.setAttribute("x", "108");
+      bar.setAttribute("x", String(trackX));
       bar.setAttribute("y", String(y));
       bar.setAttribute("width", String(w));
       bar.setAttribute("height", "10");
+      bar.setAttribute("rx", "2");
       bar.setAttribute("class", "bar-fill");
       svg.appendChild(bar);
       var name = document.createElementNS(svgNs, "text");
@@ -131,7 +144,7 @@
       name.textContent = b.name;
       svg.appendChild(name);
       var value = document.createElementNS(svgNs, "text");
-      value.setAttribute("x", "284");
+      value.setAttribute("x", "316");
       value.setAttribute("y", String(y + 9));
       value.setAttribute("class", "bar-value");
       value.textContent = b.text || String(b.value);

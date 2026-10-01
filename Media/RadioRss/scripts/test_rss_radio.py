@@ -246,6 +246,9 @@ def test_news_update() -> None:  # info: def test_news_update
     calm = {"title": "Harbor ferry schedule", "summary": "The state published a new timetable.", "url": "https://news.test/ferry", "guid": "ferry", "published_at": "2026-10-01T18:00:00Z"}  # info: set calm
     assert violent(hawaii, crime, registry) is True  # info: assert violent ( hawaii , crime , registry ) is True
     assert normalize(hawaii, crime, registry) is None  # info: assert normalize ( hawaii , crime , registry ) is None
+    gated = {"id": "sx", "category": "spacex", "provider": "Spaceflight Now", "name": "Spaceflight Now", "priority": "high", "require_patterns": ["spacex", "starship"]}  # info: set gated
+    assert normalize(gated, {"title": "Canada rocket test", "summary": "An engine site.", "url": "https://news.test/rocket", "guid": "rocket"}, registry) is None  # info: assert normalize ( gated , { "title" : "Canada rocket test" , "summary" : "An engine site." , "url" : "https://news.test/rocket" , "guid" : "rocket" } , registry ) is None
+    assert normalize(gated, {"title": "Starship test", "summary": "A flight.", "url": "https://news.test/star", "guid": "star"}, registry) is not None  # info: assert normalize ( gated , { "title" : "Starship test" , "summary" : "A flight." , "url" : "https://news.test/star" , "guid" : "star" } , registry ) is not None
     kept = normalize(hawaii, calm, registry)  # info: set kept
     assert kept is not None and kept["category"] == "hawaii"  # info: assert kept is not None and kept [ "category" ] == "hawaii"
     long = "The agency published a market note. " * 40  # info: set long

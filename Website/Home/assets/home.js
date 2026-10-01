@@ -345,7 +345,7 @@
       .pathDashGap(function (d) { return d.kind === "forecast" ? 0.14 : 0; })
       .pathDashAnimateTime(0)
       .pathLabel(trackLabel)
-      .pathsTransitionDuration(0)
+      .pathTransitionDuration(0)
       .polygonGeoJsonGeometry(function (d) { return d.geometry; })
       .polygonAltitude(0.003)
       .polygonCapColor(zoneFill)

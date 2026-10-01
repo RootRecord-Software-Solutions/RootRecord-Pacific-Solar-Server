@@ -1779,12 +1779,23 @@ body.broadcast #globe {
 .b-card { padding: 14px 16px; }
 
 .b-k {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
   margin: 0 0 8px;
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: #8ba3b8;
   font-weight: 600;
+}
+
+.b-scale {
+  flex: none;
+  letter-spacing: 0.08em;
+  font-weight: 650;
+  color: #9fb3c4;
 }
 
 .b-rings {
@@ -1890,6 +1901,14 @@ body.broadcast .chart { margin-top: 0; }
 body.broadcast .empty-note {
   margin: 0;
   color: #8ba3b8;
+}
+
+body.broadcast .bar-track { fill: rgba(255, 255, 255, 0.16); }
+
+body.broadcast .bar-name,
+body.broadcast .bar-value {
+  font-size: 12px;
+  font-weight: 650;
 }
 
 body.broadcast #chart-soc .bar-fill { fill: #00e5ff; }
