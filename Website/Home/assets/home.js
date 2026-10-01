@@ -23,7 +23,6 @@
       .arcLabel(function (d) { return d.label || "Connection"; })
       .pointColor(function (d) {
         if (d.type === "hawaii") return "#ffffff";
-        if (d.type === "mainland") return "#38bdf8";
         return "#ff6b9d";
       })
       .pointAltitude(function (d) { return d.type === "endpoint" ? 0.01 : 0.02; })
@@ -92,19 +91,10 @@
   function draw(d) {
     if (!globe || !d) return;
     var points = [];
-    var mainland = null;
     (d.points || []).forEach(function (p) {
       var pub = publicPoint(p);
-      if (pub) {
-        points.push(pub);
-        return;
-      }
-      var pos = p && finitePair(p.lat, p.lng);
-      if (!mainland && pos) {
-        mainland = { lat: pos.lat, lng: pos.lng, type: "mainland", label: "Mainland Server" };
-      }
+      if (pub) points.push(pub);
     });
-    if (mainland) points.push(mainland);
     var arcs = [];
     (d.arcs || []).forEach(function (a) {
       var arc = publicArc(a);
