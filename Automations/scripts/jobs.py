@@ -582,6 +582,46 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
         "cwd": f"{PACIFIC}/System/scripts",  # info: "cwd" : f" { PACIFIC } /System/scripts "
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
+    {  # info: {
+        # Public radio and origin checks. OFF unless RR_PUBLIC_HEALTH=1. Writes a file. Does not start port 8787.
+        # Ava posts the down list only when RR_PUBLIC_HEALTH_SEND=1. That flag stays off here.
+        "id": "public_health",  # info: "id" : "public_health" ,
+        "enabled": os.environ.get("RR_PUBLIC_HEALTH", "0") == "1",  # info: "enabled" : os . environ . get ( "RR_PUBLIC_HEALTH" , "0" ) == "1" ,
+        "description": "Check origin radio and 127.0.0.1:8787. Writes a status file. Does not start the origin. Send stays off unless RR_PUBLIC_HEALTH_SEND=1.",  # info: "description" : "Check origin radio and 127.0.0.1:8787. Writes a status file. Does not start the origin. Send stays off unless RR_PUBLIC_HEALTH_SEND=1." ,
+        "interval_sec": 300,  # info: "interval_sec" : 300 ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Communications/PublicHealth/scripts/public_health.py"',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Communications/PublicHealth/scripts/public_health.py" ' ,
+        "timeout_sec": 40,  # info: "timeout_sec" : 40 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{PACIFIC}/Communications/PublicHealth",  # info: "cwd" : f" { PACIFIC } /Communications/PublicHealth " ,
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
+    {  # info: {
+        # Count queued Kilauea drafts. OFF unless RR_KILAUEA_DRAFT_ANNOUNCE=1. Does not publish. Send stays off unless RR_KILAUEA_DRAFT_SEND=1.
+        "id": "kilauea_draft_count",  # info: "id" : "kilauea_draft_count" ,
+        "enabled": os.environ.get("RR_KILAUEA_DRAFT_ANNOUNCE", "0") == "1",  # info: "enabled" : os . environ . get ( "RR_KILAUEA_DRAFT_ANNOUNCE" , "0" ) == "1" ,
+        "description": "Count queued Kilauea public drafts and write the sentence. Does not publish. Send stays off unless RR_KILAUEA_DRAFT_SEND=1.",  # info: "description" : "Count queued Kilauea public drafts and write the sentence. Does not publish. Send stays off unless RR_KILAUEA_DRAFT_SEND=1." ,
+        "interval_sec": 3600,  # info: "interval_sec" : 3600 ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Geology/PublicDraftQueue/scripts/announce_count.py"',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Geology/PublicDraftQueue/scripts/announce_count.py" ' ,
+        "timeout_sec": 30,  # info: "timeout_sec" : 30 ,
+        "needs_internet": False,  # info: "needs_internet" : False ,
+        "cwd": f"{PACIFIC}/Geology/PublicDraftQueue",  # info: "cwd" : f" { PACIFIC } /Geology/PublicDraftQueue " ,
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
+    {  # info: {
+        # One notes.jsonl line becomes a work-order draft. OFF unless RR_NOTE_DRAFT=1. Does not build.
+        "id": "note_work_draft",  # info: "id" : "note_work_draft" ,
+        "enabled": os.environ.get("RR_NOTE_DRAFT", "0") == "1",  # info: "enabled" : os . environ . get ( "RR_NOTE_DRAFT" , "0" ) == "1" ,
+        "description": "Turn one voice-report note into a Library work-order draft. Gated off. Does not call development.execute_work_order.",  # info: "description" : "Turn one voice-report note into a Library work-order draft. Gated off. Does not call development.execute_work_order." ,
+        "interval_sec": 300,  # info: "interval_sec" : 300 ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/note_draft.py"',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/note_draft.py" ' ,
+        "timeout_sec": 30,  # info: "timeout_sec" : 30 ,
+        "needs_internet": False,  # info: "needs_internet" : False ,
+        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd" : f" { PACIFIC } /Media/Voice/scripts " ,
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
     # --- TEMPLATE (EVERY_SECONDS) — copy from the next line through the closing brace, paste ABOVE this template, remove the leading # ---
     # {
     #     "id": "example_every_seconds",
@@ -1099,6 +1139,19 @@ ON_AT = [  # info: set ON_AT
         "timeout_sec": 180,  # info: "timeout_sec" : 180 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
         "cwd": f"{PACIFIC}/System/ApiPrices",  # info: "cwd" : f" { PACIFIC } /System/ApiPrices "
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
+    {  # info: {
+        # Report-board catch-up. OFF unless RR_REPORT_BOARD=1. Text only. Never plays audio.
+        "id": "reports_board_catchup",  # info: "id" : "reports_board_catchup" ,
+        "enabled": os.environ.get("RR_REPORT_BOARD", "0") == "1",  # info: "enabled" : os . environ . get ( "RR_REPORT_BOARD" , "0" ) == "1" ,
+        "description": "Run one due morning or midday report from the board. Text only. No --voice and no speaker playback.",  # info: "description" : "Run one due morning or midday report from the board. Text only. No --voice and no speaker playback." ,
+        "at_times": ["14:00"],  # info: "at_times" : [ "14:00" ] ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Reports/scripts/report_board.py" run-due',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Reports/scripts/report_board.py" run-due ' ,
+        "timeout_sec": 900,  # info: "timeout_sec" : 900 ,
+        "needs_internet": False,  # info: "needs_internet" : False ,
+        "cwd": f"{PACIFIC}/Reports",  # info: "cwd" : f" { PACIFIC } /Reports " ,
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
     # --- TEMPLATE (ON_AT) — copy from the next line through the closing brace, paste ABOVE this template, remove the leading # ---

@@ -69,6 +69,30 @@ def not_up(rows: list[dict]) -> list[str]:  # info: def not_up
 
 
 # ====================================================
+# SECTION: function maybe_send
+# What it does: Ava posts the down list only when RR_PUBLIC_HEALTH_SEND=1. Default returns without a request.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def maybe_send(text: str) -> dict:  # info: def maybe_send
+    if not send_enabled() or not text.strip():  # info: if not send_enabled ( ) or not text . strip ( ) :
+        return {"ok": True, "sent": False, "detail": "send gate off"}  # info: return { "ok" : True , "sent" : False , "detail" : "send gate off" }
+    import sys  # info: import sys
+    voice = Path(__file__).resolve().parents[3] / "Media" / "Voice" / "scripts"  # info: set voice
+    if str(voice) not in sys.path:  # info: if str ( voice ) not in sys . path :
+        sys.path.insert(0, str(voice))  # info: sys . path . insert ( 0 , str ( voice ) )
+    import voice_deliver  # info: import voice_deliver
+    cfg = voice_deliver.load_kv(voice_deliver.RELAY)  # info: set cfg
+    voice_deliver.load_secrets(cfg)  # info: call voice_deliver . load_secrets
+    token = (os.environ.get("TELEGRAM_AVA_TOKEN") or "").strip()  # info: set token
+    chat = voice_deliver.chat_id(cfg)  # info: set chat
+    if not token or not chat:  # info: if not token or not chat :
+        return {"ok": False, "sent": False, "detail": "missing token or chat"}  # info: return { "ok" : False , "sent" : False , "detail" : "missing token or chat" }
+    body = json.dumps({"chat_id": chat, "text": text[:3500], "disable_web_page_preview": True}).encode()  # info: set body
+    result = voice_deliver.post(token, "sendMessage", body, "application/json")  # info: set result
+    return {"ok": bool(result.get("ok")), "sent": bool(result.get("ok")), "detail": "sendMessage"}  # info: return { "ok" : bool ( result . get ( "ok" ) ) , "sent" : bool ( result . get ( "ok" ) ) , "detail" : "sendMessage" }
+
+
+# ====================================================
 # SECTION: function main
 # What it does: Write the status file. Send stays off unless the send flag is on.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -86,10 +110,11 @@ def main() -> int:  # info: def main
         "not_fully_up": down,  # info: "not_fully_up" : down ,
         "sent": False,  # info: "sent" : False ,
     }  # info: }
-    if send_enabled() and down:  # info: if send_enabled ( ) and down :
-        payload["would_say"] = "Not fully up: " + ", ".join(down)  # info: payload [ "would_say" ] = "Not fully up: " + ", " . join ( down )
-        payload["sent"] = False  # info: payload [ "sent" ] = False
-        payload["detail"] = "send flag on but this checker does not post; Ava posts from the file"  # info: payload [ "detail" ] = "send flag on but this checker does not post; Ava posts from the file"
+    if down:  # info: if down :
+        said = "Not fully up: " + ", ".join(down)  # info: set said
+        payload["would_say"] = said  # info: payload [ "would_say" ] = said
+        delivery = maybe_send(said)  # info: set delivery
+        payload["sent"] = bool(delivery.get("sent"))  # info: payload [ "sent" ] = bool ( delivery . get ( "sent" ) )
     OUT.parent.mkdir(parents=True, exist_ok=True)  # info: OUT . parent . mkdir ( parents = True , exist_ok = True )
     tmp = OUT.with_suffix(".json.tmp")  # info: set tmp
     tmp.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")  # info: tmp . write_text ( json . dumps ( payload , indent = 2 ) + "\n" , encoding = "utf-8" )

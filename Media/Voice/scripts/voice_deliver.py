@@ -52,7 +52,7 @@ TITLES = {  # info: set TITLES
     "official_weather": "Official weather",  # info: "official_weather" : "Official weather" ,
     "boot_brief": "Boot brief",  # info: "boot_brief" : "Boot brief" ,
 }  # info: }
-NOTES = "Reply to this with notes if the report should be better."  # info: set NOTES
+NOTE_CAPTION = "Reply to this with notes if the report should be better."  # info: set NOTE_CAPTION
 
 # ====================================================
 # SECTION: function deliver_enabled
@@ -296,7 +296,7 @@ def deliver(report: str, wav: str | Path, spoken: str, kind: str, report_text: s
     title = TITLES.get(report, report.replace("_", " "))  # info: set title
     plan = posts_for(dest_name())  # info: set plan
     body, boundary = form_body(  # info: body , boundary = form_body
-        {"chat_id": chat, "caption": f"{title}\n{NOTES}"[:1024]},  # info: { "chat_id" : chat , "caption" : f" { title } \n { NOTES } " [ : 1024 ] }
+        {"chat_id": chat, "caption": f"{title}\n{NOTE_CAPTION}"[:1024]},  # info: { "chat_id" : chat , "caption" : f" { title } \n { NOTE_CAPTION } " [ : 1024 ] }
         "voice",  # info: "voice"
         f"{report}.ogg",  # info: f" { report } .ogg "
         ogg.read_bytes(),  # info: ogg . read_bytes ( )

@@ -210,6 +210,82 @@
         "blocked_by": "RR_VOICE_BANDWIDTH",
         "enable_condition": "RR_VOICE_BANDWIDTH=1 and RR_NET_SAMPLES=1 at poller start. Delivery also needs RR_VOICE_DELIVER=1"
       }
+    },
+    {
+      "program_id": "reports_board_catchup",
+      "name": "Report board catch-up",
+      "entrypoint": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Reports/scripts/report_board.py",
+      "owner_job": "reports_board_catchup",
+      "agent_launchable": false,
+      "agents_allowed": [],
+      "requires_confirmation": false,
+      "inputs": ["Reports board state"],
+      "outputs": ["text report markdown"],
+      "side_effects": ["writes_report_board"],
+      "why_not": {
+        "status": "gated",
+        "kind": "gated",
+        "reason": "Catch-up is a poller job. Text only. It never plays audio. Agents do not run it.",
+        "blocked_by": "RR_REPORT_BOARD",
+        "enable_condition": "RR_REPORT_BOARD=1 at poller start. The command is run-due without --voice"
+      }
+    },
+    {
+      "program_id": "public_health",
+      "name": "Public radio and origin check",
+      "entrypoint": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Communications/PublicHealth/scripts/public_health.py",
+      "owner_job": "public_health",
+      "agent_launchable": false,
+      "agents_allowed": [],
+      "requires_confirmation": true,
+      "inputs": ["origin.avaivy.cloud/radio", "127.0.0.1:8787"],
+      "outputs": ["Communications/PublicHealth/latest.json"],
+      "side_effects": ["http_get", "writes_status_file"],
+      "why_not": {
+        "status": "gated",
+        "kind": "gated",
+        "reason": "Writes a status file. Does not start port 8787. Ava posts only when the send flag is on. Agents do not run it.",
+        "blocked_by": "RR_PUBLIC_HEALTH",
+        "enable_condition": "RR_PUBLIC_HEALTH=1 at poller start. Posting also needs RR_PUBLIC_HEALTH_SEND=1"
+      }
+    },
+    {
+      "program_id": "kilauea_draft_count",
+      "name": "Kilauea draft count",
+      "entrypoint": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Geology/PublicDraftQueue/scripts/announce_count.py",
+      "owner_job": "kilauea_draft_count",
+      "agent_launchable": false,
+      "agents_allowed": [],
+      "requires_confirmation": true,
+      "inputs": ["Geology/PublicDraftQueue/queue"],
+      "outputs": ["Geology/PublicDraftQueue/announce-last.json"],
+      "side_effects": ["writes_count_file"],
+      "why_not": {
+        "status": "gated",
+        "kind": "gated",
+        "reason": "Counts queued drafts. Does not publish them. Send stays off unless its own flag is on. Agents do not run it.",
+        "blocked_by": "RR_KILAUEA_DRAFT_ANNOUNCE",
+        "enable_condition": "RR_KILAUEA_DRAFT_ANNOUNCE=1 at poller start. Posting also needs RR_KILAUEA_DRAFT_SEND=1"
+      }
+    },
+    {
+      "program_id": "note_work_draft",
+      "name": "Note to work-order draft",
+      "entrypoint": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Media/Voice/scripts/note_draft.py",
+      "owner_job": "note_work_draft",
+      "agent_launchable": false,
+      "agents_allowed": [],
+      "requires_confirmation": true,
+      "inputs": ["Communications/VoiceDeliver/notes.jsonl"],
+      "outputs": ["Library Work-Orders/drafts markdown"],
+      "side_effects": ["writes_work_order_draft"],
+      "why_not": {
+        "status": "gated",
+        "kind": "gated",
+        "reason": "Ships off. Writes one draft. Does not call development.execute_work_order. Agents do not run it.",
+        "blocked_by": "RR_NOTE_DRAFT",
+        "enable_condition": "RR_NOTE_DRAFT=1 at poller start"
+      }
     }
   ]
 }
