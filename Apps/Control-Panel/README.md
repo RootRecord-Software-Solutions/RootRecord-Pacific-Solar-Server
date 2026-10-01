@@ -115,7 +115,7 @@ The values come from `Conky/conky_readout.py` (the same read-only readers, every
 
 `rr_control_panel.py` · `rr_pages.py` · `rr_ui.py` · `Lib/rr_sources.py` · `Lib/rr_settings.py` · `Lib/rr_registry.py` · `Lib/rr_config_io.py` · `Lib/rr_running.py` · `Lib/rr_netstat.py` · `Lib/rr_ssh.py` · `Lib/rr_migration.json` · `rr_aws_page.py` · `Lib/rr_aws_fallback.py` · `Lib/rr_aws_fallback.json` · `Starlink/starlink_status.py` (+ gitignored `Starlink/.venv`, py3.12 + `starlink-grpc-core`) · `settings.json` · `Conky/` · `Packaging/` · `Tests/run-check.sh` · `Tests/test_settings_io.py`
 
-Settings saves back up to `/home/rootrecord/Database/GITHUB/control-panel-settings-backups/` (0600 for secret files). Secrets are never displayed, logged or screenshotted (the `--screenshot` mode checks every PNG first).
+Settings saves back up to `2 - RootRecord-Database/Github/control-panel-settings-backups/` (0600 for secret files). Secrets are never displayed, logged or screenshotted (the `--screenshot` mode checks every PNG first).
 
 Docs: Library `Documentation/00-architecture/Control-Panel-GTK.md` · test records `Documentation/07-testing/2026-09-29-control-panel-gtk.md`, `Documentation/07-testing/2026-09-29-root-monitor-settings-running-network-ssh.md`.
 

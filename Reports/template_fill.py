@@ -17,7 +17,7 @@
 # Validator: Reports/template_validate.py — structural mismatch => output rejected (<name>_rejected.md).
 # Job: jobs.py id template_reports_daily, OFF unless RR_TEMPLATE_REPORTS=1 at poller start.
 # HOW TO ADD a template: add a render_<key>() + TEMPLATES row (file, output name, vocab rules, free-text keys).
-# Created 2026-09-29 HST (g3-template-reports). Bak: /home/rootrecord/Database/GITHUB/
+# Created 2026-09-29 HST (g3-template-reports). Bak snapshots: 2 - RootRecord-Database/Archive/Github-desk-backups/
 # ==============================================================================
 from __future__ import annotations  # info: from __future__ import annotations
 

@@ -17,7 +17,7 @@ RootRecord automation orchestration: poller engine, job catalog, stack lifecycle
 | Weather | **PASS** — `weather_poller` enabled; run + reports verified 2026-09-29 01:50/01:59 HST |
 | Ollama | **System service** — separate service-owned model store; operational logs are in journald |
 
-**Policy:** No old desk as poller host. Domain folders use existing capitalized names only. **Do not recreate `Logs/` under Pacific** — persistent logs belong to `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/`. GitHub sync flags and backups stay under `/home/rootrecord/Database/GITHUB`, outside the auto-synced tree.
+**Policy:** No old desk as poller host. Domain folders use existing capitalized names only. **Do not recreate `Logs/` under Pacific** — persistent logs belong to `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/`. GitHub sync flags and backups stay under `2 - RootRecord-Database/Github`. Mirror worktrees stay in `Github-worktrees/` at the ecosystem root. Nothing writes to `/home/rootrecord/Database`.
 
 ---
 

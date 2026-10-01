@@ -28,7 +28,7 @@ from urllib.parse import urlparse  # info: from urllib . parse import urlparse
 SECRET_TOKENS = {"TOKEN", "TOKENS", "KEY", "KEYS", "SECRET", "SECRETS", "PASS", "PASSWORD", "PASSWD", "PAT", "WEBHOOK",  # info: set SECRET_TOKENS
                  "WEBHOOKS", "AUTH", "COOKIE", "COOKIES", "APIKEY", "CREDENTIAL", "CREDENTIALS", "PRIVATE", "ACCESS"}  # info: "WEBHOOKS" , "AUTH" , "COOKIE" , "COOKIES" ,
 SECRET_SUFFIXES = ("TOKEN", "SECRET", "PASSWORD", "APIKEY", "WEBHOOK", "COOKIE")  # info: set SECRET_SUFFIXES
-BACKUP_ROOT = Path(os.environ.get("RR_CP_BACKUP_ROOT", "/home/rootrecord/Database/GITHUB/control-panel-settings-backups"))  # info: set BACKUP_ROOT
+BACKUP_ROOT = Path(os.environ.get("RR_CP_BACKUP_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Github/control-panel-settings-backups"))  # info: set BACKUP_ROOT
 
 
 # ====================================================

@@ -7,7 +7,7 @@
 # Always takes single-flight lock. Never parallel ollama run.
 # DESK_LIVE_FILE: if set and readable, measured lines are attached for cite-only.
 # Missing/unreadable file → [desk: none] — never invent watts/SOC/kWh.
-# Bak: /home/rootrecord/Database/GITHUB/
+# Bak snapshots live under 2 - RootRecord-Database/Archive/Github-desk-backups/
 # ==============================================================================
 set -euo pipefail  # info: set
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  # info: set HERE

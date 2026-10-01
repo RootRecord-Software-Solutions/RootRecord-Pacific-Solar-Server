@@ -17,7 +17,7 @@
 # Gate: run-infer.sh hook LANDED 2026-09-29 ~04:56, OFF unless RR_SPECIALIST_ROUTING=1 — see Library
 #      Documentation/00-architecture/AI-Specialist-Models-and-Routing.md. Fail-safe: errors -> generic, exit 0.
 # HOW TO ADD a specialist: see the "_info" block in the config and the Library doc.
-# Created 2026-09-29 HST (g3-specialists). Bak: /home/rootrecord/Database/GITHUB/
+# Created 2026-09-29 HST (g3-specialists). Bak snapshots: 2 - RootRecord-Database/Archive/Github-desk-backups/
 # ==============================================================================
 from __future__ import annotations  # info: from __future__ import annotations
 

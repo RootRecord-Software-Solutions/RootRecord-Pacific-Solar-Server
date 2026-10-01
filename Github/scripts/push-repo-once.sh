@@ -3,7 +3,7 @@
 # push-repo-once.sh  — one check-stage-commit-push for a repos.conf id
 # Usage: push-repo-once.sh <id>
 # Size guard: skip files > MAX_FILE_MB (default 90). Token from master-key.env.
-# Baks/logs: /home/rootrecord/Database/GITHUB/
+# Baks/logs: 2 - RootRecord-Database/Github/  Worktrees: Github-worktrees/ (umbrella root)
 #
 # When GitHub merges into the live Pacific (or legacy skills) tree, arm +
 # schedule a deferred full poller stack reload via Pacific Automations.
@@ -160,7 +160,7 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do  # info:
   if [[ "$mode" == "inplace" ]]; then  # info: if
     root="$local_path"  # info: set root
   else  # info: else
-    root="$BAK_ROOT/worktrees/$id"  # info: set root
+    root="$WORKTREE_ROOT/$id"  # info: set root
     if [[ ! -d "$root/.git" ]]; then  # info: if
       bash "$GITHUB_SCRIPTS/setup-remote.sh" "$id" || exit 1  # info: bash
     fi  # info: fi

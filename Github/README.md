@@ -13,7 +13,7 @@ GitHub repository catalog and automated push/pull for the Pacific desk.
 | Catalog | `Github/scripts/repos.conf` (tab-separated) |
 | jobs.py | `github_setup_remotes` + `github_sync_all` → Pacific paths |
 | Evidence | Poller publishes ecosystem inplace, plus pacific, database, and library from mirror worktrees. The live folders stay inside the umbrella and do not have their own .git. |
-| Logs / bak | `/home/rootrecord/Database/GITHUB/` |
+| Logs / bak | `2 - RootRecord-Database/Github/` (flags, logs). Worktrees: `Github-worktrees/` at the ecosystem root |
 | Token | `/home/rootrecord/master/master-key.env` (`GITHUB_TOKEN`) — never commit |
 
 ### Catalog rows
@@ -21,9 +21,9 @@ GitHub repository catalog and automated push/pull for the Pacific desk.
 | id | enabled | mode | notes |
 | --- | --- | --- | --- |
 | ecosystem | 1 | inplace | `/home/rootrecord/RootRecord-Ecosystem` → `RootRecord-Software-Solutions/RootRecord-Ecosystem`. Does not auto-commit paths in `ecosystem-skip-autocommit.txt` (live telemetry, databases, logs, worklogs). A pull reloads the poller only when Pacific runtime code changes. |
-| pacific | 1 | mirror | Live folder inside the ecosystem tree. Published to `RootRecord-Pacific-Solar-Server` from `Database/GITHUB/worktrees/pacific`. |
-| database | 1 | mirror | Live folder inside the ecosystem tree. Published to `RootRecord-Database` from `Database/GITHUB/worktrees/database`. |
-| library | 1 | mirror | Live folder inside the ecosystem tree. Published to `RootRecord-Library` from `Database/GITHUB/worktrees/library`. |
+| pacific | 1 | mirror | Live folder inside the ecosystem tree. Published to `RootRecord-Pacific-Solar-Server` from `Github-worktrees/pacific`. |
+| database | 1 | mirror | Live folder inside the ecosystem tree. Published to `RootRecord-Database` from `Github-worktrees/database`. |
+| library | 1 | mirror | Live folder inside the ecosystem tree. Published to `RootRecord-Library` from `Github-worktrees/library`. |
 | skills | 1 | inplace | `~/.ollama/skills` → legacy Solar-Pacific remote. Still enabled, inplace. Desk sync has moved past restore commit `1dcee66` (HEAD `87ec9ac`, 2026-09-30 01:50 HST) |
 | website | 0 | mirror | Disabled. Still points at `~/.ollama/skills/website/site`. Leave it off |
 | mainland | 0 | inplace | Disabled. Still points at `~/.ollama/skills/us-mainland-server`. Leave it off |

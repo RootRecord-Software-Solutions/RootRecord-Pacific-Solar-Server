@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ============================================================================
-# github/scripts/bak-new.sh — ensure Database/GITHUB bak tree exists
+# github/scripts/bak-new.sh — ensure Database/Github bak tree exists
 # ----------------------------------------------------------------------------
-# WHAT: mkdir flags/worktrees/logs under BAK_ROOT
+# WHAT: mkdir flags/logs under BAK_ROOT and the worktree root beside the umbrella
 # Layout style (standing): keep this header.
 # ============================================================================
 set -euo pipefail  # info: set

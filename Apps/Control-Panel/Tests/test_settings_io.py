@@ -32,7 +32,7 @@ sys.path.insert(0, str(HERE / "Lib"))  # info: sys . path . insert ( 0 ,
 import rr_config_io as cio  # noqa: E402
 import rr_registry as R  # noqa: E402
 
-TMP_PARENT = Path("/home/rootrecord/Database/GITHUB/cps-work")  # info: set TMP_PARENT
+TMP_PARENT = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Github/cps-work")  # info: set TMP_PARENT
 results: list[tuple[str, str, str]] = []  # info: set results
 
 

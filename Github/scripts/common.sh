@@ -10,9 +10,12 @@
 # SECTION: PATHS
 # ====================================================
 DATABASE_ROOT="${DATABASE_ROOT:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database}"  # info: set DATABASE_ROOT
-# BAK_ROOT (flags/worktrees/logs/backups) stays OUTSIDE the auto-synced Database git tree;
-# must match Automations/scripts/stack/{do,schedule}-stack-reload.sh defaults. (2026-09-29 WO-SRV)
-BAK_ROOT="${BAK_ROOT:-/home/rootrecord/Database/GITHUB}"  # info: set BAK_ROOT
+# Flags, sync logs, and one-shot backups live in Database/Github (Title case).
+# Worktrees stay outside Database, Pacific, and Library: mirror rsync copies each
+# live folder into its worktree, and a worktree inside that folder loops.
+# BAK_ROOT must match Automations/scripts/stack/{do,schedule}-stack-reload.sh.
+BAK_ROOT="${BAK_ROOT:-$DATABASE_ROOT/Github}"  # info: set BAK_ROOT
+WORKTREE_ROOT="${WORKTREE_ROOT:-/home/rootrecord/RootRecord-Ecosystem/Github-worktrees}"  # info: set WORKTREE_ROOT
 INTAKE_ROOT="${INTAKE_ROOT:-$DATABASE_ROOT/Intake}"  # info: set INTAKE_ROOT
 ENV_FILE="${ENV_FILE:-/home/rootrecord/master/master-key.env}"  # info: set ENV_FILE
 GITHUB_SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  # info: set GITHUB_SCRIPTS
@@ -24,7 +27,7 @@ MAX_FILE_MB="${MAX_FILE_MB:-90}"  # info: set MAX_FILE_MB
 # ====================================================
 
 ensure_bak_root() {  # info: ensure_bak_root
-  mkdir -p "$BAK_ROOT" "$BAK_ROOT/worktrees" "$BAK_ROOT/logs" "$BAK_ROOT/flags" "$INTAKE_ROOT"  # info: mkdir
+  mkdir -p "$BAK_ROOT" "$BAK_ROOT/logs" "$BAK_ROOT/flags" "$WORKTREE_ROOT" "$INTAKE_ROOT"  # info: mkdir
 }  # info: command
 
 # ====================================================

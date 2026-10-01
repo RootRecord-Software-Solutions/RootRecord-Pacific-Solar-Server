@@ -8,7 +8,7 @@
 #     body, JSONL line (ts/latency/mem normalised) and the Ollama model must be BYTE-IDENTICAL to the reference.
 #  2. Flag ON: routed/forced/generic/explicit-model cases; checks system message, temperature, max_tokens, Ollama model and
 #     the JSONL "specialist" / "route_confidence" fields.   Exit 0 = all pass.
-# Created 2026-09-29 HST (g3-specialists hook pass). Bak: /home/rootrecord/Database/GITHUB/
+# Created 2026-09-29 HST (g3-specialists hook pass). Bak snapshots: 2 - RootRecord-Database/Archive/Github-desk-backups/
 # ==============================================================================
 set -u  # info: set
 REF="${1:?reference run-infer.sh}"  # info: set REF

@@ -27,7 +27,7 @@ line="$(awk -F '\t' -v want="$ID" '$1 == want { print; exit }' "$REPOS_CONF" || 
 IFS=$'\t' read -r id enabled mode local_path slug remote_name <<<"$line"  # info: set IFS
 
 if [[ "$mode" == "mirror" ]]; then  # info: if
-  work="$BAK_ROOT/worktrees/$id"  # info: set work
+  work="$WORKTREE_ROOT/$id"  # info: set work
   if [[ ! -d "$work/.git" ]]; then  # info: if
     rm -rf "$work"  # info: rm
     echo "[clone] $id → $work"  # info: echo

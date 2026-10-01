@@ -6,7 +6,7 @@
 # Voices ava|bruce|carly map to *-telegram Ollama models on fallback.
 # RR_SPECIALIST_ROUTING=1 (default OFF): route voices to rr-* specialists; RR_SPECIALIST=<rr-name> (or TARGET=rr-*) forces one.
 # HOW TO ADD: wrap new callers with single-flight; never stack gens; refuse busy.
-# Bak: /home/rootrecord/Database/GITHUB/
+# Bak snapshots live under 2 - RootRecord-Database/Archive/Github-desk-backups/
 # ==============================================================================
 # FLM NPU (/v1/chat/completions) first. RR_NPU_ONLY=1 stays on the NPU. Otherwise Ollama is the fallback. Never abort the host.
 set -u  # info: set
