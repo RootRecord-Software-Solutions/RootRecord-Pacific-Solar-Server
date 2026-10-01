@@ -511,13 +511,26 @@ def b_energy_report(t: datetime):  # info: def b_energy_report
     return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
+_KM_ABOUT = re.compile(r"^(\d+(?:\.\d+)?)\s+km\b")  # info: set _KM_ABOUT
+
+
+# ====================================================
+# SECTION: function _about_km
+# What it does: Insert "about" before a leading USGS kilometer distance so the magnitude and the distance do not run together.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _about_km(place) -> str:  # info: def _about_km
+    """Insert "about" before a leading USGS kilometer distance so the magnitude and the distance do not run together."""  # info: """Insert "about" before a leading USGS kilometer distance so the magnitude and the distance do not run together.""
+    return _KM_ABOUT.sub(r"about \1 km", str(place or "").strip(), count=1)  # info: return _KM_ABOUT . sub
+
+
 # ====================================================
 # SECTION: function b_earthquake_report
-# What it does: G1 earthquake-hourly build_spoken + report lines, fed from Database Geology/ instead of a live USGS call.
+# What it does: G1 earthquake-hourly build_spoken + report lines, fed from Database Geology/ instead of a live USGS call. Places with a kilometer distance say "about" first.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def b_earthquake_report(t: datetime):  # info: def b_earthquake_report
-    """G1 earthquake-hourly build_spoken + report lines, fed from Database Geology/ instead of a live USGS call."""  # info: """G1 earthquake-hourly build_spoken + report lines, fed from Database Geology/ instead of a live USGS call.""
+    """G1 earthquake-hourly build_spoken + report lines, fed from Database Geology/ instead of a live USGS call. Places with a kilometer distance say "about" first."""  # info: """G1 earthquake-hourly build_spoken + report lines, fed from Database Geology/ instead of a live USGS call. Places with a kilometer distance say "about" first.""
     q = quake_facts(t)  # info: set q
     hi, gl = q.get("hawaii"), q.get("global")  # info: hi , gl = q . get (
     md = [f"# Earthquake report — {t.isoformat()}", ""]
@@ -534,7 +547,7 @@ def b_earthquake_report(t: datetime):  # info: def b_earthquake_report
         sp.append("Local earthquake data is not on file.")  # info: sp . append ( "Local earthquake data is not on file." )
     elif fresh_hi:  # info: elif fresh_hi :
         sp.append(f"{len(fresh_hi)} new local earthquake{'s' if len(fresh_hi) != 1 else ''}.")  # info: sp . append ( f" { len (
-        sp += [f"Magnitude {e.get('mag')} {e.get('place')}." for e in fresh_hi[:_MAX_HI]]  # info: set sp
+        sp += [f"Magnitude {e.get('mag')}, {_about_km(e.get('place'))}." for e in fresh_hi[:_MAX_HI]]  # info: set sp
     else:  # info: else :
         sp.append("No new local earthquakes since the last report.")  # info: sp . append ( "No new local earthquakes since the last report." )
     if hi is not None:  # info: if hi is not None :
@@ -543,7 +556,7 @@ def b_earthquake_report(t: datetime):  # info: def b_earthquake_report
         sp.append("Global earthquake data is not on file.")  # info: sp . append ( "Global earthquake data is not on file." )
     elif fresh_gl:  # info: elif fresh_gl :
         sp.append(f"{len(fresh_gl)} new global earthquake{'s' if len(fresh_gl) != 1 else ''}.")  # info: sp . append ( f" { len (
-        sp += [f"Magnitude {e.get('mag')} {e.get('place')}." for e in fresh_gl[:_MAX_GLOBAL]]  # info: set sp
+        sp += [f"Magnitude {e.get('mag')}, {_about_km(e.get('place'))}." for e in fresh_gl[:_MAX_GLOBAL]]  # info: set sp
     else:  # info: else :
         sp.append("No new global earthquakes since the last report.")  # info: sp . append ( "No new global earthquakes since the last report." )
     if gl is not None:  # info: if gl is not None :
