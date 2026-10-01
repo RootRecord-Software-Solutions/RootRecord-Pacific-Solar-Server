@@ -162,8 +162,9 @@ SPEAK_ENGLISH: dict[str, str] = {  # info: set SPEAK_ENGLISH
     "Hilo": "hee loh",  # info: "Hilo" : "hee loh" ,
     "Pāhala": "pah hah lah",  # info: "Pāhala" : "pah hah lah" ,
     "Pāhoa": "pah hoh ah",  # info: "Pāhoa" : "pah hoh ah" ,
-    "Kailua-Kona": "kye loo ah koh nah",  # info: "Kailua-Kona" : "kye loo ah koh nah" ,
-    "Kona": "koh nah",  # info: "Kona" : "koh nah" ,
+    # "kye loo ah koh nah" was five stressed beats, and "nah" came out as the cat vowel.
+    "Kailua-Kona": "Kailua Kona",  # info: "Kailua-Kona" : "Kailua Kona" ,
+    "Kona": "Kona",  # info: "Kona" : "Kona" ,
     "Waikoloa": "wye koh low ah",  # info: "Waikoloa" : "wye koh low ah" ,
     "Honokaʻa": "hoh noh kah ah",  # info: "Honokaʻa" : "hoh noh kah ah" ,
     "Waimea": "wye may ah",  # info: "Waimea" : "wye may ah" ,
@@ -191,7 +192,8 @@ SPEAK_ENGLISH: dict[str, str] = {  # info: set SPEAK_ENGLISH
     "Hāmākua": "hah mah koo ah",  # info: "Hāmākua" : "hah mah koo ah" ,
     "Honolulu": "hoh noh loo loo",  # info: "Honolulu" : "hoh noh loo loo" ,
     "Waikīkī": "wye kee kee",  # info: "Waikīkī" : "wye kee kee" ,
-    "Kailua": "kye loo ah",  # info: "Kailua" : "kye loo ah" ,
+    # Same name as in Kailua-Kona. Spaced "kye loo ah" was three stressed beats.
+    "Kailua": "Kailua",  # info: "Kailua" : "Kailua" ,
     "Kāneʻohe": "kah neh oh heh",  # info: "Kāneʻohe" : "kah neh oh heh" ,
     "Pearl City": "Pearl City",  # info: "Pearl City" : "Pearl City" ,
     "Waipahu": "wye pah hoo",  # info: "Waipahu" : "wye pah hoo" ,

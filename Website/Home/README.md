@@ -25,7 +25,7 @@ Production is [https://www.rootrecord.cloud/](https://www.rootrecord.cloud/).
 | `/operations` | Public operations readings, including River and Delta charge, solar, and AC charts when the feed has them |
 | `/infrastructure` | Hawaiʻi, the Root Record Network, and the Mainland Server |
 
-Navigation is Home, Products, Services, Solutions, About, Security, and Status. Deeper pages stay available from status, reports, and the technology notes.
+Navigation is Home, Products, Services, Solutions, About, Security, and Status. Deeper pages stay available from status, reports, and the technology notes. Page footers link to Terms, Privacy, and Data deletion.
 
 ## Reports
 
