@@ -12,7 +12,7 @@ Desk runtime for the Stripe snapshot, Vercel failed-build records, and live-data
 | `jobs.py` | `stripe_poll` every 1800 s behind `RR_STRIPE=1`. `vercel_builds` every 300 s behind `RR_VERCEL_BUILDS=1`. Both **gated off** |
 | Data | `2 - RootRecord-Database/Website/` — `stripe-snapshot.json`, `pages/{power,weather,kilauea}.json` |
 | Logs | `2 - RootRecord-Database/Logs/Website/` — failed-build JSON only. Empty until a token exists. No prune |
-| Public pages | Remote Vercel app only (`/data`, `/data/power`, `/data/weather`, `/data/kilauea`). Glass cards. They read Database `Website/pages/*.json`. On a host without those files they say the snapshot is not mounted. Not deployed. Desk folder `3 - RootRecord-Website/` was removed 2026-09-30. Do not start it again |
+| Public pages | Vercel static home at `Website/Home/`. The globe is the page background. Panels close. Globe arcs come from `https://www.rootrecord.cloud/api/state`. Last-known operation status comes from `https://www.rootrecord.cloud/api/operations`. That operations route is in the mainland server source and is not deployed, so the panel reads No data until AWS is serving the file. |
 | Holding skin | Unchanged copy in `5 - RootRecord-Library/Archive/Website-Themes/holding/`. Out of the Vercel build |
 
 ### Scripts

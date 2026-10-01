@@ -179,12 +179,29 @@ def build_all() -> dict[str, Any]:  # info: def build_all
 def write_all() -> list[Path]:  # info: def write_all
     OUT.mkdir(parents=True, exist_ok=True)  # info: OUT . mkdir ( parents = True ,
     written: list[Path] = []  # info: set written
-    for name, page in build_all().items():  # info: for name , page in build_all ( )
+    pages = build_all()  # info: set pages
+    for name, page in pages.items():  # info: for name , page in pages . items
         path = OUT / f"{name}.json"  # info: set path
         tmp = path.with_suffix(".json.tmp")  # info: set tmp
         tmp.write_text(json.dumps(page, indent=2), encoding="utf-8")  # info: tmp . write_text ( json . dumps (
         tmp.replace(path)  # info: tmp . replace ( path )
         written.append(path)  # info: written . append ( path )
+    relay = OUT.parent / "operations.json"  # info: set relay
+    weather = dict(pages["weather"])  # info: set weather
+    report = weather.get("report")  # info: set report
+    if isinstance(report, dict):  # info: if isinstance ( report , dict ) :
+        weather["report"] = {k: v for k, v in report.items() if k != "file"}  # info: weather [ "report" ] = { k : v for k , v in report . items
+    bundle = {  # info: set bundle
+        "ok": True,  # info: "ok" : True ,
+        "as_of": _now_line(),  # info: "as_of" : _now_line ( ) ,
+        "power": pages["power"],  # info: "power" : pages [ "power" ] ,
+        "weather": weather,  # info: "weather" : weather ,
+        "kilauea": pages["kilauea"],  # info: "kilauea" : pages [ "kilauea" ] ,
+    }  # info: }
+    tmp = relay.with_suffix(".json.tmp")  # info: set tmp
+    tmp.write_text(json.dumps(bundle, indent=2), encoding="utf-8")  # info: tmp . write_text ( json . dumps (
+    tmp.replace(relay)  # info: tmp . replace ( relay )
+    written.append(relay)  # info: written . append ( relay )
     return written  # info: return written
 
 
