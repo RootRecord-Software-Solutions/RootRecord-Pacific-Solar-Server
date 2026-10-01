@@ -700,12 +700,72 @@ def run_job(job: dict) -> None:  # info: def run_job
 
 
 # ====================================================
+# SECTION: function _job_on
+# What it does: True when the override file, or else the jobs.py flag, says this job should run. Fail open to the jobs.py flag.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _job_on(job: dict) -> bool:  # info: def _job_on
+    if actl is None:  # info: if actl is None
+        return bool(job.get("enabled"))  # info: return bool ( job . get ( "enabled" ) )
+    try:  # info: try
+        return actl.job_enabled(job)  # info: return actl . job_enabled ( job )
+    except Exception:  # info: except Exception
+        return bool(job.get("enabled"))  # info: return bool ( job . get ( "enabled" ) )
+
+
+# ====================================================
 # SECTION: function enabled_jobs
-# What it does: enabled jobs.
+# What it does: Jobs that should run. The override file wins over the jobs.py flag.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def enabled_jobs(section: list) -> list:  # info: def enabled_jobs
-    return [j for j in section if isinstance(j, dict) and j.get("enabled")]  # info: return [ j for j in section if
+    return [j for j in section if isinstance(j, dict) and _job_on(j)]  # info: return [ j for j in section if isinstance
+
+
+# ====================================================
+# SECTION: function _scheduled_jobs
+# What it does: The four repeating lists, filtered by the current override file.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _scheduled_jobs() -> tuple:  # info: def _scheduled_jobs
+    return (  # info: return (
+        enabled_jobs(getattr(jobmod, "EVERY_SECONDS", [])),  # info: enabled_jobs ( getattr ( jobmod , "EVERY_SECONDS" , [ ] ) ) ,
+        enabled_jobs(getattr(jobmod, "EVERY_MINUTE", [])),  # info: enabled_jobs ( getattr ( jobmod , "EVERY_MINUTE" , [ ] ) ) ,
+        enabled_jobs(getattr(jobmod, "EVERY_HOUR", [])),  # info: enabled_jobs ( getattr ( jobmod , "EVERY_HOUR" , [ ] ) ) ,
+        enabled_jobs(getattr(jobmod, "ON_AT", [])),  # info: enabled_jobs ( getattr ( jobmod , "ON_AT" , [ ] ) ) ,
+    )  # info: )
+
+
+# ====================================================
+# SECTION: function _kick_power
+# What it does: Start due EcoFlow power schedules on a side thread. Skips when one is already running. Does not restart the poller.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _kick_power(step: datetime) -> None:  # info: def _kick_power
+    if actl is None or _stop.is_set():  # info: if actl is None or _stop . is_set ( )
+        return  # info: return
+    try:  # info: try
+        doc = actl.load_power()  # info: set doc
+        items = [it for it in (doc.get("items") or []) if isinstance(it, dict)]  # info: set items
+        master = bool(doc.get("master_enabled", True))  # info: set master
+        if not any(actl.item_due(it, step, master) for it in items):  # info: if not any ( actl . item_due ( it , step , master ) for it in items )
+            return  # info: return
+    except Exception as exc:  # info: except Exception as exc
+        log(f"{full_timestamp()}power schedules ERROR {exc}")  # info: call log
+        return  # info: return
+    if not _power_busy.acquire(blocking=False):  # info: if not _power_busy . acquire ( blocking = False )
+        log(f"{full_timestamp()}power schedules still running")  # info: call log
+        return  # info: return
+
+    def work():  # info: def work
+        try:  # info: try
+            actl.run_due(step, log=lambda msg: log(f"{full_timestamp()}{msg}"))  # info: actl . run_due ( step , log = lambda msg : log
+        except Exception as exc:  # info: except Exception as exc
+            log(f"{full_timestamp()}power schedules ERROR {exc}")  # info: call log
+        finally:  # info: finally
+            _power_busy.release()  # info: _power_busy . release ( )
+
+    threading.Thread(target=work, name="power-automations", daemon=True).start()  # info: threading . Thread ( target = work , name = "power-automations" , daemon = True ) . start ( )
 
 
 # ====================================================
@@ -747,14 +807,11 @@ def crossed_slots(prev: datetime, now: datetime, cap: int = 60) -> list[datetime
 
 # ====================================================
 # SECTION: function scheduler_loop
-# What it does: scheduler loop. A job that runs across a minute still fires the jobs for each minute it crossed.
+# What it does: scheduler loop. Reloads job overrides when that file changes, and starts due power schedules. A job that runs across a minute still fires the jobs for each minute it crossed.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def scheduler_loop() -> None:  # info: def scheduler_loop
-    sec_jobs = enabled_jobs(getattr(jobmod, "EVERY_SECONDS", []))  # info: set sec_jobs
-    min_jobs = enabled_jobs(getattr(jobmod, "EVERY_MINUTE", []))  # info: set min_jobs
-    hour_jobs = enabled_jobs(getattr(jobmod, "EVERY_HOUR", []))  # info: set hour_jobs
-    at_jobs = enabled_jobs(getattr(jobmod, "ON_AT", []))  # info: set at_jobs
+    sec_jobs, min_jobs, hour_jobs, at_jobs = _scheduled_jobs()  # info: sec_jobs , min_jobs , hour_jobs , at_jobs = _scheduled_jobs ( )
     next_due: dict[str, float] = {}  # info: set next_due
     now = time.monotonic()  # info: set now
     for j in sec_jobs:  # info: for j in sec_jobs :
@@ -764,7 +821,16 @@ def scheduler_loop() -> None:  # info: def scheduler_loop
     last_slot: datetime | None = None  # info: set last_slot
     fired_at: set[str] = set()  # info: set fired_at
     log(f"{full_timestamp()}scheduler  every_seconds={len(sec_jobs)}  every_minute={len(min_jobs)}  every_hour={len(hour_jobs)}  on_at={len(at_jobs)}")  # info: call log
+    ov_stamp = actl.overrides_mtime() if actl is not None else None  # info: set ov_stamp
+    _kick_power(datetime.now().astimezone())  # info: call _kick_power
     while not _stop.is_set():  # info: while not _stop . is_set ( ) :
+        if actl is not None:  # info: if actl is not None
+            stamp = actl.overrides_mtime()  # info: set stamp
+            if stamp != ov_stamp:  # info: if stamp != ov_stamp
+                ov_stamp = stamp  # info: set ov_stamp
+                sec_jobs, min_jobs, hour_jobs, at_jobs = _scheduled_jobs()  # info: sec_jobs , min_jobs , hour_jobs , at_jobs = _scheduled_jobs ( )
+                for j in sec_jobs:  # info: for j in sec_jobs
+                    next_due.setdefault(j["id"], time.monotonic())  # info: next_due . setdefault ( j [ "id" ] , time . monotonic ( ) )
         wall = datetime.now().astimezone()  # info: set wall
         mono = time.monotonic()  # info: set mono
         for j in sec_jobs:  # info: for j in sec_jobs :
@@ -783,6 +849,7 @@ def scheduler_loop() -> None:  # info: def scheduler_loop
             last_minute, last_hour, last_slot = minute, hour, slot  # info: last_minute , last_hour , last_slot = minute , hour , slot
         elif slot != last_slot:  # info: elif slot != last_slot :
             for step in crossed_slots(last_slot, slot):  # info: for step in crossed_slots ( last_slot , slot )
+                _kick_power(step)  # info: call _kick_power
                 hm_step = f"{step.hour:02d}:{step.minute:02d}"  # info: set hm_step
                 for j in min_jobs:  # info: for j in min_jobs :
                     only = j.get("only_at_minutes") or []  # info: set only

@@ -18,7 +18,8 @@ INFO — MUST HAVE (future agents), added 2026-09-29:
   Before each PNG is saved, every string in the window is checked against the known secret values; a match
   skips that PNG (secret guard).
 - Renamed "Root Monitor" 2026-09-29 (file paths + APP_ID unchanged so the existing launcher keeps working).
-  New pages (rr_pages.py): Running, Network (+ Starlink), SSH, Not migrated, and the Settings hub
+  New pages (rr_pages.py): Running, Network (+ Starlink), SSH, Not migrated, and the Settings hub.
+  Automations (rr_automations_page.py): toggle every poller job, and schedule EcoFlow action scripts at a clock time.
   (Lib/rr_registry.py + Lib/rr_config_io.py). Every page does nothing unless it is visible.
 - 2026-09-29 16:10 HST: NO switches. Every on/off control is a labelled Gtk.ToggleButton ("Camera viewer: Off" /
   "On", green = on, red outline = off) from rr_ui.state_toggle. The camera viewer button sits at the top of the
