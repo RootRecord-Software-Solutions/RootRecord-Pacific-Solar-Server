@@ -68,19 +68,19 @@ Merged JSON the page already builds, `GET /api/state` on the globe process (toda
 
 ### Still open / unresolved
 
-- Public web redirects are on (2026-09-30). Apex and `www` 301 to `https://rootrecord.online/`. The globe tunnel ingress for `www` is still in the AWS config, and HTTP no longer uses it. `ssh.rootrecord.cloud` and `rootserver.rootrecord.cloud` were not redirected.
-- There is no second hostname for globe JSON. `https://www.rootrecord.cloud/api/state` now 301s to the Vercel host and is not a data URL.
-- `https://rootrecord.online/` has Vercel DNS and returns `DEPLOYMENT_NOT_FOUND`. The GitHub repository is not connected to a deployment.
-- Cloudflare worker in `Website/Cloudflare-Workers/` is not deployed. Its origin default is `https://root-record-cloud.vercel.app`. It does not allow `/api/state`.
+- Page hosts are the one Vercel site (`Website/Site/config/routes.yml`). `ssh.rootrecord.cloud`, `rootserver.rootrecord.cloud`, and `play.rootmc.net` stay. The AWS globe tunnel no longer lists `www`.
+- Last-known status is `https://api.rootrecord.cloud` (`/api/status`, `/api/operations`, `/api/state`). That host is not a page. DNS for it still has to be attached to the AWS tunnel.
+- `https://rootrecord.online/` has Vercel DNS and returns `DEPLOYMENT_NOT_FOUND` until the GitHub repository is connected.
+- Cloudflare worker in `Website/Cloudflare-Workers/` is not deployed. Its origin default is `https://root-record-cloud.vercel.app`.
 
 ### Explicitly historical (do not treat as current)
 
-- AWS as the public homepage, and the globe HTML on `www`, are the current accident of DNS. They are not the target.
+- AWS as the public homepage, and the globe HTML on `www`, are not the target.
 - The 60 MB `hawaii.ndjson` and `:8787` are the old append feed.
-- Docs that say `www` stays on the globe, or that the Home card links to `rootrecord.cloud/home`, describe the previous plan.
+- A signup link to `https://rootrecord.info/login` sends people through a page host. That host is the Vercel site.
 
 ### Next recommended action
 
-- Ship the Vercel homepage on its own deployment until that host returns 200.
-- Point the apex and `www` at that deployment. Remove the `www.rootrecord.cloud` → `:8090` tunnel rule after the new host answers.
-- For the live globe, add a data fetch that is not the homepage. The inputs are the two ndjson files above, or a future data-only URL that returns the `/api/state` object. Do not iframe `www` while it still points at AWS.
+- Connect the `RootRecord-Website` repository to the Vercel project for `rootrecord.online` until that host returns 200.
+- Attach `api.rootrecord.cloud` to the AWS tunnel ingress for `127.0.0.1:8091` and start `status-api/rr-status-api.service`.
+- Hawaii already writes `status-current.json`. AWS `fetch-pacific.sh` keeps the last good copy when a pull fails.

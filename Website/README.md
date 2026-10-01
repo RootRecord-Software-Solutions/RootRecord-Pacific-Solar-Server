@@ -7,8 +7,8 @@ Desk runtime for Stripe snapshots, Vercel failed-build records, and last-known o
 | Public page | [Home/](Home/) — globe background, closable services and operations panels |
 | GitHub / Vercel | Org `RootRecord-Software-Solutions/RootRecord-Website` (row `website`, Vercel) and personal `rootrecordsoftwaresolutions/RootRecord-Website` (row `website-personal`). Both pull and push from `Github/scripts/repos.conf` |
 | Data contract | [HANDOFF-vercel-homepage-2026-09-30.md](HANDOFF-vercel-homepage-2026-09-30.md). Two replaced ndjson files, or a future data-only URL with the same `/api/state` object |
-| Public redirect | `https://rootrecord.cloud/` and `https://www.rootrecord.cloud/` 301 to `https://rootrecord.online/`. `ssh.rootrecord.cloud` and `rootserver.rootrecord.cloud` stay |
-| Last-known file | `2 - RootRecord-Database/Website/operations.json` |
+| Public pages | Every page host in `Website/Site/config/routes.yml` is the one Vercel site. `https://api.rootrecord.cloud` is the AWS last-known status API. `play.rootmc.net`, `ssh.rootrecord.cloud`, and `rootserver.rootrecord.cloud` stay |
+| Last-known file | `2 - RootRecord-Database/Website/operations.json` and the Hawaii snapshot `Communications/network/local-data-globe/rebroadcast/status-current.json` |
 
 `3 - RootRecord-Website/` is not on this desk. Do not recreate it. Do not bind port 3001. `https://rootserver.rootrecord.cloud/` is the poller on `127.0.0.1:8799`, not this page.
 
@@ -37,7 +37,7 @@ Chat, voice packs, day board, Minecraft, and context are not built here.
 
 `Website/Home/` is the public page and the Vercel repository. `Website/.env.example` lists Vercel env names only. Do not clone `RootRecord-Cloud` into this tree. Do not run a local `next` server. Do not bind port 3001.
 
-`Website/Site/` is the local route manifest and on-demand checker. It does not publish the page. `www.rootrecord.cloud` is still the AWS globe until domains move to Vercel. No job.
+`Website/Site/` is the local route manifest and on-demand checker. It does not publish the page. Page hosts are the one Vercel site. `api.rootrecord.cloud` is the AWS status API. No job.
 
 `Website/Cloudflare-Workers/` is an undeployed worker. Its origin variable still names the deleted `root-record-cloud.vercel.app` project. No route is attached. It is not the live poller tunnel. That tunnel is `Communications/network/cloudflare/` (`rootserver.rootrecord.cloud` → `127.0.0.1:8799`).
 

@@ -528,6 +528,19 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
     {  # info: {
+        # Public last-known status. Local files only. AWS pulls status-current.json.
+        "id": "status_snapshot",  # info: "id" : "status_snapshot" ,
+        "enabled": True,  # info: "enabled" : True ,
+        "description": "Write the public last-known status snapshot Hawaii sends to AWS.",  # info: "description" : "Write the public last-known status snapshot Hawaii sends to AWS." ,
+        "interval_sec": 60,  # info: "interval_sec" : 60 ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Website/scripts/live_data_pages.py"',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Website/scripts/live_data_pages.py"
+        "timeout_sec": 30,  # info: "timeout_sec" : 30 ,
+        "needs_internet": False,  # info: "needs_internet" : False ,
+        "cwd": f"{PACIFIC}/Website",  # info: "cwd" : f" { PACIFIC } /Website "
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
+    {  # info: {
         # Council health (2026-09-30, WO-MIG-27). OFF unless RR_COUNCIL_HEALTH=1 at poller start.
         # Report only: no getUpdates, no send, no model load. Alerts need a separate sign-off.
         "id": "council_health",  # info: "id" : "council_health" ,

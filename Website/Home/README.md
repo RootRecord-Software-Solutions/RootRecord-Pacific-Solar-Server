@@ -2,7 +2,7 @@
 
 Public home page for Root Record Software Solutions. Vercel builds this repository.
 
-The globe is the page background. A compact activity readout sits on the left. Sign up, a short about card, and operations sit on the right. The glass is light so the globe stays visible. Arc width from the feed (about 1.2–1.5) is drawn near 0.14–0.18. Close a box to use the globe. **+ Activity**, **+ Sign up**, **+ About**, and **+ Operations** bring a closed box back. Sign up opens `https://rootrecord.info/login`.
+The globe is the page background. A compact activity readout sits on the left. Sign up, a short about card, and operations sit on the right. The glass is light so the globe stays visible. Arc width from the feed (about 1.2–1.5) is drawn near 0.14–0.18. Close a box to use the globe. **+ Activity**, **+ Sign up**, **+ About**, and **+ Operations** bring a closed box back. Sign up opens `/login` on this site.
 
 | File | Role |
 | --- | --- |
@@ -11,9 +11,9 @@ The globe is the page background. A compact activity readout sits on the left. S
 
 This repository does not hold measurements. The homepage is this Vercel app. AWS is not the site.
 
-`https://rootrecord.cloud/` and `https://www.rootrecord.cloud/` 301 to `https://rootrecord.online/`. That host is the Vercel DNS target. It currently returns `DEPLOYMENT_NOT_FOUND` until the repository is connected there. The page does not read `www` for globe data. Do not iframe `www`. Do not call port 8787. That port serves a frozen append file.
+Public page hosts point at this Vercel site. `rootrecord.info` is one of those hosts, so it is not a separate login site. The page reads last-known status from `https://api.rootrecord.cloud`. That host is the AWS status API, not a page. Do not iframe `www`. Do not call port 8787. That port serves a frozen append file.
 
-The globe inputs are two replaced files on the mainland host, or a future data-only URL that returns the same `/api/state` object. The contract is [HANDOFF-vercel-homepage-2026-09-30.md](../HANDOFF-vercel-homepage-2026-09-30.md). That file stays on the Pacific desk. It is not part of this Vercel repository.
+The globe state file and the Hawaii status snapshot live on AWS. The contract is [HANDOFF-vercel-homepage-2026-09-30.md](../HANDOFF-vercel-homepage-2026-09-30.md). That file stays on the Pacific desk. It is not part of this Vercel repository.
 
 On the desk, edit `1 - Servers/1 - RootRecord-Pacific-Solar-Server/Website/Home/`. The `website` row in `Github/scripts/repos.conf` mirror-publishes that folder here. Do not put a `.git` directory in the umbrella tree. Do not bind port 3001.
 
