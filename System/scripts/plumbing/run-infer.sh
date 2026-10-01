@@ -171,7 +171,7 @@ if scope and os.path.isfile(brief_path):  # info: if scope and os . path . isfil
     brief = open(brief_path, encoding="utf-8").read().strip()  # info: set brief
   except OSError:  # info: except
     brief = ""  # info: set brief
-if desk_lines:  # info: if
+if desk_lines and "Continue the chat as" not in user:  # info: if desk_lines and "Continue the chat as" not in user
   if persona:  # info: if
     user = "DESK_LIVE:\n" + desk_lines + "\nUser: " + user  # info: user
   else:  # info: else

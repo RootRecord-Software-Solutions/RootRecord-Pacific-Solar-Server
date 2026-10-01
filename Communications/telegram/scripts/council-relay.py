@@ -518,16 +518,19 @@ def quoted_line(msg) -> str:  # info: def quoted_line
 
 # ====================================================
 # SECTION: function continue_prompt
-# What it does: Ask one voice to answer the latest line using the recent chat. Does not send.
+# What it does: Ask one voice to continue the chat. Forbids a no-data line unless they asked for a reading. Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def continue_prompt(transcript, quoted, text, voice) -> str:  # info: def continue_prompt
-    parts = []  # info: set parts
+    parts = [f"Continue the chat as {voice}."]  # info: set parts
+    parts.append("This is conversation. Do not mention a desk, live data, watts, or SOC unless they asked for a reading.")  # info: parts . append
+    parts.append("Do not say you do not have something live. Do not ask what the question is when the lines below already show it.")  # info: parts . append
     if transcript:  # info: if transcript
         parts.append("Recent chat:\n" + transcript)  # info: parts . append
     if quoted:  # info: if quoted
-        parts.append("This message replies to:\n" + quoted)  # info: parts . append
-    parts.append(f"Continue the chat as {voice}. Answer only the latest line. Do not greet as a new conversation when recent lines are present.")  # info: parts . append
+        parts.append("They are asking about this earlier line:\n" + quoted)  # info: parts . append
+        parts.append("Explain that earlier line in plain words. Do not repeat it unchanged.")  # info: parts . append
+    parts.append("One or two short sentences.")  # info: parts . append
     parts.append("User: " + text)  # info: parts . append
     return "\n\n".join(parts)  # info: return "\n\n" . join ( parts )
 
