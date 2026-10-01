@@ -20,6 +20,7 @@ Component: `Communications/telegram/scripts/council-relay.py`, started by `ensur
 
 - Telegram messages in the sandbox, from the voice that was routed.
 - Inbox lines for held chats.
+- For the sandbox chat only, one interaction request under Database `System/status/requests/`. The live council chat is not seeded. The username on that record is a label. Build eligibility is `from.id` against the Library principal registry. Council passes start only when `RR_INTERACTION_COUNCIL=1`.
 - A refresh of Database `Intake/desk-live.txt` and `System/status/rootrecord-state.json`.
 
 ## What can change it
@@ -34,4 +35,6 @@ Component: `Communications/telegram/scripts/council-relay.py`, started by `ensur
 - Printing a bot token.
 - Enabling quake or stats sends from this process.
 - Raising FLM context above 4096, or leaving a 3B model resident.
+- Treating a Telegram username as build permission.
+- Seeding interaction requests from the live council chat.
 - Treating a social "how are you" as a license to dump watts, or answering "No data" when the desk lines are present and the person asked what you see.
