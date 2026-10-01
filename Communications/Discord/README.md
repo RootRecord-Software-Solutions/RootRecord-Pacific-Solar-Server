@@ -87,7 +87,7 @@ python3 Communications/Discord/tests/test_global_updater.py
 
 ## Root Record Global Updater
 
-This Discord application is **Root Record Global Updater** (application id `150028956034740566`). It is the professional RootRecord help desk: factual data, measured observations, operational information, and documentation answers.
+This Discord application is **Root Record Global Updater** (application id `1500289560343740566`). The professional guild allowlist is `1497039564345442406`. It is the professional RootRecord help desk: factual data, measured observations, operational information, and documentation answers.
 
 It is not Ava Ivy. Ava Ivy remains the Minecraft / RootMC personality. This folder does not use `AVA_DISCORD_BOT_TOKEN`. The professional token name stays `DISCORD_BOT_TOKEN`.
 

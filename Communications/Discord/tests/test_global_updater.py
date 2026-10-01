@@ -38,7 +38,7 @@ SCOPE = {  # info: set SCOPE
     "guild_ids": ["9001"],  # info: guild
     "mention_names": ["Root Record Global Updater", "Global Updater"],  # info: names
     "application_name": "Root Record Global Updater",  # info: application_name
-    "application_id": "150028956034740566",  # info: application_id
+    "application_id": "1500289560343740566",  # info: application_id
     "voice": "global-updater",  # info: voice
 }  # info: }
 NOW = datetime(2026, 9, 30, 21, 0, tzinfo=HST)  # info: set NOW
@@ -199,8 +199,8 @@ class GlobalUpdaterTests(unittest.TestCase):  # info: class GlobalUpdaterTests
         self.assertFalse(global_updater.invokes(bot, SCOPE))  # info: self . assertFalse
         self.assertFalse(global_updater.invokes(named, {**SCOPE, "guild_ids": []}))  # info: self . assertFalse
         self.assertFalse(global_updater.invokes(message("Global Updater", guild="minecraft"), SCOPE))  # info: self . assertFalse
-        app_mention = message("<@150028956034740566> status?")  # info: set app_mention
-        app_mention["mentions"] = [{"id": "150028956034740566", "username": "SomeBot"}]  # info: set mentions
+        app_mention = message("<@1500289560343740566> status?")  # info: set app_mention
+        app_mention["mentions"] = [{"id": "1500289560343740566", "username": "SomeBot"}]  # info: set mentions
         self.assertFalse(global_updater.invokes(app_mention, SCOPE))  # info: self . assertFalse
 
     def test_empty_guild_file_answers_nothing(self):  # info: def test_empty_guild_file_answers_nothing
