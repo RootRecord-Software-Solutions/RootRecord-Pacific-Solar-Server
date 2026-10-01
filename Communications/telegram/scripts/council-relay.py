@@ -28,6 +28,19 @@ GROUP_HELLO_RE = re.compile(r"^(hi|hey|hello|yo)( guys| all| everyone| team)?[.!
 HUMAN_AT_RE = re.compile(r"@[A-Za-z][A-Za-z0-9_]{3,}")  # info: set HUMAN_AT_RE
 READING_RE = re.compile(r"\b(weather|forecast|temperature|temp|rain|showers|wind|watts|soc|battery|power)\b", re.I)  # info: set READING_RE
 WEATHER_RE = re.compile(r"\b(weather|forecast|temperature|temp|rain|showers)\b", re.I)  # info: set WEATHER_RE
+CORRECTION_RE = re.compile(  # info: set CORRECTION_RE
+    r"terrible response|you do though|you have access|ignore the data|didn'?t build|do not ignore|don'?t ignore|stop saying|use the (?:data|database|files)",  # info: correction phrases
+    re.I,  # info: re . I
+)  # info: )
+STARTER_LESSONS = [  # info: set STARTER_LESSONS
+    "Use the desk and the forecast on this turn. Do not say you lack access when those lines answer the question.",  # info: starter lesson
+    "Root: You do though. You have access to the entire database.",  # info: starter lesson from the room
+]  # info: ]
+CORRECTION_RE = re.compile(r"terrible response|you do though|you have access|ignore the data|didn'?t build|do not ignore|don'?t ignore|stop saying|use the (?:data|database|files)", re.I)  # info: set CORRECTION_RE
+STARTER_LESSONS = [  # info: set STARTER_LESSONS
+    "Use the desk and the forecast on this turn. Do not say you lack access when those lines answer the question.",  # info: "Use the desk and the forecast
+    "Root: You do though. You have access to the entire database.",  # info: "Root: You do though
+]  # info: ]
 SFP = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Weather/Hawai'i/reports/0 Level Processing/sfp_state_forecast_current.md")  # info: set SFP
 
 # Replies are OPT-IN (Alexander 2026-09-29): RR_RELAY_REPLIES=1 enables infer+post.
@@ -529,6 +542,120 @@ def forecast_excerpt() -> str:  # info: def forecast_excerpt
     return "\n".join(lines)  # info: return "\n" . join ( lines )
 
 # ====================================================
+# SECTION: function data_block
+# What it does: Desk readings and the NWS forecast for this turn. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def data_block() -> str:  # info: def data_block
+    chunks = []  # info: set chunks
+    desk = (os.environ.get("DESK_LIVE_FILE") or "").strip()  # info: set desk
+    if desk:  # info: if desk
+        try:  # info: try
+            raw = Path(desk).read_text(encoding="utf-8").splitlines()  # info: set raw
+        except OSError:  # info: except OSError
+            raw = []  # info: set raw
+        body = [ln.strip() for ln in raw if ln.strip() and not ln.strip().startswith("#") and not ln.startswith("desk_written")]  # info: set body
+        if body:  # info: if body
+            chunks.append("Desk:\n" + "\n".join(body[:24]))  # info: chunks . append
+    forecast = forecast_excerpt()  # info: set forecast
+    if forecast:  # info: if forecast
+        chunks.append("Forecast:\n" + forecast)  # info: chunks . append
+    return "\n\n".join(chunks)  # info: return "\n\n" . join ( chunks )
+
+# ====================================================
+# SECTION: function lessons_path
+# What it does: Path of the shared correction file. Does not send or read it.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def lessons_path(state_dir):  # info: def lessons_path
+    return Path(state_dir) / "lessons.json"  # info: return Path ( state_dir ) / "lessons.json"
+
+# ====================================================
+# SECTION: function load_lessons
+# What it does: Read corrections already accepted. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def load_lessons(state_dir) -> list:  # info: def load_lessons
+    path = lessons_path(state_dir)  # info: set path
+    if not path.is_file():  # info: if not path . is_file
+        return []  # info: return [ ]
+    try:  # info: try
+        data = json.loads(path.read_text(encoding="utf-8"))  # info: set data
+    except (OSError, ValueError):  # info: except ( OSError , ValueError )
+        return []  # info: return [ ]
+    if not isinstance(data, list):  # info: if not isinstance ( data , list )
+        return []  # info: return [ ]
+    return [str(row).strip() for row in data if str(row).strip()]  # info: return filtered rows
+
+# ====================================================
+# SECTION: function save_lessons
+# What it does: Write the last eight corrections. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def save_lessons(state_dir, rows):  # info: def save_lessons
+    path = lessons_path(state_dir)  # info: set path
+    path.parent.mkdir(parents=True, exist_ok=True)  # info: path . parent . mkdir
+    tmp = path.with_suffix(".json.tmp")  # info: set tmp
+    tmp.write_text(json.dumps(list(rows)[-8:], ensure_ascii=False, indent=2) + "\n", encoding="utf-8")  # info: tmp . write_text
+    os.replace(tmp, path)  # info: os . replace
+
+# ====================================================
+# SECTION: function ensure_lessons
+# What it does: Seed the shared corrections once. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def ensure_lessons(state_dir):  # info: def ensure_lessons
+    if load_lessons(state_dir):  # info: if load_lessons ( state_dir )
+        return  # info: return
+    save_lessons(state_dir, list(STARTER_LESSONS))  # info: call save_lessons
+
+# ====================================================
+# SECTION: function remember_lesson
+# What it does: Store a room correction for Ava, Bruce, and Carly. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def remember_lesson(state_dir, who, text) -> bool:  # info: def remember_lesson
+    raw = " ".join((text or "").split())  # info: set raw
+    if not raw or not CORRECTION_RE.search(raw):  # info: if not raw or not CORRECTION_RE . search ( raw )
+        return False  # info: return False
+    line = f"{who}: {raw[:220]}"  # info: set line
+    rows = load_lessons(state_dir)  # info: set rows
+    if line in rows:  # info: if line in rows
+        return False  # info: return False
+    rows.append(line)  # info: rows . append
+    save_lessons(state_dir, rows)  # info: call save_lessons
+    return True  # info: return True
+
+# ====================================================
+# SECTION: function lesson_block
+# What it does: Corrections the next reply must follow. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def lesson_block(state_dir) -> str:  # info: def lesson_block
+    rows = load_lessons(state_dir)  # info: set rows
+    if not rows:  # info: if not rows
+        return ""  # info: return ""
+    lines = "\n".join(f"- {row}" for row in rows[-6:])  # info: set lines
+    return "Corrections already accepted. Follow them:\n" + lines  # info: return the block
+
+# ====================================================
+# SECTION: function turn_preamble
+# What it does: Data and accepted corrections for one voice. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def turn_preamble(voice, state_dir) -> str:  # info: def turn_preamble
+    parts = [f"Answer as {voice}."]  # info: set parts
+    data = data_block()  # info: set data
+    if data:  # info: if data
+        parts.append("Data on file. Measured. If these lines answer the person, use them. Do not say you lack access.\n" + data)  # info: parts . append
+    lessons = lesson_block(state_dir)  # info: set lessons
+    if lessons:  # info: if lessons
+        parts.append(lessons)  # info: parts . append
+    parts.append("On a greeting, do not recite every reading. On a question the data answers, answer from the data.")  # info: parts . append
+    parts.append("Reply to the person who just spoke. Do not address anyone else by name.")  # info: parts . append
+    return "\n\n".join(parts)  # info: return "\n\n" . join ( parts )
+
+# ====================================================
 # SECTION: function quoted_line
 # What it does: The message this update replies to. Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -543,27 +670,16 @@ def quoted_line(msg) -> str:  # info: def quoted_line
 
 # ====================================================
 # SECTION: function continue_prompt
-# What it does: Ask one voice to continue the chat. Forbids a no-data line unless they asked for a reading. Does not send.
+# What it does: Ask one voice to answer from the desk, the forecast, and accepted corrections. Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def continue_prompt(transcript, quoted, text, voice) -> str:  # info: def continue_prompt
-    reading = bool(READING_RE.search(text or ""))  # info: set reading
-    if reading:  # info: if reading
-        parts = [f"Answer as {voice}. They asked for a current reading. Use only the lines below. Do not say you lack access when those lines are present."]  # info: set parts
-        if WEATHER_RE.search(text or ""):  # info: if WEATHER_RE . search
-            forecast = forecast_excerpt()  # info: set forecast
-            if forecast:  # info: if forecast
-                parts.append("Forecast on file:\n" + forecast)  # info: parts . append
-    else:  # info: else
-        parts = [f"Continue the chat as {voice}."]  # info: set parts
-        parts.append("This is conversation. Do not mention a desk, live data, watts, or SOC unless they asked for a reading.")  # info: parts . append
-        parts.append("Do not say you do not have something live. Do not ask what the question is when the lines below already show it.")  # info: parts . append
+def continue_prompt(transcript, quoted, text, voice, state_dir) -> str:  # info: def continue_prompt
+    parts = [turn_preamble(voice, state_dir)]  # info: set parts
     if transcript:  # info: if transcript
         parts.append("Recent chat:\n" + transcript)  # info: parts . append
     if quoted:  # info: if quoted
         parts.append("They are asking about this earlier line:\n" + quoted)  # info: parts . append
         parts.append("Explain that earlier line in plain words. Do not repeat it unchanged.")  # info: parts . append
-    parts.append("Reply to the person who just spoke. Do not address anyone else by name.")  # info: parts . append
     parts.append("One or two short sentences.")  # info: parts . append
     parts.append("User: " + text)  # info: parts . append
     return "\n\n".join(parts)  # info: return "\n\n" . join ( parts )
@@ -584,7 +700,7 @@ def continue_reply(cfg, state_dir, voices, voice, msg, text, max_text):  # info:
     remember_turn(state_dir, ch, sender, text, mid)  # info: call remember_turn
     mark_seen(voice, voices, ch, mid)  # info: call mark_seen
     mark_typing(voice, voices, ch)  # info: call mark_typing
-    reply = run_infer(cfg, voice, continue_prompt(prior, quote, text, voice))  # info: set reply
+    reply = run_infer(cfg, voice, continue_prompt(prior, quote, text, voice, state_dir))  # info: set reply
     if not reply:  # info: if not reply
         return False  # info: return False
     posted = post_as(voice, voices, ch, reply, max_text, allow=True, reply_to=mid, thread_id=thread_id)  # info: set posted
@@ -626,6 +742,7 @@ def main():  # info: def main
     max_text = int(cfg.get("MAX_TEXT", "3900") or 3900)  # info: set max_text
     state_dir = Path(cfg.get("STATE_DIR", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Intake/council-relay"))  # info: set state_dir
     state_dir.mkdir(parents=True, exist_ok=True)  # info: state_dir . mkdir ( parents = True ,
+    ensure_lessons(state_dir)  # info: call ensure_lessons
     offset_file = state_dir / "offset.txt"  # info: set offset_file
     offset = int(offset_file.read_text().strip() or "0") if offset_file.is_file() else 0  # info: set offset
     timeout = int(cfg.get("POLL_TIMEOUT", "20") or "20")  # info: set timeout
@@ -688,6 +805,9 @@ def main():  # info: def main
 
             mid = msg.get("message_id")  # info: set mid
             thread_id = msg.get("message_thread_id")  # info: set thread_id
+            sender = ((msg.get("from") or {}).get("first_name") or "user")  # info: set sender
+            if remember_lesson(state_dir, sender, text):  # info: if remember_lesson
+                print("[ok] lesson stored")  # info: call print
             if not is_private and only_for_a_person(text, voices):  # info: if not is_private and only_for_a_person
                 print("[ok] named a person, not a council voice — no reply")  # info: call print
                 continue  # info: continue
@@ -707,7 +827,8 @@ def main():  # info: def main
                     if hop not in voices:  # info: if hop not in voices :
                         continue  # info: continue
                     mark_seen(hop, voices, ch, mid)  # info: call mark_seen
-                    reply = run_infer(cfg, hop, text, prior=prior)  # info: set reply
+                    hop_prompt = turn_preamble(hop, state_dir) + "\n\nRecent chat:\n" + prior + "\n\nUser: " + text  # info: set hop_prompt
+                    reply = run_infer(cfg, hop, hop_prompt)  # info: set reply
                     if reply:  # info: if reply :
                         mark_typing(hop, voices, ch)  # info: call mark_typing
                         post_as(hop, voices, ch, reply, max_text, allow=True, reply_to=mid, thread_id=thread_id)  # info: call post_as
@@ -721,17 +842,17 @@ def main():  # info: def main
                 prior_chat = chat_transcript(state_dir, ch)  # info: set prior_chat
                 quote = quoted_line(msg)  # info: set quote
                 remember_turn(state_dir, ch, (msg.get("from") or {}).get("first_name") or "user", text, mid)  # info: call remember_turn
-                if group_hello(text):  # info: if group_hello ( text ) :
-                    ask = "Greet the room in one or two sentences. User said: " + text  # info: set ask
-                else:  # info: else :
-                    ask = "Answer the person. This is not a power or desk reading. No data line unless they asked for watts, SOC, or host numbers.\nUser: " + text  # info: set ask
-                if prior_chat:  # info: if prior_chat
-                    ask = "Recent chat:\n" + prior_chat + "\n\n" + ask  # info: set ask
-                if quote:  # info: if quote
-                    ask = "This message replies to:\n" + quote + "\n\n" + ask  # info: set ask
                 for hop in room:  # info: for hop in room :
                     mark_seen(hop, voices, ch, mid)  # info: call mark_seen
                 for hop in room:  # info: for hop in room :
+                    ask = turn_preamble(hop, state_dir)  # info: set ask
+                    if group_hello(text):  # info: if group_hello ( text )
+                        ask += "\n\nGreet the room in one or two sentences."  # info: set ask
+                    if prior_chat:  # info: if prior_chat
+                        ask += "\n\nRecent chat:\n" + prior_chat  # info: set ask
+                    if quote:  # info: if quote
+                        ask += "\n\nThis message replies to:\n" + quote  # info: set ask
+                    ask += "\n\nUser: " + text  # info: set ask
                     reply = run_infer(cfg, hop, ask)  # info: set reply
                     if reply:  # info: if reply :
                         mark_typing(hop, voices, ch)  # info: call mark_typing

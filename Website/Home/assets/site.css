@@ -94,7 +94,8 @@ a:hover { color: #e0f2fe; }
 .stage {
   position: relative;
   z-index: 1;
-  min-height: 100vh;
+  min-height: calc(100vh - 55px);
+  min-height: calc(100dvh - 55px);
   display: flex;
   flex-direction: column;
   padding: 12px 22px 22px;

@@ -176,7 +176,7 @@ if desk_lines and "Continue the chat as" not in user:  # info: if desk_lines and
     user = "DESK_LIVE:\n" + desk_lines + "\nUser: " + user  # info: user
   else:  # info: else
     user = "[desk: measured — cite only these lines]\n" + desk_lines + "\nUser: " + user  # info: user
-  user += "\nThe DESK_LIVE lines above are measured. Cite one only when the person asked for a reading. Do not recite the desk on a greeting or a side comment."  # info: user
+  user += "\nThe DESK_LIVE lines above are measured. If they answer the question, use them. Do not say you lack access. Do not recite every line on a greeting."  # info: user
 spec_sys = (os.environ.get("RR_SPEC_SYS") or "").strip()  # info: set spec_sys
 persona_sys = (os.environ.get("RR_PERSONA_SYSTEM") or "").strip()  # info: set persona_sys
 npu_sys = ((persona.get("system") if persona else "") or "").strip()  # info: set npu_sys
