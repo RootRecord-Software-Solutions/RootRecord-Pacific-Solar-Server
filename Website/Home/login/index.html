@@ -18,7 +18,8 @@
 <body>
 <a class="skip" href="#content">Skip to content</a>
 <canvas id="starfield" aria-hidden="true"></canvas>
-<header class="top">
+<div id="globe"></div>
+<header class="top top-clear">
   <a class="brand" href="/">Root Record</a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
   <nav id="site-nav" aria-label="Primary">
@@ -32,12 +33,59 @@
     <a href="/status">Status</a>
   </nav>
 </header>
-<main class="panel login" id="content">
-  <h1>Login</h1>
-  <p class="prose">Account entry stays on this site. Sign-in is not open on this page yet.</p>
-  <p class="prose"><a href="/">Return home</a></p>
+<main class="auth-stage" id="content">
+  <section class="auth-box" aria-label="Login and signup">
+    <h1>Account</h1>
+    <div class="auth-switch" role="tablist" aria-label="Login or signup">
+      <button type="button" id="tab-login" role="tab" aria-selected="true" aria-controls="form-login">Login</button>
+      <button type="button" id="tab-signup" role="tab" aria-selected="false" aria-controls="form-signup">Signup</button>
+    </div>
+    <form id="form-login" role="tabpanel" aria-labelledby="tab-login">
+      <label for="login-email">Email</label>
+      <input id="login-email" name="email" type="email" autocomplete="username" required>
+      <label for="login-password">Password</label>
+      <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+      <button type="submit">Login</button>
+    </form>
+    <form id="form-signup" role="tabpanel" aria-labelledby="tab-signup" hidden>
+      <label for="signup-email">Email</label>
+      <input id="signup-email" name="email" type="email" autocomplete="username" required>
+      <label for="signup-password">Password</label>
+      <input id="signup-password" name="password" type="password" autocomplete="new-password" required>
+      <button type="submit">Signup</button>
+    </form>
+    <p class="fine" id="auth-note" role="status">Sign-in is not open on this page yet.</p>
+  </section>
 </main>
+<script src="https://unpkg.com/globe.gl@2.46.2"></script>
+<script src="/assets/telemetry.js"></script>
 <script src="/assets/starfield.js"></script>
+<script src="/assets/home.js"></script>
 <script src="/assets/shell.js"></script>
+<script>
+(function () {
+  var loginTab = document.getElementById("tab-login");
+  var signupTab = document.getElementById("tab-signup");
+  var loginForm = document.getElementById("form-login");
+  var signupForm = document.getElementById("form-signup");
+  var note = document.getElementById("auth-note");
+  function show(which) {
+    var login = which === "login";
+    loginTab.setAttribute("aria-selected", login ? "true" : "false");
+    signupTab.setAttribute("aria-selected", login ? "false" : "true");
+    loginForm.hidden = !login;
+    signupForm.hidden = login;
+    if (note) note.textContent = "Sign-in is not open on this page yet.";
+  }
+  loginTab.addEventListener("click", function () { show("login"); });
+  signupTab.addEventListener("click", function () { show("signup"); });
+  function hold(event) {
+    event.preventDefault();
+    if (note) note.textContent = "Sign-in is not open on this page yet.";
+  }
+  loginForm.addEventListener("submit", hold);
+  signupForm.addEventListener("submit", hold);
+})();
+</script>
 </body>
 </html>
