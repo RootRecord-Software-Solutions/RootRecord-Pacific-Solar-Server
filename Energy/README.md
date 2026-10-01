@@ -10,6 +10,14 @@ API reads are live. At 22:26 HST the poller logged Delta 2 at 7% (57 W AC out, 9
 
 Do not arm, disarm, or switch AC from this page. Those actions stay on WO-ECO-001 Phase 2.
 
+## Desired upgrades
+
+Hardware Alexander intends to add later. These notes do not authorize a purchase or a control change.
+
+| Upgrade | State | Note |
+| --- | --- | --- |
+| Four corner actuators for sun tilt | DESIRED | One actuator on each corner of a wood or aluminum frame. Until then a person sets left-up, flat, or right-up, and the energy desk asks when channel 1 shows the wrong tilt. [Library note](../../../5%20-%20RootRecord-Library/Documentation/09-desired-upgrades/2026-09-30-four-corner-sun-tilt-actuators.md). |
+
 ## Earlier status (2026-09-28) — Phase 1 layout
 
 | Item | State |
