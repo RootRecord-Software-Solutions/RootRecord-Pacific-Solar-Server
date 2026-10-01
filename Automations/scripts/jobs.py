@@ -687,7 +687,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
     {  # info: {
         "id": "voice_energy_report",  # info: "id" : "voice_energy_report" ,
         "enabled": os.environ.get("RR_VOICE_ENERGY", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "Carly energy report from Database Energy/ EcoFlow BLE last readings, with the hourly channel-1 solar look in the same report.",  # info: "description" : "Carly energy report from Database Energy/ EcoFlow BLE last readings, with the hourly channel-1 solar look in the same report." ,
+        "description": "Refresh the hourly channel-1 solar look. The sentence is spoken on the hourly solar desk, not as a second voice note.",  # info: "description" : "Refresh the hourly channel-1 solar look. The sentence is spoken on the hourly solar desk, not as a second voice note." ,
         "only_at_minutes": [15, 45],  # info: "only_at_minutes" : [ 15 , 45 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" energy_report',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" energy_report
@@ -749,7 +749,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         # Voice note posts only when RR_VOICE_DELIVER=1. Default chat is the sandbox.
         "id": "voice_solar_desk",  # info: "id" : "voice_solar_desk" ,
         "enabled": os.environ.get("RR_VOICE_SOLAR", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "Bruce hourly solar desk from Energy last files and sun times. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Bruce hourly solar desk from Energy last files and sun times. Voice note when RR_VOICE_DELIVER=1." ,
+        "description": "Bruce hourly solar desk: packs, sun times, newest channel-1 still, and the last stored camera look. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Bruce hourly solar desk: packs, sun times, newest channel-1 still, and the last stored camera look. Voice note when RR_VOICE_DELIVER=1." ,
         "only_at_minutes": [4],  # info: "only_at_minutes" : [ 4 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" solar_desk',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" solar_desk

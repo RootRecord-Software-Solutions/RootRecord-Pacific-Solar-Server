@@ -162,7 +162,7 @@
       "agent_launchable": false,
       "agents_allowed": [],
       "requires_confirmation": true,
-      "inputs": ["Energy/soc/*-last.json", "Energy/watts/*-last.json", "Energy/sun/sun-times-last.json"],
+      "inputs": ["Energy/soc/*-last.json", "Energy/watts/*-last.json", "Energy/sun/sun-times-last.json", "Energy/vision/ch1-look-last.json", "Media/Images/ch1-*.jpg"],
       "outputs": ["voice report markdown", "wav", "sandbox voice note only when RR_VOICE_DELIVER=1"],
       "side_effects": ["writes_voice_files", "telegram_sendVoice"],
       "why_not": {

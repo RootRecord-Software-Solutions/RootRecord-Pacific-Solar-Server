@@ -405,6 +405,35 @@ def camera_observation(t: datetime) -> str:  # info: def camera_observation
 
 
 # ====================================================
+# SECTION: function last_camera_look
+# What it does: Last stored channel-1 sentence and its age. Does not call the vision model.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def last_camera_look(t: datetime) -> dict:  # info: def last_camera_look
+    """Last stored channel-1 sentence and its age. Does not call the vision model."""  # info: """Last stored channel-1 sentence and its age. Does not call the vision model."""
+    cam = PACIFIC / "Security" / "Cameras"  # info: set cam
+    if str(cam) not in sys.path:  # info: if str ( cam ) not in sys . path :
+        sys.path.insert(0, str(cam))  # info: sys . path . insert ( 0 , str ( cam ) )
+    try:  # info: try :
+        import panel_look  # info: import panel_look
+        row = panel_look.load_cache() or {}  # info: set row
+    except Exception:  # info: except Exception :
+        return {}  # info: return { }
+    if not isinstance(row, dict):  # info: if not isinstance ( row , dict ) :
+        return {}  # info: return { }
+    age = None  # info: set age
+    try:  # info: try :
+        when = datetime.fromisoformat(str(row.get("at") or ""))  # info: set when
+        if when.tzinfo is None and t.tzinfo is not None:  # info: if when . tzinfo is None and t . tzinfo is not None :
+            when = when.replace(tzinfo=t.tzinfo)  # info: set when
+        age = max(0, int((t - when).total_seconds() // 60))  # info: set age
+    except (TypeError, ValueError):  # info: except ( TypeError , ValueError ) :
+        age = None  # info: set age
+    return {"sentence": str(row.get("sentence") or ""), "age_min": age,  # info: return { "sentence" : str ( row . get ( "sentence" ) or "" ) , "age_min" : age ,
+            "hour": str(row.get("hour") or ""), "at": row.get("at")}  # info: "hour" : str ( row . get ( "hour" ) or "" ) , "at" : row . get ( "at" ) }
+
+
+# ====================================================
 # SECTION: function board_status
 # What it does: Read report_board.py status. Morning 09:02, midday 12:02, late 21:02.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -840,11 +869,11 @@ def spoken_hhmm(hhmm) -> str:  # info: def spoken_hhmm
 
 # ====================================================
 # SECTION: function b_solar_desk
-# What it does: G1 hourly-clip-reports solar_spoken ("Solar desk at <clock>. <EcoFlow line>") + G1 hourly-solar-weather sun times.
+# What it does: Hourly packs, sun times, the newest channel-1 still, and the last stored camera look.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def b_solar_desk(t: datetime):  # info: def b_solar_desk
-    """G1 hourly-clip-reports solar_spoken ("Solar desk at <clock>. <EcoFlow line>") + G1 hourly-solar-weather sun times."""  # info: """G1 hourly-clip-reports solar_spoken ("Solar desk at <clock>. <EcoFlow line>") + G1 hourly-solar-weather sun
+    """Hourly packs, sun times, the newest channel-1 still, and the last stored camera look."""  # info: """Hourly packs, sun times, the newest channel-1 still, and the last stored camera look."""
     facts = energy_facts(t)  # info: set facts
     sun = jload(ENERGY / "sun" / "sun-times-last.json") or {}  # info: set sun
     sp = [f"Solar desk at {clock(t)} Hawaiian Standard Time.".replace("..", ".")]  # info: set sp
@@ -855,18 +884,19 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
             spoken_lines.append(f"{f['name']}: offline")  # info: spoken_lines . append ( f" { f [
             continue  # info: continue
         bits, sbits = [f"state of charge {f['soc']}%"], [f"state of charge {f['soc']}%"]  # info: bits , sbits = [ f" state of charge {
-        power = [(k, f.get(k)) for k in ("solar_w", "ac_out_w") if f.get(k) is not None]  # info: set power
+        power = [(k, f.get(k)) for k in ("solar_w", "ac_out_w", "usbc_out_w") if f.get(k) is not None]  # info: set power
+        labels = {"solar_w": "solar input", "ac_out_w": "AC out", "usbc_out_w": "USB-C out"}  # info: set labels
         for k, v in power:  # info: for k , v in power :
-            bits.append(f"{'solar input' if k == 'solar_w' else 'AC out'} {v} W")  # info: bits . append ( f" { 'solar input' if
+            bits.append(f"{labels[k]} {v} W")  # info: bits . append ( f" { labels [ k ] } { v } W " )
         clause = supply_clause(f).lstrip(", ")  # info: set clause
         nonzero = [(k, v) for k, v in power if int(round(float(v))) != 0]  # info: set nonzero
         if clause:  # info: if clause :
             bits.append(clause)  # info: bits . append ( clause )
             sbits.append(clause)  # info: sbits . append ( clause )
         if nonzero:  # info: if nonzero :
-            sbits += [f"{'solar input' if k == 'solar_w' else 'AC out'} {spoken_watts(v)}" for k, v in nonzero]  # info: set sbits
+            sbits += [f"{labels[k]} {spoken_watts(v)}" for k, v in nonzero]  # info: set sbits
         elif not clause:  # info: elif not clause :
-            sbits.append("idle")  # no solar in, no AC out, not on generator or transfer
+            sbits.append("idle")  # no solar in, no AC out, no USB-C out, not on generator or transfer
         lines.append(f"{f['name']}: " + ", ".join(bits))  # info: lines . append ( f" { f [
         spoken_lines.append(f"{f['name']}: " + ", ".join(sbits))  # info: spoken_lines . append ( f" { f [
     if not any(f["ok"] for f in facts):  # info: if not any ( f [ "ok" ]
@@ -884,10 +914,36 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
             sp.append(f"Sunset was {spoken_hhmm(sun['sunset'])}; next sunrise {spoken_hhmm(sun['next_sunrise'])}.".replace("..", "."))  # info: sp . append ( f" Sunset was { spoken_hhmm
         else:  # info: else :
             sp.append(f"Sunset was {spoken_hhmm(sun['sunset'])}.".replace("..", "."))  # info: sp . append ( f" Sunset was { spoken_hhmm
+    elif sun.get("date"):  # info: elif sun . get ( "date" ) :
+        sp.append("Sun times on file are not for today.")  # info: sp . append ( "Sun times on file are not for today." )
+    extra = []  # info: set extra
+    still = newest_ch1(t)  # info: set still
+    if still:  # info: if still :
+        name = Path(still["path"]).name  # info: set name
+        if still["age_min"] > 0:  # info: if still [ "age_min" ] > 0 :
+            extra.append(f"- Solar panel still age: {still['age_min']} min (`{name}`)")  # info: extra . append ( f" - Solar panel still age:
+            unit = "minute" if still["age_min"] == 1 else "minutes"  # info: set unit
+            sp.append(f"Solar panel still is {still['age_min']} {unit} old.")  # info: sp . append ( f" Solar panel still is { still
+        else:  # info: else :
+            extra.append(f"- Solar panel still: current (`{name}`)")  # info: extra . append ( f" - Solar panel still: current ( ` { name } ` ) " )
+    else:  # info: else :
+        extra.append("- Solar panel still: not on file")  # info: extra . append ( "- Solar panel still: not on file" )
+        sp.append("No solar panel still on file.")  # info: sp . append ( "No solar panel still on file." )
+    look = last_camera_look(t)  # info: set look
+    if look.get("sentence"):  # info: if look . get ( "sentence" ) :
+        extra.append(f"- {look['sentence']}")  # info: extra . append ( f" - { look [ 'sentence' ] } " )
+        sp.append(look["sentence"])  # info: sp . append ( look [ "sentence" ] )
+        if look.get("hour") != t.strftime("%Y-%m-%dT%H") and look.get("age_min") is not None:  # info: if look . get ( "hour" ) != t . strftime
+            extra.append(f"- Camera look age: {look['age_min']} min ({look.get('at')})")  # info: extra . append ( f" - Camera look age: { look
+            unit = "minute" if look["age_min"] == 1 else "minutes"  # info: set unit
+            sp.append(f"That camera look is {look['age_min']} {unit} old.")  # info: sp . append ( f" That camera look is { look
+    else:  # info: else :
+        extra.append("- Camera look: not on file")  # info: extra . append ( "- Camera look: not on file" )
+        sp.append("No solar panel camera look on file.")  # info: sp . append ( "No solar panel camera look on file." )
     md = [f"# Solar desk — {t.isoformat()}", ""] + [f"- {x}" for x in lines] + [
-        f"- Sun: {sun.get('sunrise', 'n/a')} / {sun.get('sunset', 'n/a')} ({sun.get('date', 'n/a')}, Open-Meteo)", "",  # info: f" - Sun: { sun . get ( 'sunrise'
-        "## Spoken", "", " ".join(sp), "",
-        "_Source: Database Energy/soc + Energy/watts (EcoFlow BLE) + Energy/sun/sun-times-last.json._", ""]  # info: "_Source: Database Energy/soc + Energy/watts (EcoFlow BLE) + Energy/sun/sun-times-last.json._" , "" ]
+        f"- Sun: {sun.get('sunrise', 'n/a')} / {sun.get('sunset', 'n/a')} ({sun.get('date', 'n/a')}, Open-Meteo)",  # info: f" - Sun: { sun . get ( 'sunrise'
+    ] + extra + ["", "## Spoken", "", " ".join(sp), "",  # info: ] + extra + [ "" , "## Spoken" , "" , " " . join ( sp ) , "" ,
+        "_Source: Database Energy/soc + Energy/watts (EcoFlow BLE), Energy/sun/sun-times-last.json, the newest ch1 still, and Energy/vision/ch1-look-last.json._", ""]  # info: "_Source: Database Energy/soc + Energy/watts (EcoFlow BLE), Energy/sun/sun-times-last.json, the newest ch1 still, and Energy/vision/ch1-look-last.json._" , "" ]
     return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
@@ -1253,13 +1309,15 @@ def main() -> int:  # info: def main
             res["voice"] = {"ok": True, "mode": "prebuilt", "wav": str(path), "agent": who}  # info: res [ "voice" ] = { "ok" : True , "mode" : "prebuilt"
             import voice_deliver  # info: import voice_deliver
             res["deliver"] = voice_deliver.deliver(report, path, " ".join(spoken), KIND[report], report_text=md, who=who, remember_as=t.strftime("%Y-%m-%dT%H:%M"))  # info: res [ "deliver" ] = voice_deliver . deliver
+    elif "--no-voice" not in sys.argv and report == "energy_report":  # info: elif "--no-voice" not in sys . argv and report == "energy_report" :
+        res["voice"] = {"ok": True, "skipped": True, "detail": "blended into the hourly solar desk; this run refreshes the camera look"}  # info: res [ "voice" ] = { "ok" : True , "skipped" : True , "detail" : "blended into the hourly solar desk; this run refreshes the camera look" }
     elif "--no-voice" not in sys.argv:  # info: elif "--no-voice" not in sys . argv :
         res["voice"] = voice(report, spoken)  # info: res [ "voice" ] = voice ( report
         wav = (res.get("voice") or {}).get("wav")  # info: set wav
         if wav:  # info: if wav
             import voice_deliver  # info: import voice_deliver
-            photo = newest_ch1(t) if report == "energy_report" else None  # info: set photo
-            look = camera_observation(t) if report == "energy_report" else ""  # info: set look
+            photo = newest_ch1(t) if report == "solar_desk" else None  # info: set photo
+            look = str(last_camera_look(t).get("sentence") or "") if report == "solar_desk" else ""  # info: set look
             age_line = f"Solar panel still is {photo['age_min']} minutes old." if photo and photo["age_min"] > 0 else ""  # info: set age_line
             caption = " ".join(part for part in (look, age_line) if part)  # info: set caption
             res["deliver"] = voice_deliver.deliver(report, wav, " ".join(spoken), KIND[report], report_text=md, photo=(photo or {}).get("path"), photo_caption=caption)  # info: res [ "deliver" ] = voice_deliver . deliver
