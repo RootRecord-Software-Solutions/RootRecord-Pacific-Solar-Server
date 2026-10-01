@@ -51,17 +51,17 @@
     var cores = navigator.hardwareConcurrency || 8;
     var save = navigator.connection && navigator.connection.saveData;
     var small = w < 800;
-    var density = small ? 0.00058 : 0.00046;
-    var cap = 1400;
+    var density = small ? 0.00095 : 0.00078;
+    var cap = 1800;
     if (cores <= 4) {
-      density *= 0.72;
-      cap = 860;
+      density *= 0.75;
+      cap = 1100;
     }
     if (cores <= 2 || save) {
-      density *= 0.6;
-      cap = 480;
+      density *= 0.65;
+      cap = 560;
     }
-    var floor = Math.min(small ? 300 : 560, cap);
+    var floor = Math.min(small ? 420 : 780, cap);
     return Math.max(floor, Math.min(cap, Math.round(area * density)));
   }
 
@@ -78,7 +78,7 @@
     for (var row = 0; row < rows && n < count; row++) {
       for (var col = 0; col < cols && n < count; col++) {
         var roll = rand();
-        var layer = roll < 0.74 ? 0 : roll < 0.94 ? 1 : 2;
+        var layer = roll < 0.7 ? 0 : roll < 0.93 ? 1 : 2;
         var colorPick = rand();
         var colorIndex = colorPick < 0.06 ? 5 : Math.floor(rand() * 5);
         var radius;
@@ -86,8 +86,8 @@
         var halo = 0;
         var tw = 0;
         if (layer === 0) {
-          radius = 0.4 + rand() * 0.75;
-          alpha = 0.32 + rand() * 0.42;
+          radius = 0.45 + rand() * 0.8;
+          alpha = 0.5 + rand() * 0.4;
         } else if (layer === 1) {
           radius = 0.85 + rand() * 0.7;
           alpha = 0.68 + rand() * 0.32;
