@@ -559,7 +559,7 @@ def describe_item(item: dict, now: datetime | None = None) -> str:  # info: def 
         tail = "paused"  # info: set tail
     if item.get("repeat") == "once" and not item.get("enabled") and status == "ok":  # info: if item . get ( "repeat" ) == "once" and
         tail = "finished"  # info: set tail
-    pair = f" · pair {item.get('group')}" if item.get("group") else ""  # info: set pair
+    pair = " · paired step" if item.get("group") else ""  # info: set pair
     return f"{label} · {when} · {tail}{pair}"  # info: return f
 
 
