@@ -76,19 +76,29 @@ def wav_path(hour: int, minute: int = 0) -> Path:  # info: def wav_path
 
 
 # ====================================================
+# SECTION: function chime_phrases
+# What it does: Four spoken lines for one slot. Render inserts a pause between them.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def chime_phrases(hour: int, minute: int = 0) -> list[str]:  # info: def chime_phrases
+    h = int(hour) % 24  # info: set h
+    m = slot_minute(minute)  # info: set m
+    lines = [  # info: set lines
+        f"It is currently {spoken_clock(h, m)} in Hawaii.",  # info: f" It is currently { spoken_clock ( h , m ) } in Hawaii. "
+        f"Mountain Daylight Time is {spoken_clock((h + MDT_AHEAD) % 24, m)}.",  # info: f" Mountain Daylight Time is { spoken_clock ( ( h + MDT_AHEAD ) % 24 , m ) } . "
+        f"Eastern time is {spoken_clock((h + EASTERN_AHEAD) % 24, m)}.",  # info: f" Eastern time is { spoken_clock ( ( h + EASTERN_AHEAD ) % 24 , m ) } . "
+        f"U.T.C. is {spoken_clock((h + UTC_AHEAD) % 24, m)}.",  # info: f" U.T.C. is { spoken_clock ( ( h + UTC_AHEAD ) % 24 , m ) } . "
+    ]  # info: ]
+    return [line.replace("..", ".") for line in lines]  # info: return [ line . replace ( ".." , "." ) for line in lines ]
+
+
+# ====================================================
 # SECTION: function chime_sentence
-# What it does: Spoken line for one Hawaii slot, plus Mountain Daylight Time, Eastern time, and UTC.
+# What it does: The four lines as one caption. The wav pauses between them.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def chime_sentence(hour: int, minute: int = 0) -> str:  # info: def chime_sentence
-    h = int(hour) % 24  # info: set h
-    m = slot_minute(minute)  # info: set m
-    return (  # info: return (
-        f"It is currently {spoken_clock(h, m)} in Hawaii. "  # info: f" It is currently { spoken_clock ( h , m ) } in Hawaii. "
-        f"Mountain Daylight Time is {spoken_clock((h + MDT_AHEAD) % 24, m)}. "  # info: f" Mountain Daylight Time is { spoken_clock ( ( h + MDT_AHEAD ) % 24 , m ) } . "
-        f"Eastern time is {spoken_clock((h + EASTERN_AHEAD) % 24, m)}. "  # info: f" Eastern time is { spoken_clock ( ( h + EASTERN_AHEAD ) % 24 , m ) } . "
-        f"U.T.C. is {spoken_clock((h + UTC_AHEAD) % 24, m)}."  # info: f" U.T.C. is { spoken_clock ( ( h + UTC_AHEAD ) % 24 , m ) } . "
-    ).replace("..", ".")  # info: ) . replace ( ".." , "." )
+    return " ".join(chime_phrases(hour, minute))  # info: return " " . join ( chime_phrases ( hour , minute ) )
 
 
 # ====================================================
@@ -132,7 +142,7 @@ def adopt_legacy() -> None:  # info: def adopt_legacy
 
 # ====================================================
 # SECTION: function render_all
-# What it does: Write any missing :00 and :30 wavs in one Kokoro load. Existing files stay unless force is set.
+# What it does: Write :00 and :30 wavs in one Kokoro load, with a pause between the four lines. Existing files stay unless force is set.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def render_all(force: bool = False) -> list[dict]:  # info: def render_all
@@ -147,10 +157,11 @@ def render_all(force: bool = False) -> list[dict]:  # info: def render_all
         who = persona_for(hour)  # info: set who
         voice = speakers.AGENTS[who]["kokoro"]  # info: set voice
         rate = float(speakers.AGENTS[who]["speed"])  # info: set rate
-        read = chime_sentence(hour, minute)  # info: set read
-        spoken = speakable(read)  # info: set spoken
+        phrases = chime_phrases(hour, minute)  # info: set phrases
+        read = " ".join(phrases)  # info: set read
+        spoken = " ".join(speakable(line) for line in phrases)  # info: set spoken
         dest = wav_path(hour, minute)  # info: set dest
-        row = {"hour": hour, "minute": minute, "persona": who, "voice": voice, "speed": rate, "text": read, "spoken": spoken, "wav": str(dest)}  # info: set row
+        row = {"hour": hour, "minute": minute, "persona": who, "voice": voice, "speed": rate, "text": read, "spoken": spoken, "phrases": phrases, "wav": str(dest)}  # info: set row
         if dest.is_file() and not force:  # info: if dest . is_file ( ) and not force :
             rows.append(row)  # info: rows . append ( row )
             print(json.dumps({"hour": hour, "minute": minute, "persona": who, "wav": str(dest), "kept": True}), flush=True)  # info: call print
@@ -158,11 +169,18 @@ def render_all(force: bool = False) -> list[dict]:  # info: def render_all
         if tone is None:  # info: if tone is None :
             tone = load_chime()  # info: set tone
             gap = np.zeros(int(vg.SAMPLE_RATE * 0.25), dtype=np.float32)  # info: set gap
-        speech = vg.synth(spoken, voice, rate)  # info: set speech
-        if speech is None:  # info: if speech is None :
-            raise RuntimeError(f"no audio for {hour:02d}:{minute:02d}")  # info: raise RuntimeError ( f" no audio for { hour : 02d } : { minute : 02d } " )
-        body, _lead, _tail = vg.prepare(np.asarray(speech, dtype=np.float32))  # info: body , _lead , _tail = vg . prepare (
-        mixed = np.concatenate([tone, gap, body])  # info: set mixed
+        phrase_gap = np.zeros(int(vg.SAMPLE_RATE * PHRASE_GAP_S), dtype=np.float32)  # info: set phrase_gap
+        pieces = []  # info: set pieces
+        for line in phrases:  # info: for line in phrases :
+            speech = vg.synth(speakable(line), voice, rate)  # info: set speech
+            if speech is None:  # info: if speech is None :
+                raise RuntimeError(f"no audio for {hour:02d}:{minute:02d}")  # info: raise RuntimeError ( f" no audio for { hour : 02d } : { minute : 02d } " )
+            body, _lead, _tail = vg.prepare(np.asarray(speech, dtype=np.float32))  # info: body , _lead , _tail = vg . prepare (
+            pieces.append(body)  # info: pieces . append ( body )
+        voiced = pieces[0]  # info: set voiced
+        for body in pieces[1:]:  # info: for body in pieces [ 1 : ] :
+            voiced = np.concatenate([voiced, phrase_gap, body])  # info: set voiced
+        mixed = np.concatenate([tone, gap, voiced])  # info: set mixed
         vg.write_wav(dest, mixed)  # info: call vg . write_wav
         rows.append(row)  # info: rows . append ( row )
         print(json.dumps({"hour": hour, "minute": minute, "persona": who, "wav": str(dest), "kept": False}), flush=True)  # info: call print
