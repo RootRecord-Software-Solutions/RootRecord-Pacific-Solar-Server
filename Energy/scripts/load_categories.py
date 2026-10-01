@@ -192,6 +192,7 @@ def apply_ebatt(devices: list[dict], *, sun: dict | None = None) -> None:  # inf
 def apply_roles(devices: list[dict]) -> None:  # info: def apply_roles
     for d in devices:  # info: for d in devices :
         d["ac_role"] = None  # info: d [ "ac_role" ] = None
+        d["on_generator"] = False  # info: d [ "on_generator" ] = False
         d["transfer_sure"] = False  # info: d [ "transfer_sure" ] = False
         d.pop("transfer_w", None)  # info: d . pop ( "transfer_w" , None )
         d.pop("appliance_w", None)  # info: d . pop ( "appliance_w" , None )
@@ -206,10 +207,10 @@ def apply_roles(devices: list[dict]) -> None:  # info: def apply_roles
         d_out, r_out = _ac_out(delta), _ac_out(river)  # info: d_out , r_out = _ac_out ( delta )
         d_in, r_in = _ac_in(delta), _ac_in(river)  # info: d_in , r_in = _ac_in ( delta )
         # AC only — never discharge_w (USB inflates that).
-        if d_out >= 20 and r_in >= 20:  # info: if d_out >= 20 and r_in >= 20
+        if same_watts(d_out, r_in):  # info: if same_watts ( d_out , r_in ) :
             src, dst = delta, river  # info: src , dst = delta , river
             transfer = min(d_out, r_in)  # info: set transfer
-        elif r_out >= 20 and d_in >= 20:  # info: elif r_out >= 20 and d_in >= 20
+        elif same_watts(r_out, d_in):  # info: elif same_watts ( r_out , d_in ) :
             src, dst = river, delta  # info: src , dst = river , delta
             transfer = min(r_out, d_in)  # info: set transfer
         if src is not None:  # info: if src is not None :
@@ -221,11 +222,14 @@ def apply_roles(devices: list[dict]) -> None:  # info: def apply_roles
             dst["transfer_w"] = round(transfer, 1)  # info: dst [ "transfer_w" ] = round ( transfer
 
     for d in devices:  # info: for d in devices :
-        if d.get("ac_role") in ("transfer_out", "transfer_in"):  # info: if d . get ( "ac_role" ) in
+        if d.get("ac_role") == "transfer_in":  # info: if d . get ( "ac_role" ) == "transfer_in" :
             continue  # info: continue
-        aci = float(d.get("ac_in_w") or 0)  # info: set aci
-        if aci >= 20:  # info: if aci >= 20 :
-            d["ac_role"] = "generator"  # info: d [ "ac_role" ] = "generator"
+        aci = _ac_in(d)  # info: set aci
+        limit = 550.0 if _is_delta(d) else 300.0 if _is_river(d) else None  # info: set limit
+        if limit is not None and aci > limit:  # info: if limit is not None and aci > limit :
+            d["on_generator"] = True  # info: d [ "on_generator" ] = True
+            if d.get("ac_role") != "transfer_out":  # info: if d . get ( "ac_role" ) != "transfer_out" :
+                d["ac_role"] = "generator"  # info: d [ "ac_role" ] = "generator"
 
     leftover: list[tuple[dict, float]] = []  # info: set leftover
     for d in devices:  # info: for d in devices :
@@ -304,6 +308,9 @@ def bank_state(devices: list[dict]) -> str:  # info: def bank_state
         bits.append("appliances")  # info: bits . append ( "appliances" )
     src = next((d.get("label") for d in devices if d.get("ac_role") == "transfer_out"), None)  # info: set src
     dst = next((d.get("label") for d in devices if d.get("ac_role") == "transfer_in"), None)  # info: set dst
+    gens = [d.get("label") for d in devices if d.get("on_generator")]  # info: set gens
+    if gens:  # info: if gens :
+        bits.append("generator " + ", ".join(str(g) for g in gens))  # info: bits . append ( "generator " + ", " . join
     if src and dst:  # info: if src and dst :
         bits.append(f"transfer {src} -> {dst}")  # info: bits . append ( f" transfer { src
     elif cats["transfer_w"] >= 20:  # info: elif cats [ "transfer_w" ] >= 20 :

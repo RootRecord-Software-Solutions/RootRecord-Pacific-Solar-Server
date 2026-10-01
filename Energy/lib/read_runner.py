@@ -146,23 +146,45 @@ def _has_data(fields: dict) -> bool:  # info: def _has_data
 
 
 # ====================================================
-# SECTION: function derive_charge_source
-# What it does: Generator status is API-only (per operator rule).
+# SECTION: function _watts_match
+# What it does: True when two AC watt readings are the same transfer.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def derive_charge_source(fields: dict, source: str, other_ac_outs: list[float]) -> str:  # info: def derive_charge_source
-    """Generator status is API-only (per operator rule)."""  # info: """Generator status is API-only (per operator rule)."""
+def _watts_match(a: float, b: float) -> bool:  # info: def _watts_match
+    if a < 20 or b < 20:  # info: if a < 20 or b < 20 :
+        return False  # info: return False
+    return abs(a - b) <= max(40.0, 0.12 * max(a, b))  # info: return abs ( a - b ) <= max ( 40.0 , 0.12 * max ( a , b ) )
+
+
+# ====================================================
+# SECTION: function derive_charge_source
+# What it does: Delta AC in over 550 W or River AC in over 300 W is generator. Matching Delta output is a transfer.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def derive_charge_source(fields: dict, source: str, other_ac_outs: list[float], alias: str = "") -> str:  # info: def derive_charge_source
+    """Delta AC in over 550 W, or River AC in over 300 W, is generator. A matching Delta AC out is a transfer."""  # info: """Delta AC in over 550 W, or River AC in over 300 W, is generator. A matching Delta AC out is a transfer."""
+    del source  # info: watt thresholds replace the old API-only generator rule
     try:  # info: try :
         ac_in = float(fields.get("ac_input_power") or 0)  # info: set ac_in
     except (TypeError, ValueError):  # info: except ( TypeError , ValueError ) :
         ac_in = 0.0  # info: set ac_in
+    key = (alias or "").lower()  # info: set key
+    outs = []  # info: set outs
+    for out in other_ac_outs:  # info: for out in other_ac_outs :
+        try:  # info: try :
+            outs.append(float(out))  # info: outs . append ( float ( out ) )
+        except (TypeError, ValueError):  # info: except ( TypeError , ValueError ) :
+            continue  # info: continue
+    if "river" in key and any(_watts_match(out, ac_in) for out in outs):  # info: if "river" in key and any (
+        return "battery_transfer"  # info: return "battery_transfer"
+    if "delta" in key and ac_in > 550:  # info: if "delta" in key and ac_in > 550 :
+        return "generator"  # info: return "generator"
+    if "river" in key and ac_in > 300:  # info: if "river" in key and ac_in > 300 :
+        return "generator"  # info: return "generator"
     if ac_in <= 5:  # info: if ac_in <= 5 :
         return "none"  # info: return "none"
-    for out in other_ac_outs:  # info: for out in other_ac_outs :
-        if out is not None and out > 20 and abs(out - ac_in) < max(80, ac_in * 0.4):  # info: if out is not None and out >
-            return "battery_transfer"  # info: return "battery_transfer"
-    if source in ("api", "cloud"):  # info: if source in ( "api" , "cloud" )
-        return "generator"  # info: return "generator"
+    if any(_watts_match(out, ac_in) for out in outs):  # info: if any ( _watts_match ( out , ac_in ) for out in outs ) :
+        return "battery_transfer"  # info: return "battery_transfer"
     return "ac"  # info: return "ac"
 
 
