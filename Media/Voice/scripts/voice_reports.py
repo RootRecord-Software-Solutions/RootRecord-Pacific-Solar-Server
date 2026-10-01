@@ -81,6 +81,8 @@ STORM_CLASS = {"HU": "Hurricane", "TS": "Tropical Storm", "TD": "Tropical Depres
                "PC": "Post-tropical Cyclone", "TY": "Typhoon", "STY": "Super Typhoon"}  # NHC classification codes
 DEVICES = (("delta2", "Delta 2"), ("river2pro", "River 2 Pro"))  # info: set DEVICES
 STALE_MIN = 30  # info: set STALE_MIN
+DELTA_GEN_W = 550  # info: Delta 2 AC in above this is the generator
+RIVER_GEN_W = 300  # info: River 2 Pro AC in above this is the generator
 # ====================================================
 # SECTION: KIND
 # What it does: Set KIND.
@@ -144,7 +146,82 @@ def energy_facts(t: datetime) -> list[dict]:  # info: def energy_facts
                     "solar_w": watts.get("solar_input_power"), "ac_out_w": watts.get("ac_output_power"),  # info: "solar_w" : watts . get ( "solar_input_power" )
                     "usbc_out_w": watts.get("usbc_output_power"), "ac_in_w": watts.get("ac_input_power"),  # info: "usbc_out_w" : watts . get ( "usbc_output_power" )
                     "charge": watts.get("charge_source")})  # info: "charge" : watts . get ( "charge_source" )
+    mark_supply(out)  # info: label generator or a Delta-to-River transfer
     return out  # info: return out
+
+
+# ====================================================
+# SECTION: function _watts
+# What it does: Float watts, or None when the field is missing.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _watts(v):  # info: def _watts
+    try:  # info: try :
+        return float(v)  # info: return float ( v )
+    except (TypeError, ValueError):  # info: except ( TypeError , ValueError ) :
+        return None  # info: return None
+
+
+# ====================================================
+# SECTION: function watts_match
+# What it does: True when Delta AC out and River AC in are the same transfer.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def watts_match(a, b) -> bool:  # info: def watts_match
+    if a is None or b is None:  # info: if a is None or b is None :
+        return False  # info: return False
+    if a < 20 or b < 20:  # info: if a < 20 or b < 20 :
+        return False  # info: return False
+    return abs(a - b) <= max(40.0, 0.12 * max(a, b))  # info: return abs ( a - b ) <= max ( 40.0 , 0.12 * max ( a , b ) )
+
+
+# ====================================================
+# SECTION: function mark_supply
+# What it does: Delta AC in over 550 W, or River AC in over 300 W, is generator. A matching Delta output is a transfer.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def mark_supply(facts: list[dict]) -> None:  # info: def mark_supply
+    by = {f.get("name"): f for f in facts if f.get("ok")}  # info: set by
+    delta, river = by.get("Delta 2"), by.get("River 2 Pro")  # info: delta , river = by . get (
+    d_out = _watts(delta.get("ac_out_w")) if delta else None  # info: set d_out
+    r_in = _watts(river.get("ac_in_w")) if river else None  # info: set r_in
+    transfer = watts_match(d_out, r_in)  # info: set transfer
+    if delta:  # info: if delta :
+        d_in = _watts(delta.get("ac_in_w"))  # info: set d_in
+        delta["supply"] = "generator" if d_in is not None and d_in > DELTA_GEN_W else None  # info: delta [ "supply" ] = "generator" if d_in
+        delta["feeding"] = "transfer" if transfer else None  # info: delta [ "feeding" ] = "transfer" if transfer else None
+    if river:  # info: if river :
+        if transfer:  # info: if transfer :
+            river["supply"] = "transfer"  # info: river [ "supply" ] = "transfer"
+        else:  # info: else :
+            river["supply"] = "generator" if r_in is not None and r_in > RIVER_GEN_W else None  # info: river [ "supply" ] = "generator" if r_in
+
+
+# ====================================================
+# SECTION: function supply_clause
+# What it does: Spoken generator or transfer clause. Empty when neither applies.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def supply_clause(f: dict) -> str:  # info: def supply_clause
+    if f.get("supply") == "generator":  # info: if f . get ( "supply" ) == "generator" :
+        return f", on generator, AC in {spoken_watts(f.get('ac_in_w'))}"  # info: return f" , on generator, AC in { spoken_watts
+    if f.get("supply") == "transfer":  # info: if f . get ( "supply" ) == "transfer" :
+        return ", transfer from the Delta 2"  # info: return ", transfer from the Delta 2"
+    if f.get("feeding") == "transfer":  # info: if f . get ( "feeding" ) == "transfer" :
+        return ", transfer to the River 2 Pro"  # info: return ", transfer to the River 2 Pro"
+    return ""  # info: return ""
+
+
+# ====================================================
+# SECTION: function range_clause
+# What it does: Out-of-range line when a pack reading is stale. Does not call it old.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def range_clause(f: dict) -> str | None:  # info: def range_clause
+    age = f.get("age_min")  # info: set age
+    if not f.get("ok") or age is None or age <= STALE_MIN:  # info: if not f . get ( "ok" ) or age is None or age <= STALE_MIN :
+        return None  # info: return None
+    return f"{f['name']} is out of range."  # info: return f" { f [ 'name' ] } is out of range. "
 
 
 # ====================================================
@@ -393,13 +470,18 @@ def b_energy_report(t: datetime):  # info: def b_energy_report
         out = sum(x for x in (f["ac_out_w"], f["usbc_out_w"]) if isinstance(x, (int, float)))  # info: set out
         if f["ac_out_w"] is not None or f["usbc_out_w"] is not None:  # info: if f [ "ac_out_w" ] is not None
             s += f", output {spoken_watts(out)}"  # info: set s
-        sp.append(s + ".")  # info: sp . append ( s + "." )
-        if f["age_min"] is not None and f["age_min"] > STALE_MIN:  # info: if f [ "age_min" ] is not None
-            sp.append(f"That {f['name']} reading is {f['age_min']} minutes old.")  # info: sp . append ( f" That { f
+        sp.append(s + supply_clause(f) + ".")  # info: sp . append ( s + supply_clause ( f ) + "." )
+        note = range_clause(f)  # info: set note
+        if note:  # info: if note :
+            sp.append(note)  # info: sp . append ( note )
     still = newest_ch1(t)  # info: set still
     if still:  # info: if still :
-        md.append(f"- Solar panel still age: {still['age_min']} min (`{Path(still['path']).name}`)")  # info: md . append ( f" - Solar panel still age: { still
-        sp.append(f"Solar panel still is {still['age_min']} minutes old.")  # info: sp . append ( f" Solar panel still is { still
+        name = Path(still["path"]).name  # info: set name
+        if still["age_min"] > 0:  # info: if still [ "age_min" ] > 0 :
+            md.append(f"- Solar panel still age: {still['age_min']} min (`{name}`)")  # info: md . append ( f" - Solar panel still age: { still
+            sp.append(f"Solar panel still is {still['age_min']} minutes old.")  # info: sp . append ( f" Solar panel still is { still
+        else:  # info: else :
+            md.append(f"- Solar panel still: current (`{name}`)")  # info: md . append ( f" - Solar panel still: current ( ` { name } ` ) " )
     else:  # info: else :
         md.append("- Solar panel still: not on file")  # info: md . append ( "- Solar panel still: not on file" )
         sp.append("No solar panel still on file.")  # info: sp . append ( "No solar panel still on file." )
@@ -741,10 +823,15 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
         power = [(k, f.get(k)) for k in ("solar_w", "ac_out_w") if f.get(k) is not None]  # info: set power
         for k, v in power:  # info: for k , v in power :
             bits.append(f"{'solar input' if k == 'solar_w' else 'AC out'} {v} W")  # info: bits . append ( f" { 'solar input' if
-        if power and all(int(round(float(v))) == 0 for _, v in power):  # info: if power and all ( int ( round
-            sbits.append("idle")  # no solar in, no AC out
-        else:  # info: else :
-            sbits += [f"{'solar input' if k == 'solar_w' else 'AC out'} {spoken_watts(v)}" for k, v in power]  # info: set sbits
+        clause = supply_clause(f).lstrip(", ")  # info: set clause
+        nonzero = [(k, v) for k, v in power if int(round(float(v))) != 0]  # info: set nonzero
+        if clause:  # info: if clause :
+            bits.append(clause)  # info: bits . append ( clause )
+            sbits.append(clause)  # info: sbits . append ( clause )
+        if nonzero:  # info: if nonzero :
+            sbits += [f"{'solar input' if k == 'solar_w' else 'AC out'} {spoken_watts(v)}" for k, v in nonzero]  # info: set sbits
+        elif not clause:  # info: elif not clause :
+            sbits.append("idle")  # no solar in, no AC out, not on generator or transfer
         lines.append(f"{f['name']}: " + ", ".join(bits))  # info: lines . append ( f" { f [
         spoken_lines.append(f"{f['name']}: " + ", ".join(sbits))  # info: spoken_lines . append ( f" { f [
     if not any(f["ok"] for f in facts):  # info: if not any ( f [ "ok" ]
@@ -752,8 +839,9 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
     else:  # info: else :
         sp += [x + "." for x in spoken_lines]  # info: set sp
         for f in facts:  # info: for f in facts :
-            if f["ok"] and f.get("age_min") is not None and f["age_min"] > STALE_MIN:  # info: if f [ "ok" ] and f .
-                sp.append(f"That {f['name']} reading is {f['age_min']} minutes old.")  # info: sp . append ( f" That { f
+            note = range_clause(f)  # info: set note
+            if note:  # info: if note :
+                sp.append(note)  # info: sp . append ( note )
     if sun.get("date") == t.date().isoformat() and sun.get("sunset"):  # info: if sun . get ( "date" ) ==
         if t.strftime("%H:%M") < sun["sunset"]:  # info: if t . strftime ( "%H:%M" ) <
             sp.append(f"Sunrise was {spoken_hhmm(sun['sunrise'])}, sunset is {spoken_hhmm(sun['sunset'])}.".replace("..", "."))  # info: sp . append ( f" Sunrise was { spoken_hhmm
@@ -1123,7 +1211,7 @@ def main() -> int:  # info: def main
         if wav:  # info: if wav
             import voice_deliver  # info: import voice_deliver
             photo = newest_ch1(t) if report == "energy_report" else None  # info: set photo
-            caption = f"Solar panel still is {photo['age_min']} minutes old." if photo else ""  # info: set caption
+            caption = f"Solar panel still is {photo['age_min']} minutes old." if photo and photo["age_min"] > 0 else ""  # info: set caption
             res["deliver"] = voice_deliver.deliver(report, wav, " ".join(spoken), KIND[report], report_text=md, photo=(photo or {}).get("path"), photo_caption=caption)  # info: res [ "deliver" ] = voice_deliver . deliver
     print(json.dumps(res, ensure_ascii=False))  # info: call print
     return 0  # info: return 0

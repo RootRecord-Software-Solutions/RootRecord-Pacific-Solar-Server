@@ -297,7 +297,7 @@ def main() -> int:  # info: def main
 
     # 3) Charge source
     other_outs = _collect_other_ac_outs(alias)  # info: set other_outs
-    charge_source = derive_charge_source(fields, source, other_outs)  # info: set charge_source
+    charge_source = derive_charge_source(fields, source, other_outs, alias)  # info: set charge_source
 
     observed_at = (  # info: set observed_at
         datetime.now(timezone.utc)  # info: datetime . now ( timezone . utc )
