@@ -37,9 +37,9 @@ AGENT = {  # info: set AGENT
 NAMES = {"ava": "Ava", "bruce": "Bruce", "carly": "Carly"}  # info: set NAMES
 TITLES = {  # info: set TITLES
     "nws_weather": "NWS Hawaiʻi", "kilauea_report": "Kīlauea", "security_desk": "Security",  # info: titles
-    "bandwidth_desk": "Bandwidth", "energy_report": "Energy desk", "remaining_tasks": "Remaining tasks",  # info: titles
-    "system_perf": "System performance", "solar_desk": "Hourly solar", "earthquake_report": "Earthquake",  # info: titles
-    "hurricane_desk": "Hurricane desk", "morning_report": "Morning report", "midday_report": "Midday report",  # info: titles
+    "bandwidth_desk": "Bandwidth", "energy_report": "Energy", "remaining_tasks": "Remaining tasks",  # info: titles
+    "system_perf": "System performance", "solar_desk": "Solar", "earthquake_report": "Earthquake",  # info: titles
+    "hurricane_desk": "Hurricane", "morning_report": "Morning report", "midday_report": "Midday report",  # info: titles
     "late_report": "Late report", "official_weather": "Official weather", "boot_brief": "Boot brief",  # info: titles
 }  # info: }
 STAMP = re.compile(r"_(\d{8}T\d{4})")  # info: set STAMP
@@ -92,6 +92,8 @@ def spoken_text(md: str, read: str = "") -> str:  # info: def spoken_text
         s = line.strip()  # info: set s
         if not s or s.startswith("#") or s.startswith("_") or s.startswith("|---") or s.startswith("| Device") or s.startswith("| Metric"):  # info: if skip
             continue  # info: continue
+        if len(s) > 220 and not s.startswith(("-", "|")):  # info: if narrative
+            continue  # info: continue
         if s.startswith("## ") or "`" in s or "Source:" in s:  # info: if internal
             continue  # info: continue
         if s.startswith("|"):  # info: if table row
@@ -106,17 +108,29 @@ def spoken_text(md: str, read: str = "") -> str:  # info: def spoken_text
 
 
 # ====================================================
+# SECTION: function measured_text
+# What it does: Public measured lines. Spoken transcripts stay out of the post.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def measured_text(md: str) -> str:  # info: def measured_text
+    """Public measured lines. Spoken transcripts stay out of the post."""  # info: docstring
+    clipped = md.split("\n## Spoken", 1)[0]  # info: set clipped
+    return spoken_text(clipped, "")  # info: return measured
+
+
+# ====================================================
 # SECTION: function public_message
-# What it does: Persona header, spoken report, and the public page link.
+# What it does: Report title, measured lines, and the public page link.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def public_message(key: str, slug: str, md: str, read: str = "") -> str:  # info: def public_message
-    """Persona header, spoken report, and the public page link."""  # info: docstring
-    body = spoken_text(md, read)  # info: set body
+    """Report title, measured lines, and the public page link."""  # info: docstring
+    del read  # info: ignore transcript
+    body = measured_text(md)  # info: set body
     if not body:  # info: if not body
         return ""  # info: return empty
     title = TITLES.get(key, key.replace("_", " "))  # info: set title
-    return f"{persona_name(key)} — {title}\n\n{body}\n\n{page_link(slug)}"  # info: return message
+    return f"{title}\n\n{body}\n\n{page_link(slug)}"  # info: return message
 
 
 # ====================================================
@@ -237,8 +251,8 @@ def consolidation(key: str, slug: str, rows: list[tuple[datetime, str]], hours: 
         first, last = rows[0][0], rows[-1][0]  # info: set first , last
         bits = [f"{label}, {span}.", f"{len(rows)} report{'s' if len(rows) != 1 else ''} on file, {first.strftime('%H:%M')} to {last.strftime('%H:%M')} HST."]  # info: set bits
         bits.extend(averages([text for _, text in rows]))  # info: extend averages
-        latest = spoken_text(rows[-1][1])  # info: set latest
+        latest = measured_text(rows[-1][1])  # info: set latest
         if latest:  # info: if latest
             bits.append(f"Latest: {latest}")  # info: append latest
         body = " ".join(bits)  # info: set body
-    return f"{persona_name(key)} — {title}\n\n{body}\n\n{page_link(slug)}"  # info: return message
+    return f"{title}\n\n{body}\n\n{page_link(slug)}"  # info: return message
