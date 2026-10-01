@@ -257,8 +257,11 @@ def _flat(text: str) -> str:  # info: def _flat
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _shore(phrase: str) -> str:  # info: def _shore
-    cut = re.split(r" near the shore| near \d| at \d{3,}| to around \d+", phrase or "", maxsplit=1)[0]  # info: set cut
-    return cut.strip(" ,")  # info: return cut . strip ( " ," )
+    raw = (phrase or "").strip(" ,")  # info: set raw
+    cut = re.split(r" near the shore| near \d| at \d{3,}| to around \d+", raw, maxsplit=1)[0].strip(" ,")  # info: set cut
+    if cut and cut != raw:  # info: if cut and cut != raw
+        return cut + " at the shore"  # info: return cut + " at the shore"
+    return cut  # info: return cut
 
 
 # ====================================================
@@ -427,16 +430,38 @@ def b_hourly_chime(t: datetime):  # info: def b_hourly_chime
 
 
 # ====================================================
+# SECTION: function _temp_clause
+# What it does: High and low words from one forecast period. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _temp_clause(body: str) -> str:  # info: def _temp_clause
+    bits = []  # info: set bits
+    for word, say in (("Highs", "highs"), ("Lows", "lows")):  # info: for word , say
+        hit = re.search(rf"\b{word}\s+(.+?)(?:\.|$)", body or "")  # info: set hit
+        if hit:  # info: if hit :
+            bits.append(f"{say} {_shore(hit.group(1))}")  # info: bits . append
+    if bits:  # info: if bits :
+        return ", ".join(bits)  # info: return ", " . join ( bits )
+    return re.split(r"(?<=\.)\s", body or "")[0].strip().rstrip(".")  # info: return first sentence
+
+
+# ====================================================
 # SECTION: function b_nws_weather
-# What it does: b nws weather.
+# What it does: Alerts, today's state forecast, shore temperatures, and the later outlook. Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def b_nws_weather(t: datetime):  # info: def b_nws_weather
     rows, upd = alerts()  # info: rows , upd = alerts ( )
-    today, issued = sfp_today()  # info: today , issued = sfp_today ( )
+    issued, groups = sfp_read()  # info: issued , groups = sfp_read ( )
+    places = zfp_temps()  # info: set places
+    today = None  # info: set today
+    if groups and groups[0]["periods"]:  # info: if groups and groups [ 0 ] [ "periods" ]
+        label, body = groups[0]["periods"][0]  # info: label , body = first period
+        today = f"{label}: {body}"  # info: set today
     sp = ["NWS Hawaii Report."]  # info: set sp
     md = [f"# NWS Hawaii — {t.isoformat()}", "", f"- Alerts source: `api.weather.gov/alerts/active?area=HI` (updated {upd or 'n/a'})",
-          f"- Forecast source: NWS HFO State Forecast (SFP), issued {issued or 'n/a'}", "", "## Active alerts", ""]
+          f"- Forecast source: NWS HFO State Forecast (SFP), issued {issued or 'n/a'}",
+          "- Temperatures: NWS HFO Zone Forecast (ZFP), today high and tonight low", "", "## Active alerts", ""]
     if rows:  # info: if rows :
         sp.append(f"{len(rows)} active alert{'s' if len(rows) != 1 else ''} for Hawaii.")  # info: sp . append ( f" { len (
         for r in rows[:3]:  # info: for r in rows [ : 3 ]
@@ -449,6 +474,41 @@ def b_nws_weather(t: datetime):  # info: def b_nws_weather
     if today:  # info: if today :
         sp.append(f"State forecast for {today.split(':', 1)[0].lower()}.")  # info: sp . append ( f" State forecast for { today
         sp.append(today.split(":", 1)[1].strip().rstrip(".") + ".")  # info: sp . append ( today . split (
+    md += ["## Temperatures", "", "Shore number when the zone also lists an elevation.", ""]  # info: md += temperatures heading
+    if places:  # info: if places :
+        spoken_places = []  # info: set spoken_places
+        for p in places:  # info: for p in places
+            bits = []  # info: set bits
+            if p["high"]:  # info: if p [ "high" ]
+                bits.append(f"high {p['high']}")  # info: bits . append
+            if p["low"]:  # info: if p [ "low" ]
+                bits.append(f"low {p['low']}")  # info: bits . append
+            md.append(f"- **{p['place']}** — " + ", ".join(bits))  # info: md . append
+            spoken_places.append(f"{p['place']} " + ", ".join(bits))  # info: spoken_places . append
+        sp.append("Temperatures. " + ". ".join(spoken_places) + ".")  # info: sp . append
+    else:  # info: else :
+        md.append("- _not on file_")  # info: md . append ( "- _not on file_" )
+        sp.append("Temperatures are not on file.")  # info: sp . append
+    md += ["## Outlook", ""]  # info: md += outlook heading
+    wrote = False  # info: set wrote
+    outlook_bits = []  # info: set outlook_bits
+    for g in groups:  # info: for g in groups
+        later = g["periods"][1:]  # info: set later
+        if not later:  # info: if not later
+            continue  # info: continue
+        if wrote:  # info: if wrote
+            md.append("")  # info: md . append ( "" )
+        wrote = True  # info: set wrote
+        md += [f"**{g['name']}**", ""]  # info: md += group heading
+        for label, body in later:  # info: for label , body in later
+            md.append(f"- {label}: {body}")  # info: md . append
+        if not outlook_bits:  # info: if not outlook_bits
+            for label, body in later[:2]:  # info: for label , body in later [ : 2 ]
+                outlook_bits.append(f"{label}, {_temp_clause(body)}")  # info: outlook_bits . append
+    if wrote:  # info: if wrote
+        sp.append("Outlook. " + ". ".join(outlook_bits) + ".")  # info: sp . append
+    else:  # info: else
+        md.append("- _not on file_")  # info: md . append ( "- _not on file_" )
     return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
