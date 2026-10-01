@@ -27,7 +27,7 @@ from pathlib import Path  # info: from pathlib import Path
 
 import speakers  # info: import speakers
 
-PACIFIC = Path(__file__).resolve().parents[2]  # info: set PACIFIC
+PACIFIC = Path(__file__).resolve().parents[3]  # info: set PACIFIC
 RELAY = PACIFIC / "Communications" / "telegram" / "config" / "relay.conf"  # info: set RELAY
 VOICES = PACIFIC / "Communications" / "telegram" / "config" / "voices.conf"  # info: set VOICES
 DB = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database")  # info: set DB

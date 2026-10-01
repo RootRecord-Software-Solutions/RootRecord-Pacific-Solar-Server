@@ -569,6 +569,19 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
         "cwd": f"{PACIFIC}/Communications/Inbox",  # info: "cwd" : f" { PACIFIC } /Communications/Inbox "
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
+    {  # info: {
+        # Bandwidth desk needs a byte sample. OFF unless RR_NET_SAMPLES=1 at poller start. Does not send.
+        "id": "system_net_sample",  # info: "id" : "system_net_sample" ,
+        "enabled": os.environ.get("RR_NET_SAMPLES", "0") == "1",  # info: "enabled" : os . environ . get (
+        "description": "Byte-counter sample of the default-route iface -> Database System/network/. No send.",  # info: "description" : "Byte-counter sample of the default-route iface -> Database System/network/. No send." ,
+        "interval_sec": 300,  # info: "interval_sec" : 300 ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/System/scripts/host_desks.py" net-sample',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /System/scripts/host_desks.py" net-sample
+        "timeout_sec": 30,  # info: "timeout_sec" : 30 ,
+        "needs_internet": False,  # info: "needs_internet" : False ,
+        "cwd": f"{PACIFIC}/System/scripts",  # info: "cwd" : f" { PACIFIC } /System/scripts "
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
     # --- TEMPLATE (EVERY_SECONDS) — copy from the next line through the closing brace, paste ABOVE this template, remove the leading # ---
     # {
     #     "id": "example_every_seconds",
@@ -688,6 +701,41 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "command": "",  # info: "command" : "" ,
         "timeout_sec": 90,  # info: "timeout_sec" : 90 ,
         "cwd": "",  # info: "cwd" : "" ,
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
+    {  # info: {
+        # Hourly solar voice (2026-09-30). OFF unless RR_VOICE_SOLAR=1 at poller start.
+        # Voice note posts only when RR_VOICE_DELIVER=1. Default chat is the sandbox.
+        "id": "voice_solar_desk",  # info: "id" : "voice_solar_desk" ,
+        "enabled": os.environ.get("RR_VOICE_SOLAR", "0") == "1",  # info: "enabled" : os . environ . get (
+        "description": "Bruce hourly solar desk from Energy last files and sun times. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Bruce hourly solar desk from Energy last files and sun times. Voice note when RR_VOICE_DELIVER=1." ,
+        "only_at_minutes": [4],  # info: "only_at_minutes" : [ 4 ] ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" solar_desk',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" solar_desk
+        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
+        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd" : f" { PACIFIC } /Media/Voice/scripts "
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
+    {  # info: {
+        "id": "voice_security_desk",  # info: "id" : "voice_security_desk" ,
+        "enabled": os.environ.get("RR_VOICE_SECURITY", "0") == "1",  # info: "enabled" : os . environ . get (
+        "description": "Carly security desk (firewall boot, ssh, listeners, failed sign-ins). Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Carly security desk (firewall boot, ssh, listeners, failed sign-ins). Voice note when RR_VOICE_DELIVER=1." ,
+        "only_at_minutes": [11],  # info: "only_at_minutes" : [ 11 ] ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" security_desk',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" security_desk
+        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
+        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd" : f" { PACIFIC } /Media/Voice/scripts "
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
+    {  # info: {
+        "id": "voice_bandwidth_desk",  # info: "id" : "voice_bandwidth_desk" ,
+        "enabled": os.environ.get("RR_VOICE_BANDWIDTH", "0") == "1",  # info: "enabled" : os . environ . get (
+        "description": "Carly bandwidth desk from host byte samples. Voice note when RR_VOICE_DELIVER=1. Needs system_net_sample.",  # info: "description" : "Carly bandwidth desk from host byte samples. Voice note when RR_VOICE_DELIVER=1. Needs system_net_sample." ,
+        "only_at_minutes": [12],  # info: "only_at_minutes" : [ 12 ] ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" bandwidth_desk',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" bandwidth_desk
+        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
+        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd" : f" { PACIFIC } /Media/Voice/scripts "
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
     # --- TEMPLATE (EVERY_MINUTE) — copy from the next line through the closing brace, paste ABOVE this template, remove the leading # ---

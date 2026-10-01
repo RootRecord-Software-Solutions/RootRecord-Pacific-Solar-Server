@@ -25,6 +25,20 @@ export CLOUDFLARED_BIN="${CLOUDFLARED_BIN:-$REPO/Communications/network/cloudfla
 export CLOUDFLARED_TOKEN_FILE="${CLOUDFLARED_TOKEN_FILE:-$HOME/.cloudflared/rootserver.token}"  # info: export
 # Armed 2026-09-30 after sign-off (WO-MIG-01). No night-mode.json still means not sleeping.
 export RR_NIGHT_SLEEP="${RR_NIGHT_SLEEP:-1}"  # info: export
+# Voice notes Alexander asked for on 2026-09-30. Sandbox chat. Takes effect at the next poller start.
+export RR_VOICE_DELIVER="${RR_VOICE_DELIVER:-1}"  # info: export
+export RR_TELEGRAM_DEST="${RR_TELEGRAM_DEST:-sandbox}"  # info: export
+export RR_VOICE_NWS="${RR_VOICE_NWS:-1}"  # info: export
+export RR_VOICE_KILAUEA="${RR_VOICE_KILAUEA:-1}"  # info: export
+export RR_VOICE_SECURITY="${RR_VOICE_SECURITY:-1}"  # info: export
+export RR_VOICE_BANDWIDTH="${RR_VOICE_BANDWIDTH:-1}"  # info: export
+export RR_VOICE_SYSTEM_PERF="${RR_VOICE_SYSTEM_PERF:-1}"  # info: export
+export RR_VOICE_ENERGY="${RR_VOICE_ENERGY:-1}"  # info: export
+export RR_VOICE_REMAINING="${RR_VOICE_REMAINING:-1}"  # info: export
+export RR_VOICE_QUAKE="${RR_VOICE_QUAKE:-1}"  # info: export
+export RR_VOICE_SOLAR="${RR_VOICE_SOLAR:-1}"  # info: export
+export RR_GEOLOGY="${RR_GEOLOGY:-1}"  # info: export
+export RR_NET_SAMPLES="${RR_NET_SAMPLES:-1}"  # info: export
 
 # ====================================================
 # SECTION: EXEC
