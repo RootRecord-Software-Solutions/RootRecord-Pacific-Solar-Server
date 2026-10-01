@@ -38,6 +38,10 @@ try:  # info: try
     import automation_control as actl  # info: import automation_control as actl
 except Exception:  # info: except Exception
     actl = None  # info: set actl
+try:  # info: try
+    import service_notice as svc  # info: import service_notice as svc
+except Exception:  # info: except Exception
+    svc = None  # info: set svc
 
 INTERVAL_FALLBACK = float(os.environ.get("POLLER_INTERVAL_SEC", "5"))  # info: set INTERVAL_FALLBACK
 HOST = os.environ.get("POLLER_BIND", "127.0.0.1")  # info: set HOST
@@ -83,6 +87,7 @@ _latest = "starting"  # info: set _latest
 _lock = threading.Lock()  # info: set _lock
 _stop = threading.Event()  # info: set _stop
 _power_busy = threading.Lock()  # info: set _power_busy
+_service_busy = threading.Lock()  # info: set _service_busy
 _tunnel_ready = threading.Event()  # info: set _tunnel_ready
 _tunnel_proc: subprocess.Popen | None = None  # info: set _tunnel_proc
 _internet_ok = False  # info: set _internet_ok
@@ -769,6 +774,36 @@ def _kick_power(step: datetime) -> None:  # info: def _kick_power
 
 
 # ====================================================
+# SECTION: function _kick_service
+# What it does: Snapshot last-known network counts once when a published service window becomes active. Does not restart the poller.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _kick_service(step: datetime) -> None:  # info: def _kick_service
+    if svc is None or _stop.is_set():  # info: if svc is None or _stop . is_set ( )
+        return  # info: return
+    try:  # info: try
+        if not svc.needs_freeze(step):  # info: if not svc . needs_freeze ( step )
+            return  # info: return
+    except Exception as exc:  # info: except Exception as exc
+        log(f"{full_timestamp()}service notice ERROR {exc}")  # info: call log
+        return  # info: return
+    if not _service_busy.acquire(blocking=False):  # info: if not _service_busy . acquire ( blocking = False )
+        return  # info: return
+
+    def work():  # info: def work
+        try:  # info: try
+            frozen = svc.freeze_due(step)  # info: set frozen
+            if frozen:  # info: if frozen
+                log(f"{full_timestamp()}service notice frozen {','.join(frozen)}")  # info: call log
+        except Exception as exc:  # info: except Exception as exc
+            log(f"{full_timestamp()}service notice ERROR {exc}")  # info: call log
+        finally:  # info: finally
+            _service_busy.release()  # info: _service_busy . release ( )
+
+    threading.Thread(target=work, name="service-notice", daemon=True).start()  # info: threading . Thread ( target = work , name = "service-notice" , daemon = True ) . start ( )
+
+
+# ====================================================
 # SECTION: function _normalize_hhmm
 # What it does:  normalize hhmm.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -823,6 +858,7 @@ def scheduler_loop() -> None:  # info: def scheduler_loop
     log(f"{full_timestamp()}scheduler  every_seconds={len(sec_jobs)}  every_minute={len(min_jobs)}  every_hour={len(hour_jobs)}  on_at={len(at_jobs)}")  # info: call log
     ov_stamp = actl.overrides_mtime() if actl is not None else None  # info: set ov_stamp
     _kick_power(datetime.now().astimezone())  # info: call _kick_power
+    _kick_service(datetime.now().astimezone())  # info: call _kick_service
     while not _stop.is_set():  # info: while not _stop . is_set ( ) :
         if actl is not None:  # info: if actl is not None
             stamp = actl.overrides_mtime()  # info: set stamp
@@ -850,6 +886,7 @@ def scheduler_loop() -> None:  # info: def scheduler_loop
         elif slot != last_slot:  # info: elif slot != last_slot :
             for step in crossed_slots(last_slot, slot):  # info: for step in crossed_slots ( last_slot , slot )
                 _kick_power(step)  # info: call _kick_power
+                _kick_service(step)  # info: call _kick_service
                 hm_step = f"{step.hour:02d}:{step.minute:02d}"  # info: set hm_step
                 for j in min_jobs:  # info: for j in min_jobs :
                     only = j.get("only_at_minutes") or []  # info: set only
