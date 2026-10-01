@@ -14,7 +14,7 @@ import json, os  # info: import json , os
 from datetime import datetime  # info: from datetime import datetime
 from pathlib import Path  # info: from pathlib import Path
 
-LOG = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Automations/execution-audit.jsonl")  # info: set LOG
+LOG = Path(os.environ.get("RR_EXECUTION_AUDIT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Automations/execution-audit.jsonl"))  # info: set LOG
 
 # ====================================================
 # SECTION: function append

@@ -14,6 +14,7 @@ import json, subprocess, sys  # info: import json , subprocess , sys
 from pathlib import Path  # info: from pathlib import Path
 
 import audit  # info: import audit
+import gates  # info: import gates
 
 ROOT = Path("/home/rootrecord/RootRecord-Ecosystem")  # info: set ROOT
 REGISTRY = ROOT / "5 - RootRecord-Library" / "Documentation" / "02-agents" / "capabilities" / "capability-registry.json"  # info: set REGISTRY
@@ -88,10 +89,15 @@ def decide(agent: str, cap_id: str, service: str) -> tuple[int, dict]:  # info: 
         audit.append({"agent": agent, "capability": cap_id, "result": "refused"})  # info: call audit . append
         return 2, result  # info: return 2 , result
     allowed = (cap.get("agents") or {}).get(agent) == "allowed"  # info: set allowed
+    if not gates.allowed(cap):  # info: if not gates . allowed ( cap )
+        why = {"kind": "gated", "reason": "monitor gate closed"}  # info: set why
+        result = {"result": "refused", "capability": cap_id, "why_not": why}  # info: set result
+        audit.append({"agent": agent, "capability": cap_id, "permission": cap.get("permission"), "result": "refused", "reason": "monitor gate closed"})  # info: call audit . append
+        return 3, result  # info: return 3 , result
     if not allowed or not cap.get("agent_may_invoke") or cap.get("side_effects"):  # info: if not allowed or not cap . get ( "agent_may_invoke" ) or cap . get ( "side_effects" )
         why = cap.get("why_not") or {"kind": "gated", "reason": "agent may not invoke this"}  # info: set why
         result = {"result": "refused", "capability": cap_id, "why_not": why}  # info: set result
-        audit.append({"agent": agent, "capability": cap_id, "result": "refused", "kind": why.get("kind")})  # info: call audit . append
+        audit.append({"agent": agent, "capability": cap_id, "permission": cap.get("permission"), "result": "refused", "kind": why.get("kind")})  # info: call audit . append
         return 3, result  # info: return 3 , result
     body = read_body(cap_id, service)  # info: set body
     result = {"result": "ok", "capability": cap_id, "body": body}  # info: set result
