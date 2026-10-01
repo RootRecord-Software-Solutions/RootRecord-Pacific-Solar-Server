@@ -1,11 +1,11 @@
 {
   "ok": true,
   "kind": "last-known",
-  "as_of": "Thursday, October 1, 2026 \u00b7 09:54 Hawaiian Standard Time",
+  "as_of": "Thursday, October 1, 2026 \u00b7 10:00 Hawaiian Standard Time",
   "power": {
     "resource": "power",
     "title": "Power / solar",
-    "as_of": "Thursday, October 1, 2026 \u00b7 09:54 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 10:00 Hawaiian Standard Time",
     "devices": {
       "delta2": {
         "watts": {
@@ -26,16 +26,16 @@
       "river2pro": {
         "watts": {
           "solar_input_power": 0,
-          "ac_output_power": 92,
+          "ac_output_power": 96,
           "ac_input_power": 0,
-          "usbc_output_power": 8,
-          "at": "2026-10-01T09:49:54-10:00",
+          "usbc_output_power": 7,
+          "at": "2026-10-01T09:56:10-10:00",
           "source": "ble",
           "charge_source": "none"
         },
         "soc": {
-          "soc": 31.99,
-          "at": "2026-10-01T09:49:54-10:00",
+          "soc": 29.92,
+          "at": "2026-10-01T09:56:10-10:00",
           "source": "ble"
         }
       }
@@ -44,7 +44,7 @@
   "weather": {
     "resource": "weather",
     "title": "Weather",
-    "as_of": "Thursday, October 1, 2026 \u00b7 09:54 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 10:00 Hawaiian Standard Time",
     "report": {
       "generated": "2026-10-01T09:54:02-10:00 HST",
       "sections": 35
@@ -53,9 +53,9 @@
   "kilauea": {
     "resource": "kilauea",
     "title": "K\u012blauea",
-    "as_of": "Thursday, October 1, 2026 \u00b7 09:54 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 10:00 Hawaiian Standard Time",
     "status": {
-      "at": "2026-10-01T09:47:32-10:00",
+      "at": "2026-10-01T09:55:50-10:00",
       "alert_level": "WATCH",
       "color_code": "ORANGE",
       "headline": "WATCH \u2014 elevated unrest",
