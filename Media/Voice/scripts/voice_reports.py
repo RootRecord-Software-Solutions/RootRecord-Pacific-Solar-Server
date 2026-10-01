@@ -18,7 +18,7 @@
 Each run writes Database Media/Audio/Voice/Reports/<report>_current.md (old copy -> Reports/Archive/
 <report>_YYYYMMDDTHHMM.md) and a stitched WAV Media/Audio/Voice/<report>_current.wav via voice-render.sh
 (single-flight lock, nice 10, phrase-clip cache, non-resident). If the lock is busy the WAV is skipped
-(rc 75 recorded) and the text still lands. A Telegram voice note posts only when RR_VOICE_DELIVER=1, to the sandbox unless RR_TELEGRAM_DEST=council. Radio and speakers stay off.
+(rc 75 recorded) and the text still lands. A Telegram voice note posts only when RR_VOICE_DELIVER=1. RR_TELEGRAM_DEST=council selects the original council chat. Radio and speakers stay off.
 Only G3 data that exists is read: Database Energy/{soc,watts}/*-last.json (EcoFlow BLE), Database
 Weather/Hawai'i (NWS alerts + SFP state forecast, Pacific weather poller), Library Work-Order checkboxes,
 /proc, and Database Geology/Earthquakes/{hawaii,global}-last.json (Pacific Geology/scripts/geology_collect.py,

@@ -9,7 +9,7 @@
 # Pacific .gitignore excludes us-mainland-server/ (own repo). No rclone / aws-sync.
 # Council relay (ensure-relay.sh): FLM llama3.2:3b on the NPU, RR_NPU_ONLY=1, no Ollama fallback, context 4096, on demand.
 # Other callers and flm-warmup.sh still default to llama3.2:1b on demand. That 1b default is not the council model.
-# Telegram council-relay: one getUpdates (Ava). Sandbox replies on (SANDBOX_REPLIES=1). Live council and private DMs stay quiet (RR_RELAY_REPLIES default 0).
+# Telegram council-relay: one getUpdates (Ava). Original council replies on (COUNCIL_REPLIES=1). Sandbox replies off (SANDBOX_REPLIES=0). Private DMs stay quiet (RR_RELAY_REPLIES default 0). Delivery dest is the original council (RR_TELEGRAM_DEST=council).
 #
 # Deploy format (standing, all future builds):
 #   push to GitHub → github_sync_all merge → schedule-stack-reload full stop/start + window.

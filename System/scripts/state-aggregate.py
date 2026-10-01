@@ -351,14 +351,21 @@ def capabilities(relay: dict, flags: dict) -> dict:  # info: def capabilities
     def flag_on(name: str) -> bool:  # info: def flag_on
         return flags.get(name) == "set"  # info: return flags . get ( name ) == "set"
     sandbox_on = relay.get("SANDBOX_REPLIES") == "1"  # info: set sandbox_on
+    council_on = relay.get("COUNCIL_REPLIES") == "1" or flag_on("RR_RELAY_REPLIES")  # info: set council_on
+    available = [  # info: set available
+        {"id": "sandbox_replies", "status": "available" if sandbox_on else "disabled", "source": "relay.conf", "confidence": "configured", "why_not": None if sandbox_on else why("disabled", "disabled", "SANDBOX_REPLIES is not 1", "SANDBOX_REPLIES", "SANDBOX_REPLIES=1")},  # info: { "id" : "sandbox_replies" , "status" : "available" if sandbox_on else "disabled"
+        {"id": "npu_council_infer", "status": "available", "source": "ensure-relay.sh", "confidence": "configured", "note": "On demand llama3.2:3b, context 4096. Not resident."},  # info: { "id" : "npu_council_infer" , "status" : "available" , "source" : "ensure-relay.sh"
+    ]  # info: ]
+    gated = [  # info: set gated
+        {"id": "private_dm_replies", "why_not": why("gated", "gated", "Private DMs stay quiet on purpose.", "RR_RELAY_REPLIES", "RR_RELAY_REPLIES=1")},  # info: { "id" : "private_dm_replies" , "why_not" : why
+    ]  # info: ]
+    if council_on:  # info: if council_on
+        available.append({"id": "live_council_replies", "status": "available", "source": "relay.conf", "confidence": "configured", "why_not": None})  # info: available . append
+    else:  # info: else
+        gated.insert(0, {"id": "live_council_replies", "why_not": why("gated", "gated", "Original council stays quiet on purpose.", "COUNCIL_REPLIES", "COUNCIL_REPLIES=1")})  # info: gated . insert
     return {  # info: return {
-        "available": [  # info: "available" : [
-            {"id": "sandbox_replies", "status": "available" if sandbox_on else "disabled", "source": "relay.conf", "confidence": "configured", "why_not": None if sandbox_on else why("disabled", "disabled", "SANDBOX_REPLIES is not 1", "SANDBOX_REPLIES", "SANDBOX_REPLIES=1")},  # info: { "id" : "sandbox_replies" , "status" : "available" if sandbox_on else "disabled"
-            {"id": "npu_council_infer", "status": "available", "source": "ensure-relay.sh", "confidence": "configured", "note": "On demand llama3.2:3b, context 4096. Not resident."},  # info: { "id" : "npu_council_infer" , "status" : "available" , "source" : "ensure-relay.sh"
-        ],  # info: ] ,
-        "gated": [  # info: "gated" : [
-            {"id": "live_council_replies", "why_not": why("gated", "gated", "Live council stays quiet on purpose.", "RR_RELAY_REPLIES", "RR_RELAY_REPLIES=1")},  # info: { "id" : "live_council_replies" , "why_not" : why
-            {"id": "private_dm_replies", "why_not": why("gated", "gated", "Private DMs stay quiet on purpose.", "RR_RELAY_REPLIES", "RR_RELAY_REPLIES=1")},  # info: { "id" : "private_dm_replies" , "why_not" : why
+        "available": available,  # info: "available" : available ,
+        "gated": gated + [  # info: "gated" : gated + [
             {"id": "quake_telegram_send", "why_not": why("gated", "gated", "Quake posts do not send.", "RR_COUNCIL_QUAKE_SEND", "RR_COUNCIL_QUAKE_SEND=1")},  # info: { "id" : "quake_telegram_send" , "why_not" : why
             {"id": "bruce_stats_send", "why_not": why("gated", "gated", "Bruce stats do not send.", "RR_BRUCE_STATS_SEND", "RR_BRUCE_STATS_SEND=1")},  # info: { "id" : "bruce_stats_send" , "why_not" : why
             {"id": "agent_program_launch", "why_not": why("not_implemented", "not_implemented", "No agent may launch a program from this snapshot.", "agent_execution_layer", "Alexander adds an execution layer")},  # info: { "id" : "agent_program_launch" , "why_not" : why
@@ -630,6 +637,8 @@ def build() -> dict:  # info: def build
         for j in jobs:  # info: for j in jobs :
             j["confidence"] = "unknown"  # info: j [ "confidence" ] = "unknown"
     relay = kv_file(RELAY_CONF)  # info: set relay
+    council_on = relay.get("COUNCIL_REPLIES") == "1" or flags.get("RR_RELAY_REPLIES") == "set"  # info: set council_on
+    dm_on = flags.get("RR_RELAY_REPLIES") == "set"  # info: set dm_on
     relay_pids = python_script(rows, "council-relay.py")  # info: set relay_pids
     ollama_pids = exe_serve(rows, "ollama")  # info: set ollama_pids
     poller_pids = python_script(rows, "rootserver_poller.py")  # info: set poller_pids
@@ -688,8 +697,8 @@ def build() -> dict:  # info: def build
         "communication": {  # info: "communication" : {
             "telegram": {"credentials": "not_in_this_file", "source": "policy", "confidence": "configured"},  # info: "telegram" : { "credentials" : "not_in_this_file" , "source" : "policy" , "confidence" : "configured" } ,
             "sandbox": {"chat_configured": bool(relay.get("SANDBOX_CHAT_ID")), "replies": relay.get("SANDBOX_REPLIES") == "1", "source": "relay.conf", "confidence": "configured"},  # info: "sandbox" : { "chat_configured" : bool ( relay . get ( "SANDBOX_CHAT_ID" ) ) , "replies" : relay . get ( "SANDBOX_REPLIES" ) == "1"
-            "live_council": {"chat_configured": bool(relay.get("COUNCIL_CHAT_ID")), "replies": False, "why_not": why("gated", "gated", "Live council replies are off on purpose.", "RR_RELAY_REPLIES", "RR_RELAY_REPLIES=1"), "source": "relay.conf", "confidence": "configured"},  # info: "live_council" : { "chat_configured" : bool ( relay . get ( "COUNCIL_CHAT_ID" ) )
-            "private_dms": {"replies": False, "why_not": why("gated", "gated", "Private DMs are off on purpose.", "RR_RELAY_REPLIES", "RR_RELAY_REPLIES=1"), "source": "council-relay.py", "confidence": "configured"},  # info: "private_dms" : { "replies" : False , "why_not" : why
+            "live_council": {"chat_configured": bool(relay.get("COUNCIL_CHAT_ID")), "replies": council_on, "why_not": None if council_on else why("gated", "gated", "Original council replies are off.", "COUNCIL_REPLIES", "COUNCIL_REPLIES=1"), "source": "relay.conf", "confidence": "configured"},  # info: "live_council" : { "chat_configured" : bool ( relay . get ( "COUNCIL_CHAT_ID" ) )
+            "private_dms": {"replies": dm_on, "why_not": None if dm_on else why("gated", "gated", "Private DMs are off on purpose.", "RR_RELAY_REPLIES", "RR_RELAY_REPLIES=1"), "source": "council-relay.py", "confidence": "configured"},  # info: "private_dms" : { "replies" : dm_on , "why_not" : None if dm_on else why
         },  # info: } ,
         "repositories": repos_block(),  # info: "repositories" : repos_block ( ) ,
         "automation": {"scheduled": jobs, "running_processes": {"rootserver_poller": poller_pids, "council_relay": relay_pids}, "poller_flag_source": flag_source},  # info: "automation" : { "scheduled" : jobs , "running_processes" : { "rootserver_poller" : poller_pids , "council_relay" : relay_pids } , "poller_flag_source" : flag_source } ,

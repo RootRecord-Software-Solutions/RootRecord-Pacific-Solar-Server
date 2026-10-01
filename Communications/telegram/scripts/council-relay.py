@@ -38,12 +38,16 @@ def replies_enabled() -> bool:  # info: def replies_enabled
 
 # ====================================================
 # SECTION: function replies_for_chat
-# What it does: Live council stays quiet unless RR_RELAY_REPLIES=1. The sandbox chat answers when SANDBOX_REPLIES=1.
+# What it does: Original council answers when COUNCIL_REPLIES=1. Sandbox answers when SANDBOX_REPLIES=1. Anything else needs RR_RELAY_REPLIES=1.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def replies_for_chat(cfg, chat: str) -> bool:  # info: def replies_for_chat
+    chat = str(chat)  # info: set chat
     sandbox = (cfg.get("SANDBOX_CHAT_ID") or "").strip()  # info: set sandbox
-    if sandbox and str(chat) == sandbox and (cfg.get("SANDBOX_REPLIES") or "0").strip() == "1":  # info: if sandbox and str ( chat ) == sandbox
+    if sandbox and chat == sandbox and (cfg.get("SANDBOX_REPLIES") or "0").strip() == "1":  # info: if sandbox and chat == sandbox
+        return True  # info: return True
+    council = (cfg.get("COUNCIL_CHAT_ID") or "").strip()  # info: set council
+    if council and chat == council and (cfg.get("COUNCIL_REPLIES") or "0").strip() == "1":  # info: if council and chat == council
         return True  # info: return True
     return replies_enabled()  # info: return replies_enabled ( )
 
@@ -440,7 +444,7 @@ def seed_interaction(msg, text, ch, sandbox_id):  # info: def seed_interaction
 
 # ====================================================
 # SECTION: function main
-# What it does: Poll one getUpdates. Answer the sandbox when SANDBOX_REPLIES=1. Keep the live council quiet unless RR_RELAY_REPLIES=1.
+# What it does: Poll one getUpdates. Answer the original council when COUNCIL_REPLIES=1. Answer the sandbox only when SANDBOX_REPLIES=1. Private DMs stay quiet unless RR_RELAY_REPLIES=1.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def main():  # info: def main
@@ -476,7 +480,8 @@ def main():  # info: def main
     offset = int(offset_file.read_text().strip() or "0") if offset_file.is_file() else 0  # info: set offset
     timeout = int(cfg.get("POLL_TIMEOUT", "20") or "20")  # info: set timeout
     sandbox_note = f" sandbox={sandbox_id} sandbox_replies={'ON' if replies_for_chat(cfg, sandbox_id) else 'OFF'}" if sandbox_id else ""  # info: set sandbox_note
-    print(f"[ok] relay chat={chat_id}{sandbox_note} poll={poll_voice} infer=FLM-prefer replies={'ON' if replies_enabled() else 'OFF (quiet; set RR_RELAY_REPLIES=1 to opt in)'}")  # info: call print
+    council_note = f" council_replies={'ON' if replies_for_chat(cfg, chat_id) else 'OFF'}"  # info: set council_note
+    print(f"[ok] relay chat={chat_id}{council_note}{sandbox_note} poll={poll_voice} infer=FLM-prefer replies={'ON' if replies_enabled() else 'OFF (private DMs quiet; RR_RELAY_REPLIES=0)'}")  # info: call print
 
     last_rotate = 0.0  # info: set last_rotate
     while True:  # info: while True :

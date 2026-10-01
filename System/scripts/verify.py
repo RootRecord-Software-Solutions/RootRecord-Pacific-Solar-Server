@@ -99,11 +99,16 @@ def source_checks() -> None:  # info: def source_checks
         add("PASS", "jobs.py council line matches NPU llama3.2:3b")  # info: call add
     else:  # info: else :
         add("WARN", "configuration drift: jobs.py council line does not name llama3.2:3b with no Ollama fallback")  # info: call add
-    if "SANDBOX_REPLIES=1" in conf:  # info: if "SANDBOX_REPLIES=1" in conf
-        add("PASS", "sandbox replies configured on")  # info: call add
+    if "COUNCIL_REPLIES=1" in conf and "SANDBOX_REPLIES=0" in conf:  # info: if "COUNCIL_REPLIES=1" in conf and "SANDBOX_REPLIES=0" in conf
+        add("PASS", "original council replies on; sandbox replies off")  # info: call add
+    elif "SANDBOX_REPLIES=1" in conf:  # info: elif "SANDBOX_REPLIES=1" in conf
+        add("WARN", "sandbox replies are on; original council is not the reply target")  # info: call add
     else:  # info: else :
-        add("WARN", "sandbox replies are not 1 in relay.conf")  # info: call add
-    add("WARN", "live council and private DMs intentionally gated (RR_RELAY_REPLIES default 0)")  # info: call add
+        add("WARN", "neither sandbox nor original council replies are configured on")  # info: call add
+    if 'RR_RELAY_REPLIES="${RR_RELAY_REPLIES:-0}"' in relay:  # info: if 'RR_RELAY_REPLIES="${RR_RELAY_REPLIES:-0}"' in relay
+        add("PASS", "private DMs stay off (RR_RELAY_REPLIES default 0)")  # info: call add
+    else:  # info: else :
+        add("WARN", "RR_RELAY_REPLIES default is not 0; private DMs may answer")  # info: call add
     if '"agent_launchable": true' in registry:  # info: if '"agent_launchable": true' in registry
         add("FAIL", "a program is marked agent_launchable")  # info: call add
     else:  # info: else :

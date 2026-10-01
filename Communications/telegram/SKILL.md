@@ -26,8 +26,8 @@ description: >-
 | Infer | `System/scripts/plumbing/run-infer.sh` (via relay) |
 
 Set `COUNCIL_CHAT_ID` before live poll. Stop legacy `apps.council` first.
-Sandbox tests use `SANDBOX_CHAT_ID` (`-1004406495175`, https://t.me/c/4406495175/2). `SANDBOX_REPLIES=1` answers that chat while the live council stays quiet. Reports, statuses, and commands target it with `RR_TELEGRAM_DEST=sandbox`.
-`DESK_LIVE_FILE` is refreshed before each sandbox reply. A power question cites those lines. A scope question cites the state slice. Live council replies stay off until `RR_RELAY_REPLIES=1`.
+The original council chat is `COUNCIL_CHAT_ID`. `COUNCIL_REPLIES=1` answers that chat. The sandbox (`SANDBOX_CHAT_ID`, https://t.me/c/4406495175/2) answers only when `SANDBOX_REPLIES=1`. Reports and statuses use `RR_TELEGRAM_DEST=council` for the original chat.
+`DESK_LIVE_FILE` is refreshed before each reply. A power question cites those lines. A scope question cites the state slice. Private DMs stay off until `RR_RELAY_REPLIES=1`.
 
 # ------------------------------------------------------------------------------
 # SECTION: HOW TO ADD A VOICE

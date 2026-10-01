@@ -5,8 +5,9 @@ Component: `Communications/telegram/scripts/council-relay.py`, started by `ensur
 ## Promises
 
 - Exactly one long-poll, Ava's token, chats listed in `config/relay.conf`.
-- Sandbox replies when `SANDBOX_REPLIES=1`, even if `RR_RELAY_REPLIES` is 0.
-- Live council and private DMs are held, not answered, while `RR_RELAY_REPLIES` is 0.
+- The original council chat replies when `COUNCIL_REPLIES=1`.
+- The sandbox replies when `SANDBOX_REPLIES=1`.
+- Private DMs are held, not answered, while `RR_RELAY_REPLIES` is 0.
 - Before a reply, refresh the desk file and the state snapshot.
 - Post only the reply text. Drop a reply that echoes `DESK_LIVE:` or the instruction block.
 - Eyes reaction, then inference, then typing, then the message.
@@ -18,7 +19,7 @@ Component: `Communications/telegram/scripts/council-relay.py`, started by `ensur
 
 ## Produces
 
-- Telegram messages in the sandbox, from the voice that was routed.
+- Telegram messages in the chat that is allowed to reply, from the voice that was routed.
 - Inbox lines for held chats.
 - For the sandbox chat only, one interaction request under Database `System/status/requests/`. The live council chat is not seeded. The username on that record is a label. Build eligibility is `from.id` against the Library principal registry. Council passes start only when `RR_INTERACTION_COUNCIL=1`.
 - A refresh of Database `Intake/desk-live.txt` and `System/status/rootrecord-state.json`.
@@ -27,7 +28,7 @@ Component: `Communications/telegram/scripts/council-relay.py`, started by `ensur
 
 - `relay.conf` for chat ids and the sandbox switch.
 - `ensure-relay.sh` for the NPU flags. The poller starts the relay. Do not start a second one.
-- Alexander, by setting `RR_RELAY_REPLIES=1` when the live room should speak.
+- Alexander, by setting `COUNCIL_REPLIES` for the original council chat, or `RR_RELAY_REPLIES=1` when private DMs should also speak.
 
 ## Must never happen
 

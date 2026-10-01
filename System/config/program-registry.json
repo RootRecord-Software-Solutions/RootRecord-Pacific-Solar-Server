@@ -87,7 +87,7 @@
       "agents_allowed": [],
       "requires_confirmation": true,
       "inputs": [],
-      "outputs": ["sandbox replies when SANDBOX_REPLIES=1"],
+      "outputs": ["original council replies when COUNCIL_REPLIES=1", "sandbox replies when SANDBOX_REPLIES=1"],
       "side_effects": ["telegram_getUpdates", "telegram_sendMessage"],
       "why_not": {
         "status": "gated",
@@ -163,7 +163,7 @@
       "agents_allowed": [],
       "requires_confirmation": true,
       "inputs": ["Energy/soc/*-last.json", "Energy/watts/*-last.json", "Energy/sun/sun-times-last.json", "Energy/vision/ch1-look-last.json", "Media/Images/ch1-*.jpg"],
-      "outputs": ["voice report markdown", "wav", "sandbox voice note only when RR_VOICE_DELIVER=1"],
+      "outputs": ["voice report markdown", "wav", "telegram voice note when RR_VOICE_DELIVER=1 and RR_TELEGRAM_DEST names the chat"],
       "side_effects": ["writes_voice_files", "telegram_sendVoice"],
       "why_not": {
         "status": "gated",
@@ -182,7 +182,7 @@
       "agents_allowed": [],
       "requires_confirmation": true,
       "inputs": ["ufw boot", "sshd", "listener counts"],
-      "outputs": ["voice report markdown", "wav", "sandbox voice note only when RR_VOICE_DELIVER=1"],
+      "outputs": ["voice report markdown", "wav", "telegram voice note when RR_VOICE_DELIVER=1 and RR_TELEGRAM_DEST names the chat"],
       "side_effects": ["writes_voice_files", "telegram_sendVoice"],
       "why_not": {
         "status": "gated",
@@ -201,7 +201,7 @@
       "agents_allowed": [],
       "requires_confirmation": true,
       "inputs": ["System/network samples"],
-      "outputs": ["voice report markdown", "wav", "sandbox voice note only when RR_VOICE_DELIVER=1"],
+      "outputs": ["voice report markdown", "wav", "telegram voice note when RR_VOICE_DELIVER=1 and RR_TELEGRAM_DEST names the chat"],
       "side_effects": ["writes_voice_files", "telegram_sendVoice"],
       "why_not": {
         "status": "gated",
