@@ -171,6 +171,14 @@ a:hover { color: #e0f2fe; }
   font-size: 13px;
 }
 
+a.rel-login {
+  color: #f0f9ff;
+  text-decoration: none;
+  border-color: rgba(125, 211, 252, 0.55);
+}
+
+a.rel-login:hover { color: #fff; }
+
 .rel-spine {
   display: flex;
   align-items: center;
