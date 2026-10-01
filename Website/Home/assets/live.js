@@ -35,6 +35,7 @@
   var opsSeen = false;
   var opsAt = null;
   var lastReadings = null;
+  var lastMoonPhase = null;
 
   function wordFrom(hasSignal, fresh) {
     if (!navigator.onLine) return "OFFLINE";
@@ -226,12 +227,71 @@
       + " Z";
   }
 
+  function moonSkyTurn(date) {
+    var lat = 19.43 * Math.PI / 180;
+    var lon = -155.23;
+    var obliq = 23.4397 * Math.PI / 180;
+    var day = date.getTime() / 86400000 - 0.5 + 2440588 - 2451545;
+    function rightAscension(lng, lat) {
+      return Math.atan2(Math.sin(lng) * Math.cos(obliq) - Math.tan(lat) * Math.sin(obliq), Math.cos(lng));
+    }
+    function declination(lng, lat) {
+      return Math.asin(Math.sin(lat) * Math.cos(obliq) + Math.cos(lat) * Math.sin(obliq) * Math.sin(lng));
+    }
+    function place(ra, dec) {
+      var hour = (Math.PI / 180) * (280.16 + 360.9856235 * day) - (Math.PI / 180) * -lon - ra;
+      var alt = Math.asin(Math.sin(lat) * Math.sin(dec) + Math.cos(lat) * Math.cos(dec) * Math.cos(hour));
+      var az = Math.atan2(Math.sin(hour), Math.cos(hour) * Math.sin(lat) - Math.tan(dec) * Math.cos(lat));
+      var compass = (az + Math.PI) % (2 * Math.PI);
+      return {
+        x: Math.cos(alt) * Math.sin(compass),
+        y: Math.cos(alt) * Math.cos(compass),
+        z: Math.sin(alt)
+      };
+    }
+    var mean = (Math.PI / 180) * (357.5291 + 0.98560028 * day);
+    var center = (Math.PI / 180) * (1.9148 * Math.sin(mean) + 0.02 * Math.sin(2 * mean) + 0.0003 * Math.sin(3 * mean));
+    var sunLng = mean + center + (Math.PI / 180) * 102.9372 + Math.PI;
+    var moonMean = (Math.PI / 180) * (134.963 + 13.064993 * day);
+    var moonLng = (Math.PI / 180) * (218.316 + 13.176396 * day) + (Math.PI / 180) * 6.289 * Math.sin(moonMean);
+    var moonLat = (Math.PI / 180) * 5.128 * Math.sin((Math.PI / 180) * (93.272 + 13.229350 * day));
+    var sun = place(rightAscension(sunLng, 0), declination(sunLng, 0));
+    var moon = place(rightAscension(moonLng, moonLat), declination(moonLng, moonLat));
+    function dot(a, b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+    function unit(v) {
+      var n = Math.sqrt(dot(v, v)) || 1;
+      return { x: v.x / n, y: v.y / n, z: v.z / n };
+    }
+    var up = unit({ x: -dot({ x: 0, y: 0, z: 1 }, moon) * moon.x, y: -dot({ x: 0, y: 0, z: 1 }, moon) * moon.y, z: 1 - dot({ x: 0, y: 0, z: 1 }, moon) * moon.z });
+    var right = unit({
+      x: moon.y * up.z - moon.z * up.y,
+      y: moon.z * up.x - moon.x * up.z,
+      z: moon.x * up.y - moon.y * up.x
+    });
+    var bright = unit({
+      x: sun.x - dot(sun, moon) * moon.x,
+      y: sun.y - dot(sun, moon) * moon.y,
+      z: sun.z - dot(sun, moon) * moon.z
+    });
+    var fromUp = Math.atan2(dot(bright, right), dot(bright, up)) * 180 / Math.PI;
+    return fromUp + 90;
+  }
+
   function drawMoon(phase) {
     var d = moonLitPath(phase);
+    var turn = "rotate(" + moonSkyTurn(new Date()).toFixed(1) + " 50 50)";
     var path = document.getElementById("moon-lit");
     var clip = document.getElementById("moon-lit-shape");
-    if (path) path.setAttribute("d", d);
-    if (clip) clip.setAttribute("d", d);
+    var craters = document.getElementById("moon-craters");
+    if (path) {
+      path.setAttribute("d", d);
+      path.setAttribute("transform", turn);
+    }
+    if (clip) {
+      clip.setAttribute("d", d);
+      clip.setAttribute("transform", turn);
+    }
+    if (craters) craters.setAttribute("transform", turn);
     var shade = document.getElementById("moon-shade");
     if (!shade || phase === null || phase === undefined || !Number.isFinite(phase)) return;
     var p = ((phase % 1) + 1) % 1;
@@ -239,6 +299,7 @@
   }
 
   function paintMoonClock() {
+    if (lastMoonPhase !== null) drawMoon(lastMoonPhase);
     var node = document.getElementById("moon-when");
     if (!node) return;
     var parts = new Intl.DateTimeFormat("en-US", {
@@ -267,6 +328,7 @@
       drawMoon(null);
       return;
     }
+    lastMoonPhase = moon.phase;
     text("moon-phase-name", moon.name || "Moon");
     text("moon-illum", moon.illumination === null ? "Illumination unavailable" : Math.round(moon.illumination) + "% illuminated");
     var next = moon.nextName ? "Next · " + moon.nextName : "Next phase unavailable";
