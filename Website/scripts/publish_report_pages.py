@@ -17,6 +17,7 @@ from __future__ import annotations  # info: from __future__ import annotations
 
 import html  # info: import html
 import json  # info: import json
+import re  # info: import re
 import sys  # info: import sys
 from pathlib import Path  # info: from pathlib import Path
 
@@ -56,6 +57,85 @@ def public_body(key: str) -> str:  # info: def public_body
 
 
 # ====================================================
+# SECTION: function report_markdown
+# What it does: Read one current report. Empty when the file is missing.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def report_markdown(key: str) -> str:  # info: def report_markdown
+    path = VOICE / f"{key}_current.md"  # info: set path
+    if not path.is_file():  # info: if not path . is_file
+        return ""  # info: return empty
+    return path.read_text(encoding="utf-8", errors="replace")  # info: return markdown
+
+
+# ====================================================
+# SECTION: function as_of
+# What it does: Clock from the report heading, shown as Hawaiian time.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def as_of(md: str) -> str:  # info: def as_of
+    found = re.search(r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})", md)  # info: set found
+    if not found:  # info: if not found
+        return ""  # info: return empty
+    year, month, day, hour, minute = found.groups()  # info: unpack stamp
+    names = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")  # info: set names
+    return f"{int(day)} {names[int(month) - 1]} {year} · {hour}:{minute} HST"  # info: return stamp
+
+
+# ====================================================
+# SECTION: function measured
+# What it does: Public measured lines. Drops source paths, file names, and template notes.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def measured(md: str) -> list[str]:  # info: def measured
+    body = md.split("\n## Spoken", 1)[0]  # info: set body
+    section = ""  # info: set section
+    rows = []  # info: set rows
+    for line in body.splitlines():  # info: for line in body
+        raw = line.strip()  # info: set raw
+        if raw.startswith("## "):  # info: if section heading
+            section = raw[3:].strip()  # info: set section
+            continue  # info: continue
+        if not raw or raw.startswith("#") or raw.startswith("_") or raw.startswith("|---") or raw.startswith("| Metric") or raw.startswith("| Device"):  # info: if skip
+            continue  # info: continue
+        if raw.startswith("|"):  # info: if table row
+            cells = [cell.strip() for cell in raw.strip("|").split("|")]  # info: set cells
+            item = f"{cells[0]}: {cells[1]}" if len(cells) >= 2 else ""  # info: set item
+        else:  # info: else
+            item = raw[2:].strip() if raw.startswith("- ") else raw  # info: set item
+        item = re.sub(r"`[^`]*`", "", item)  # info: drop code spans
+        item = item.replace("**", "")  # info: drop bold marks
+        item = re.sub(r"\(\s*\)", "", item)  # info: drop empty parens
+        item = " ".join(item.split()).strip(" -")  # info: collapse space
+        low = item.lower()  # info: set low
+        if not item or low.startswith(("alerts source", "forecast source", "collected", "source:")):  # info: if provenance
+            continue  # info: continue
+        if any(token in low for token in ("database ", ".json", ".py", ".jpg", "/proc", "host_desks")):  # info: if internal
+            continue  # info: continue
+        if section and not low.startswith(section.lower()):  # info: if section applies
+            item = f"{section}: {item}"  # info: prefix section
+        section = ""  # info: clear section
+        if item not in rows:  # info: if new
+            rows.append(item)  # info: append
+        if len(rows) >= 8:  # info: if cap
+            break  # info: break
+    return rows  # info: return rows
+
+
+# ====================================================
+# SECTION: function excerpt
+# What it does: Short public preview for one report card.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def excerpt(text: str, limit: int = 220) -> str:  # info: def excerpt
+    words = " ".join((text or "").split())  # info: set words
+    if len(words) <= limit:  # info: if short
+        return words  # info: return words
+    cut = words[:limit].rsplit(" ", 1)[0]  # info: set cut
+    return cut.rstrip(".,;:") + "…"  # info: return cut
+
+
+# ====================================================
 # SECTION: function write_if_changed
 # What it does: Write HTML only when the new text differs. Does not post.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -70,12 +150,13 @@ def write_if_changed(path: Path, text: str) -> bool:  # info: def write_if_chang
 
 # ====================================================
 # SECTION: function chrome
-# What it does: Shared page head, nav, and footer. Reports is the current nav item.
+# What it does: Shared page head, nav, and footer. No starfield. Reports is the current nav item.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def chrome(title: str, description: str, canonical: str, main: str) -> str:  # info: def chrome
+def chrome(title: str, description: str, canonical: str, main: str, wide: bool = False) -> str:  # info: def chrome
     desc = html.escape(description, quote=True)  # info: set desc
     page_title = html.escape(title, quote=True)  # info: set page_title
+    width = "page page-wide" if wide else "page"  # info: set width
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -93,9 +174,8 @@ def chrome(title: str, description: str, canonical: str, main: str) -> str:  # i
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
-<body>
+<body class="desk">
 <a class="skip" href="#content">Skip to content</a>
-<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
@@ -110,7 +190,7 @@ def chrome(title: str, description: str, canonical: str, main: str) -> str:  # i
     <a href="/status">Status</a>
   </nav>
 </header>
-<main class="page" id="content">
+<main class="{width}" id="content">
 {main}
 </main>
 <footer class="site-foot">
@@ -121,7 +201,6 @@ def chrome(title: str, description: str, canonical: str, main: str) -> str:  # i
   <a href="/status">Status</a>
   <a href="/about">About</a>
 </footer>
-<script src="/assets/starfield.js"></script>
 <script src="/assets/shell.js"></script>
 </body>
 </html>
@@ -130,7 +209,7 @@ def chrome(title: str, description: str, canonical: str, main: str) -> str:  # i
 
 # ====================================================
 # SECTION: function index_page
-# What it does: Build the /reports index. One link per Discord slug.
+# What it does: Build the /reports index as cards with the latest public text.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def index_page(rows: list[dict]) -> str:  # info: def index_page
@@ -138,25 +217,39 @@ def index_page(rows: list[dict]) -> str:  # info: def index_page
     for row in rows:  # info: for row in rows
         key = str(row["key"])  # info: set key
         who = persona_name(key)  # info: set who
-        slug = str(row["name"])  # info: set slug
-        title = TITLES.get(key, key.replace("_", " "))  # info: set title
-        groups.setdefault(who, []).append(f'    <li><a href="/reports/{html.escape(slug, quote=True)}">{html.escape(title)}</a></li>')  # info: append link
+        slug = html.escape(str(row["name"]), quote=True)  # info: set slug
+        title = html.escape(TITLES.get(key, key.replace("_", " ")))  # info: set title
+        role = html.escape(str(row.get("function") or ""))  # info: set role
+        md = report_markdown(key)  # info: set md
+        preview = excerpt(public_body(key) or "")  # info: set preview
+        if not preview:  # info: if not preview
+            facts = measured(md)  # info: set facts
+            preview = excerpt(facts[0]) if facts else "No public report is on file."  # info: set preview
+        when = as_of(md)  # info: set when
+        stamp = f'<p class="fine">{html.escape(when)}</p>' if when else ""  # info: set stamp
+        groups.setdefault(who, []).append(  # info: append card
+            f'    <a class="card report-card" href="/reports/{slug}">\n'
+            f"      <h3>{title}</h3>\n"
+            f'      <p class="tax-items">{role}</p>\n'
+            f'      <p class="excerpt">{html.escape(preview)}</p>\n'
+            f"      {stamp}\n"
+            f"    </a>"
+        )  # info: card
     blocks = []  # info: set blocks
     for who in ("Ava", "Bruce", "Carly"):  # info: for who in personas
-        items = "\n".join(groups.get(who) or [])  # info: set items
-        if items:  # info: if items
-            blocks.append(f"  <h2>{who}</h2>\n  <ul>\n{items}\n  </ul>")  # info: append block
+        cards = "\n".join(groups.get(who) or [])  # info: set cards
+        if cards:  # info: if cards
+            blocks.append(f'  <section class="sec" aria-label="{who}">\n    <h2>{who}</h2>\n    <div class="report-board">\n{cards}\n    </div>\n  </section>')  # info: append section
     main = """  <p class="eyebrow">Public reports</p>
   <h1>Reports</h1>
-  <p class="prose">Ava, Bruce, and Carly. Each page is the latest public report. The same address is the link posted with that report.</p>
-  <section class="tree" aria-label="Reports">
-""" + "\n".join(blocks) + "\n  </section>\n  <p class=\"fine\"><a href=\"/operations#reporting\">Systems</a></p>"  # info: set main
-    return chrome("Reports — Root Record", "Public reports from Ava, Bruce, and Carly.", f"{SITE}", main)  # info: return chrome
+  <p class="prose">Ava, Bruce, and Carly. Each card is the latest public report. Open it for the spoken text and the measured lines.</p>
+""" + "\n".join(blocks)  # info: set main
+    return chrome("Reports — Root Record", "Public reports from Ava, Bruce, and Carly.", f"{SITE}", main, wide=True)  # info: return chrome
 
 
 # ====================================================
 # SECTION: function report_page
-# What it does: Build one /reports/<slug> page. Spoken text only.
+# What it does: Build one /reports/<slug> page with the spoken text and measured lines.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def report_page(row: dict) -> str:  # info: def report_page

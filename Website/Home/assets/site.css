@@ -1054,3 +1054,40 @@ body { overflow-x: clip; }
 @media (prefers-reduced-motion: reduce) {
   .spin { display: none; }
 }
+
+body.desk { background: #000011; }
+
+body.desk .top { background: #000011; }
+
+.report-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.report-card h3 {
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.report-card .excerpt {
+  margin: 10px 0 0;
+  color: #d0d0dc;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.facts {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+.facts li {
+  padding: 8px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 13px;
+  line-height: 1.5;
+}
