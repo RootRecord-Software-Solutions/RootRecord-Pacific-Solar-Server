@@ -4,7 +4,7 @@
 | --- | --- |
 | **Ported from** | G0 `rootrecordsoftwaresolutions/old` `operations/news/_collector.py` + `operations/news/hawaii/news.py` (scheduled by `operations/cronologicals/on-time/10:00/hawaii-news.py`). G0 files KEPT, unchanged |
 | **Date** | 2026-09-29 14:03 HST (old-repo migration, breadth pass) |
-| **State** | LANDED · Hawaiʻi seeded 2026-09-29 ~14:20 HST: **PASS, 278 posts** from 16 feeds (temp root) · job **PROPOSED, not registered**. WO-MIG-12 adds the other 49 states and the global index (jobs **PROPOSED, not in jobs.py**). Public page: desk folder `3 - RootRecord-Website/` was removed 2026-09-30. Do not start it again. The public Vercel app is remote only. |
+| **State** | LANDED · Hawaiʻi seeded 2026-09-29 ~14:20 HST: **PASS, 278 posts** from 16 feeds (temp root) · job **PROPOSED, not registered**. WO-MIG-12 adds the other 49 states and the global index (jobs **PROPOSED, not in jobs.py**). The public page is `Website/Home/` only. News is not a route on that page. |
 | **Secrets** | none (public official pages only) |
 
 ```text
@@ -56,7 +56,7 @@ Standing rule: `Automations/scripts/jobs.py` is edited only on Alexander's reque
 
 The other 49 states are one script plus `config/state_portals.json`, not 49 copies of `news.py`. `build_global_news.py` only aggregates databases that are already on disk. `locations` stays `[]` until the country location pollers exist. Runtime SQLite, `*-news-last.json` (except the Hawaiʻi summary), `global-news-last.json`, and `Logs/Reports/News/` stay out of git.
 
-Public page: desk folder `3 - RootRecord-Website/` was removed 2026-09-30. There is no desk checkout. Do not start it again. The public Vercel app is remote only. `https://rootserver.rootrecord.cloud/` is the poller on `127.0.0.1:8799`, not a site. A signed-off remote news route should read `global-news-last.json` with the globe overlay glass card (dark glass, 16px radius, blur). Do not import `news.css` or the old geography news HTML. Do not deploy without a separate sign-off.
+Public page: news is not on `Website/Home/`. Do not recreate `3 - RootRecord-Website/`. Do not bind port 3001. Data stays in Database `Reports/News/`. `https://rootserver.rootrecord.cloud/` is the poller on `127.0.0.1:8799`, not a site.
 
 Proposed jobs (not in `jobs.py` — shared file, left untouched). Both default off. Paste into `EVERY_HOUR` only when Alexander asks and the file is free:
 
@@ -89,6 +89,6 @@ Proposed jobs (not in `jobs.py` — shared file, left untouched). Both default o
 
 **Check later (Alexander):**
 1. Review the 16 seed feeds (`SEED_FEEDS` in `hawaii_news.py`): keep the County of Maui feed (not hawaii.gov, 134 items incl. 2013 archive)? Find working Honolulu / Hawaiʻi County / Kauaʻi feeds (403 / 404 / empty today). Keep `RR_NEWS_SEEDS_ONLY=1` or also run discovery?
-2. The public news page has no desk checkout. Desk folder `3 - RootRecord-Website/` was removed 2026-09-30. Do not start it again. Data stays in Database `Reports/News/`.
+2. The public news page is not on `Website/Home/`. Do not recreate `3 - RootRecord-Website/`. Data stays in Database `Reports/News/`.
 3. The other 49 states and the global builder landed in WO-MIG-12 (one wrapper, not 49 scripts). Jobs `RR_STATE_NEWS` and `RR_GLOBAL_NEWS` stay proposed.
 4. Posts older than the checkpoint are kept on a normal run (only `--backfill` filters by checkpoint), so the first run stores the feeds' full history (oldest 2013-11-02, Maui).

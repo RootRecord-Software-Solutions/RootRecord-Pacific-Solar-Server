@@ -2,70 +2,61 @@
   "guild_id": "1497039564345442406",
   "guild_name": "RootRecord Software Solutions",
   "bot_username": "Root Record Global Updater",
-  "observed_at": "2026-09-30T19:44:00-10:00",
-  "note": "Snapshot of channels the bot can see. Not the reply allowlist. config/channels.json stays empty until a channel is accepted.",
+  "observed_at": "2026-09-30T20:05:00-10:00",
+  "note": "Professional layout. One channel per function. The reply allowlist is config/channels.json and contains only #help-desk.",
+  "rules_channel_id": "1555097949413970081",
+  "public_updates_channel_id": "1555098748772688087",
   "categories": [
     {
-      "id": "1504063647943495710",
-      "name": "Public",
+      "id": "1555097945009815633",
+      "name": "Start",
       "channels": [
-        {"id": "1497160346358644767", "name": "verification", "type": "text"},
-        {"id": "1507198579687559269", "name": "links", "type": "text"},
-        {"id": "1512245745166581821", "name": "global-updates-bot", "type": "announcement"}
+        {"id": "1555097949413970081", "name": "rules", "type": "text", "function": "Membership rules and entry gate"},
+        {"id": "1555097954237284383", "name": "announcements", "type": "announcement", "function": "Official RootRecord announcements"},
+        {"id": "1555098748772688087", "name": "discord-notices", "type": "text", "function": "Notices Discord sends to community administrators"}
       ]
     },
     {
-      "id": "1504063663051374643",
-      "name": "04 · Support",
+      "id": "1555097958624526342",
+      "name": "Help",
       "channels": [
-        {"id": "1497042843674349658", "name": "suggestions", "type": "text"},
-        {"id": "1504070258976096399", "name": "unverified-help", "type": "text"},
-        {"id": "1504063674438910012", "name": "verified-support", "type": "text"},
-        {"id": "1506459571139383326", "name": "kilauea-app-support", "type": "text"},
-        {"id": "1506459515560919112", "name": "weather-app-support", "type": "text"},
-        {"id": "1506459456685342780", "name": "business-app-support", "type": "text"},
-        {"id": "1509829430128672809", "name": "promote-your-content", "type": "text"}
+        {"id": "1555097963049521192", "name": "help-desk", "type": "text", "function": "Root Record Global Updater"}
       ]
     },
     {
-      "id": "1504063654285283339",
-      "name": "Verified Chats",
+      "id": "1555097967575310408",
+      "name": "Products",
       "channels": [
-        {"id": "1497039565461000214", "name": "general", "type": "text"},
-        {"id": "1545283785803960393", "name": "kilauea-alerts", "type": "text"},
-        {"id": "1497039787356590201", "name": "weather-manager", "type": "text"},
-        {"id": "1497039751482707970", "name": "business-manager", "type": "text"},
-        {"id": "1497039887524696084", "name": "homestead-manager", "type": "text"}
+        {"id": "1555097972419731476", "name": "weather-manager", "type": "text", "function": "Weather Manager"},
+        {"id": "1555097976530145310", "name": "business-manager", "type": "text", "function": "Business Manager"},
+        {"id": "1555097980665598022", "name": "kilauea-alerts", "type": "text", "function": "Kilauea Alerts"},
+        {"id": "1555097984381886545", "name": "root-goals", "type": "text", "function": "Root Goals"},
+        {"id": "1555097988769128509", "name": "rootmc", "type": "text", "function": "RootMC product. Community chat stays on the Minecraft Discord"}
       ]
     },
     {
-      "id": "1504063650673987628",
-      "name": "01 · Ops & feed",
+      "id": "1555097992791466045",
+      "name": "Operations",
       "channels": [
-        {"id": "1499515809767096443", "name": "in-app-feedback", "type": "text"},
-        {"id": "1499495951373697125", "name": "transactions", "type": "text"},
-        {"id": "1545278495750361171", "name": "sessions", "type": "text"},
-        {"id": "1545283818146242642", "name": "raw-ai", "type": "text"},
-        {"id": "1498944021689536542", "name": "testers-lounge", "type": "text"},
-        {"id": "1500286864119038103", "name": "global-updates", "type": "text"},
-        {"id": "1497044129140707479", "name": "office-operations", "type": "text"},
-        {"id": "1497042889128022086", "name": "general-feedback", "type": "text"},
-        {"id": "1499489364147835090", "name": "partnership-requests", "type": "text"},
-        {"id": "1508977018971230308", "name": "product-ideas", "type": "text"},
-        {"id": "1509812977069592676", "name": "ios-waitlist", "type": "text"},
-        {"id": "1511922772983545947", "name": "blocknotes-ai", "type": "text"},
-        {"id": "1511923750776606780", "name": "rootgoal-ai-reports", "type": "text"}
+        {"id": "1555097997086302221", "name": "server-status", "type": "text", "function": "Recorded Pacific server and service status"},
+        {"id": "1555098002329436301", "name": "incidents", "type": "text", "function": "Active incidents and resolution"},
+        {"id": "1555098007249362954", "name": "releases", "type": "text", "function": "Product and service releases"}
       ]
     },
     {
-      "id": "1504063666637635614",
-      "name": "05 · Voice",
+      "id": "1555098011594530866",
+      "name": "Office",
       "channels": [
-        {"id": "1497039565461000215", "name": "General", "type": "voice"}
+        {"id": "1555098016275243040", "name": "feedback", "type": "text", "function": "Product feedback and suggestions"},
+        {"id": "1555098021476180061", "name": "partnerships", "type": "text", "function": "Partnership requests"}
+      ]
+    },
+    {
+      "id": "1555098026337505280",
+      "name": "Voice",
+      "channels": [
+        {"id": "1555098030884130928", "name": "briefing", "type": "voice", "function": "Scheduled calls"}
       ]
     }
-  ],
-  "uncategorized": [
-    {"id": "1509026945331892285", "name": "rules", "type": "text"}
   ]
 }

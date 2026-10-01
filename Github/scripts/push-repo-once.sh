@@ -196,7 +196,9 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do  # info:
 
   branch=$(git rev-parse --abbrev-ref HEAD)  # info: set branch
 
-  if ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then  # info: if
+  has_head=0  # info: set has_head
+  git rev-parse --verify HEAD >/dev/null 2>&1 && has_head=1  # info: command
+  if [[ "$has_head" == 0 ]] || ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then  # info: if
     git add -A  # info: git
     if [[ "$id" == "ecosystem" ]]; then  # info: if
       unstage_ecosystem_runtime  # info: unstage_ecosystem_runtime

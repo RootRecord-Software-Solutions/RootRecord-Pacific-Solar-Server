@@ -13,7 +13,7 @@ Before any Discord bot is brought online on Pacific:
 1. Issue a new bot token from the Discord Developer Portal for the target application (Reset Token / generate).
 2. Store it as `DISCORD_BOT_TOKEN` in `/home/rootrecord/master/master-key.env` only. Never commit the value.
 3. Do not copy tokens from archive, mirror, or inventory history. Do not fall through `AVA_DISCORD_BOT_TOKEN`, `SEXI_DISCORD_BOT_TOKEN`, or `DISCORD_ROOTMC_BOT_TOKEN`.
-4. `config/channels.json` stays `[]` until a channel id is accepted. An empty list does not call Discord, even after the token is present.
+4. `config/channels.json` lists only `#help-desk` (`1555097963049521192`). The poller does not fetch other channels.
 5. Posts stay off unless `RR_DISCORD_POST=1`. That gate is unset. Mark LIVE only after a smoke test Alexander signs off.
 
 Canonical process: [WO-COM-002 — Discord Bot Credential Rotation](https://github.com/RootRecord-Software-Solutions/RootRecord-Library/blob/main/Documentation/06-development/Work-Orders/WO-COM-002-Discord-Bot-Credential-Rotation.md)
@@ -108,7 +108,7 @@ The gate is `RR_GLOBAL_UPDATER=1`. Unset means the poller does not run this path
 - the message names Root Record Global Updater, or a mention username matches that name
 - the author is not a bot
 
-The professional guild is `1497039564345442406`. Direct messages have no guild id, so they are ignored. The bot user id is `1500289560343740566`. A mention of that id, or of the name Root Record Global Updater, is the trigger. Other channel traffic is left alone. `config/channels.json` is still empty, so the poller does not fetch or reply until a channel is accepted. `config/channel-map.json` is the observed channel list, not the allowlist.
+The professional guild is `1497039564345442406`. Direct messages have no guild id, so they are ignored. The bot user id is `1500289560343740566`. A mention of that id, or of the name Root Record Global Updater, is the trigger, and only in `#help-desk`. `config/channel-map.json` is the full professional layout. `RR_GLOBAL_UPDATER` and `RR_DISCORD_POST` stay unset, so the poller does not reply until those gates are turned on.
 
 The reply is one `run-infer.sh` call for the voice `global-updater`, on the existing NPU single-flight path (`RR_NPU_ONLY=1`, `llama3.2:3b`). It does not call Ava, Bruce, or Carly. Host figures come from the recorded file `2 - RootRecord-Database/System/last/host-last.json`. Discord does not sample the host. A missing or old sample is unavailable. A sample older than 15 minutes and no older than 6 hours is reported as stale. A host sample is not a service-status claim.
 

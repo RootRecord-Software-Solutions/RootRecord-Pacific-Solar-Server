@@ -1,6 +1,16 @@
 # Website
 
-Desk runtime for the Stripe snapshot, Vercel failed-build records, and live-data pages. Public cards are in the remote Vercel app only. Desk folder `3 - RootRecord-Website/` was removed 2026-09-30. There is no desk checkout. Do not start it again. `https://rootserver.rootrecord.cloud/` is the poller on `127.0.0.1:8799`, not a site.
+Desk runtime for Stripe snapshots, Vercel failed-build records, and last-known operation JSON. The public page is `Website/Home/`.
+
+| Item | Where |
+| --- | --- |
+| Public page | [Home/](Home/) — globe background, closable services and operations panels |
+| GitHub / Vercel | `RootRecord-Software-Solutions/RootRecord-Website`, mirror row `website` in `Github/scripts/repos.conf` |
+| Globe feed | `https://www.rootrecord.cloud/api/state` on AWS |
+| Operations feed | `https://www.rootrecord.cloud/api/operations` on AWS. The route is in the mainland server source and is not deployed, so the panel reads No data until that file is on AWS |
+| Last-known file | `2 - RootRecord-Database/Website/operations.json` |
+
+`3 - RootRecord-Website/` is not on this desk. Do not recreate it. Do not bind port 3001. `https://rootserver.rootrecord.cloud/` is the poller on `127.0.0.1:8799`, not this page.
 
 ## Status (2026-09-30 HST — WO-MIG-10)
 
@@ -12,7 +22,7 @@ Desk runtime for the Stripe snapshot, Vercel failed-build records, and live-data
 | `jobs.py` | `stripe_poll` every 1800 s behind `RR_STRIPE=1`. `vercel_builds` every 300 s behind `RR_VERCEL_BUILDS=1`. Both **gated off** |
 | Data | `2 - RootRecord-Database/Website/` — `stripe-snapshot.json`, `pages/{power,weather,kilauea}.json` |
 | Logs | `2 - RootRecord-Database/Logs/Website/` — failed-build JSON only. Empty until a token exists. No prune |
-| Public pages | Vercel static home at `Website/Home/`. The globe is the page background. Panels close. Globe arcs come from `https://www.rootrecord.cloud/api/state`. Last-known operation status comes from `https://www.rootrecord.cloud/api/operations`. That operations route is in the mainland server source and is not deployed, so the panel reads No data until AWS is serving the file. |
+| Public pages | `Website/Home/` is the Vercel source. See the table at the top of this file |
 | Holding skin | Unchanged copy in `5 - RootRecord-Library/Archive/Website-Themes/holding/`. Out of the Vercel build |
 
 ### Scripts

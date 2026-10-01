@@ -12,6 +12,6 @@ Desk product apps that were not imported as their own domains. One capitalized f
 | `scripts/FinanceDesk/` | Source copy only. Not a running path. Do not call Stripe. `--db` stays outside this folder. |
 | `scripts/Look/` | Source copy of `look.py` only. Not a running path. The DVR grabber was not copied. |
 
-Public glass-card routes are remote Vercel only. Desk folder `3 - RootRecord-Website/` was removed 2026-09-30. There is no desk checkout. Do not start it again. Do not add a second site. `https://rootserver.rootrecord.cloud/` is the poller on `127.0.0.1:8799`, not a site.
+Public product pages are not on the Vercel site. The only published page is `Website/Home/`. Do not recreate `3 - RootRecord-Website/`. Do not bind port 3001. `https://rootserver.rootrecord.cloud/` is the poller on `127.0.0.1:8799`, not a site.
 
 Old themes live in `5 - RootRecord-Library/Archive/Website-Themes/` and stay out of the Vercel build.
