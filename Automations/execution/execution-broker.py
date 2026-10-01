@@ -110,6 +110,14 @@ def decide(agent: str, cap_id: str, service: str) -> tuple[int, dict]:  # info: 
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def main() -> int:  # info: def main
+    if len(sys.argv) >= 3 and sys.argv[1] == "execute":  # info: if len ( sys . argv ) >= 3 and sys . argv [ 1 ] == "execute"
+        import interaction  # info: import interaction
+        print(json.dumps(interaction.execute(sys.argv[2]), indent=2))  # info: call print
+        return 0  # info: return 0
+    if len(sys.argv) >= 4 and sys.argv[1] == "recover":  # info: if len ( sys . argv ) >= 4 and sys . argv [ 1 ] == "recover"
+        import interaction  # info: import interaction
+        print(json.dumps(interaction.recover(sys.argv[2], sys.argv[3]), indent=2))  # info: call print
+        return 0  # info: return 0
     if len(sys.argv) < 4 or sys.argv[1] != "request":  # info: if len ( sys . argv ) < 4 or sys . argv [ 1 ] != "request"
         print("usage: execution-broker.py request <ava|bruce|carly> <capability> [service]", file=sys.stderr)  # info: call print
         return 2  # info: return 2

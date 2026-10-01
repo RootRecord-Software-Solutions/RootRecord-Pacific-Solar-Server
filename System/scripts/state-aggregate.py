@@ -542,7 +542,7 @@ def slices_for(doc: dict) -> dict:  # info: def slices_for
         "services=" + " ".join(run_lines),  # info: "services=" + " " . join ( run_lines ) ,
         f"health_failed={','.join(health.get('failed') or []) or 'none'}",  # info: f" health_failed=
         f"health_unknown={','.join(health.get('unknown') or []) or 'none'}",  # info: f" health_unknown=
-        "agent_launchable=none execution_broker=not_built",  # info: "agent_launchable=none execution_broker=not_built" ,
+        "read_broker=built agent_launch=not_built build_handoff=built cursor_api=gated",  # info: "read_broker=built agent_launch=not_built build_handoff=built cursor_api=gated" ,
         "unknown_is_not_broken=true",  # info: "unknown_is_not_broken=true" ,
     ])  # info: ]
     return {"safety": safety, "energy": "\n".join(energy_lines), "scope": scope, "index": f"generated_at={doc.get('generated_at')} health_failed={','.join(health.get('failed') or []) or 'none'}"}  # info: return { "safety" : safety , "energy" : "\n" . join ( energy_lines ) , "scope" : scope , "index" : f" generated_at=
@@ -558,7 +558,7 @@ def attach_canonical(doc: dict, rows: list[tuple[int, str]]) -> dict:  # info: d
     gated = [j["id"] for j in jobs if not j.get("enabled") and (j.get("why_not") or {}).get("kind") == "gated"]  # info: set gated
     disabled = [j["id"] for j in jobs if not j.get("enabled") and (j.get("why_not") or {}).get("kind") != "gated"]  # info: set disabled
     doc["schema_version"] = SCHEMA  # info: doc [ "schema_version" ] = SCHEMA
-    doc["execution_broker"] = {"state": "not_built", "visibility": "agent", "reason": "Agents do not execute programs yet."}  # info: doc [ "execution_broker" ] = { "state" : "not_built"
+    doc["execution_broker"] = {"state": "read_only", "read_broker": "built", "agent_launch": "not_built", "build_handoff": "built", "cursor_api": "gated", "visibility": "agent", "source": "execution-broker.py", "observed_at": now_local(), "confidence": "configured", "reason": "Read broker is built. Agent launch is not. The handoff package exists. cursor_api stays gated until an operator opens it."}  # info: doc [ "execution_broker" ] = { "state" : "read_only" , "read_broker" : "built"
     doc["context_policy"] = {"max_tokens": 3000, "priority": ["task", "safety", "live_state", "capabilities", "recent_changes", "history"], "visibility": "agent"}  # info: doc [ "context_policy" ] = { "max_tokens" : 3000
     doc["drift"] = [inference_drift()]  # info: doc [ "drift" ] = [ inference_drift ( ) ]
     doc["domains"] = {  # info: doc [ "domains" ] = {
@@ -574,6 +574,13 @@ def attach_canonical(doc: dict, rows: list[tuple[int, str]]) -> dict:  # info: d
     doc["services"]["cloudflared"] = {"service": "cloudflared", "status": "running" if tunnel else "stopped", "source": "process_scan", "confidence": "live", "visibility": "operator", "observed_at": now_local()}  # info: doc [ "services" ] [ "cloudflared" ] = { "service" : "cloudflared" , "status" : "running" if tunnel else "stopped"
     doc["credential"] = {"telegram": {"configured": "not_checked", "value": None, "source": "policy", "visibility": "secret", "note": "Token values are never written."}}  # info: doc [ "credential" ] = { "telegram" : { "configured" : "not_checked" , "value" : None
     doc["recent_changes"] = doc["domains"]["changes"]  # info: doc [ "recent_changes" ] = doc [ "domains" ] [ "changes" ]
+    summary_path = DB / "System" / "status" / "interaction-summary.json"  # info: set summary_path
+    summary = {}  # info: set summary
+    try:  # info: try :
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))  # info: set summary
+    except (OSError, ValueError):  # info: except ( OSError , ValueError )
+        summary = {}  # info: set summary
+    doc["interaction"] = {"request_id": summary.get("request_id"), "interaction_mode": summary.get("interaction_mode"), "status": summary.get("status"), "matching_work_orders": summary.get("matching_work_orders") or [], "visibility": "agent", "source": str(summary_path), "observed_at": summary.get("observed_at"), "confidence": "recent" if summary else "unknown"}  # info: doc [ "interaction" ] = { "request_id" : summary . get ( "request_id" )
     return doc  # info: return doc
 
 # ====================================================
@@ -585,9 +592,15 @@ def write_projections(doc: dict, slices: dict) -> None:  # info: def write_proje
     agent_dir = PROJ / "agent"  # info: set agent_dir
     agent_dir.mkdir(parents=True, exist_ok=True)  # info: agent_dir . mkdir ( parents = True , exist_ok = True )
     roles = {"ava": "default voice and the only getUpdates owner", "bruce": "replies when addressed or in a room round", "carly": "replies when addressed or in a room round"}  # info: set roles
-    public = {"schema_version": SCHEMA, "execution_broker": "not_built", "telemetry": "none_marked_public", "visibility": "public"}  # info: set public
+    public = {"schema_version": SCHEMA, "execution_broker": "read_only", "telemetry": "none_marked_public", "visibility": "public"}  # info: set public
     for voice, role in roles.items():  # info: for voice , role in roles . items ( )
-        packet = {"voice": voice, "role": role, "can_launch": False, "visibility": "agent", "slices": slices, "drift": doc.get("drift")}  # info: set packet
+        caps = []  # info: set caps
+        try:  # info: try :
+            reg = json.loads((ECOSYSTEM / "5 - RootRecord-Library" / "Documentation" / "02-agents" / "capabilities" / "capability-registry.json").read_text(encoding="utf-8"))  # info: set reg
+            caps = [row.get("id") for row in reg.get("capabilities") or [] if (row.get("agents") or {}).get(voice) == "allowed" and row.get("agent_may_invoke")]  # info: set caps
+        except (OSError, ValueError):  # info: except ( OSError , ValueError )
+            caps = []  # info: set caps
+        packet = {"voice": voice, "role": role, "can_launch": False, "visibility": "agent", "slices": slices, "drift": doc.get("drift"), "interaction": doc.get("interaction"), "capabilities": caps}  # info: set packet
         path = agent_dir / f"{voice}.json"  # info: set path
         path.write_text(json.dumps(packet, indent=2) + "\n", encoding="utf-8")  # info: path . write_text ( json . dumps ( packet , indent = 2 ) + "\n" , encoding = "utf-8" )
         os.chmod(path, 0o600)  # info: os . chmod ( path , 0o600 )

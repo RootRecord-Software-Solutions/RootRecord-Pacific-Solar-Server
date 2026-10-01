@@ -118,6 +118,31 @@ def source_checks() -> None:  # info: def source_checks
         add("PASS", "restart_known_service stays agent-locked")  # info: call add
     else:  # info: else :
         add("FAIL", "restart capability missing or unlocked")  # info: call add
+    develop = next((row for row in caps if row.get("id") == "development.execute_work_order"), None)  # info: set develop
+    denied = develop and develop.get("agent_may_invoke") is False and all((develop.get("agents") or {}).get(name) == "denied" for name in ("ava", "bruce", "carly"))  # info: set denied
+    if denied:  # info: if denied
+        add("PASS", "development.execute_work_order stays denied to agents")  # info: call add
+    else:  # info: else :
+        add("FAIL", "development.execute_work_order missing or agent-unlocked")  # info: call add
+    gate_seed = PACIFIC / "Apps" / "Control-Panel" / "execution-gates.json"  # info: set gate_seed
+    try:  # info: try :
+        gates = json.loads(gate_seed.read_text(encoding="utf-8"))  # info: set gates
+    except (OSError, ValueError):  # info: except ( OSError , ValueError )
+        gates = {}  # info: set gates
+    if (gates.get("steps") or {}).get("build", {}).get("cursor_api") is False and (gates.get("steps") or {}).get("recovery", {}).get("raise_attempt_cap") is False:  # info: if ( gates . get ( "steps" ) or { } ) . get ( "build" , { } ) . get ( "cursor_api" ) is False and ( gates . get ( "steps" ) or { } ) . get ( "recovery" , { } ) . get ( "raise_attempt_cap" ) is False
+        add("PASS", "cursor_api and attempt-cap gates ship closed")  # info: call add
+    else:  # info: else :
+        add("FAIL", "cursor_api or attempt-cap seed gate is open")  # info: call add
+    principals = ROOT / "5 - RootRecord-Library" / "Documentation" / "02-agents" / "identity" / "principal-registry.json"  # info: set principals
+    try:  # info: try :
+        people = json.loads(principals.read_text(encoding="utf-8"))  # info: set people
+    except (OSError, ValueError):  # info: except ( OSError , ValueError )
+        people = {}  # info: set people
+    agents_ok = all((people.get("agents") or {}).get(name, {}).get("can_build") is False for name in ("ava", "bruce", "carly"))  # info: set agents_ok
+    if people.get("match_key") == "telegram_user_id" and agents_ok:  # info: if people . get ( "match_key" ) == "telegram_user_id" and agents_ok
+        add("PASS", "build match key is telegram_user_id and agents cannot build")  # info: call add
+    else:  # info: else :
+        add("FAIL", "principal registry match key or agent can_build drifted")  # info: call add
     if "2 - RootRecord-Database/System/status" in skip:  # info: if "2 - RootRecord-Database/System/status" in skip
         add("PASS", "generated state is on the auto-commit skip list")  # info: call add
     else:  # info: else :

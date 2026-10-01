@@ -376,6 +376,33 @@ def inbox_hold(upd, msg, text, target, inbox_dir=None):  # info: def inbox_hold
     return cur  # info: return cur
 
 # ====================================================
+# SECTION: function seed_interaction
+# What it does: Record a sandbox message as an interaction request. Does not infer, send, or touch the live council chat.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def seed_interaction(msg, text, ch, sandbox_id):  # info: def seed_interaction
+    frm = msg.get("from") or {}  # info: set frm
+    payload = json.dumps({"chat_id": ch, "sandbox_chat_id": sandbox_id, "text": text, "message_id": msg.get("message_id"), "from_id": frm.get("id"), "username": frm.get("username") or ""})  # info: set payload
+    script = Path("/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Automations/execution/interaction.py")  # info: set script
+    try:  # info: try :
+        proc = subprocess.run([sys.executable, str(script), "seed"], input=payload, text=True, capture_output=True, timeout=5)  # info: set proc
+    except (OSError, subprocess.TimeoutExpired) as exc:  # info: except ( OSError , subprocess . TimeoutExpired ) as exc
+        print(f"[warn] interaction seed failed: {type(exc).__name__}", file=sys.stderr)  # info: call print
+        return  # info: return
+    if proc.returncode != 0:  # info: if proc . returncode != 0
+        print("[warn] interaction seed refused", file=sys.stderr)  # info: call print
+        return  # info: return
+    if os.environ.get("RR_INTERACTION_COUNCIL") != "1":  # info: if os . environ . get ( "RR_INTERACTION_COUNCIL" ) != "1"
+        return  # info: return
+    try:  # info: try :
+        seeded = json.loads(proc.stdout or "{}")  # info: set seeded
+    except ValueError:  # info: except ValueError
+        return  # info: return
+    if seeded.get("interaction_mode") not in ("work_order", "build"):  # info: if seeded . get ( "interaction_mode" ) not in ( "work_order" , "build" )
+        return  # info: return
+    subprocess.Popen([sys.executable, str(script), "council", seeded.get("request_id", "")], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)  # info: call subprocess . Popen
+
+# ====================================================
 # SECTION: function main
 # What it does: Poll one getUpdates. Answer the sandbox when SANDBOX_REPLIES=1. Keep the live council quiet unless RR_RELAY_REPLIES=1.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -451,6 +478,8 @@ def main():  # info: def main
                 print("[ok] silence cue — no post")  # info: call print
                 continue  # info: continue
             allow_reply = replies_enabled() if is_private else replies_for_chat(cfg, ch)  # info: set allow_reply
+            if sandbox_id and ch == str(sandbox_id):  # info: if sandbox_id and ch == str ( sandbox_id )
+                seed_interaction(msg, text, ch, sandbox_id)  # info: call seed_interaction
             if not allow_reply:  # info: if not allow_reply :
                 try:  # info: try :
                     inbox_hold(upd, msg, text, persona_target(text, is_private, poll_voice, voices, triggers, default_voice))  # info: call inbox_hold
