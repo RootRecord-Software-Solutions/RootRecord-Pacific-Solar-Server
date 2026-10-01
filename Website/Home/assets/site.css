@@ -130,7 +130,17 @@ a:hover { color: #e0f2fe; }
   background: #ff2d2d;
   box-shadow: 0 0 6px rgba(255, 45, 45, 0.95);
   pointer-events: auto;
+}
+
+.quake-core::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 45, 45, 0.9);
   animation: quake-pulse 1.6s ease-out infinite;
+  animation-delay: inherit;
+  pointer-events: none;
 }
 
 .quake-core.quake-m4 {
@@ -152,9 +162,8 @@ a:hover { color: #e0f2fe; }
 }
 
 @keyframes quake-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(255, 45, 45, 0.75), 0 0 6px rgba(255, 45, 45, 0.95); }
-  70% { box-shadow: 0 0 0 9px rgba(255, 45, 45, 0), 0 0 6px rgba(255, 45, 45, 0.95); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 45, 45, 0), 0 0 6px rgba(255, 45, 45, 0.95); }
+  0% { transform: scale(0.55); opacity: 0.95; }
+  100% { transform: scale(2.8); opacity: 0; }
 }
 
 .stage {
@@ -1233,10 +1242,7 @@ body { overflow-x: clip; }
 
 @media (prefers-reduced-motion: reduce) {
   .spin { display: none; }
-  .quake-core {
-    animation: none;
-    box-shadow: 0 0 6px rgba(255, 45, 45, 0.95);
-  }
+  .quake-core::after { animation: none; opacity: 0; }
 }
 
 body.desk { background: #000011; }

@@ -90,6 +90,18 @@ def blocked(feed: dict, item: dict, registry: dict) -> bool:  # info: def blocke
 
 
 # ====================================================
+# SECTION: function violent
+# What it does: Drop a violent-crime item when the feed is marked nonviolent. Hawaii uses this.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def violent(feed: dict, item: dict, registry: dict) -> bool:  # info: def violent
+    if not feed.get("nonviolent"):  # info: if not feed . get ( "nonviolent" ) :
+        return False  # info: return False
+    text = f"{item.get('title') or ''} {item.get('summary') or ''}"  # info: set text
+    return _hit(text, registry["policy"].get("violence_patterns") or [])  # info: return _hit ( text , registry [ "policy" ] . get ( "violence_patterns" ) or [ ] )
+
+
+# ====================================================
 # SECTION: function normalize
 # What it does: Turn one feed item into the story object. An empty title is invalid.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -102,7 +114,7 @@ def normalize(feed: dict, item: dict, registry: dict) -> dict | None:  # info: d
     guid = (item.get("guid") or "").strip()  # info: set guid
     if not url and not guid:  # info: if not url and not guid :
         return None  # info: return None
-    if blocked(feed, item, registry):  # info: if blocked ( feed , item , registry ) :
+    if blocked(feed, item, registry) or violent(feed, item, registry):  # info: if blocked ( feed , item , registry ) or violent ( feed , item , registry ) :
         return None  # info: return None
     category = classify(feed, item, registry)  # info: set category
     summary = plain(item.get("summary"), 1200)  # info: set summary

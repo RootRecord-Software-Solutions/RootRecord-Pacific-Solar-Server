@@ -15,6 +15,7 @@
   python3 rss_radio.py health
   python3 rss_radio.py queue
   python3 rss_radio.py handoff [--speak]
+  python3 rss_radio.py news-hour [--speak]
   python3 rss_radio.py trace STORY_ID
   python3 rss_radio.py enable ID
   python3 rss_radio.py disable ID
@@ -32,6 +33,7 @@ sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 , str ( HERE ) )
 
 from common import log_line  # info: from common import log_line
 from pipeline import export_queue, handoff, health_report, health_text, poll, set_runtime, trace, write_health  # info: from pipeline import export_queue , handoff , health_report , health_text , poll , set_runtime , trace , write_health
+from news_hour import news_hour  # info: from news_hour import news_hour
 from registry import load_registry  # info: from registry import load_registry
 from store import connect  # info: from store import connect
 
@@ -75,6 +77,9 @@ def main(argv: list[str]) -> int:  # info: def main
             return 0  # info: return 0
         if command == "handoff":  # info: if command == "handoff" :
             _print(handoff(registry, conn, speak="--speak" in argv))  # info: _print ( handoff ( registry , conn , speak = "--speak" in argv ) )
+            return 0  # info: return 0
+        if command == "news-hour":  # info: if command == "news-hour" :
+            _print(news_hour(registry, conn, speak="--speak" in argv))  # info: _print ( news_hour ( registry , conn , speak = "--speak" in argv ) )
             return 0  # info: return 0
         if command == "trace" and len(argv) > 2:  # info: if command == "trace" and len ( argv ) > 2 :
             _print(trace(conn, argv[2]))  # info: _print ( trace ( conn , argv [ 2 ] ) )

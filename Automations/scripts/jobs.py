@@ -651,7 +651,7 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
         "env": {"RR_DISCORD_POST": "1"},  # info: "env" : { "RR_DISCORD_POST" : "1" } ,
     },  # info: } ,
     {  # info: {
-        # External RSS for RootRecord Radio. OFF unless RR_RADIO_RSS=1 at poller start.
+        # External RSS for RootRecord Radio. On when RR_RADIO_RSS=1. The poller script defaults that on.
         # Polls the feed registry into the story queue. Does not speak, push audio, or change the broadcaster.
         "id": "radio_rss_poll",  # info: "id" : "radio_rss_poll" ,
         "enabled": os.environ.get("RR_RADIO_RSS", "0") == "1",  # info: "enabled" : os . environ . get ( "RR_RADIO_RSS" , "0" ) == "1" ,
@@ -829,6 +829,19 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" current_report',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" current_report
         "timeout_sec": 600,  # info: "timeout_sec" : 600 ,
         "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd" : f" { PACIFIC } /Media/Voice/scripts "
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
+    {  # info: {
+        # Hourly RSS news update. Speaks about five minutes, rotates Ava, Bruce, and Carly, replaces news_update_current.
+        "id": "radio_news_update",  # info: "id" : "radio_news_update" ,
+        "enabled": os.environ.get("RR_RADIO_NEWS", "0") == "1",  # info: "enabled" : os . environ . get ( "RR_RADIO_NEWS" , "0" ) == "1" ,
+        "description": "Hourly news update. Rotates Ava, Bruce, and Carly. Replaces news_update_current and uploads it to the reports playlist.",  # info: "description" : "Hourly news update. Rotates Ava, Bruce, and Carly. Replaces news_update_current and uploads it to the reports playlist." ,
+        "only_at_minutes": [20],  # info: "only_at_minutes" : [ 20 ] ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Media/RadioRss/scripts/rss_radio.py" news-hour --speak',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/RadioRss/scripts/rss_radio.py" news-hour --speak ' ,
+        "timeout_sec": 1200,  # info: "timeout_sec" : 1200 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{PACIFIC}/Media/RadioRss",  # info: "cwd" : f" { PACIFIC } /Media/RadioRss " ,
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
     # --- TEMPLATE (EVERY_MINUTE) — copy from the next line through the closing brace, paste ABOVE this template, remove the leading # ---

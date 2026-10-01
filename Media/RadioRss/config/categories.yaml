@@ -67,6 +67,26 @@ categories:
     program: GLOBAL_NEWS_BRIEF
     lead: "Global news brief."
     rank: 22
+  - id: markets
+    name: Markets
+    program: MARKETS_BRIEF
+    lead: "Market report."
+    rank: 16
+  - id: national_security
+    name: National security
+    program: DEFENCE_BRIEF
+    lead: "National security brief."
+    rank: 12
+  - id: spacex
+    name: SpaceX
+    program: SPACEX_BRIEF
+    lead: "SpaceX brief."
+    rank: 11
+  - id: hawaii
+    name: Hawaii
+    program: HAWAII_BRIEF
+    lead: "Hawaii brief."
+    rank: 14
   - id: science_offbeat
     name: Science offbeat
     program: OFFBEAT_BRIEF

@@ -21,7 +21,10 @@ from pathlib import Path  # info: from pathlib import Path
 HERE = Path(__file__).resolve().parent  # info: set HERE
 sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 , str ( HERE ) )
 
+from datetime import datetime, timezone  # info: from datetime import datetime , timezone
 from parse_feed import parse_document  # info: from parse_feed import parse_document
+from stories import normalize, violent  # info: from stories import normalize , violent
+from news_hour import build_update, persona_for  # info: from news_hour import build_update , persona_for
 from pipeline import handoff, health_report, poll, trace  # info: from pipeline import handoff , health_report , poll , trace
 from registry import load_registry  # info: from registry import load_registry
 from store import connect, feed_row  # info: from store import connect , feed_row
@@ -232,6 +235,37 @@ def test_conditional() -> None:  # info: def test_conditional
         shutil.rmtree(root)  # info: shutil . rmtree ( root )
 
 
+def test_news_update() -> None:  # info: def test_news_update
+    registry = load_registry(HERE.parent / "config")  # info: set registry
+    assert "markets" in registry["categories"] and "spacex" in registry["categories"]  # info: assert "markets" in registry [ "categories" ] and "spacex" in registry [ "categories" ]
+    assert persona_for(0, 0, ("ava", "bruce", "carly")) == "ava"  # info: assert persona_for ( 0 , 0 , ( "ava" , "bruce" , "carly" ) ) == "ava"
+    assert persona_for(1, 0, ("ava", "bruce", "carly")) == "bruce"  # info: assert persona_for ( 1 , 0 , ( "ava" , "bruce" , "carly" ) ) == "bruce"
+    assert persona_for(0, 1, ("ava", "bruce", "carly")) == "bruce"  # info: assert persona_for ( 0 , 1 , ( "ava" , "bruce" , "carly" ) ) == "bruce"
+    hawaii = {"id": "hi", "nonviolent": True, "category": "hawaii", "provider": "Honolulu Civil Beat", "name": "Honolulu Civil Beat", "priority": "high"}  # info: set hawaii
+    crime = {"title": "Shooting in Honolulu", "summary": "A man was killed.", "url": "https://news.test/crime", "guid": "crime"}  # info: set crime
+    calm = {"title": "Harbor ferry schedule", "summary": "The state published a new timetable.", "url": "https://news.test/ferry", "guid": "ferry", "published_at": "2026-10-01T18:00:00Z"}  # info: set calm
+    assert violent(hawaii, crime, registry) is True  # info: assert violent ( hawaii , crime , registry ) is True
+    assert normalize(hawaii, crime, registry) is None  # info: assert normalize ( hawaii , crime , registry ) is None
+    kept = normalize(hawaii, calm, registry)  # info: set kept
+    assert kept is not None and kept["category"] == "hawaii"  # info: assert kept is not None and kept [ "category" ] == "hawaii"
+    long = "The agency published a market note. " * 40  # info: set long
+    stories = []  # info: set stories
+    for index, category in enumerate(["markets", "national_security", "spacex", "hawaii", "space"]):  # info: for index , category in enumerate ( [ "markets" , "national_security" , "spacex" , "hawaii" , "space" ] )
+        for copy in range(6):  # info: for copy in range ( 6 )
+            stories.append({  # info: stories . append ( {
+                "id": f"{category}-{copy}", "category": category, "provider": "NPR", "title": f"{category} item {copy} with a live figure {copy}",  # info: "id" : f"{ category }-{ copy }" , "category" : category , "provider" : "NPR" , "title" : f"{ category } item { copy } with a live figure { copy }" ,
+                "summary": long, "url": f"https://news.test/{category}/{copy}", "published_at": f"2026-10-01T1{copy}:00:00Z",  # info: "summary" : long , "url" : f"https://news.test/{ category }/{ copy }" , "published_at" : f"2026-10-01T1{ copy }:00:00Z" ,
+                "priority": "high", "cluster_id": f"c-{category}-{copy}", "political": 0, "canonical_url": f"https://news.test/{category}/{copy}",  # info: "priority" : "high" , "cluster_id" : f"c-{ category }-{ copy }" , "political" : 0 , "canonical_url" : f"https://news.test/{ category }/{ copy }" ,
+            })  # info: } )
+    when = datetime(2026, 10, 1, 10, 0, tzinfo=timezone.utc)  # info: set when
+    built = build_update(stories, registry, when)  # info: set built
+    assert built["words"] <= 900  # info: assert built [ "words" ] <= 900
+    assert built["words"] >= 400  # info: assert built [ "words" ] >= 400
+    assert [section["persona"] for section in built["sections"][:4]] == ["ava", "bruce", "carly", "ava"]  # info: assert [ section [ "persona" ] for section in built [ "sections" ] [ : 4 ] ] == [ "ava" , "bruce" , "carly" , "ava" ]
+    assert "Markets." in built["speak"] and "SpaceX." in built["speak"] and "killed" not in built["speak"].lower()  # info: assert "Markets." in built [ "speak" ] and "SpaceX." in built [ "speak" ] and "killed" not in built [ "speak" ] . lower ( )
+    assert "2026" in built["speak"]  # info: assert "2026" in built [ "speak" ]
+
+
 # ====================================================
 # SECTION: function main
 # What it does: Run the RSS tests and print a one-line result.
@@ -242,6 +276,7 @@ def main() -> int:  # info: def main
     test_parse()  # info: test_parse ( )
     test_pipeline()  # info: test_pipeline ( )
     test_conditional()  # info: test_conditional ( )
+    test_news_update()  # info: test_news_update ( )
     print("rss tests passed")  # info: print ( "rss tests passed" )
     return 0  # info: return 0
 

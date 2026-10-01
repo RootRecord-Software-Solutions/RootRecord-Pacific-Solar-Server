@@ -9,7 +9,7 @@ fetch:
   max_bytes: 2000000
   user_agent: "RootRecord Radio RSS/1.0"
   max_redirects: 5
-  max_feeds_per_run: 6
+  max_feeds_per_run: 12
   max_items_per_feed: 20
   max_broadcast_age_hours: 36
   cluster_window_hours: 48
@@ -95,6 +95,30 @@ drop_sentence_patterns:
   - "you should vote"
   - "cast your ballot"
 
+# Whole items dropped when the feed sets nonviolent: true. Hawaii uses this.
+violence_patterns:
+  - homicide
+  - murder
+  - manslaughter
+  - shooting
+  - "shot dead"
+  - "shot and"
+  - stabbed
+  - stabbing
+  - "sexual assault"
+  - rape
+  - robbery
+  - gunman
+  - gunfire
+  - "domestic violence"
+  - assault
+  - killed
+  - killing
+  - deadly
+  - "fatal crash"
+  - kidnapping
+  - hostage
+
 programs:
   NEWS_BRIEF:
     report: news_brief
@@ -144,6 +168,54 @@ programs:
     report: offbeat_brief
     voice: af_nova
     lead: "Science notebook."
+  MARKETS_BRIEF:
+    report: markets_brief
+    voice: am_echo
+    lead: "Market report."
+  DEFENCE_BRIEF:
+    report: defence_brief
+    voice: af_nova
+    lead: "National security brief."
+  SPACEX_BRIEF:
+    report: spacex_brief
+    voice: am_echo
+    lead: "SpaceX brief."
+  HAWAII_BRIEF:
+    report: hawaii_brief
+    voice: af_heart
+    lead: "Hawaii brief."
+
+# One hourly bulletin. Four desks, then other news if the script is still short.
+# Voices leapfrog by the Hawaii hour: midnight Ava, 1 Bruce, 2 Carly, then the next desk takes the next voice.
+news_update:
+  report: news_update
+  target_words: 750
+  desk_words: 150
+  fresh_hours: 18
+  backfill_hours: 36
+  roster: [ava, bruce, carly]
+  desks:
+    - id: markets
+      name: Markets
+      lead: "Markets."
+      categories: [markets, economics_finance, energy_market]
+    - id: defence
+      name: National security
+      lead: "National security."
+      categories: [national_security]
+    - id: spacex
+      name: SpaceX
+      lead: "SpaceX."
+      categories: [spacex]
+    - id: hawaii
+      name: Hawaii
+      lead: "Hawaii."
+      categories: [hawaii]
+    - id: also
+      name: Also
+      lead: "Also in the news."
+      fill: true
+      categories: [space, cybersecurity, science, technology, aviation, global_news, artificial_intelligence]
 
 publishers:
   NASA: "NASA"
@@ -168,3 +240,22 @@ publishers:
   Microsoft: "Microsoft"
   Google: "Google"
   ScienceDaily: "ScienceDaily"
+  "Bureau of Labor Statistics": "the Bureau of Labor Statistics"
+  "Bureau of Economic Analysis": "the Bureau of Economic Analysis"
+  SEC: "the Securities and Exchange Commission"
+  CFTC: "the Commodity Futures Trading Commission"
+  MarketWatch: "MarketWatch"
+  CNBC: "CNBC"
+  "USNI News": "U.S. Naval Institute News"
+  "Breaking Defense": "Breaking Defense"
+  "Defense News": "Defense News"
+  "UK Ministry of Defence": "the U.K. Ministry of Defence"
+  "Space.com": "Space dot com"
+  SpaceNews: "SpaceNews"
+  "Spaceflight Now": "Spaceflight Now"
+  "Honolulu Civil Beat": "Honolulu Civil Beat"
+  "Honolulu Star-Advertiser": "the Honolulu Star-Advertiser"
+  "Hawaii News Now": "Hawaii News Now"
+  "Office of the Governor of Hawaii": "the Office of the Governor of Hawaii"
+  "Hawaii DBEDT": "the Hawaii Department of Business, Economic Development, and Tourism"
+  "Hawaii Department of Health": "the Hawaii Department of Health"

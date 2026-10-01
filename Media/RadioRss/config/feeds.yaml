@@ -1090,3 +1090,264 @@ feeds:
     native_overlap: false
     origin: external
     directory: https://www.sciencedaily.com/
+
+  - id: bls_latest
+    name: Bureau of Labor Statistics
+    provider: Bureau of Labor Statistics
+    category: markets
+    type: rss
+    url: https://www.bls.gov/feed/bls_latest.rss
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.bls.gov/feed/bls_latest.rss
+
+  - id: bea_news
+    name: Bureau of Economic Analysis
+    provider: Bureau of Economic Analysis
+    category: markets
+    type: rss
+    url: https://www.bea.gov/rss/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.bea.gov/rss/rss.xml
+
+  - id: sec_press
+    name: SEC Press Releases
+    provider: SEC
+    category: markets
+    type: rss
+    url: https://www.sec.gov/news/pressreleases.rss
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.sec.gov/news/pressreleases.rss
+
+  - id: cftc_press
+    name: CFTC
+    provider: CFTC
+    category: markets
+    type: rss
+    url: https://www.cftc.gov/RSS/RSSGP/rssgp.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.cftc.gov/RSS/RSSGP/rssgp.xml
+
+  - id: marketwatch_pulse
+    name: MarketWatch Market Pulse
+    provider: MarketWatch
+    category: markets
+    type: rss
+    url: https://feeds.marketwatch.com/marketwatch/marketpulse/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.marketwatch.com/
+
+  - id: cnbc_markets
+    name: CNBC Markets
+    provider: CNBC
+    category: markets
+    type: rss
+    url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15839069"
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.cnbc.com/markets/
+
+  - id: dod_news
+    name: Department of War News
+    provider: Department of War
+    category: national_security
+    type: rss
+    url: ""
+    enabled: false
+    priority: high
+    native_overlap: false
+    origin: unavailable
+    directory: https://www.war.gov/News/RSS/
+    note: "war.gov and defense.gov returned HTTP 403 on 2026-10-01. No official feed body was verified. The desk uses the publishers below until that page allows a fetch."
+
+  - id: usni_news
+    name: USNI News
+    provider: USNI News
+    category: national_security
+    type: rss
+    url: https://news.usni.org/feed
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://news.usni.org/
+
+  - id: breaking_defense
+    name: Breaking Defense
+    provider: Breaking Defense
+    category: national_security
+    type: rss
+    url: https://breakingdefense.com/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://breakingdefense.com/
+
+  - id: defense_news
+    name: Defense News
+    provider: Defense News
+    category: national_security
+    type: rss
+    url: "https://www.defensenews.com/arc/outboundfeeds/rss/?outputType=xml"
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.defensenews.com/
+
+  - id: uk_mod
+    name: UK Ministry of Defence
+    provider: UK Ministry of Defence
+    category: national_security
+    type: atom
+    url: https://www.gov.uk/government/organisations/ministry-of-defence.atom
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.gov.uk/government/organisations/ministry-of-defence.atom
+
+  - id: spacex_official
+    name: SpaceX
+    provider: SpaceX
+    category: spacex
+    type: rss
+    url: ""
+    enabled: false
+    priority: high
+    native_overlap: false
+    origin: unavailable
+    directory: https://www.spacex.com/
+    note: "spacex.com returned HTML on 2026-10-01 and did not expose an RSS or Atom link. Tag feeds from Space.com, SpaceNews, and Spaceflight Now cover the desk."
+
+  - id: spacecom_spacex
+    name: Space.com SpaceX
+    provider: Space.com
+    category: spacex
+    type: rss
+    url: https://www.space.com/feeds/tag/spacex
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.space.com/news/spacex
+
+  - id: spacenews_spacex
+    name: SpaceNews SpaceX
+    provider: SpaceNews
+    category: spacex
+    type: rss
+    url: https://spacenews.com/tag/spacex/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://spacenews.com/tag/spacex/
+
+  - id: spaceflightnow_spacex
+    name: Spaceflight Now SpaceX
+    provider: Spaceflight Now
+    category: spacex
+    type: rss
+    url: https://spaceflightnow.com/category/spacex/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://spaceflightnow.com/category/spacex/
+
+  - id: hawaii_governor
+    name: Hawaii Governor
+    provider: Office of the Governor of Hawaii
+    category: hawaii
+    type: rss
+    url: https://governor.hawaii.gov/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    nonviolent: true
+    origin: external
+    directory: https://governor.hawaii.gov/
+
+  - id: hawaii_dbedt
+    name: Hawaii DBEDT
+    provider: Hawaii DBEDT
+    category: hawaii
+    type: rss
+    url: https://dbedt.hawaii.gov/feed/
+    enabled: true
+    priority: medium
+    native_overlap: false
+    nonviolent: true
+    origin: external
+    directory: https://dbedt.hawaii.gov/
+
+  - id: hawaii_health
+    name: Hawaii Department of Health
+    provider: Hawaii Department of Health
+    category: hawaii
+    type: rss
+    url: https://health.hawaii.gov/news/feed/
+    enabled: true
+    priority: medium
+    native_overlap: false
+    nonviolent: true
+    origin: external
+    directory: https://health.hawaii.gov/news/
+
+  - id: civil_beat
+    name: Honolulu Civil Beat
+    provider: Honolulu Civil Beat
+    category: hawaii
+    type: rss
+    url: https://www.civilbeat.org/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    nonviolent: true
+    origin: external
+    directory: https://www.civilbeat.org/
+
+  - id: star_advertiser
+    name: Honolulu Star-Advertiser
+    provider: Honolulu Star-Advertiser
+    category: hawaii
+    type: rss
+    url: https://www.staradvertiser.com/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    nonviolent: true
+    origin: external
+    directory: https://www.staradvertiser.com/
+
+  - id: hawaii_news_now
+    name: Hawaii News Now
+    provider: Hawaii News Now
+    category: hawaii
+    type: rss
+    url: https://www.hawaiinewsnow.com/arc/outboundfeeds/rss/
+    enabled: true
+    priority: medium
+    native_overlap: true
+    nonviolent: true
+    origin: overlapping
+    directory: https://www.hawaiinewsnow.com/
+    note: "Broadcast desk. Weather, quake, and volcano items are dropped. Violent crime is dropped."
