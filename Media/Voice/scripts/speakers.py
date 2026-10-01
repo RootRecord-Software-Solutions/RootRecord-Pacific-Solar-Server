@@ -9,7 +9,7 @@
 # ==============================================================================
 """Locked Kokoro voices, report-kind personas and live-data gate (G3 port of G1 speakers.py).
 
-Bruce = Echo (am_echo, 0.92) · Ava = Heart (af_heart, 0.82, default) · Carly = Nova (af_nova, 1.0)
+Bruce = Echo (am_echo, 1.0) · Ava = Heart (af_heart, 1.0, default) · Carly = Nova (af_nova, 1.0)
 
 G3 changes (2026-09-29, g3-voice-ailog): retire pattern is now
   <report>_current.wav  ->  Archive/<report>_YYYYMMDDTHHMM.wav  (+ .read.txt / .speak.txt sidecars)
@@ -34,8 +34,8 @@ HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 AGENTS = {  # info: set AGENTS
-    "ava": {"name": "Ava", "kokoro": "af_heart", "speed": 0.82},  # info: "ava" : { "name" : "Ava" , "kokoro"
-    "bruce": {"name": "Bruce", "kokoro": "am_echo", "speed": 0.92},  # info: "bruce" : { "name" : "Bruce" , "kokoro"
+    "ava": {"name": "Ava", "kokoro": "af_heart", "speed": 1.0},  # info: "ava" : { "name" : "Ava" , "kokoro" : "af_heart" , "speed" : 1.0 } ,
+    "bruce": {"name": "Bruce", "kokoro": "am_echo", "speed": 1.0},  # info: "bruce" : { "name" : "Bruce" , "kokoro" : "am_echo" , "speed" : 1.0 } ,
     "carly": {"name": "Carly", "kokoro": "af_nova", "speed": 1.0},  # info: "carly" : { "name" : "Carly" , "kokoro" : "af_nova" , "speed" : 1.0 } ,
 }  # info: }
 

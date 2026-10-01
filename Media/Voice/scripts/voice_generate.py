@@ -25,7 +25,7 @@ Run through voice-render.sh (single-flight inference lock + nice 10), with Media
           Pre-render the phrase catalog (clip_catalog.py) into Clips/<Persona>/<slug>.wav with QC and
           update Clips/clips_manifest.json.
 
-Voices (locked): Ava af_heart 0.82 (default) · Bruce am_echo 0.92 · Carly af_nova 1.0.
+Voices (locked): Ava af_heart 1.0 (default) · Bruce am_echo 1.0 · Carly af_nova 1.0.
 Output: 24 kHz, 16-bit PCM, mono WAV. Lexicon: Ava/Ayeva/Avaivy fixes + hawaiian_lexicon (verbatim G1).
 Delivery (Telegram sendVoice, speaker playback, AWS radio) is NOT implemented here — OFF by design.
 Env: RR_DATABASE_ROOT, RR_KOKORO_MODEL_DIR, RR_VOICE_OUT_DIR, RR_VOICE_THREADS (4), RR_VOICE_GAP_MS (180).
@@ -58,7 +58,7 @@ CLIPS_DIR = OUT_DIR / "Clips"  # info: set CLIPS_DIR
 MANIFEST = CLIPS_DIR / "clips_manifest.json"  # info: set MANIFEST
 SAMPLE_RATE = 24000  # info: set SAMPLE_RATE
 DEFAULT_VOICE = "af_heart"  # info: set DEFAULT_VOICE
-SPEEDS = {"af_heart": 0.82, "am_echo": 0.92, "af_nova": 1.0}  # info: set SPEEDS
+SPEEDS = {"af_heart": 1.0, "am_echo": 1.0, "af_nova": 1.0}  # info: set SPEEDS
 # ====================================================
 # SECTION: VOICE_ALIASES
 # What it does: Set VOICE_ALIASES.
