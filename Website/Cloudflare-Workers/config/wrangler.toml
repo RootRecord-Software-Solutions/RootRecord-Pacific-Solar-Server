@@ -1,5 +1,5 @@
 # One worker in front of the one Vercel site.
-# No route is attached. Communications/Site/config/routes.yml keeps
+# No route is attached. Website/Site/config/routes.yml keeps
 # www.rootrecord.cloud on the globe and leaves the home card off until
 # a DNS change is signed off.
 # Do not put an account id or a D1 id in this file.

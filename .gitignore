@@ -43,6 +43,7 @@ Energy/Smart-Devices/**/tuya-raw.json
 Energy/Smart-Devices/**/snapshot.json
 Energy/Smart-Devices/.venv/
 
-# Communications/website (2026-09-29): RootRecord-Cloud Vercel site staged as its OWN clone (own repo + Vercel git deploy).
-# Only Communications/website/README.md is tracked by Pacific. Never let Pacific auto-sync add the nested .git as a gitlink.
+# RootRecord-Cloud is the remote Vercel app. Do not nest a checkout in Pacific.
+# The old Communications/website/ path is still ignored so a leftover clone cannot return.
+Website/RootRecord-Cloud/
 Communications/website/RootRecord-Cloud/

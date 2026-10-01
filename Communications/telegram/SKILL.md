@@ -9,13 +9,10 @@ description: >-
 # # INFO — MUST HAVE (operators / future agents)
 # ------------------------------------------------------------------------------
 # What: one council-relay (getUpdates) + per-voice post; mediate = Bruce
-# Config: config/{voices,relay,bots}.conf
-# DESK_LIVE_FILE → Database/Intake/desk-live.txt (measured lines, refreshed before each reply)
+# Config: config/voices.conf, config/relay.conf
 # Council model: llama3.2:3b on the NPU via ensure-relay.sh. RR_NPU_ONLY=1. Context 4096.
-# State snapshot: Database/System/status/rootrecord-state.json (generated, not committed).
-# Bak: /home/rootrecord/Database/GITHUB/
-# Style bar: automations/scripts/jobs.py
-# Walls: billing → Carly · AWS → US-MAINLAND · public wording → Ava
+# Inference binary: System/scripts/plumbing/run-infer.sh
+# Persona packs are Library Agent Context, not this folder.
 # ==============================================================================
 
 # telegram
@@ -23,11 +20,10 @@ description: >-
 | | |
 |--|--|
 | Config | `config/voices.conf` · `config/relay.conf` |
-| Ask | `scripts/ask-voice.sh <voice> '…'` |
-| Post | `scripts/post-voice.sh <voice> '…'` |
-| Poll | `scripts/council-relay.py` (**one** process) |
-| Status | `scripts/status.sh` |
-| Infer | `plumbing/scripts/run-infer.sh` (via relay) |
+| Poll | `scripts/council-relay.py` (**one** process), started by `scripts/ensure-relay.sh` |
+| Desk lines | `scripts/desk-live.py` |
+| Held messages | `scripts/relay-inbox-replay.py` (read-only unless `--send` and `RR_RELAY_REPLIES=1`) |
+| Infer | `System/scripts/plumbing/run-infer.sh` (via relay) |
 
 Set `COUNCIL_CHAT_ID` before live poll. Stop legacy `apps.council` first.
 Sandbox tests use `SANDBOX_CHAT_ID` (`-1004406495175`, https://t.me/c/4406495175/2). `SANDBOX_REPLIES=1` answers that chat while the live council stays quiet. Reports, statuses, and commands target it with `RR_TELEGRAM_DEST=sandbox`.

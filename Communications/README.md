@@ -1,65 +1,52 @@
 # Communications
 
-Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messaging (telegram live, Discord and Slack pollers gated off, email shell, github messaging).
+How the Pacific server reaches something outside itself, or exposes a communication-facing interface.
+
+Messaging, the live Cloudflare tunnel, the Hawaii network-globe collector, and chat-facing adapters live here. Domain processing, agent identity, local models, and the public website do not.
 
 ---
 
-## Status (2026-09-29 22:23 HST)
+## Owns
 
-| Area | State |
+| Path | Role | State |
+| --- | --- | --- |
+| `network/cloudflare/` | Live `cloudflared` for `rootserver.rootrecord.cloud` → `127.0.0.1:8799`. Binary is untracked. Token file `~/.cloudflared/rootserver.token`. | **Live.** Job `cloudflare_tunnel`. |
+| `network/local-data-globe/` | Hawaii SSH collector. Live records go to AWS, or to Telegram when SSH is down. Not a chart library. | **Live.** Job `network_globe_hawaii`. |
+| `telegram/` | One `getUpdates` owner (`council-relay.py` via `ensure-relay.sh`). Contract: `telegram/CONTRACT.md`. | **Live.** Sandbox replies on. Live council and private DMs stay off (`RR_RELAY_REPLIES` default 0). Inference is NPU `llama3.2:3b` on demand, in `System/scripts/plumbing/`, not here. |
+| `Discord/` | Poller. Token `DISCORD_BOT_TOKEN` only, local. | **Off.** Job `discord_poller` enabled false. No post. |
+| `Slack/` | Poller. Token `SLACK_BOT_TOKEN` only, local. | **Off** unless `RR_SLACK=1`. No post. |
+| `email/` | Empty shell. | **Unused.** |
+| `github/` | Empty shells for API, messaging, notifications, webhooks. | **Unused.** Git catalog sync is `Github/`, not here. |
+| `Inbox/` | Reads the quiet-mode relay hold. Does not poll Telegram. | **Off.** Jobs `inbox_drain`, `overnight_relay`. |
+| `CouncilHealth/` | Relay process, Telegram `getMe`, and 409 tail. Report only. | **Off** unless `RR_COUNCIL_HEALTH=1`. Default command is `--no-alert --no-probe`. |
+| `CouncilQuake/` | Telegram text from existing Geology last files. Does not fetch USGS. | **Off** unless `RR_COUNCIL_QUAKE=1`. Send stays off. |
+| `BruceStats/` | Telegram text from existing host and EcoFlow last files. Does not sample the host. | **Off** unless `RR_BRUCE_STATS=1`. Send stays off. |
+| `PublicHealth/` | HTTP probes of the public radio origin and `127.0.0.1:8787`, plus an optional Telegram line. Does not start port 8787. | **Off** unless `RR_PUBLIC_HEALTH=1`. Send stays off. |
+| `live-wx/` | Chat lines from NWS and the weather poller's hurricane files. | **On demand.** No job. Not wired to the relay. |
+| `web-facts/` | Allowlisted HTTPS GET for chat. | **On demand.** No job. Not wired to the relay. |
+
+## Does not own
+
+| Concern | Where it lives |
 | --- | --- |
-| `network/cloudflare/` | **Live.** `jobs.py` starts `Communications/network/cloudflare/bin/cloudflared` (token file `~/.cloudflared/rootserver.token`, public host `rootserver.rootrecord.cloud` → `127.0.0.1:8799`). The binary stays untracked and is on `Github/scripts/ecosystem-skip-autocommit.txt`. Do not commit it. |
-| `network/scripts/ensure-network-globe-hawaii.sh` | **Live.** Job cwd is Pacific `Communications/network`. Collector is `network/local-data-globe/collector.js`. |
-| telegram | **Live.** `council_relay` runs `ensure-relay.sh`. Sandbox replies are on. Live council and private DMs stay quiet (`RR_RELAY_REPLIES` default 0). Council inference is NPU `llama3.2:3b`, on demand. Contract: `telegram/CONTRACT.md`. |
-| discord | Poller at `Communications/Discord/` (WO-MIG-21). Job `discord_poller` is off. No token, no post. **WO-COM-002** before LIVE |
-| slack | Poller at `Communications/Slack/` (WO-MIG-22). Job `communications_slack` stays off unless `RR_SLACK=1`. No token, no post. Not a second live relay. |
-| email | Shell only. Not a second live relay. |
-| Notify policy | Still the unsealed draft under Library `Documentation/00-architecture/Communications-Notify-Policy-Draft-2026-09-28.md`. Do not add notify jobs from this page. |
-| `web-facts/` | G1 `websites/web-facts` port (allowlisted HTTPS GET), on demand only — LANDED, smoke PASS 2026-09-29 13:58 HST; not wired to the council relay |
-| `live-wx/` | G1 `weather/live-wx` port (NWS point forecast + HI alert names + nearest hurricane, for chat), on demand only (`--offline` = no HTTP) — LANDED, smoke PASS 2026-09-29 14:09 HST; not wired to the council relay |
-| `website/` | Pointer only. Desk folder `3 - RootRecord-Website/` was removed 2026-09-30. There is no desk checkout. Do not start it again. The public Vercel app is remote only. `https://rootserver.rootrecord.cloud/` is the poller on `127.0.0.1:8799`, not a site. The leftover `website/RootRecord-Cloud/` tree was removed 2026-09-30. No deploy, no auto-sync. See `website/README.md` |
-| `CouncilHealth/` | WO-MIG-27. Job `council_health` off unless `RR_COUNCIL_HEALTH=1`. Report only. No send, no model probe. |
+| Agent identity and prompts | Library `Agent Context/{Ava,Bruce,Carly}-Agent-Context/` |
+| Telegram Modelfiles | Database `AI/Ollama/Modelfiles/Production/` |
+| Local inference | `System/scripts/plumbing/` (`run-infer.sh`) |
+| Earthquake and volcano collection | `Geology/` |
+| Weather collection and reports | `Weather/` |
+| Public Vercel app, route manifest, undeployed site worker | `Website/`, `Website/Site/`, `Website/Cloudflare-Workers/` |
+| Meta AI chat client | Still `Communications/MetaAI/` until an owner is chosen. No job. Do not send. |
+
+`network/cloudflare/` is the live tunnel binary and config. `Website/Cloudflare-Workers/` is a separate, undeployed worker in front of the Vercel origin. They are not the same system.
+
+## Contracts
+
+- Relay: `telegram/CONTRACT.md`
+- Relay settings: `telegram/config/relay.conf`, `telegram/config/voices.conf`
+- Discord channels: `Discord/config/channels.json` (empty)
+
+Persona text is not a Communications contract.
 
 ---
 
-## jobs.py
-
-| Job id | Notes |
-| --- | --- |
-| `cloudflare_tunnel` | Pacific `bin/cloudflared`. ON_BOOT builtin `tunnel_start`. |
-| `network_globe_hawaii` | Pacific `network/scripts/ensure-network-globe-hawaii.sh` |
-| `council_relay` | Pacific `telegram/scripts/ensure-relay.sh`. Sandbox replies on. Live council quiet. One getUpdates owner. |
-| `council_health` | Pacific `CouncilHealth/scripts/council_health.py --no-alert --no-probe`. Off unless `RR_COUNCIL_HEALTH=1`. |
-| `communications_slack` | Pacific `Slack/scripts/poll.py`. Off unless `RR_SLACK=1` at poller start. No HTTP and no post. |
-
-Token: `/home/rootrecord/.cloudflared/rootserver.token` (local only).
-
-Messaging bot tokens (Discord, Telegram, etc.): **local secrets only** — never from git history or inventory mirrors. Discord enablement: see `Discord/README.md` and Library **WO-COM-002**.
-
----
-
-## G1 recovery (after G2 telegram / globe)
-
-| Packet | Target |
-| --- | --- |
-| communications/telegram, discord, slack | Matching shells under this domain |
-| network-globe, local-data-globe | `network/` |
-| council-telegram | Policy + relay — one getUpdates only |
-| cloudflare-workers | `Communications/Cloudflare-Workers/`. One local worker in front of the Vercel origin. Separate from the poller `cloudflared` binary. Route not attached. Deploy not signed off. |
-
----
-
-## Layout
-
-```text
-Communications/
-  network/cloudflare/{bin,config}/
-  network/scripts/
-  Cloudflare-Workers/{scripts,config}/
-  telegram/ Discord/ email/ Slack/
-  github/{api,messaging,notifications,webhooks}/
-```
-
----
-
-*Paths corrected 2026-09-29 22:23 HST. Replies and Discord stay off.*
+*Boundary set 2026-09-30. No jobs were enabled or disabled.*

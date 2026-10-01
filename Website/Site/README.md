@@ -1,4 +1,4 @@
-# Communications / Site
+# Website / Site
 
 Local route manifest for the one Vercel site. On demand only. No job.
 
@@ -16,4 +16,6 @@ Old avaivy.cloud skins are copied unchanged under Library `Archive/Website-Theme
 nice -n 10 python3 scripts/site_check.py
 ```
 
-A manifest that adds a `token` or `credentials-file` key exits non-zero. Pass that file as the only argument. The default run writes Database `Communications/Site/routes-last.json` and appends Logs `Communications/Site/site_check.log`.
+A manifest that adds a `token` or `credentials-file` key exits non-zero. Pass that file as the only argument. The default run still writes Database `Communications/Site/routes-last.json` and appends Logs `Communications/Site/site_check.log`. That output path was not moved.
+
+Code lives at `Website/Site/`. It is the Vercel route manifest, not the live `cloudflared` tunnel.

@@ -25,6 +25,12 @@ Desk runtime for the Stripe snapshot, Vercel failed-build records, and live-data
 
 Chat, voice packs, day board, Minecraft, and context are not built here.
 
+The public app is remote. `Website/.env.example` lists Vercel env names only. Do not clone `RootRecord-Cloud` into this tree. Do not run a local `next` server.
+
+`Website/Site/` is the local route manifest and on-demand checker. `www.rootrecord.cloud` stays on the globe. `home_card` stays off. No job.
+
+`Website/Cloudflare-Workers/` is the undeployed worker in front of `root-record-cloud.vercel.app`. No route is attached. It is not the live poller tunnel. That tunnel is `Communications/network/cloudflare/` (`rootserver.rootrecord.cloud` → `127.0.0.1:8799`).
+
 Live Energy BLE, the poller, Hawaiʻi weather, the globe, cameras, Kokoro, and `geology_collect.py` are not replaced.
 
 ## Paths

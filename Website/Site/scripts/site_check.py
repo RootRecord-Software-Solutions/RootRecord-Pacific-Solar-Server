@@ -1,5 +1,5 @@
 # ==============================================================================
-# FILE: Communications/Site/scripts/site_check.py
+# FILE: Website/Site/scripts/site_check.py
 # What this file is: first-party Pacific source. Read the SECTION banner above
 # the function or list you need. Every code line ends with an # info: note.
 # How to edit: change the code, then change the # info: note on that same line

@@ -284,11 +284,28 @@ def _fresh_cloud_cache(alias: str) -> dict | None:  # info: def _fresh_cloud_cac
 # What it does: Remember a successful cloud read so the next BLE miss can reuse it.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def _save_cloud_cache(alias: str, fields: dict, at: str) -> None:  # info: def _save_cloud_cache
+def _save_cloud_cache(alias: str, fields: dict | None, at: str | None) -> None:  # info: def _save_cloud_cache
     _cloud_cache_path(alias).write_text(  # info: call write_text
         json.dumps({"alias": alias, "at_epoch": time.time(), "at": at, "fields": fields}),  # info: json . dumps ( { "alias" : alias
         encoding="utf-8",  # info: encoding = "utf-8"
     )  # info: )
+
+
+# ====================================================
+# SECTION: function _cloud_throttled
+# What it does: True when this alias already called EcoFlow within CLOUD_FALLBACK_SEC.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _cloud_throttled(alias: str) -> bool:  # info: def _cloud_throttled
+    path = _cloud_cache_path(alias)  # info: set path
+    if not path.is_file():  # info: if not path . is_file ( ) :
+        return False  # info: return False
+    try:  # info: try :
+        data = json.loads(path.read_text(encoding="utf-8"))  # info: set data
+        age = time.time() - float(data.get("at_epoch") or 0)  # info: set age
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):  # info: except ( OSError , ValueError , TypeError , json . JSONDecodeError ) :
+        return False  # info: return False
+    return 0 <= age < CLOUD_FALLBACK_SEC  # info: return 0 <= age < CLOUD_FALLBACK_SEC
 
 
 # ====================================================
@@ -354,12 +371,18 @@ def main() -> int:  # info: def main
             source = "cloud"  # info: set source
             cloud_reused = True  # info: set cloud_reused
             device = None  # info: set device
+        elif _cloud_throttled(alias):  # info: elif _cloud_throttled ( alias ) :
+            print("WAITING")  # info: call print
+            print(f"No data — BLE: {ble_err or 'skipped'}; API: throttled")  # info: call print
+            print("STATUS=WAITING")  # info: call print
+            return 2  # info: return 2
         else:  # info: else :
             try:  # info: try :
                 fields = _read_api(alias)  # info: set fields
                 source = "cloud"  # info: set source
                 device = None  # info: set device
             except Exception as e:  # info: except Exception as e :
+                _save_cloud_cache(alias, None, None)  # info: call _save_cloud_cache
                 print("WAITING")  # info: call print
                 print(f"No data — BLE: {ble_err or 'skipped'}; API: {type(e).__name__}: {e}")  # info: call print
                 print("STATUS=WAITING")  # info: call print

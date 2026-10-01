@@ -8,7 +8,7 @@ The default run prints status and does not call EcoFlow:
 python3 scripts/quota_poll.py
 ```
 
-A BLE miss in `Energy/lib/read_runner.py` calls this quota API when the device is online in the EcoFlow device list. Offline quota is not written, because that payload stays frozen. Repeat misses reuse the last cloud snapshot for two minutes. `RR_ECOFLOW_CLOUD` still gates `quota_poll.py`: that script prints `cloud=off` and does not HTTP unless the variable is `1`.
+A BLE miss in `Energy/lib/read_runner.py` calls this quota API when the device is online in the EcoFlow device list. Offline quota is not written, because that payload stays frozen. A cloud result, including an offline miss, is reused for two minutes so the poll does not call EcoFlow on every cycle. `RR_ECOFLOW_CLOUD` still gates `quota_poll.py`: that script prints `cloud=off` and does not HTTP unless the variable is `1`.
 
 Key names, loaded only through `Energy/lib/envload.py` from `/home/rootrecord/master/master-key.env`: `ECOFLOW_ACCESS`, `ECOFLOW_SECRET`, `ECOFLOW_REGION`, `ECOFLOW_DELTA_2`, `ECOFLOW_RIVER_2_PRO`, `ECOFLOW_DELTA_2_SECONDARY`. Values are never printed.
 
