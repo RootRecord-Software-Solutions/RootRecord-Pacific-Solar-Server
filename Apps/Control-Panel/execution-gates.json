@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "modes": {
+    "conversation": true,
+    "work_order": true,
+    "build": false,
+    "diagnose": true,
+    "recovery": false,
+    "deployment": false
+  },
+  "steps": {
+    "build": {
+      "council_discovery": false,
+      "question_send": false,
+      "work_order_draft": false,
+      "handoff": false,
+      "cursor_api": false,
+      "file_modify": false,
+      "tests": false,
+      "execution_report": false,
+      "verification_report": false,
+      "commit": false,
+      "push": false,
+      "merge": false,
+      "deploy": false
+    },
+    "recovery": {
+      "inspect": true,
+      "select_capability": false,
+      "run_existing_program": false,
+      "raise_attempt_cap": false
+    },
+    "diagnose": {
+      "inspect": true
+    }
+  }
+}
