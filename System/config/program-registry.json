@@ -134,6 +134,82 @@
         "blocked_by": "RR_BRUCE_STATS_SEND",
         "enable_condition": "RR_BRUCE_STATS_SEND=1"
       }
+    },
+    {
+      "program_id": "system_net_sample",
+      "name": "Host byte-counter sample",
+      "entrypoint": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/System/scripts/host_desks.py",
+      "owner_job": "system_net_sample",
+      "agent_launchable": false,
+      "agents_allowed": [],
+      "requires_confirmation": false,
+      "inputs": [],
+      "outputs": ["System/network/Daily/net-YYYYMMDD.jsonl"],
+      "side_effects": ["writes_network_sample"],
+      "why_not": {
+        "status": "gated",
+        "kind": "gated",
+        "reason": "The poller samples the default route when RR_NET_SAMPLES=1. Agents do not start a second sampler.",
+        "blocked_by": "agent_execution_layer",
+        "enable_condition": "RR_NET_SAMPLES=1 at poller start"
+      }
+    },
+    {
+      "program_id": "voice_solar_desk",
+      "name": "Hourly solar desk",
+      "entrypoint": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Media/Voice/scripts/voice_reports.py",
+      "owner_job": "voice_solar_desk",
+      "agent_launchable": false,
+      "agents_allowed": [],
+      "requires_confirmation": true,
+      "inputs": ["Energy/soc/*-last.json", "Energy/watts/*-last.json", "Energy/sun/sun-times-last.json"],
+      "outputs": ["voice report markdown", "wav", "sandbox voice note only when RR_VOICE_DELIVER=1"],
+      "side_effects": ["writes_voice_files", "telegram_sendVoice"],
+      "why_not": {
+        "status": "gated",
+        "kind": "gated",
+        "reason": "Bruce solar desk is a poller job. Agents do not render or send it.",
+        "blocked_by": "RR_VOICE_SOLAR",
+        "enable_condition": "RR_VOICE_SOLAR=1 at poller start. Delivery also needs RR_VOICE_DELIVER=1"
+      }
+    },
+    {
+      "program_id": "voice_security_desk",
+      "name": "Security desk",
+      "entrypoint": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Media/Voice/scripts/voice_reports.py",
+      "owner_job": "voice_security_desk",
+      "agent_launchable": false,
+      "agents_allowed": [],
+      "requires_confirmation": true,
+      "inputs": ["ufw boot", "sshd", "listener counts"],
+      "outputs": ["voice report markdown", "wav", "sandbox voice note only when RR_VOICE_DELIVER=1"],
+      "side_effects": ["writes_voice_files", "telegram_sendVoice"],
+      "why_not": {
+        "status": "gated",
+        "kind": "gated",
+        "reason": "Carly security desk is a poller job. Counts only. Agents do not render or send it.",
+        "blocked_by": "RR_VOICE_SECURITY",
+        "enable_condition": "RR_VOICE_SECURITY=1 at poller start. Delivery also needs RR_VOICE_DELIVER=1"
+      }
+    },
+    {
+      "program_id": "voice_bandwidth_desk",
+      "name": "Bandwidth desk",
+      "entrypoint": "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Media/Voice/scripts/voice_reports.py",
+      "owner_job": "voice_bandwidth_desk",
+      "agent_launchable": false,
+      "agents_allowed": [],
+      "requires_confirmation": true,
+      "inputs": ["System/network samples"],
+      "outputs": ["voice report markdown", "wav", "sandbox voice note only when RR_VOICE_DELIVER=1"],
+      "side_effects": ["writes_voice_files", "telegram_sendVoice"],
+      "why_not": {
+        "status": "gated",
+        "kind": "gated",
+        "reason": "Carly bandwidth desk is a poller job. It needs system_net_sample. Agents do not render or send it.",
+        "blocked_by": "RR_VOICE_BANDWIDTH",
+        "enable_condition": "RR_VOICE_BANDWIDTH=1 and RR_NET_SAMPLES=1 at poller start. Delivery also needs RR_VOICE_DELIVER=1"
+      }
     }
   ]
 }

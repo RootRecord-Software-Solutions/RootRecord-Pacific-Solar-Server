@@ -32,6 +32,7 @@ RELAY = PACIFIC / "Communications" / "telegram" / "config" / "relay.conf"  # inf
 VOICES = PACIFIC / "Communications" / "telegram" / "config" / "voices.conf"  # info: set VOICES
 DB = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database")  # info: set DB
 STATE = DB / "Communications" / "VoiceDeliver" / "sent.json"  # info: set STATE
+NOTES = DB / "Communications" / "VoiceDeliver" / "notes.jsonl"  # info: set NOTES
 TOKEN_ENV = {"ava": "TELEGRAM_AVA_TOKEN", "bruce": "TELEGRAM_BRUCE_TOKEN", "carly": "TELEGRAM_CARLY_TOKEN"}  # info: set TOKEN_ENV
 TITLES = {  # info: set TITLES
     "nws_weather": "NWS Hawaiʻi",  # info: "nws_weather" : "NWS Hawaiʻi" ,
@@ -163,15 +164,59 @@ def post(token: str, method: str, body: bytes, content_type: str) -> dict:  # in
         method="POST",  # info: method = "POST"
     )  # info: )
     try:  # info: try
-        with urllib.request.urlopen(req, timeout=60) as response:  # info: with urllib . request . urlopen
+        direct = urllib.request.build_opener(urllib.request.ProxyHandler({}))  # info: set direct
+        with direct.open(req, timeout=60) as response:  # info: with direct . open ( req , timeout = 60 )
             payload = json.load(response)  # info: set payload
     except urllib.error.HTTPError as exc:  # info: except urllib . error . HTTPError as exc
         return {"ok": False, "detail": f"http {exc.code}"}  # info: return { "ok" : False , "detail" : f" http { exc . code } " }
-    except (urllib.error.URLError, TimeoutError, OSError):  # info: except
-        return {"ok": False, "detail": "telegram unreachable"}  # info: return { "ok" : False , "detail" : "telegram unreachable" }
+    except urllib.error.URLError as exc:  # info: except urllib . error . URLError as exc
+        return {"ok": False, "detail": f"telegram unreachable ({type(getattr(exc, 'reason', exc)).__name__})"}  # info: return { "ok" : False , "detail" : f" telegram unreachable ( { type ( getattr ( exc , 'reason' , exc ) ) . __name__ } ) " }
+    except (TimeoutError, OSError) as exc:  # info: except ( TimeoutError , OSError ) as exc
+        return {"ok": False, "detail": f"telegram unreachable ({type(exc).__name__})"}  # info: return { "ok" : False , "detail" : f" telegram unreachable ( { type ( exc ) . __name__ } ) " }
     if not payload.get("ok"):  # info: if not payload . get ( "ok" )
         return {"ok": False, "detail": "telegram refused"}  # info: return { "ok" : False , "detail" : "telegram refused" }
     return payload  # info: return payload
+
+# ====================================================
+# SECTION: function matched_report
+# What it does: Name the voice report whose Telegram message id matches. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def matched_report(state: dict, message_id: int) -> str | None:  # info: def matched_report
+    for report, row in state.items():  # info: for report , row in state . items
+        if isinstance(row, dict) and row.get("message_id") == message_id:  # info: if isinstance ( row , dict ) and row . get ( "message_id" ) == message_id
+            return str(report)  # info: return str ( report )
+    return None  # info: return None
+
+# ====================================================
+# SECTION: function record_note
+# What it does: Append a human reply to a delivered voice report. Does not send or open a work order.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def record_note(message: dict) -> bool:  # info: def record_note
+    reply = message.get("reply_to_message") or {}  # info: set reply
+    text = (message.get("text") or "").strip()  # info: set text
+    try:  # info: try
+        mid = int(reply.get("message_id"))  # info: set mid
+    except (TypeError, ValueError):  # info: except ( TypeError , ValueError )
+        return False  # info: return False
+    if not text:  # info: if not text
+        return False  # info: return False
+    try:  # info: try
+        state = json.loads(STATE.read_text(encoding="utf-8")) if STATE.is_file() else {}  # info: set state
+    except (OSError, ValueError):  # info: except ( OSError , ValueError )
+        return False  # info: return False
+    if not isinstance(state, dict):  # info: if not isinstance ( state , dict )
+        return False  # info: return False
+    report = matched_report(state, mid)  # info: set report
+    if not report:  # info: if not report
+        return False  # info: return False
+    sender = message.get("from") or {}  # info: set sender
+    line = {"ts": message.get("date"), "report": report, "reply_to": mid, "text": text[:2000], "from_id": sender.get("id")}  # info: set line
+    NOTES.parent.mkdir(parents=True, exist_ok=True)  # info: NOTES . parent . mkdir
+    with NOTES.open("a", encoding="utf-8") as handle:  # info: with NOTES . open
+        handle.write(json.dumps(line) + "\n")  # info: handle . write
+    return True  # info: return True
 
 # ====================================================
 # SECTION: function remember
