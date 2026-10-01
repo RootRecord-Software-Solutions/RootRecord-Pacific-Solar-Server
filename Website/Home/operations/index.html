@@ -125,22 +125,33 @@
 
   <section class="sec" id="automation">
     <h2>Automation</h2>
-    <p class="prose">Automation is the part of the runtime that repeats bounded work: collection, scheduling, and handoff between field systems and the record. This page does not publish a task queue or a job count. No public signal is available for that queue.</p>
+    <p class="prose">Automation is the part of the runtime that repeats bounded work. Collectors read field systems. Schedulers decide when a pass runs. The result is handed to the data layer as a reading, not as a story about the reading.</p>
+    <p class="prose">This page does not publish a task queue, a job count, a success rate, or a list of what ran. No public signal is available for that queue. A collector being configured is not the same fact as a current value above.</p>
   </section>
 
   <section class="sec" id="monitoring">
     <h2>Monitoring</h2>
-    <p class="prose">Public monitoring is the status feed. A reading is present or it is not. The absence of a reading is not filled with a healthy state. <a href="/status">Status</a></p>
+    <p class="prose">Public monitoring is the status feed. A reading is present, stale, offline, or absent. The page does not turn a loaded document into a healthy system.</p>
+    <ul class="terms">
+      <li><strong>Live</strong> A successful poll returned counts, and that poll is recent.</li>
+      <li><strong>Stale</strong> A later poll failed, and the last reading is still on the page.</li>
+      <li><strong>Offline</strong> This browser reports that it is offline.</li>
+      <li><strong>No public signal</strong> The feed has no count or reading to show.</li>
+      <li><strong>No reading</strong> That field is in the model, and the feed did not return a value.</li>
+    </ul>
+    <p class="prose"><a href="/status">Status</a> uses the same words.</p>
   </section>
 
   <section class="sec" id="reporting">
     <h2>Reporting</h2>
-    <p class="prose">Public observations are the current energy, weather, geology, and network readings above. They are last-known values from the public feed. There is no public history table to expand. The spoken reports are on <a href="/reports">Reports</a>.</p>
+    <p class="prose">Two public surfaces exist. This page and Status show current observations: energy, the weather observation time, Kīlauea, and network counts. <a href="/reports">Reports</a> holds the latest written desks from Ava, Bruce, and Carly.</p>
+    <p class="prose">A report is a published text. It is not a second live feed, and it is not a history chart. If a report page says nothing is on file, that is the current public state. Power over time is still not in the operations feed, so it is not charted here.</p>
   </section>
 
   <section class="sec" id="verification">
     <h2>Verification</h2>
-    <p class="prose">A configured collector is not the same fact as a current reading. Verification is the check that the feed actually reported a value, with a time. <a href="/security">Security</a> · <a href="/data">Data</a></p>
+    <p class="prose">Verification is the check that the feed actually reported a value, with a time. A configured collector, a commit, or a page that rendered is not that check.</p>
+    <p class="prose">Energy is treated as stale when the observation is old. Weather and geology use longer windows, because those records are not sampled on the same cadence as power. The exact window is a display rule. It is not a claim that the instrument failed. <a href="/security">Security</a> · <a href="/data">Data</a></p>
   </section>
 </main>
 <footer class="site-foot">
