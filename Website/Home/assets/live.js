@@ -518,6 +518,86 @@
     });
   }
 
+  function quakeClock(ms) {
+    var full = T.formatHst(ms, false);
+    if (!full) return "";
+    return full.replace(/:\d{2}(?= HST$)/, "");
+  }
+
+  function magText(mag) {
+    if (!Number.isFinite(mag)) return "—";
+    return "M" + String(Math.round(mag * 100) / 100);
+  }
+
+  function hawaiiQuakeUrl() {
+    var start = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 19);
+    return "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&orderby=time&minmagnitude=1&minlatitude=18.5&maxlatitude=22.5&minlongitude=-160.5&maxlongitude=-154.5&starttime=" + encodeURIComponent(start);
+  }
+
+  function paintQuakeNote(message) {
+    var list = document.getElementById("quake-feed");
+    if (!list) return;
+    list.textContent = "";
+    var empty = document.createElement("li");
+    empty.className = "b-quake-empty";
+    empty.textContent = message;
+    list.appendChild(empty);
+  }
+
+  function paintQuakes(features) {
+    var list = document.getElementById("quake-feed");
+    if (!list) return;
+    var rows = [];
+    (features || []).forEach(function (feature) {
+      if (rows.length >= 4) return;
+      var props = (feature && feature.properties) || {};
+      if (props.type && props.type !== "earthquake") return;
+      var mag = Number(props.mag);
+      var place = typeof props.place === "string" ? props.place.replace(/\s+/g, " ").trim() : "";
+      if (!Number.isFinite(mag) && !place) return;
+      rows.push({
+        mag: magText(mag),
+        place: place || "Place unavailable",
+        when: quakeClock(props.time) || "Time unavailable"
+      });
+    });
+    if (!rows.length) {
+      paintQuakeNote("No Hawaiʻi earthquakes in the last 24 hours");
+      return;
+    }
+    list.textContent = "";
+    rows.forEach(function (row) {
+      var item = document.createElement("li");
+      item.className = "b-quake";
+      var mag = document.createElement("span");
+      mag.className = "mag";
+      mag.textContent = row.mag;
+      var place = document.createElement("span");
+      place.className = "place";
+      place.textContent = row.place;
+      var when = document.createElement("time");
+      when.className = "when";
+      when.textContent = row.when;
+      item.appendChild(mag);
+      item.appendChild(place);
+      item.appendChild(when);
+      list.appendChild(item);
+    });
+  }
+
+  function tickQuakes() {
+    if (!document.getElementById("quake-feed")) return;
+    fetch(hawaiiQuakeUrl(), { cache: "no-store", credentials: "omit" }).then(function (r) {
+      if (r.status === 204) return { features: [] };
+      if (!r.ok) throw new Error("http");
+      return r.json();
+    }).then(function (geo) {
+      paintQuakes(geo && geo.features);
+    }).catch(function () {
+      paintQuakeNote("USGS feed unavailable");
+    });
+  }
+
   function tickNotice() {
     if (!T.readNotice) return;
     T.readNotice().then(function (doc) {
@@ -533,11 +613,13 @@
   tickNotice();
   tickState();
   tickOps();
+  tickQuakes();
   paintMoonClock();
   var stateTimer = setInterval(tickState, 5000);
   var opsTimer = setInterval(tickOps, 60000);
   var noticeTimer = setInterval(tickNotice, 60000);
   var moonTimer = setInterval(paintMoonClock, 30000);
+  var quakeTimer = setInterval(tickQuakes, 5 * 60 * 1000);
   window.addEventListener("offline", function () {
     paintStateMiss();
     applyNotice();
@@ -548,5 +630,6 @@
     clearInterval(opsTimer);
     clearInterval(noticeTimer);
     clearInterval(moonTimer);
+    clearInterval(quakeTimer);
   });
 })();

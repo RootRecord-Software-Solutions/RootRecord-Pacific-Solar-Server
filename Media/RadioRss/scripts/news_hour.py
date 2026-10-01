@@ -12,6 +12,7 @@ from __future__ import annotations  # info: from __future__ import annotations
 
 import json  # info: import json
 import os  # info: import os
+import shutil  # info: import shutil
 import subprocess  # info: import subprocess
 import sys  # info: import sys
 import tempfile  # info: import tempfile
@@ -328,8 +329,10 @@ def _join(parts: list[Path], built: dict) -> dict:  # info: def _join
         if voice_dir not in sys.path:  # info: if voice_dir not in sys . path :
             sys.path.insert(0, voice_dir)  # info: sys . path . insert ( 0 , voice_dir )
         import speakers  # info: import speakers
+        same_disk = dest.with_name(".news_update_current.new.wav")  # info: set same_disk
+        shutil.copyfile(staged, same_disk)  # info: shutil . copyfile ( staged , same_disk )
         speakers.retire_current(dest)  # info: speakers . retire_current ( dest )
-        os.replace(staged, dest)  # info: os . replace ( staged , dest )
+        os.replace(same_disk, dest)  # info: os . replace ( same_disk , dest )
     except (OSError, subprocess.TimeoutExpired) as exc:  # info: except ( OSError , subprocess . TimeoutExpired ) as exc
         return {"ok": False, "detail": type(exc).__name__}  # info: return { "ok" : False , "detail" : type ( exc ) . __name__ }
     REPORT_TEXT.mkdir(parents=True, exist_ok=True)  # info: REPORT_TEXT . mkdir ( parents = True , exist_ok = True )

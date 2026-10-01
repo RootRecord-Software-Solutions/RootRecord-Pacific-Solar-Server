@@ -1968,3 +1968,51 @@ body.broadcast #chart-output .bar-fill { fill: #7dd3fc; }
   font-variant-numeric: tabular-nums;
 }
 
+.b-quakes-card {
+  margin-top: auto;
+  flex: none;
+}
+
+.b-quakes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.b-quake {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  column-gap: 8px;
+  align-items: baseline;
+}
+
+.b-quake .mag {
+  font-size: 16px;
+  font-weight: 750;
+  color: #00e5ff;
+  font-variant-numeric: tabular-nums;
+}
+
+.b-quake .place {
+  font-size: 14px;
+  font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.b-quake .when {
+  grid-column: 2;
+  color: #9fb3c4;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.b-quake-empty {
+  margin: 0;
+  color: #9fb3c4;
+  font-size: 14px;
+}
+

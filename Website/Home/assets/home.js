@@ -288,6 +288,7 @@
       out.push([lng, lat]);
     });
     if (out.length < 4) return null;
+    out.reverse();
     var first = out[0];
     var last = out[out.length - 1];
     if (first[0] !== last[0] || first[1] !== last[1]) out.push([first[0], first[1]]);
@@ -508,7 +509,6 @@
       globe._rrApplySpin = applySpin;
       startQuakes();
       startStorms();
-      window.__rrGlobe = globe;
 
       var canvas = globeEl.querySelector("canvas");
       if (canvas) {
