@@ -38,7 +38,7 @@ APP_FILE = DISCORD / "config" / "global-updater.json"  # info: set APP_FILE
 FLAG = "RR_GLOBAL_UPDATER"  # info: set FLAG
 
 from lib.observations import load_host, render_observation  # noqa: E402
-from lib.updater import VOICE, build_prompt, canonical_intro, enforce, notes_for, system_text  # noqa: E402
+from lib.updater import VOICE, build_prompt, enforce, notes_for, system_text  # noqa: E402
 
 
 # ====================================================
@@ -253,12 +253,3 @@ def apply(  # info: def apply
     if handled:  # info: if handled
         save_seen(seen_file, seen)  # info: call save_seen
     return {"handled": handled, "posted": posted, "ids": ids, "public_texts": public_texts}  # info: return
-
-
-# ====================================================
-# SECTION: function intro_line
-# What it does: Expose the Library introduction for callers that need the canonical sentence.
-# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
-# ====================================================
-def intro_line() -> str:  # info: def intro_line
-    return canonical_intro()  # info: return canonical_intro ( )
