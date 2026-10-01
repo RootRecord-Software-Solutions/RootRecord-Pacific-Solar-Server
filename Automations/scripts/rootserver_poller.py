@@ -24,7 +24,7 @@ import sys  # info: import sys
 import threading  # info: import threading
 import time  # info: import time
 import json  # info: import json
-from datetime import datetime  # info: from datetime import datetime
+from datetime import datetime, timedelta  # info: from datetime import datetime , timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer  # info: from http . server import BaseHTTPRequestHandler , ThreadingHTTPServer
 from pathlib import Path  # info: from pathlib import Path
 
@@ -721,8 +721,28 @@ def _normalize_hhmm(raw: object) -> str | None:  # info: def _normalize_hhmm
 
 
 # ====================================================
+# SECTION: function crossed_slots
+# What it does: Minutes after the last slot through now. A long job can cross :00; those minutes still count. Caps at 60.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def crossed_slots(prev: datetime, now: datetime, cap: int = 60) -> list[datetime]:  # info: def crossed_slots
+    prev_m = prev.replace(second=0, microsecond=0)  # info: set prev_m
+    now_m = now.replace(second=0, microsecond=0)  # info: set now_m
+    if now_m <= prev_m:  # info: if now_m <= prev_m
+        return []  # info: return [ ]
+    if now_m - prev_m > timedelta(minutes=cap):  # info: if now_m - prev_m > timedelta
+        prev_m = now_m - timedelta(minutes=cap)  # info: set prev_m
+    out: list[datetime] = []  # info: set out
+    step = prev_m  # info: set step
+    while step < now_m and len(out) < cap:  # info: while step < now_m and len ( out ) < cap
+        step = step + timedelta(minutes=1)  # info: set step
+        out.append(step)  # info: out . append
+    return out  # info: return out
+
+
+# ====================================================
 # SECTION: function scheduler_loop
-# What it does: scheduler loop.
+# What it does: scheduler loop. A job that runs across a minute still fires the jobs for each minute it crossed.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def scheduler_loop() -> None:  # info: def scheduler_loop
@@ -736,6 +756,7 @@ def scheduler_loop() -> None:  # info: def scheduler_loop
         next_due[j["id"]] = now  # info: next_due [ j [ "id" ] ] =
     last_minute: int | None = None  # info: set last_minute
     last_hour: int | None = None  # info: set last_hour
+    last_slot: datetime | None = None  # info: set last_slot
     fired_at: set[str] = set()  # info: set fired_at
     log(f"{full_timestamp()}scheduler  every_seconds={len(sec_jobs)}  every_minute={len(min_jobs)}  every_hour={len(hour_jobs)}  on_at={len(at_jobs)}")  # info: call log
     while not _stop.is_set():  # info: while not _stop . is_set ( ) :
@@ -746,38 +767,40 @@ def scheduler_loop() -> None:  # info: def scheduler_loop
             if mono >= next_due.get(jid, 0):  # info: if mono >= next_due . get ( jid
                 run_job(j)  # info: call run_job
                 interval = float(j.get("interval_sec") or INTERVAL_FALLBACK)  # info: set interval
-                next_due[jid] = mono + max(0.2, interval)  # info: next_due [ jid ] = mono + max
+                next_due[jid] = time.monotonic() + max(0.2, interval)  # info: next_due [ jid ] = time . monotonic ( ) + max
+        wall = datetime.now().astimezone()  # info: set wall
         minute, hour = wall.minute, wall.hour  # info: minute , hour = wall . minute ,
-        hm = f"{hour:02d}:{minute:02d}"  # info: set hm
         day = wall.date().isoformat()  # info: set day
-        if last_minute is None:  # info: if last_minute is None :
-            last_minute, last_hour = minute, hour  # info: last_minute , last_hour = minute , hour
-        else:  # info: else :
-            if minute != last_minute:  # info: if minute != last_minute :
+        slot = wall.replace(second=0, microsecond=0)  # info: set slot
+        if last_slot is None:  # info: if last_slot is None :
+            last_minute, last_hour, last_slot = minute, hour, slot  # info: last_minute , last_hour , last_slot = minute , hour , slot
+        elif slot < last_slot:  # info: elif slot < last_slot :
+            last_minute, last_hour, last_slot = minute, hour, slot  # info: last_minute , last_hour , last_slot = minute , hour , slot
+        elif slot != last_slot:  # info: elif slot != last_slot :
+            for step in crossed_slots(last_slot, slot):  # info: for step in crossed_slots ( last_slot , slot )
+                hm_step = f"{step.hour:02d}:{step.minute:02d}"  # info: set hm_step
                 for j in min_jobs:  # info: for j in min_jobs :
                     only = j.get("only_at_minutes") or []  # info: set only
-                    if only and minute not in only:  # info: if only and minute not in only :
+                    if only and step.minute not in only:  # info: if only and step . minute not in only :
                         continue  # info: continue
                     run_job(j)  # info: call run_job
                 for j in at_jobs:  # info: for j in at_jobs :
                     times = {t for raw in (j.get("at_times") or []) if (t := _normalize_hhmm(raw))}  # info: set times
-                    if hm not in times:  # info: if hm not in times :
+                    if hm_step not in times:  # info: if hm_step not in times :
                         continue  # info: continue
-                    key = f"{j['id']}|{day}|{hm}"  # info: set key
+                    key = f"{j['id']}|{step.date().isoformat()}|{hm_step}"  # info: set key
                     if key in fired_at:  # info: if key in fired_at :
                         continue  # info: continue
                     run_job(j)  # info: call run_job
                     fired_at.add(key)  # info: fired_at . add ( key )
-                last_minute = minute  # info: set last_minute
-            if hour != last_hour and minute == 0:  # info: if hour != last_hour and minute == 0
-                for j in hour_jobs:  # info: for j in hour_jobs :
-                    only = j.get("only_at_hours") or []  # info: set only
-                    if only and hour not in only:  # info: if only and hour not in only :
-                        continue  # info: continue
-                    run_job(j)  # info: call run_job
-                last_hour = hour  # info: set last_hour
-            elif hour != last_hour:  # info: elif hour != last_hour :
-                last_hour = hour  # info: set last_hour
+                if step.minute == 0:  # info: if step . minute == 0 :
+                    for j in hour_jobs:  # info: for j in hour_jobs :
+                        only_h = j.get("only_at_hours") or []  # info: set only_h
+                        if only_h and step.hour not in only_h:  # info: if only_h and step . hour not in only_h :
+                            continue  # info: continue
+                        run_job(j)  # info: call run_job
+                    last_hour = step.hour  # info: set last_hour
+            last_minute, last_slot = minute, slot  # info: last_minute , last_slot = minute , slot
             if fired_at:  # info: if fired_at :
                 fired_at = {k for k in fired_at if f"|{day}|" in k}  # info: set fired_at
         _stop.wait(0.25)  # info: _stop . wait ( 0.25 )

@@ -265,7 +265,7 @@ def measured_text(report_text: str, title: str) -> str:  # info: def measured_te
 
 # ====================================================
 # SECTION: function deliver
-# What it does: Sandbox sends voice, transcript, and report. Live sends voice and report. Skips when the gate is off or the words are unchanged.
+# What it does: Sandbox sends voice, transcript, and report. Live sends voice and report. Skips when the gate is off or the same words already went to this chat.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def deliver(report: str, wav: str | Path, spoken: str, kind: str, report_text: str = "", photo: str | None = None, photo_caption: str = "", who: str = "", remember_as: str = "") -> dict:  # info: def deliver
@@ -275,7 +275,7 @@ def deliver(report: str, wav: str | Path, spoken: str, kind: str, report_text: s
     wav_path = Path(wav)  # info: set wav_path
     if not text or not wav_path.is_file():  # info: if not text or not wav_path . is_file
         return {"ok": False, "sent": False, "detail": "missing wav or spoken text"}  # info: return { "ok" : False , "sent" : False , "detail" : "missing wav or spoken text" }
-    digest = hashlib.sha256((text + "\n" + remember_as).encode()).hexdigest()  # info: set digest
+    digest = hashlib.sha256((dest_name() + "\n" + text + "\n" + remember_as).encode()).hexdigest()  # info: set digest
     try:  # info: try
         prior = json.loads(STATE.read_text(encoding="utf-8")) if STATE.is_file() else {}  # info: set prior
     except (OSError, ValueError):  # info: except

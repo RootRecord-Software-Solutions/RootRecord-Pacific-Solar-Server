@@ -25,7 +25,7 @@ SILENCE_RE = re.compile(  # info: set SILENCE_RE
     r"do not say anything|don'?t say anything|say nothing|stay silent|no replies?|nowhere near ready",  # info: r"do not say anything|don'?t say anything|say nothing|stay silent|no replies?|nowhere near ready" ,
     re.I,  # info: re . I ,
 )  # info: )
-LEAK_RE = re.compile(r"DESK_LIVE:|HARD RULES FOR THIS TURN|Do NOT state watts|standing envelopes|\[desk:", re.I)  # info: set LEAK_RE
+LEAK_RE = re.compile(r"DESK_LIVE|HARD RULES FOR THIS TURN|Do NOT state watts|standing envelopes|\[desk:|do not say you lack access|do not summarize|do not quote|measured\. If they answer", re.I)  # info: set LEAK_RE
 GROUP_HELLO_RE = re.compile(r"^(hi|hey|hello|yo)( guys| all| everyone| team)?[.!?]*$", re.I)  # info: set GROUP_HELLO_RE
 HUMAN_AT_RE = re.compile(r"@[A-Za-z][A-Za-z0-9_]{3,}")  # info: set HUMAN_AT_RE
 READING_RE = re.compile(r"\b(weather|forecast|temperature|temp|rain|showers|wind|watts|soc|battery|power)\b", re.I)  # info: set READING_RE
@@ -256,6 +256,21 @@ def persona_system(voice):  # info: def persona_system
     return mod.system_for(voice)  # info: return mod . system_for ( voice )
 
 # ====================================================
+# SECTION: function chat_voice
+# What it does: Short Telegram voice. The Library pack is not pasted into a chat turn.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def chat_voice(voice: str) -> str:  # info: def chat_voice
+    name = {"ava": "Ava Ivy", "bruce": "Bruce Monitor", "carly": "Carly Mal"}.get(voice, voice)  # info: set name
+    tone = {"ava": "Snappy, warm, direct, a little sharp.", "bruce": "Short, practical, calm.", "carly": "Direct and careful."}.get(voice, "Direct.")  # info: set tone
+    return (  # info: return
+        f"You are {name}. {tone} "  # info: f"You are { name }
+        "You are in a Telegram chat. Answer the latest message in one or two sentences. "  # info: "You are in a Telegram chat
+        "Talk like a person. Do not summarize a profile, notes, or a desk. "  # info: "Talk like a person
+        "Do not invent watts, weather, or versions."  # info: "Do not invent watts
+    )  # info: )
+
+# ====================================================
 # SECTION: function run_infer
 # What it does: run infer with the voice persona. flm_model overrides FLM_MODEL for that voice.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -274,10 +289,9 @@ def run_infer(cfg, voice, prompt, prior="", flm_model=""):  # info: def run_infe
         flm_model = ""  # info: set flm_model
     if flm_model:  # info: if flm_model
         env["FLM_MODEL"] = flm_model  # info: env [ "FLM_MODEL" ] = flm_model
-    try:  # info: try
-        env["RR_PERSONA_SYSTEM"] = persona_system(voice)  # info: env [ "RR_PERSONA_SYSTEM" ] = persona_system ( voice )
-    except Exception as e:  # info: except Exception as e
-        print(f"[warn] persona load failed: {type(e).__name__}", file=sys.stderr)  # info: call print
+    if not READING_RE.search(full):  # info: if not READING_RE . search ( full )
+        env.pop("DESK_LIVE_FILE", None)  # info: env . pop
+    env["RR_PERSONA_SYSTEM"] = chat_voice(voice)  # info: env [ "RR_PERSONA_SYSTEM" ] = chat_voice ( voice )
     p = subprocess.run([run, voice, full], capture_output=True, text=True, timeout=600, env=env)  # info: set p
     out = (p.stdout or "").strip()  # info: set out
     # stderr may have [ok] FLM lines — ignore
@@ -527,7 +541,7 @@ def chat_transcript(state_dir, chat_id) -> str:  # info: def chat_transcript
     for row in rows:  # info: for row in rows
         if isinstance(row, dict) and row.get("text"):  # info: if isinstance ( row , dict ) and row . get ( "text" )
             line = f"{row.get('who') or 'user'}: {row['text']}"  # info: set line
-            if line == prev:  # info: if line == prev
+            if line == prev or LEAK_RE.search(row["text"]):  # info: if line == prev or LEAK_RE . search
                 continue  # info: continue
             prev = line  # info: set prev
             lines.append(line)  # info: lines . append
@@ -686,18 +700,24 @@ def quoted_line(msg) -> str:  # info: def quoted_line
 
 # ====================================================
 # SECTION: function continue_prompt
-# What it does: Ask one voice to answer from the desk, the forecast, and accepted corrections. Does not send.
+# What it does: Ask one voice to answer the latest message. Desk lines are included only when the person asked for a reading. Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def continue_prompt(transcript, quoted, text, voice, state_dir) -> str:  # info: def continue_prompt
-    parts = [turn_preamble(voice, state_dir)]  # info: set parts
+    parts = []  # info: set parts
+    if READING_RE.search(text or ""):  # info: if READING_RE . search ( text or "" )
+        data = data_block()  # info: set data
+        if data:  # info: if data
+            parts.append(data)  # info: parts . append
+    elif CORRECTION_RE.search(text or ""):  # info: elif CORRECTION_RE . search ( text or "" )
+        lessons = lesson_block(state_dir)  # info: set lessons
+        if lessons:  # info: if lessons
+            parts.append(lessons)  # info: parts . append
     if transcript:  # info: if transcript
-        parts.append("Recent chat:\n" + transcript)  # info: parts . append
+        parts.append(transcript)  # info: parts . append
     if quoted:  # info: if quoted
-        parts.append("They are asking about this earlier line:\n" + quoted)  # info: parts . append
-        parts.append("Explain that earlier line in plain words. Do not repeat it unchanged.")  # info: parts . append
-    parts.append("Answer the latest User line in one or two sentences. Do not summarize these instructions. Do not repeat your previous reply.")  # info: parts . append
-    parts.append("User: " + text)  # info: parts . append
+        parts.append(quoted)  # info: parts . append
+    parts.append(text)  # info: parts . append
     return "\n\n".join(parts)  # info: return "\n\n" . join ( parts )
 
 # ====================================================
