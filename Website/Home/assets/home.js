@@ -8,6 +8,8 @@
   var pullTimer = 0;
   var quakeTimer = 0;
   var quakeSig = "";
+  var stormTimer = 0;
+  var stormSig = "";
 
   function reduced() {
     return !!(reduceQuery && reduceQuery.matches);
@@ -226,6 +228,170 @@
     quakeTimer = window.setInterval(pullQuakes, 5 * 60 * 1000);
   }
 
+  var STORM_MAP = "https://mapservices.weather.noaa.gov/tropical/rest/services/tropical/NHC_tropical_weather_summary/MapServer";
+
+  function stormQuery(layer, where) {
+    return STORM_MAP + "/" + layer + "/query?where=" + encodeURIComponent(where || "1=1") +
+      "&outFields=*&returnGeometry=true&f=geojson&outSR=4326&geometryPrecision=3";
+  }
+
+  function stormTitle(props) {
+    var p = props || {};
+    var name = p.stormname || p.stormid || p.binnumber || "Storm";
+    var code = String(p.stormtype || "").toUpperCase();
+    var kind = code === "HU" || code === "TY" ? "Hurricane" :
+      code === "TS" ? "Tropical storm" :
+      code === "TD" ? "Tropical depression" :
+      code === "PTC" || code === "STD" ? "Potential tropical cyclone" : "";
+    return kind ? kind + " " + name : String(name);
+  }
+
+  function linePaths(geo, kind, names) {
+    var out = [];
+    var features = geo && geo.features;
+    if (!Array.isArray(features)) return out;
+    features.forEach(function (f) {
+      if (!f || !f.geometry || f.geometry.type !== "LineString") return;
+      var props = f.properties || {};
+      if (!props.stormname && names && props.binnumber && names[props.binnumber]) {
+        props = Object.assign({}, props, { stormname: names[props.binnumber] });
+      }
+      var pts = [];
+      function pushPath() {
+        if (pts.length >= 2) out.push({ kind: kind, points: pts, props: props });
+        pts = [];
+      }
+      (f.geometry.coordinates || []).forEach(function (c) {
+        if (!c || c.length < 2) return;
+        var pos = finitePair(c[1], c[0]);
+        if (!pos) return;
+        if (pts.length && Math.abs(pos.lng - pts[pts.length - 1].lng) > 180) pushPath();
+        pts.push(pos);
+      });
+      pushPath();
+    });
+    return out;
+  }
+
+  function zoneFeatures(geo, kind) {
+    var out = [];
+    var features = geo && geo.features;
+    if (!Array.isArray(features)) return out;
+    features.forEach(function (f) {
+      if (!f || !f.geometry) return;
+      var t = f.geometry.type;
+      if (t !== "Polygon" && t !== "MultiPolygon") return;
+      var props = f.properties || {};
+      if (kind === "wind" && Number(props.tau) !== 0) return;
+      out.push({ kind: kind, geometry: f.geometry, props: props });
+    });
+    return out;
+  }
+
+  function nameByBin(geo) {
+    var names = {};
+    var features = geo && geo.features;
+    if (!Array.isArray(features)) return names;
+    features.forEach(function (f) {
+      var p = f && f.properties;
+      if (p && p.binnumber && p.stormname) names[p.binnumber] = p.stormname;
+    });
+    return names;
+  }
+
+  function trackLabel(d) {
+    var title = stormTitle(d.props);
+    return d.kind === "forecast" ? title + ", forecast track" : title + ", past track";
+  }
+
+  function zoneLabel(d) {
+    var title = stormTitle(d.props);
+    if (d.kind === "cone") return title + ", forecast cone";
+    var r = Number(d.props && d.props.radii);
+    if (r >= 64) return title + ", hurricane-force winds";
+    if (r >= 50) return title + ", storm-force winds";
+    return title + ", tropical-storm-force winds";
+  }
+
+  function zoneFill(d) {
+    if (d.kind === "cone") return "rgba(255, 196, 72, 0.14)";
+    var r = Number(d.props && d.props.radii);
+    if (r >= 64) return "rgba(255, 72, 72, 0.20)";
+    if (r >= 50) return "rgba(255, 160, 48, 0.16)";
+    return "rgba(125, 196, 255, 0.13)";
+  }
+
+  function zoneStroke(d) {
+    if (d.kind === "cone") return "rgba(255, 210, 110, 0.55)";
+    var r = Number(d.props && d.props.radii);
+    if (r >= 64) return "rgba(255, 120, 120, 0.7)";
+    if (r >= 50) return "rgba(255, 180, 80, 0.6)";
+    return "rgba(160, 210, 255, 0.55)";
+  }
+
+  function bindStormStyle() {
+    if (!globe || globe._rrStorm || typeof globe.pathsData !== "function") return;
+    globe._rrStorm = true;
+    globe
+      .pathPoints(function (d) { return d.points; })
+      .pathPointLat("lat")
+      .pathPointLng("lng")
+      .pathPointAlt(0.006)
+      .pathColor(function (d) {
+        return d.kind === "forecast" ? "rgba(255, 196, 72, 0.92)" : "rgba(255, 244, 220, 0.8)";
+      })
+      .pathStroke(function (d) { return d.kind === "forecast" ? 0.16 : 0.22; })
+      .pathDashLength(function (d) { return d.kind === "forecast" ? 0.32 : 1; })
+      .pathDashGap(function (d) { return d.kind === "forecast" ? 0.14 : 0; })
+      .pathDashAnimateTime(0)
+      .pathLabel(trackLabel)
+      .pathsTransitionDuration(0)
+      .polygonGeoJsonGeometry(function (d) { return d.geometry; })
+      .polygonAltitude(0.003)
+      .polygonCapColor(zoneFill)
+      .polygonSideColor(function () { return "rgba(0,0,0,0)"; })
+      .polygonStrokeColor(zoneStroke)
+      .polygonLabel(zoneLabel)
+      .polygonsTransitionDuration(0);
+  }
+
+  function showStorms(paths, zones) {
+    if (!globe) return;
+    bindStormStyle();
+    var sig = paths.length + ":" + zones.length + ":" +
+      paths.map(function (d) { return (d.props && (d.props.stormname || d.props.binnumber)) || ""; }).join(",") + "|" +
+      zones.map(function (d) { return (d.props && (d.props.stormname || d.props.stormid || "")) + (d.props && d.props.radii || ""); }).join(",");
+    if (sig === stormSig) return;
+    stormSig = sig;
+    globe.pathsData(paths);
+    globe.polygonsData(zones);
+  }
+
+  function pullStorms() {
+    if (!globe || disposed) return;
+    Promise.all([
+      readQuakeFeed(stormQuery(11)).catch(function () { return null; }),
+      readQuakeFeed(stormQuery(6)).catch(function () { return null; }),
+      readQuakeFeed(stormQuery(7)).catch(function () { return null; }),
+      readQuakeFeed(stormQuery(16, "tau=0")).catch(function () { return null; })
+    ]).then(function (packs) {
+      if (!globe || disposed) return;
+      if (!packs[0] && !packs[1] && !packs[2] && !packs[3]) return;
+      var names = nameByBin(packs[1]);
+      var coneNames = nameByBin(packs[2]);
+      Object.keys(coneNames).forEach(function (k) { if (!names[k]) names[k] = coneNames[k]; });
+      var paths = linePaths(packs[0], "past", names).concat(linePaths(packs[1], "forecast", names));
+      var zones = zoneFeatures(packs[2], "cone").concat(zoneFeatures(packs[3], "wind"));
+      showStorms(paths, zones);
+    }).catch(function () {});
+  }
+
+  function startStorms() {
+    if (!globe || stormTimer) return;
+    pullStorms();
+    stormTimer = window.setInterval(pullStorms, 5 * 60 * 1000);
+  }
+
   function draw(d) {
     if (!globe || !d) return;
     var scene = publicScene(d);
@@ -304,6 +470,8 @@
       applySpin();
       globe._rrApplySpin = applySpin;
       startQuakes();
+      startStorms();
+      window.__rrGlobe = globe;
 
       var canvas = globeEl.querySelector("canvas");
       if (canvas) {
@@ -321,6 +489,7 @@
         fallbackControls.autoRotateSpeed = document.body.classList.contains("broadcast") ? 1.05 : 0.35;
         globe.pointOfView({ lat: 16, lng: -156, altitude: 2.15 });
         startQuakes();
+        startStorms();
       } catch (err2) {
         globe = null;
         failGlobe();
@@ -363,6 +532,7 @@
     disposed = true;
     if (pullTimer) window.clearInterval(pullTimer);
     if (quakeTimer) window.clearInterval(quakeTimer);
+    if (stormTimer) window.clearInterval(stormTimer);
     document.removeEventListener("visibilitychange", onVisibility);
     window.removeEventListener("resize", fitGlobe);
     if (window.visualViewport) window.visualViewport.removeEventListener("resize", fitGlobe);

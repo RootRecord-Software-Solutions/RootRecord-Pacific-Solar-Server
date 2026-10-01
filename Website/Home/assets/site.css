@@ -123,47 +123,47 @@ a:hover { color: #e0f2fe; }
   position: absolute;
   left: 0;
   top: 0;
-  width: 8px;
-  height: 8px;
-  margin: -4px 0 0 -4px;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
   border-radius: 50%;
   background: #ff2d2d;
-  box-shadow: 0 0 6px rgba(255, 45, 45, 0.95);
+  box-shadow: 0 0 4px rgba(255, 45, 45, 0.9);
   pointer-events: auto;
 }
 
 .quake-core::after {
   content: "";
   position: absolute;
-  inset: -1px;
+  inset: 0;
   border-radius: 50%;
-  border: 2px solid rgba(255, 45, 45, 0.9);
+  border: 1px solid rgba(255, 45, 45, 0.85);
   animation: quake-pulse 1.6s ease-out infinite;
   animation-delay: inherit;
   pointer-events: none;
 }
 
 .quake-core.quake-m4 {
-  width: 10px;
-  height: 10px;
-  margin: -5px 0 0 -5px;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
 }
 
 .quake-core.quake-m5 {
-  width: 13px;
-  height: 13px;
-  margin: -6.5px 0 0 -6.5px;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
 }
 
 .quake-core.quake-m6 {
-  width: 16px;
-  height: 16px;
-  margin: -8px 0 0 -8px;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
 }
 
 @keyframes quake-pulse {
-  0% { transform: scale(0.55); opacity: 0.95; }
-  100% { transform: scale(2.8); opacity: 0; }
+  0% { transform: scale(0.7); opacity: 0.9; }
+  100% { transform: scale(2.1); opacity: 0; }
 }
 
 .stage {

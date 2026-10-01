@@ -235,7 +235,7 @@ def _source(story: dict) -> dict:  # info: def _source
 def _roundup_feeds(registry: dict) -> list[dict]:  # info: def _roundup_feeds
     categories = set()  # info: set categories
     for desk in (_cfg(registry).get("desks") or []):  # info: for desk in ( _cfg ( registry ) . get ( "desks" ) or [ ] )
-        if isinstance(desk, dict):  # info: if isinstance ( desk , dict ) :
+        if isinstance(desk, dict) and not desk.get("fill"):  # info: if isinstance ( desk , dict ) and not desk . get ( "fill" ) :
             categories.update(desk.get("categories") or [])  # info: categories . update ( desk . get ( "categories" ) or [ ] )
     return [feed for feed in registry["feeds"] if configured_on(feed) and feed.get("category") in categories]  # info: return [ feed for feed in registry [ "feeds" ] if configured_on ( feed ) and feed . get ( "category" ) in categories ]
 
