@@ -2,8 +2,8 @@
   "guild_id": "1497039564345442406",
   "guild_name": "RootRecord Software Solutions",
   "bot_username": "Root Record Global Updater",
-  "observed_at": "2026-09-30T20:05:00-10:00",
-  "note": "Professional layout. One channel per function. The reply allowlist is config/channels.json and contains only #help-desk.",
+  "observed_at": "2026-09-30T20:15:00-10:00",
+  "note": "Professional layout. One channel per function. The reply allowlist is config/channels.json and contains only #help-desk. Report delivery is config/report-channels.json.",
   "rules_channel_id": "1555097949413970081",
   "public_updates_channel_id": "1555098748772688087",
   "categories": [
@@ -49,6 +49,27 @@
       "channels": [
         {"id": "1555098016275243040", "name": "feedback", "type": "text", "function": "Product feedback and suggestions"},
         {"id": "1555098021476180061", "name": "partnerships", "type": "text", "function": "Partnership requests"}
+      ]
+    },
+    {
+      "id": "1555100597919944746",
+      "name": "Reports",
+      "channels": [
+        {"id": "1555100603846500414", "name": "nws-weather", "type": "text", "function": "NWS Hawaii weather report"},
+        {"id": "1555100608221028435", "name": "energy-report", "type": "text", "function": "Energy desk"},
+        {"id": "1555100612818112556", "name": "remaining-tasks", "type": "text", "function": "Remaining tasks from the report board"},
+        {"id": "1555100617481920575", "name": "morning-report", "type": "text", "function": "Morning roll-up"},
+        {"id": "1555100622028537906", "name": "midday-report", "type": "text", "function": "Midday roll-up"},
+        {"id": "1555100626340421633", "name": "late-report", "type": "text", "function": "Late roll-up"},
+        {"id": "1555100630597767209", "name": "earthquake-report", "type": "text", "function": "USGS earthquake report"},
+        {"id": "1555100634665979907", "name": "hurricane-desk", "type": "text", "function": "Hurricane desk"},
+        {"id": "1555100640559108107", "name": "kilauea-report", "type": "text", "function": "Kilauea report"},
+        {"id": "1555100644833108069", "name": "solar-desk", "type": "text", "function": "Solar desk"},
+        {"id": "1555100649291776033", "name": "security-desk", "type": "text", "function": "Security desk"},
+        {"id": "1555100653767106600", "name": "bandwidth-desk", "type": "text", "function": "Bandwidth desk"},
+        {"id": "1555100658166796308", "name": "official-weather", "type": "text", "function": "Official weather report"},
+        {"id": "1555100662843318352", "name": "boot-brief", "type": "text", "function": "Boot brief"},
+        {"id": "1555100666882424852", "name": "system-perf", "type": "text", "function": "System performance"}
       ]
     },
     {

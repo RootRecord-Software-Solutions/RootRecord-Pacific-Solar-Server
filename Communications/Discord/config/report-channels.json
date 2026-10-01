@@ -1,0 +1,23 @@
+{
+  "guild_id": "1497039564345442406",
+  "category_id": "1555100597919944746",
+  "category_name": "Reports",
+  "note": "One channel per automated report. The relay posts the current markdown when its digest changes. Help-desk is not in this list.",
+  "reports": [
+    {"key": "nws_weather", "name": "nws-weather", "channel_id": "1555100603846500414", "function": "NWS Hawaii weather report", "source": "test-reports/Voice/nws_weather_current.md"},
+    {"key": "energy_report", "name": "energy-report", "channel_id": "1555100608221028435", "function": "Energy desk", "source": "test-reports/Voice/energy_report_current.md"},
+    {"key": "remaining_tasks", "name": "remaining-tasks", "channel_id": "1555100612818112556", "function": "Remaining tasks from the report board", "source": "test-reports/Voice/remaining_tasks_current.md"},
+    {"key": "morning_report", "name": "morning-report", "channel_id": "1555100617481920575", "function": "Morning roll-up", "source": "test-reports/Voice/morning_report_current.md"},
+    {"key": "midday_report", "name": "midday-report", "channel_id": "1555100622028537906", "function": "Midday roll-up", "source": "test-reports/Voice/midday_report_current.md"},
+    {"key": "late_report", "name": "late-report", "channel_id": "1555100626340421633", "function": "Late roll-up", "source": "test-reports/Voice/late_report_current.md"},
+    {"key": "earthquake_report", "name": "earthquake-report", "channel_id": "1555100630597767209", "function": "USGS earthquake report", "source": "test-reports/Voice/earthquake_report_current.md"},
+    {"key": "hurricane_desk", "name": "hurricane-desk", "channel_id": "1555100634665979907", "function": "Hurricane desk", "source": "test-reports/Voice/hurricane_desk_current.md"},
+    {"key": "kilauea_report", "name": "kilauea-report", "channel_id": "1555100640559108107", "function": "Kilauea report", "source": "test-reports/Voice/kilauea_report_current.md"},
+    {"key": "solar_desk", "name": "solar-desk", "channel_id": "1555100644833108069", "function": "Solar desk", "source": "test-reports/Voice/solar_desk_current.md"},
+    {"key": "security_desk", "name": "security-desk", "channel_id": "1555100649291776033", "function": "Security desk", "source": "test-reports/Voice/security_desk_current.md"},
+    {"key": "bandwidth_desk", "name": "bandwidth-desk", "channel_id": "1555100653767106600", "function": "Bandwidth desk", "source": "test-reports/Voice/bandwidth_desk_current.md"},
+    {"key": "official_weather", "name": "official-weather", "channel_id": "1555100658166796308", "function": "Official weather report", "source": "test-reports/Voice/official_weather_current.md"},
+    {"key": "boot_brief", "name": "boot-brief", "channel_id": "1555100662843318352", "function": "Boot brief", "source": "test-reports/Voice/boot_brief_current.md"},
+    {"key": "system_perf", "name": "system-perf", "channel_id": "1555100666882424852", "function": "System performance", "source": "test-reports/Voice/system_perf_current.md"}
+  ]
+}
