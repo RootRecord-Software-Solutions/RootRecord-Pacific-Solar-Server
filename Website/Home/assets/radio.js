@@ -29,6 +29,7 @@
   var stateEl = document.getElementById("radio-state");
   var led = document.getElementById("radio-led");
   var musicEl = document.getElementById("radio-music");
+  var blurbEl = document.getElementById("radio-blurb");
   var reportEl = document.getElementById("radio-report");
   if (!listen || !stateEl || !musicEl || !reportEl) return;
 
@@ -54,6 +55,7 @@
   var gapTimer = 0;
   var pollTimer = 0;
   var musicFails = 0;
+  var attempt = 0;
 
   function setState(text, on) {
     stateEl.textContent = text;
@@ -92,20 +94,28 @@
     if (orderAt >= order.length) {
       order = shuffle(tracks);
       orderAt = 0;
-      if (order.length > 1 && order[0] === lastTrack) {
+      if (order.length > 1 && order[0] && order[0].name === lastTrack) {
         var first = order[0];
         order[0] = order[1];
         order[1] = first;
       }
     }
-    var name = order[orderAt++];
+    var row = order[orderAt++];
+    var name = row && row.name ? row.name : String(row || "");
+    var mine = ++attempt;
     lastTrack = name;
     music.src = BASE + "/music/" + encodeURIComponent(name);
-    musicEl.textContent = trackLabel(name);
+    musicEl.textContent = (row && row.title) || trackLabel(name);
+    if (blurbEl) blurbEl.textContent = (row && row.description) || "";
     var pending = music.play();
     if (pending && pending.catch) {
-      pending.catch(function () {
-        if (!started) return;
+      pending.catch(function (err) {
+        if (mine !== attempt || !started) return;
+        if (err && err.name === "NotAllowedError") {
+          if (orderAt > 0) orderAt -= 1;
+          waitForListen();
+          return;
+        }
         musicFails += 1;
         if (musicFails > tracks.length + 2) {
           setState("QUIET", false);
@@ -114,6 +124,19 @@
         playMusic();
       });
     }
+  }
+
+  function waitForListen() {
+    started = false;
+    clearTimeout(gapTimer);
+    clearInterval(pollTimer);
+    pollTimer = 0;
+    music.pause();
+    setState("OFF", false);
+    musicEl.textContent = "Waiting";
+    if (blurbEl) blurbEl.textContent = "";
+    listen.hidden = false;
+    listen.disabled = false;
   }
 
   music.addEventListener("playing", function () {
@@ -222,7 +245,13 @@
   }
 
   function applyCatalog(data) {
-    tracks = (data.music || []).map(function (row) { return row.name; }).filter(Boolean);
+    tracks = (data.music || []).filter(function (row) { return row && row.name; }).map(function (row) {
+      return {
+        name: row.name,
+        title: row.title || trackLabel(row.name),
+        description: row.description || ""
+      };
+    });
     reports = (data.reports || []).filter(function (row) { return row && row.id && row.file; });
     if (!primed) {
       reports.forEach(function (row) { seen[row.id] = row.mtime; });
@@ -263,30 +292,48 @@
     });
   }
 
+  function startPlayback() {
+    if (!tracks.length) {
+      listen.hidden = false;
+      listen.disabled = false;
+      setState("QUIET", false);
+      musicEl.textContent = "No music is on the stream.";
+      if (blurbEl) blurbEl.textContent = "";
+      return;
+    }
+    started = true;
+    music.volume = FULL;
+    listen.hidden = true;
+    playMusic();
+    armGap();
+    if (!pollTimer) pollTimer = setInterval(poll, POLL_MS);
+  }
+
   listen.addEventListener("click", function () {
+    if (started) return;
     listen.disabled = true;
     setState("STARTING", false);
     unlock(music).then(function () { return unlock(report); }).then(function () {
       return fetchCatalog();
     }).then(function (data) {
       applyCatalog(data);
-      if (!tracks.length) {
-        listen.disabled = false;
-        setState("QUIET", false);
-        musicEl.textContent = "No music is on the stream.";
-        return;
-      }
-      started = true;
-      music.volume = FULL;
-      listen.hidden = true;
-      playMusic();
-      armGap();
-      pollTimer = setInterval(poll, POLL_MS);
+      startPlayback();
     }).catch(function () {
       listen.disabled = false;
       setState("QUIET", false);
       musicEl.textContent = "The stream is not reachable.";
     });
+  });
+
+  listen.disabled = true;
+  setState("STARTING", false);
+  fetchCatalog().then(function (data) {
+    applyCatalog(data);
+    startPlayback();
+  }).catch(function () {
+    listen.disabled = false;
+    setState("QUIET", false);
+    musicEl.textContent = "The stream is not reachable.";
   });
 
   window.addEventListener("pagehide", function () {

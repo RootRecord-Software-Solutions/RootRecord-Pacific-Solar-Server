@@ -227,8 +227,15 @@
   }
 
   function drawMoon(phase) {
+    var d = moonLitPath(phase);
     var path = document.getElementById("moon-lit");
-    if (path) path.setAttribute("d", moonLitPath(phase));
+    var clip = document.getElementById("moon-lit-shape");
+    if (path) path.setAttribute("d", d);
+    if (clip) clip.setAttribute("d", d);
+    var shade = document.getElementById("moon-shade");
+    if (!shade || phase === null || phase === undefined || !Number.isFinite(phase)) return;
+    var p = ((phase % 1) + 1) % 1;
+    shade.setAttribute("cx", p < 0.5 ? "68%" : "32%");
   }
 
   function paintMoonClock() {

@@ -1592,4 +1592,7 @@ p .enter { display: inline-block; }
 
 .radio-go { margin: 16px 0 0; }
 
+#radio-blurb { margin-top: 4px; max-width: 42rem; }
+#radio-blurb:empty { display: none; }
+
 #radio-report:empty { min-height: 1.2em; }

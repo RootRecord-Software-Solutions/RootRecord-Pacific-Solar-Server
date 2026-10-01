@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Send a finished voice report to the Mainland radio library.
 
-Hawaii writes the WAV. This script encodes it and copies that one file up
-over SSH. It never downloads. Music is a separate one-way copy of the
-library that already sits on this desk.
+Hawaii writes the WAV. This script encodes it and replaces that one
+<report>_current.ogg over SSH. Older copies and any other name in the
+reports folder are removed. It never downloads. Music is a separate
+one-way copy of the library that already sits on this desk.
 """
 from __future__ import annotations
 
@@ -23,6 +24,12 @@ REMOTE = os.environ.get(
     "RR_RADIO_REMOTE",
     "/home/ubuntu/US-Mainland-Server/communications/rootrecord-radio/audio",
 )
+# Live reports stay outside the git checkout. A pull must not restore an older file.
+REPORTS_REMOTE = os.environ.get(
+    "RR_RADIO_REPORTS",
+    "/home/ubuntu/rootrecord-radio/audio/reports",
+)
+KEEP_REPORT = re.compile(r"^[a-z0-9]+(?:_[a-z0-9]+)*_current\.ogg$")
 MUSIC = Path(os.environ.get(
     "RR_RADIO_MUSIC",
     "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/2 - RootRecord-US-Mainland-Server/communications/rootrecord-radio/audio/music",
@@ -31,13 +38,41 @@ REPORT_NAME = re.compile(r"^[a-z0-9_]+$")
 SSH = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20"]
 
 
+def prune_reports() -> bool:
+    """Drop every remote report that is not exactly one <name>_current.ogg."""
+    remote_dir = REPORTS_REMOTE.rstrip("/")
+    script = (
+        "RR_RADIO_REPORTS=" + shlex.quote(remote_dir)
+        + " RR_RADIO_KEEP=" + shlex.quote(KEEP_REPORT.pattern)
+        + " python3 - <<'PY'\n"
+        "import os, re\n"
+        "root = os.environ['RR_RADIO_REPORTS']\n"
+        "keep = re.compile(os.environ['RR_RADIO_KEEP'])\n"
+        "os.makedirs(root, exist_ok=True)\n"
+        "for name in os.listdir(root):\n"
+        "    if name == '.gitkeep' or keep.fullmatch(name):\n"
+        "        continue\n"
+        "    path = os.path.join(root, name)\n"
+        "    if os.path.isfile(path) or os.path.islink(path):\n"
+        "        os.remove(path)\n"
+        "PY"
+    )
+    cleaned = subprocess.run(
+        SSH + [HOST, script],
+        capture_output=True,
+        text=True,
+        timeout=40,
+    )
+    return cleaned.returncode == 0
+
+
 def push_report(report: str) -> dict:
     if not REPORT_NAME.fullmatch(report):
         return {"ok": False, "detail": "bad_report"}
     wav = VOICE / f"{report}_current.wav"
     if not wav.is_file():
         return {"ok": False, "detail": "no_wav", "report": report}
-    remote_dir = REMOTE.rstrip("/") + "/reports"
+    remote_dir = REPORTS_REMOTE.rstrip("/")
     final_name = f"{report}_current.ogg"
     partial = remote_dir + "/." + final_name + ".partial"
     final = remote_dir + "/" + final_name
@@ -69,13 +104,16 @@ def push_report(report: str) -> dict:
         if sent.returncode != 0:
             return {"ok": False, "detail": "send_failed", "report": report}
         moved = subprocess.run(
-            SSH + [HOST, "mv -f -- " + shlex.quote(partial) + " " + shlex.quote(final)],
+            SSH + [HOST, "mv -f -- " + shlex.quote(partial) + " " + shlex.quote(final)
+                   + " && chmod 644 -- " + shlex.quote(final)],
             capture_output=True,
             text=True,
             timeout=40,
         )
         if moved.returncode != 0:
             return {"ok": False, "detail": "replace_failed", "report": report}
+        if not prune_reports():
+            return {"ok": False, "detail": "prune_failed", "report": report, "file": final_name}
         return {"ok": True, "report": report, "file": final_name, "bytes": tmp.stat().st_size}
     except (OSError, subprocess.TimeoutExpired):
         return {"ok": False, "detail": "send_failed", "report": report}

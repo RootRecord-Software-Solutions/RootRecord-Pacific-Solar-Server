@@ -228,6 +228,9 @@ def main() -> int:  # info: def main
             if wav:  # info: if wav
                 import voice_deliver  # info: import voice_deliver
                 res["deliver"] = voice_deliver.deliver(REPORT, wav, spoken, "system", report_text=md)  # info: res [ "deliver" ] = voice_deliver . deliver
+            if os.environ.get("RR_RADIO_PUSH", "1") == "1" and p.returncode == 0 and wav:  # info: if os . environ . get ( "RR_RADIO_PUSH" , "1" ) == "1" and p . returncode == 0 and wav
+                import radio_push  # info: import radio_push
+                res["radio"] = radio_push.push_report(REPORT)  # info: res [ "radio" ] = radio_push . push_report ( REPORT )
         finally:  # info: finally :
             os.unlink(f.name)  # info: os . unlink ( f . name )
     print(json.dumps(res))  # info: call print
