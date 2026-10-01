@@ -14,7 +14,6 @@ from __future__ import annotations  # info: from __future__ import annotations
 import argparse  # info: import argparse
 import asyncio  # info: import asyncio
 import json  # info: import json
-import os  # info: import os
 import sys  # info: import sys
 import time  # info: import time
 from datetime import datetime, timezone  # info: from datetime import datetime , timezone
