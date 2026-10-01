@@ -27,7 +27,7 @@ GitHub repository catalog and automated push/pull for the Pacific desk.
 | skills | 0 | inplace | Retired 2026-09-30. Checkout moved to `Old repos deleted and merged/ollama-skills-g2-2026-09-30`. `~/.ollama/skills` is Ollama's. Leave this row off |
 | website | 1 | mirror | `Website/Home/` → `RootRecord-Software-Solutions/RootRecord-Website`. Vercel builds that repository. A merge of this row does not reload the poller |
 | website-personal | 1 | mirror | Same `Website/Home/` → `rootrecordsoftwaresolutions/RootRecord-Website`. Pull and push on the same `github_sync_all` pass. A merge of this row does not reload the poller |
-| mainland | 1 | mirror | Live folder `1 - Servers/2 - RootRecord-US-Mainland-Server` → `rootrecordsoftwaresolutions/US-Mainland-Server`. No nested `.git`. AWS `aws-git-pull.timer` fast-forwards that checkout every minute |
+| mainland | 1 | mirror | Live folder `1 - Servers/2 - RootRecord-US-Mainland-Server` → `RootRecord-Software-Solutions/US-Mainland-Server`. No nested `.git`. AWS `aws-git-pull.timer` fast-forwards that checkout every minute |
 
 ### Policy
 
