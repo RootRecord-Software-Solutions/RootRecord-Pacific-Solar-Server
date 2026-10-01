@@ -425,6 +425,14 @@ class Handler(BaseHTTPRequestHandler):  # info: class Handler
             except Exception as e:  # info: except Exception as e :
                 self._send(500, json.dumps({"ok": False, "error": type(e).__name__}) + "\n", "application/json; charset=utf-8")  # info: self . _send ( 500 , json .
             return  # info: return
+        if self.path in ("/api/ops/mobile-dashboard", "/api/ops/mobile-dashboard/"):  # info: if self . path in ( "/api/ops/mobile-dashboard" ,
+            try:  # info: try :
+                import root_ops_board  # info: import root_ops_board
+                payload = json.dumps(root_ops_board.build_board())  # info: set payload
+                self._send(200, payload + "\n", "application/json; charset=utf-8")  # info: self . _send ( 200 , payload +
+            except Exception as e:  # info: except Exception as e :
+                self._send(500, json.dumps({"ok": False, "error": type(e).__name__}) + "\n", "application/json; charset=utf-8")  # info: self . _send ( 500 , json .
+            return  # info: return
         self._send(404, "not found\n")  # info: self . _send ( 404 , "not found\n" )
 
 
