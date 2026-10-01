@@ -268,14 +268,14 @@ def measured_text(report_text: str, title: str) -> str:  # info: def measured_te
 # What it does: Sandbox sends voice, transcript, and report. Live sends voice and report. Skips when the gate is off or the words are unchanged.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def deliver(report: str, wav: str | Path, spoken: str, kind: str, report_text: str = "", photo: str | None = None, photo_caption: str = "") -> dict:  # info: def deliver
+def deliver(report: str, wav: str | Path, spoken: str, kind: str, report_text: str = "", photo: str | None = None, photo_caption: str = "", who: str = "", remember_as: str = "") -> dict:  # info: def deliver
     if not deliver_enabled():  # info: if not deliver_enabled
         return {"ok": True, "sent": False, "detail": "deliver gate off"}  # info: return { "ok" : True , "sent" : False , "detail" : "deliver gate off" }
     text = " ".join(spoken.split())  # info: set text
     wav_path = Path(wav)  # info: set wav_path
     if not text or not wav_path.is_file():  # info: if not text or not wav_path . is_file
         return {"ok": False, "sent": False, "detail": "missing wav or spoken text"}  # info: return { "ok" : False , "sent" : False , "detail" : "missing wav or spoken text" }
-    digest = hashlib.sha256(text.encode()).hexdigest()  # info: set digest
+    digest = hashlib.sha256((text + "\n" + remember_as).encode()).hexdigest()  # info: set digest
     try:  # info: try
         prior = json.loads(STATE.read_text(encoding="utf-8")) if STATE.is_file() else {}  # info: set prior
     except (OSError, ValueError):  # info: except
@@ -284,7 +284,7 @@ def deliver(report: str, wav: str | Path, spoken: str, kind: str, report_text: s
         return {"ok": True, "sent": False, "detail": "unchanged"}  # info: return { "ok" : True , "sent" : False , "detail" : "unchanged" }
     cfg = load_kv(RELAY)  # info: set cfg
     load_secrets(cfg)  # info: call load_secrets
-    who = persona(kind)  # info: set who
+    who = (who or persona(kind)).strip().lower()  # info: set who
     token = (os.environ.get(TOKEN_ENV[who]) or "").strip()  # info: set token
     chat = chat_id(cfg)  # info: set chat
     if not token or not chat:  # info: if not token or not chat

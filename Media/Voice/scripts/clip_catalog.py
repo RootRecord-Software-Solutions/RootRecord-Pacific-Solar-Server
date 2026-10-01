@@ -85,12 +85,15 @@ PROPOSED_PRONUNCIATION = [  # info: set PROPOSED_PRONUNCIATION
 
 # ====================================================
 # SECTION: function chime_text
-# What it does: Exact G1 chime sentence (media/voice/local_tts.build_time_announcement).
+# What it does: On-the-hour chime sentence from hourly_chimes.py. Half hours stay the short clock line.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def chime_text(hour: int, minute: int) -> str:  # info: def chime_text
-    """Exact G1 chime sentence (media/voice/local_tts.build_time_announcement)."""  # info: """Exact G1 chime sentence (media/voice/local_tts.build_time_announcement)."""
-    return f"It's {spoken_clock(hour, minute)}.".replace("..", ".")  # G1 gave "p.m.." — same speech, cleaner text
+    """On-the-hour chime sentence. Half hours are not prebuilt."""  # info: """On-the-hour chime sentence. Half hours are not prebuilt."""
+    if int(minute) != 0:  # info: if int ( minute ) != 0 :
+        return f"It's {spoken_clock(hour, minute)}.".replace("..", ".")  # info: return f" It's { spoken_clock ( hour , minute ) } . " . replace
+    from hourly_chimes import chime_sentence  # info: from hourly_chimes import chime_sentence
+    return chime_sentence(int(hour))  # info: return chime_sentence ( int ( hour ) )
 
 
 # ====================================================
@@ -100,10 +103,6 @@ def chime_text(hour: int, minute: int) -> str:  # info: def chime_text
 # ====================================================
 def catalog() -> list[dict]:  # info: def catalog
     out = [{"persona": p, "slug": s, "text": t, "kinds": k, "source": src} for p, s, t, k, src in _FIXED]  # info: set out
-    for h in range(24):  # info: for h in range ( 24 ) :
-        for m in (0, 30):  # info: for m in ( 0 , 30 )
-            out.append({"persona": "Ava", "slug": f"chime_{h:02d}{m:02d}", "text": chime_text(h, m),  # info: out . append ( { "persona" : "Ava"
-                        "kinds": ["chime"], "source": "media/hourly-chime + local_tts.build_time_announcement (:00/:30)"})  # info: "kinds" : [ "chime" ] , "source" :
     for name, resp, _note, *suffix in PROPOSED_PRONUNCIATION:  # info: for name , resp , _note , *
         slug = "proposed_" + name.lower().replace("ʻ", "").translate(str.maketrans("āēīōū", "aeiou")) + "".join(suffix)  # info: set slug
         out.append({"persona": "Ava", "slug": slug, "text": f"{name}.", "spoken": f"{resp}.", "kinds": [],  # info: out . append ( { "persona" : "Ava"

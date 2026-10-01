@@ -200,7 +200,7 @@ def is_live(kind: str, text: str) -> bool:  # info: def is_live
     if _dead_line(raw):  # info: if _dead_line ( raw ) :
         return False  # info: return False
     if key in {"chime"}:  # info: if key in { "chime" } :
-        return bool(re.search(r"\d", raw) or "o'clock" in raw.lower() or "noon" in raw.lower())  # info: return bool ( re . search ( r"\d"
+        return bool(re.search(r"\d", raw) or "o'clock" in raw.lower() or "noon" in raw.lower() or "midnight" in raw.lower())  # info: return bool ( re . search ( r"\d"
     if key in {"solar", "energy"}:  # info: if key in { "solar" , "energy" }
         return bool(  # info: return bool (
             re.search(r"\d+\s*%", raw)  # info: re . search ( r"\d+\s*%" , raw )

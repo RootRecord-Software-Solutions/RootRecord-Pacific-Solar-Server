@@ -334,15 +334,16 @@ def _m25(events: list[dict]) -> list[dict]:  # info: def _m25
 # ------------------------------------------------------------------ builders: (markdown, spoken sentences)
 # ====================================================
 # SECTION: function b_hourly_chime
-# What it does: b hourly chime.
+# What it does: Prebuilt on-the-hour chime. Ava, Bruce, and Carly leapfrog. No live render.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def b_hourly_chime(t: datetime):  # info: def b_hourly_chime
-    h, mi = t.hour, (0 if t.minute < 15 else 30 if t.minute < 45 else 0)  # info: h , mi = t . hour ,
-    if t.minute >= 45:  # info: if t . minute >= 45 :
-        h = (h + 1) % 24  # info: set h
-    line = f"It's {spoken_clock(h, mi)}.".replace("..", ".")  # info: set line
-    return f"# Hourly chime — {t.isoformat()}\n\n{line}\n", [line]
+    from hourly_chimes import chime_sentence, persona_for  # info: from hourly_chimes import chime_sentence , persona_for
+    hour = t.hour  # info: set hour
+    line = chime_sentence(hour)  # info: set line
+    who = persona_for(hour)  # info: set who
+    md = [f"# Hourly chime — {t.isoformat()}", "", f"- Voice: {who}", "", line, ""]  # info: set md
+    return "\n".join(md), [line]  # info: return "\n" . join ( md ) , [ line ]
 
 
 # ====================================================
@@ -1203,9 +1204,22 @@ def main() -> int:  # info: def main
         print(json.dumps({"ok": False, "detail": f"usage: voice_reports.py {'|'.join(BUILD)} [--no-voice]"}))  # info: call print
         return 2  # info: return 2
     report, t = sys.argv[1], now()  # info: report , t = sys . argv [
+    if report == "hourly_chime" and t.minute != 0:  # info: if report == "hourly_chime" and t . minute != 0 :
+        print(json.dumps({"ok": True, "report": report, "skipped": True, "detail": "prebuilt chimes play on the hour"}))  # info: call print
+        return 0  # info: return 0
     md, spoken = BUILD[report](t)  # info: md , spoken = BUILD [ report ]
     res = {"ok": True, "report": report, "md": str(write_md(report, md)), "sentences": len(spoken)}  # info: set res
-    if "--no-voice" not in sys.argv:  # info: if "--no-voice" not in sys . argv :
+    if "--no-voice" not in sys.argv and report == "hourly_chime":  # info: if "--no-voice" not in sys . argv and report == "hourly_chime" :
+        from hourly_chimes import persona_for, wav_path  # info: from hourly_chimes import persona_for , wav_path
+        path = wav_path(t.hour)  # info: set path
+        who = persona_for(t.hour)  # info: set who
+        if not path.is_file():  # info: if not path . is_file ( ) :
+            res["voice"] = {"ok": False, "detail": "prebuilt chime missing", "wav": str(path)}  # info: res [ "voice" ] = { "ok" : False
+        else:  # info: else :
+            res["voice"] = {"ok": True, "mode": "prebuilt", "wav": str(path), "agent": who}  # info: res [ "voice" ] = { "ok" : True , "mode" : "prebuilt"
+            import voice_deliver  # info: import voice_deliver
+            res["deliver"] = voice_deliver.deliver(report, path, " ".join(spoken), KIND[report], report_text=md, who=who, remember_as=t.strftime("%Y-%m-%dT%H"))  # info: res [ "deliver" ] = voice_deliver . deliver
+    elif "--no-voice" not in sys.argv:  # info: elif "--no-voice" not in sys . argv :
         res["voice"] = voice(report, spoken)  # info: res [ "voice" ] = voice ( report
         wav = (res.get("voice") or {}).get("wav")  # info: set wav
         if wav:  # info: if wav
