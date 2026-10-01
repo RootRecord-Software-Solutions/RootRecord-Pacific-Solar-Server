@@ -117,6 +117,16 @@ class EcoflowApi:  # info: class EcoflowApi
         """Return flat quota map for device serial number."""  # info: """Return flat quota map for device serial number."""
         return self._get("/iot-open/sign/device/quota/all", {"sn": sn})  # info: return self . _get ( "/iot-open/sign/device/quota/all" , {
 
+    def device_list(self) -> dict[str, dict[str, Any]]:  # info: def device_list
+        """Serial → list row. Used to skip offline quota, which stays frozen."""  # info: """Serial → list row. Used to skip offline quota, which stays frozen."""
+        data = self._get("/iot-open/sign/device/list", {})  # info: set data
+        rows = data if isinstance(data, list) else []  # info: set rows
+        found: dict[str, dict[str, Any]] = {}  # info: set found
+        for row in rows:  # info: for row in rows :
+            if isinstance(row, dict) and row.get("sn"):  # info: if isinstance ( row , dict ) and row . get ( "sn" ) :
+                found[str(row["sn"])] = row  # info: found [ str ( row [ "sn" ] ) ] = row
+        return found  # info: return found
+
 
 # ── field mapping (Delta 2 / River 2 family – best-effort) ──────────────────
 # Keys vary by firmware; we try several common names.
@@ -143,20 +153,19 @@ def map_quota_to_fields(quota: dict[str, Any]) -> dict[str, Any]:  # info: def m
     # SOC
     soc = _first(  # info: set soc
         quota,  # info: quota ,
+        "bms_emsStatus.f32LcdShowSoc", "bms_bmsStatus.f32ShowSoc",  # info: float LCD SOC before the integer pd.soc
         "pd.soc", "bms_bmsStatus.soc", "bmsMaster.soc", "soc",  # info: "pd.soc" , "bms_bmsStatus.soc" , "bmsMaster.soc" , "soc" ,
         "bmsHeartBeat.soc",  # info: "bmsHeartBeat.soc" ,
     )  # info: )
-    # AC output
+    # AC output. inv.outputWatts is the inverter. pd.wattsOutSum includes USB and DC.
     ac_out = _first(  # info: set ac_out
         quota,  # info: quota ,
-        "inv.outputWatts", "inv.outputWatts", "pd.wattsOutSum",  # info: "inv.outputWatts" , "inv.outputWatts" , "pd.wattsOutSum" ,
-        "inv.acOutputWatts", "outputWatts",  # info: "inv.acOutputWatts" , "outputWatts" ,
+        "inv.outputWatts", "inv.acOutputWatts", "pd.dsgPowerAC",  # info: inverter AC out, not the all-port sum
     )  # info: )
-    # AC input
+    # AC input. cfgAcEnabled is a switch, and wattsInSum includes solar.
     ac_in = _first(  # info: set ac_in
         quota,  # info: quota ,
         "inv.inputWatts", "inv.acInputWatts", "pd.chgPowerAC",  # info: "inv.inputWatts" , "inv.acInputWatts" , "pd.chgPowerAC" ,
-        "pd.wattsInSum", "inputWatts", "inv.cfgAcEnabled",  # last is boolean-ish
     )  # info: )
     # try numeric only for ac_in
     try:  # info: try :
@@ -209,8 +218,15 @@ def map_quota_to_fields(quota: dict[str, Any]) -> dict[str, Any]:  # info: def m
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def fetch_device_fields(sn: str) -> dict[str, Any]:  # info: def fetch_device_fields
-    """High-level: return fields dict or raise EcoflowApiError."""  # info: """High-level: return fields dict or raise EcoflowApiError."""
+    """Return fields when the device is cloud-online. Offline quota is left unread."""  # info: """Return fields when the device is cloud-online. Offline quota is left unread."""
     client = EcoflowApi()  # info: set client
+    row = client.device_list().get(sn)  # info: set row
+    try:  # info: try :
+        online = int(row.get("online")) if isinstance(row, dict) else 0  # info: set online
+    except (TypeError, ValueError):  # info: except ( TypeError , ValueError ) :
+        online = 0  # info: set online
+    if online != 1:  # info: if online != 1 :
+        raise EcoflowApiError("cloud offline")  # info: raise EcoflowApiError ( "cloud offline" )
     quota = client.quota_all(sn)  # info: set quota
     if not quota:  # info: if not quota :
         raise EcoflowApiError("empty quota response")  # info: raise EcoflowApiError ( "empty quota response" )

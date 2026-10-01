@@ -8,7 +8,7 @@
 # Kind: python
 # ==============================================================================
 #!/usr/bin/env python3
-"""Read live snapshot (BLE preferred, cloud quota only when RR_ECOFLOW_CLOUD=1)."""  # info: """Read live snapshot (BLE preferred, cloud quota only when RR_ECOFLOW_CLOUD=1)."""
+"""Read live snapshot (BLE preferred, cloud quota when BLE misses and the device is cloud-online)."""  # info: """Read live snapshot (BLE preferred, cloud quota when BLE misses and the device is cloud-online)."""
 from __future__ import annotations  # info: from __future__ import annotations
 
 import argparse  # info: import argparse
@@ -16,6 +16,7 @@ import asyncio  # info: import asyncio
 import json  # info: import json
 import os  # info: import os
 import sys  # info: import sys
+import time  # info: import time
 from datetime import datetime, timezone  # info: from datetime import datetime , timezone
 from pathlib import Path  # info: from pathlib import Path
 from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
@@ -24,13 +25,14 @@ HERE = Path(__file__).resolve().parent  # info: set HERE
 sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 ,
 sys.path.insert(0, str(HERE.parent.parent))  # info: sys . path . insert ( 0 ,
 
-from paths import SAMPLES, SOC, WATTS, ensure_dirs  # noqa: E402
+from paths import SAMPLES, SOC, WATTS, STATE_DIR, ensure_dirs  # noqa: E402
 from ble_client import connect, BleUnavailable, eflib_ready  # noqa: E402
 from config import device as device_cfg, load as load_conf  # noqa: E402
 from Energy.db.ingest import persist_eflow_device  # noqa: E402
 from Energy.db.condense import condense_closed_periods  # noqa: E402
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
+CLOUD_FALLBACK_SEC = 120  # info: set CLOUD_FALLBACK_SEC
 
 
 # ====================================================
@@ -226,7 +228,7 @@ async def _read_ble(alias: str):  # info: async def
     await asyncio.sleep(2.0)  # info: await asyncio . sleep ( 2.0 )
     fields = _fields_from_ble(device)  # info: set fields
     if not _has_data(fields):  # info: if not _has_data ( fields ) :
-        # Connected but no usable telemetry — BLE miss. Cloud runs only if the flag is on.
+        # Connected but no usable telemetry — BLE miss. Cloud fallback runs next.
         try:  # info: try :
             await device.disconnect()  # info: await device . disconnect ( )
         except Exception:  # info: except Exception :
@@ -242,13 +244,52 @@ async def _read_ble(alias: str):  # info: async def
 # ====================================================
 def _read_api(alias: str) -> dict:  # info: def _read_api
     from ecoflow_api import fetch_device_fields, EcoflowApiError  # info: from ecoflow_api import fetch_device_fields , EcoflowApiError
-    if os.environ.get("RR_ECOFLOW_CLOUD", "0") != "1":  # info: if os . environ . get ( "RR_ECOFLOW_CLOUD"
-        raise EcoflowApiError("cloud=off")  # info: raise EcoflowApiError ( "cloud=off" )
     cfg = device_cfg(alias)  # info: set cfg
     sn = (cfg.get("sn") or "").strip()  # info: set sn
     if not sn:  # info: if not sn :
         raise EcoflowApiError(f"no sn for {alias}")  # info: raise EcoflowApiError ( f" no sn for { alias }
     return fetch_device_fields(sn)  # info: return fetch_device_fields ( sn )
+
+
+# ====================================================
+# SECTION: function _cloud_cache_path
+# What it does: One state file per alias so a BLE miss does not call EcoFlow every cycle.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _cloud_cache_path(alias: str) -> Path:  # info: def _cloud_cache_path
+    return STATE_DIR / f"cloud-fallback-{alias}.json"  # info: return STATE_DIR / f" cloud-fallback- { alias } .json"
+
+
+# ====================================================
+# SECTION: function _fresh_cloud_cache
+# What it does: Return the last cloud fields when they are younger than CLOUD_FALLBACK_SEC.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _fresh_cloud_cache(alias: str) -> dict | None:  # info: def _fresh_cloud_cache
+    path = _cloud_cache_path(alias)  # info: set path
+    if not path.is_file():  # info: if not path . is_file ( ) :
+        return None  # info: return None
+    try:  # info: try :
+        data = json.loads(path.read_text(encoding="utf-8"))  # info: set data
+        age = time.time() - float(data.get("at_epoch") or 0)  # info: set age
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):  # info: except ( OSError , ValueError , TypeError , json . JSONDecodeError ) :
+        return None  # info: return None
+    fields = data.get("fields") if isinstance(data, dict) else None  # info: set fields
+    if age < 0 or age >= CLOUD_FALLBACK_SEC or not isinstance(fields, dict) or not _has_data(fields):  # info: if age < 0 or age >= CLOUD_FALLBACK_SEC
+        return None  # info: return None
+    return data  # info: return data
+
+
+# ====================================================
+# SECTION: function _save_cloud_cache
+# What it does: Remember a successful cloud read so the next BLE miss can reuse it.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _save_cloud_cache(alias: str, fields: dict, at: str) -> None:  # info: def _save_cloud_cache
+    _cloud_cache_path(alias).write_text(  # info: call write_text
+        json.dumps({"alias": alias, "at_epoch": time.time(), "at": at, "fields": fields}),  # info: json . dumps ( { "alias" : alias
+        encoding="utf-8",  # info: encoding = "utf-8"
+    )  # info: )
 
 
 # ====================================================
@@ -285,6 +326,7 @@ def main() -> int:  # info: def main
     fields: dict = {}  # info: set fields
     device = None  # info: set device
     ble_err = None  # info: set ble_err
+    cloud_reused = False  # info: set cloud_reused
 
     # 1) Prefer BLE unless prefer_api=1
     #    Silence eflib/bleak connect spam when falling back to API.
@@ -305,17 +347,24 @@ def main() -> int:  # info: def main
         else:  # info: else :
             ble_err = reason  # info: set ble_err
 
-    # 2) Cloud fallback when BLE missing or empty. No HTTP unless RR_ECOFLOW_CLOUD=1.
+    # 2) Cloud fallback when BLE missed or prefer_api. Skip offline quota (it stays frozen).
     if source != "ble":  # info: if source != "ble" :
-        try:  # info: try :
-            fields = _read_api(alias)  # info: set fields
+        cached = _fresh_cloud_cache(alias)  # info: set cached
+        if cached:  # info: if cached :
+            fields = cached["fields"]  # info: set fields
             source = "cloud"  # info: set source
+            cloud_reused = True  # info: set cloud_reused
             device = None  # info: set device
-        except Exception as e:  # info: except Exception as e :
-            print("WAITING")  # info: call print
-            print(f"No data — BLE: {ble_err or 'skipped'}; API: {type(e).__name__}: {e}")  # info: call print
-            print("STATUS=WAITING")  # info: call print
-            return 2  # info: return 2
+        else:  # info: else :
+            try:  # info: try :
+                fields = _read_api(alias)  # info: set fields
+                source = "cloud"  # info: set source
+                device = None  # info: set device
+            except Exception as e:  # info: except Exception as e :
+                print("WAITING")  # info: call print
+                print(f"No data — BLE: {ble_err or 'skipped'}; API: {type(e).__name__}: {e}")  # info: call print
+                print("STATUS=WAITING")  # info: call print
+                return 2  # info: return 2
 
     # 3) Charge source
     other_outs = _collect_other_ac_outs(alias)  # info: set other_outs
@@ -350,22 +399,25 @@ def main() -> int:  # info: def main
     else:  # info: else :
         db_ok = True  # JSON path is authoritative for API reads
 
-    # 5) Samples / last files. Cloud JSON is not written into Energy/samples.
-    _write_sample(snap, alias, source)  # info: call _write_sample
+    # 5) Samples / last files. A reused cloud read keeps the earlier timestamp.
+    if not cloud_reused:  # info: if not cloud_reused :
+        _write_sample(snap, alias, source)  # info: call _write_sample
 
-    if fields.get("soc") is not None:  # info: if fields . get ( "soc" ) is
-        (SOC / f"{alias}-last.json").write_text(  # info: call (
-            json.dumps({"soc": fields["soc"], "at": snap["at"], "source": source}, indent=2)  # info: json . dumps ( { "soc" : fields
-        )  # info: )
-    watts = {  # info: set watts
-        k: fields[k]  # info: set k
-        for k in ("ac_output_power", "ac_input_power", "usbc_output_power", "solar_input_power")  # info: for k in ( "ac_output_power" , "ac_input_power" ,
-        if fields.get(k) is not None  # info: if fields . get ( k ) is
-    }  # info: }
-    if watts:  # info: if watts :
-        (WATTS / f"{alias}-last.json").write_text(  # info: call (
-            json.dumps({**watts, "at": snap["at"], "source": source, "charge_source": charge_source}, indent=2)  # info: json . dumps ( { ** watts ,
-        )  # info: )
+        if fields.get("soc") is not None:  # info: if fields . get ( "soc" ) is
+            (SOC / f"{alias}-last.json").write_text(  # info: call (
+                json.dumps({"soc": fields["soc"], "at": snap["at"], "source": source}, indent=2)  # info: json . dumps ( { "soc" : fields
+            )  # info: )
+        watts = {  # info: set watts
+            k: fields[k]  # info: set k
+            for k in ("ac_output_power", "ac_input_power", "usbc_output_power", "solar_input_power")  # info: for k in ( "ac_output_power" , "ac_input_power" ,
+            if fields.get(k) is not None  # info: if fields . get ( k ) is
+        }  # info: }
+        if watts:  # info: if watts :
+            (WATTS / f"{alias}-last.json").write_text(  # info: call (
+                json.dumps({**watts, "at": snap["at"], "source": source, "charge_source": charge_source}, indent=2)  # info: json . dumps ( { ** watts ,
+            )  # info: )
+        if source == "cloud":  # info: if source == "cloud" :
+            _save_cloud_cache(alias, fields, snap["at"])  # info: call _save_cloud_cache
 
     # 6) Console
     if not _is_internal_only(alias):  # info: if not _is_internal_only ( alias ) :
