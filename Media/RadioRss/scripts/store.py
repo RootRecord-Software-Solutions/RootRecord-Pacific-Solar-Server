@@ -172,6 +172,16 @@ def upsert_story(conn: sqlite3.Connection, story: dict) -> str:  # info: def ups
             "SELECT id, cluster_id, status FROM stories WHERE source_id=? AND guid=?",  # info: "SELECT id, cluster_id, status FROM stories WHERE source_id=? AND guid=?" ,
             (story["source_id"], story["guid"]),  # info: ( story [ "source_id" ] , story [ "guid" ] ) ,
         ).fetchone()  # info: ) . fetchone ( )
+    if existing is None and story.get("canonical_url"):  # info: if existing is None and story . get ( "canonical_url" ) :
+        existing = conn.execute(  # info: set existing
+            "SELECT id, cluster_id, status FROM stories WHERE source_id=? AND canonical_url=?",  # info: "SELECT id, cluster_id, status FROM stories WHERE source_id=? AND canonical_url=?" ,
+            (story["source_id"], story["canonical_url"]),  # info: ( story [ "source_id" ] , story [ "canonical_url" ] ) ,
+        ).fetchone()  # info: ) . fetchone ( )
+    if existing is None and story.get("title_norm"):  # info: if existing is None and story . get ( "title_norm" ) :
+        existing = conn.execute(  # info: set existing
+            "SELECT id, cluster_id, status FROM stories WHERE source_id=? AND title_norm=?",  # info: "SELECT id, cluster_id, status FROM stories WHERE source_id=? AND title_norm=?" ,
+            (story["source_id"], story["title_norm"]),  # info: ( story [ "source_id" ] , story [ "title_norm" ] ) ,
+        ).fetchone()  # info: ) . fetchone ( )
     if existing is not None:  # info: if existing is not None :
         conn.execute(  # info: conn . execute (
             "UPDATE stories SET updated_at=?, summary=?, title=? WHERE id=?",  # info: "UPDATE stories SET updated_at=?, summary=?, title=? WHERE id=?" ,

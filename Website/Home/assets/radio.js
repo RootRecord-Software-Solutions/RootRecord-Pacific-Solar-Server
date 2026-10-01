@@ -287,6 +287,13 @@
       };
     });
     reports = (data.reports || []).filter(function (row) { return row && row.id && row.file; });
+    var live = {};
+    reports.forEach(function (row) { live[row.id] = true; });
+    updates = updates.filter(function (row) { return live[row.id]; });
+    rotation = rotation.filter(function (row) { return live[row.id]; });
+    Object.keys(seen).forEach(function (id) {
+      if (!live[id]) delete seen[id];
+    });
     if (!primed) {
       reports.forEach(function (row) { seen[row.id] = row.mtime; });
       primed = true;

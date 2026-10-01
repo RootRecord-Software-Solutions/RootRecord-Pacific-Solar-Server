@@ -223,11 +223,39 @@ def render_section(part: dict) -> str:  # info: def render_section
 
 # ====================================================
 # SECTION: function highlights
-# What it does: Up to three field pairs for an index card.
+# What it does: Up to three short readings for an index card. Long lines are shortened. Source notes stay off the card.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def highlights(parts: list[dict]) -> list[tuple[str, str]]:  # info: def highlights
-    picked = []  # info: set picked
+    short: list[tuple[str, str]] = []  # info: set short
+    long: list[tuple[str, str]] = []  # info: set long
+
+    def take(label: str, value: str) -> None:  # info: def take
+        text = re.sub(r"https?://\S+", "", value)  # info: drop urls
+        stamp = re.search(r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::\d{2}(?:\.\d+)?)?-10:00", text)  # info: set stamp
+        if stamp:  # info: if hawaiian stamp
+            year, month, day, hour, minute = stamp.groups()  # info: unpack stamp
+            names = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")  # info: set names
+            shown = f"{int(day)} {names[int(month) - 1]} {year} · {hour}:{minute} HST"  # info: set shown
+            text = (text[:stamp.start()] + shown + text[stamp.end():]).strip()  # info: replace stamp
+        if label.lower() == "age h":  # info: if age label
+            label = "Age"  # info: set label
+            text = text if text.endswith(" h") else f"{text} h"  # info: set text
+        if label.lower() == "issued / fetched":  # info: if issued label
+            label = "Issued"  # info: set label
+        text = " ".join(text.split()).strip(" .,;")  # info: collapse space
+        low = text.lower()  # info: set low
+        if not label or not text:  # info: if empty
+            return  # info: return
+        if any(token in low for token in ("zone forecast", "state forecast", "forecast source", "alerts source")):  # info: if source note
+            return  # info: return
+        if len(text) <= 80:  # info: if short
+            short.append((label, text))  # info: append short
+            return  # info: return
+        if len(text) > 96:  # info: if long
+            text = text[:96].rsplit(" ", 1)[0].rstrip(".,;:") + "…"  # info: shorten text
+        long.append((label, text))  # info: append long
+
     for part in parts:  # info: for part in parts
         if part.get("kind") == "table":  # info: if table
             columns = part.get("columns") or []  # info: set columns
@@ -236,25 +264,27 @@ def highlights(parts: list[dict]) -> list[tuple[str, str]]:  # info: def highlig
                 row = rows[0]  # info: set row
                 for name, cell in list(zip(columns, row))[:3]:  # info: for name , cell
                     if name and cell:  # info: if field
-                        picked.append((name, cell))  # info: append
-            if len(picked) >= 3:  # info: if three
-                return picked[:3]  # info: return picked
+                        take(name, cell)  # info: call take
+            if short or long:  # info: if table fields
+                return (short + long)[:3]  # info: return table fields
             continue  # info: continue
         for row in part.get("rows") or []:  # info: for row in rows
             found = pair(row)  # info: set found
+            if not found and " — " in row:  # info: if em dash
+                label, value = row.split(" — ", 1)  # info: split label
+                if label and len(label) <= 42 and value and len(value) <= 180:  # info: if field
+                    found = (label.strip(), value.strip())  # info: set found
             if found:  # info: if found
-                picked.append(found)  # info: append
-            if len(picked) >= 3:  # info: if three
-                return picked  # info: return picked
-    if picked:  # info: if picked
-        return picked  # info: return picked
+                take(found[0], found[1])  # info: call take
+    chosen = (short + long)[:3]  # info: set chosen
+    if chosen:  # info: if chosen
+        return chosen  # info: return chosen
     for part in parts:  # info: for part in parts
         rows = part.get("rows") or []  # info: set rows
         if part.get("kind") == "list" and rows:  # info: if list
-            line = rows[0]  # info: set line
-            if len(line) > 140:  # info: if long
-                line = line[:140].rsplit(" ", 1)[0].rstrip(".,;:") + "…"  # info: shorten line
-            return [(show_heading(str(part.get("heading") or "Reading")), line)]  # info: return lead
+            take(show_heading(str(part.get("heading") or "Reading")), rows[0])  # info: call take
+            if short or long:  # info: if lead
+                return (short + long)[:1]  # info: return lead
     return []  # info: return empty
 
 
@@ -354,7 +384,11 @@ def index_page(rows: list[dict]) -> str:  # info: def index_page
             when = as_of(md)  # info: set when
             fields = highlights(parts)  # info: set fields
             if fields:  # info: if fields
-                lines = "\n".join(f"        <div><dt>{html.escape(label)}</dt><dd>{html.escape(value)}</dd></div>" for label, value in fields)  # info: set lines
+                rows_html = []  # info: set rows_html
+                for label, value in fields:  # info: for label , value in fields
+                    wide = ' class="wide"' if len(value) > 40 else ""  # info: set wide
+                    rows_html.append(f"        <div{wide}><dt>{html.escape(label)}</dt><dd>{html.escape(value)}</dd></div>")  # info: append row
+                lines = "\n".join(rows_html)  # info: set lines
                 body = f'      <dl class="report-facts">\n{lines}\n      </dl>'  # info: set body
             else:  # info: else
                 body = '      <p class="excerpt">No reading is on file for this period.</p>'  # info: set body

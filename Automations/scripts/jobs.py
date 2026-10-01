@@ -650,6 +650,20 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
         "cwd": f"{PACIFIC}/Communications/Discord",  # info: "cwd" : f" { PACIFIC } /Communications/Discord " ,
         "env": {"RR_DISCORD_POST": "1"},  # info: "env" : { "RR_DISCORD_POST" : "1" } ,
     },  # info: } ,
+    {  # info: {
+        # External RSS for RootRecord Radio. OFF unless RR_RADIO_RSS=1 at poller start.
+        # Polls the feed registry into the story queue. Does not speak, push audio, or change the broadcaster.
+        "id": "radio_rss_poll",  # info: "id" : "radio_rss_poll" ,
+        "enabled": os.environ.get("RR_RADIO_RSS", "0") == "1",  # info: "enabled" : os . environ . get ( "RR_RADIO_RSS" , "0" ) == "1" ,
+        "description": "Poll external RSS into the Radio story queue. Does not speak or push audio.",  # info: "description" : "Poll external RSS into the Radio story queue. Does not speak or push audio." ,
+        "interval_sec": 300,  # info: "interval_sec" : 300 ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Media/RadioRss/scripts/rss_radio.py" poll',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/RadioRss/scripts/rss_radio.py" poll ' ,
+        "timeout_sec": 600,  # info: "timeout_sec" : 600 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{PACIFIC}/Media/RadioRss",  # info: "cwd" : f" { PACIFIC } /Media/RadioRss " ,
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
     # --- TEMPLATE (EVERY_SECONDS) — copy from the next line through the closing brace, paste ABOVE this template, remove the leading # ---
     # {
     #     "id": "example_every_seconds",
@@ -841,10 +855,10 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
 # ====================================================
 EVERY_HOUR = [  # info: set EVERY_HOUR
     {  # info: {
-        # Sun times (2026-09-29, migration-geology pass): G1 hourly-solar-weather sun_times.py port. OFF unless
-        # RR_SUN_TIMES=1 at poller start. Fetches Open-Meteo once per HST day (refresh-if-stale), else no network.
+        # Sun times (2026-09-29, migration-geology pass): G1 hourly-solar-weather sun_times.py port. ON unless
+        # RR_SUN_TIMES=0 at poller start. Fetches Open-Meteo once per HST day (refresh-if-stale), else no network.
         "id": "energy_sun_times",  # info: "id" : "energy_sun_times" ,
-        "enabled": os.environ.get("RR_SUN_TIMES", "0") == "1",  # info: "enabled" : os . environ . get (
+        "enabled": os.environ.get("RR_SUN_TIMES", "1") == "1",  # info: "enabled" : os . environ . get (
         "description": "Sunrise/sunset HST (Volcano/Puna) -> Database Energy/sun/sun-times-last.json.",  # info: "description" : "Sunrise/sunset HST (Volcano/Puna) -> Database Energy/sun/sun-times-last.json." ,
         "only_at_hours": [],  # info: "only_at_hours" : [ ] ,
         "builtin": "",  # info: "builtin" : "" ,

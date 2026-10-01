@@ -16,7 +16,7 @@ Stdlib port: same Open-Meteo query (19.43, -155.23 — Volcano / Puna, "same pat
 keys (date, sunrise, sunset, *_iso, next_*), same refresh-if-stale rule (one fetch per HST day unless --force) and the
 same facts() fields (after_sunset / before_sunrise). State file moved from G1 STATE_DIR/sun-times.json to Database
 Energy/sun/sun-times-last.json (solar context for the Energy desk). A failed fetch keeps the stored file.
-Light: one HTTP call, 10 s timeout. Schedule: hourly is plenty (jobs.py, gated RR_SUN_TIMES=1). Live numbers only.
+Light: one HTTP call, 10 s timeout. Schedule: hourly is plenty (jobs.py, on unless RR_SUN_TIMES=0). Live numbers only.
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
@@ -96,16 +96,22 @@ def refresh_if_stale(*, force: bool = False) -> dict:  # info: def refresh_if_st
     try:  # info: try :
         with urlopen(Request(OPEN_METEO, headers={"User-Agent": UA}), timeout=10) as r:  # info: with urlopen ( Request ( OPEN_METEO , headers
             daily = (json.loads(r.read().decode("utf-8")) or {}).get("daily") or {}  # info: set daily
+        times = daily.get("time") or []  # info: set times
         rises, sets = daily.get("sunrise") or [], daily.get("sunset") or []  # info: rises , sets = daily . get (
-        if not rises or not sets:  # info: if not rises or not sets :
+        today = _today()  # info: set today
+        if times and today not in times:  # info: if times and today not in times :
+            return dict(stored, refreshed=False, error="today missing from forecast")  # info: return dict ( stored , refreshed = False
+        idx = times.index(today) if today in times else 0  # info: set idx
+        if idx >= len(rises) or idx >= len(sets) or not rises or not sets:  # info: if idx >= len ( rises ) or idx >= len ( sets ) or not rises or not sets :
             return dict(stored, refreshed=False, error="no daily sunrise/sunset")  # info: return dict ( stored , refreshed = False
-        payload = {"date": _today(), "sunrise": _hhmm_from_iso(rises[0]), "sunset": _hhmm_from_iso(sets[0]),  # info: set payload
-                   "sunrise_iso": rises[0], "sunset_iso": sets[0], "source": "open-meteo", "lat": LAT, "lon": LON,  # info: "sunrise_iso" : rises [ 0 ] , "sunset_iso"
+        payload = {"date": times[idx] if idx < len(times) else today, "sunrise": _hhmm_from_iso(rises[idx]), "sunset": _hhmm_from_iso(sets[idx]),  # info: set payload
+                   "sunrise_iso": rises[idx], "sunset_iso": sets[idx], "source": "open-meteo", "lat": LAT, "lon": LON,  # info: "sunrise_iso" : rises [ idx ] , "sunset_iso"
                    "fetched_at": datetime.now(HST).replace(microsecond=0).isoformat()}  # info: "fetched_at" : datetime . now ( HST )
-        if len(rises) > 1:  # info: if len ( rises ) > 1 :
-            payload["next_date"] = (datetime.now(HST) + timedelta(days=1)).strftime("%Y-%m-%d")  # info: payload [ "next_date" ] = ( datetime .
-            payload["next_sunrise"] = _hhmm_from_iso(rises[1])  # info: payload [ "next_sunrise" ] = _hhmm_from_iso ( rises
-            payload["next_sunrise_iso"] = rises[1]  # info: payload [ "next_sunrise_iso" ] = rises [ 1
+        nxt = idx + 1  # info: set nxt
+        if nxt < len(rises):  # info: if nxt < len ( rises ) :
+            payload["next_date"] = times[nxt] if nxt < len(times) else (datetime.now(HST) + timedelta(days=1)).strftime("%Y-%m-%d")  # info: payload [ "next_date" ] = times [ nxt ] if nxt < len ( times ) else ( datetime
+            payload["next_sunrise"] = _hhmm_from_iso(rises[nxt])  # info: payload [ "next_sunrise" ] = _hhmm_from_iso ( rises
+            payload["next_sunrise_iso"] = rises[nxt]  # info: payload [ "next_sunrise_iso" ] = rises [ nxt
         return dict(write(payload), refreshed=True)  # info: return dict ( write ( payload ) ,
     except Exception as e:  # noqa: BLE001
         return dict(stored, refreshed=False, error=f"{type(e).__name__}: {e}"[:200])  # info: return dict ( stored , refreshed = False

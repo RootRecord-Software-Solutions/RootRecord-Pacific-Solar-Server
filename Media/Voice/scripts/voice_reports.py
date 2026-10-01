@@ -1165,7 +1165,7 @@ def b_bandwidth_desk(t: datetime):  # info: def b_bandwidth_desk
           f"- last hour: {hour}", f"- last 24 h: {day}", ""]  # info: f" - last hour: { hour } " , f"
     if hour is None and day is None:  # info: if hour is None and day is None
         md += ["_Not enough samples yet (needs samples covering 45 min; run `host_desks.py net-sample` every 5 min)._", ""]  # info: set md
-        return "\n".join(md), ["Bandwidth data is not on file yet."]  # info: return "\n" . join ( md ) ,
+        return "\n".join(md), ["Bandwidth desk.", generated_at(t), "Bandwidth data is not on file yet."]  # info: return "\n" . join ( md ) , ["Bandwidth desk." , generated_at ( t ) , "Bandwidth data is not on file yet." ]
     sb = hd.spoken_bytes  # info: set sb
     bits = ["Bandwidth desk.", generated_at(t), f"This host is on {(net or {}).get('link') or 'network'}."]  # info: set bits
     bits.append(f"Last hour: {sb(hour['rx'])} down, {sb(hour['tx'])} up, {sb(hour['total'])} total." if hour else "Last hour is not on file yet.")  # info: bits . append ( f" Last hour: { sb
@@ -1642,6 +1642,10 @@ def voice(report: str, spoken: list[str]) -> dict:  # info: def voice
     cmd = ["bash", str(HERE / "voice-render.sh"), "stitch", "--report", report, "--kind", KIND[report], "--text-file", f.name]  # info: set cmd
     if report == "hourly_chime":  # info: if report == "hourly_chime" :
         cmd.append("--no-gate")  # G1 chimes bypassed the live-facts gate (spelled-out times carry no digits)
+    if report == "bandwidth_desk":  # info: if report == "bandwidth_desk" :
+        import speakers  # info: import speakers
+        if not speakers.is_live("bandwidth", " ".join(spoken)):  # info: if not speakers . is_live ( "bandwidth" , " " . join ( spoken ) ) :
+            cmd.append("--no-gate")  # info: cmd . append ( "--no-gate" )
     try:  # info: try :
         p = subprocess.run(cmd, capture_output=True, text=True, timeout=600 if report == "current_report" else 300)  # info: set p
         last = (p.stdout.strip().splitlines() or ["{}"])[-1]  # info: set last
