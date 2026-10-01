@@ -105,7 +105,7 @@
       "agent_launchable": false,
       "agents_allowed": [],
       "requires_confirmation": true,
-      "inputs": ["Geology/Earthquakes/hawaii-last.json"],
+      "inputs": ["Geology/Earthquakes/hawaii-last.json", "Geology/Earthquakes/global-last.json"],
       "outputs": ["Telegram post only when send gate is on"],
       "side_effects": ["telegram_sendMessage"],
       "why_not": {
