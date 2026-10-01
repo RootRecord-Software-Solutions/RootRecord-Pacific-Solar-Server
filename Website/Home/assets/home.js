@@ -254,8 +254,6 @@
       globe = Globe()(globeEl)
         .globeImageUrl("/assets/earth/night.jpg")
         .bumpImageUrl("/assets/earth/topology.png")
-        .cloudsImageUrl("/assets/earth/clouds.png")
-        .cloudsAltitude(0.008)
         .backgroundColor("rgba(0,0,0,0)")
         .showAtmosphere(true)
         .atmosphereColor("#8eb6ff")

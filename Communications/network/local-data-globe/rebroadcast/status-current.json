@@ -1,25 +1,25 @@
 {
   "ok": true,
   "kind": "last-known",
-  "as_of": "Wednesday, September 30, 2026 \u00b7 23:57 Hawaiian Standard Time",
+  "as_of": "Wednesday, September 30, 2026 \u00b7 23:59 Hawaiian Standard Time",
   "power": {
     "resource": "power",
     "title": "Power / solar",
-    "as_of": "Wednesday, September 30, 2026 \u00b7 23:57 Hawaiian Standard Time",
+    "as_of": "Wednesday, September 30, 2026 \u00b7 23:59 Hawaiian Standard Time",
     "devices": {
       "delta2": {
         "watts": {
           "solar_input_power": 0,
-          "ac_output_power": 59,
+          "ac_output_power": 57,
           "ac_input_power": 0,
           "usbc_output_power": 0,
-          "at": "2026-09-30T23:54:26-10:00",
+          "at": "2026-09-30T23:59:26-10:00",
           "source": "ble",
           "charge_source": "none"
         },
         "soc": {
-          "soc": 8.86,
-          "at": "2026-09-30T23:54:26-10:00",
+          "soc": 8.15,
+          "at": "2026-09-30T23:59:26-10:00",
           "source": "ble"
         }
       },
@@ -28,14 +28,14 @@
           "solar_input_power": 0,
           "ac_output_power": 0.0,
           "ac_input_power": 0.0,
-          "usbc_output_power": 26,
-          "at": "2026-09-30T23:56:10-10:00",
+          "usbc_output_power": 20,
+          "at": "2026-09-30T23:57:22-10:00",
           "source": "ble+cloud",
           "charge_source": "none"
         },
         "soc": {
-          "soc": 72.35,
-          "at": "2026-09-30T23:56:10-10:00",
+          "soc": 72.28,
+          "at": "2026-09-30T23:57:22-10:00",
           "source": "ble+cloud"
         }
       }
@@ -44,16 +44,16 @@
   "weather": {
     "resource": "weather",
     "title": "Weather",
-    "as_of": "Wednesday, September 30, 2026 \u00b7 23:57 Hawaiian Standard Time",
+    "as_of": "Wednesday, September 30, 2026 \u00b7 23:59 Hawaiian Standard Time",
     "report": {
-      "generated": "2026-09-30T23:51:19-10:00 HST",
+      "generated": "2026-09-30T23:59:03-10:00 HST",
       "sections": 34
     }
   },
   "kilauea": {
     "resource": "kilauea",
     "title": "K\u012blauea",
-    "as_of": "Wednesday, September 30, 2026 \u00b7 23:57 Hawaiian Standard Time",
+    "as_of": "Wednesday, September 30, 2026 \u00b7 23:59 Hawaiian Standard Time",
     "status": {
       "at": "2026-09-30T23:53:55-10:00",
       "alert_level": "WATCH",
