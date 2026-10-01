@@ -60,8 +60,11 @@ a:hover { color: #e0f2fe; }
 .top nav {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 8px 14px;
   margin-left: auto;
+  min-width: 0;
+  flex: 1 1 280px;
 }
 
 .top nav a,
