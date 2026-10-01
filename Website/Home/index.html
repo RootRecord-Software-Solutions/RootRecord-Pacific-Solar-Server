@@ -3,266 +3,182 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Root Record — Software Solutions</title>
-<style>
-  *{box-sizing:border-box}
-  html,body{margin:0;height:100%;overflow:hidden;background:#000011;color:#e8e8ef;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-  #globe{position:fixed;inset:0;z-index:0}
-  #ui{position:fixed;inset:0;z-index:2;pointer-events:none;--edge:18px;--gap:12px}
-  #ui *{box-sizing:border-box}
-  .glass{background:rgba(8,12,32,.22);border:1px solid rgba(255,255,255,.2);border-radius:16px;backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);box-shadow:0 10px 36px rgba(0,0,0,.22)}
-  .hud,.card{pointer-events:auto;position:relative}
-  .hud[hidden],.card[hidden]{display:none}
-  .hud{position:absolute;top:var(--edge);left:var(--edge);width:min(320px,calc(100vw - 36px));padding:14px 16px 12px}
-  .title{font-size:12px;letter-spacing:1.6px;font-weight:700}
-  .status{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:#d5d5e0}
-  .dot{width:8px;height:8px;border-radius:50%;background:#6b7280;flex:0 0 8px}
-  .dot.ok{background:#22c55e;box-shadow:0 0 8px #22c55e}
-  .dot.bad{background:#ef4444;box-shadow:0 0 8px #ef4444}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-top:12px}
-  .metric{display:flex;flex-direction:column;gap:2px}
-  .metric span{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#9a9aaa}
-  .metric strong{font-size:15px;font-variant-numeric:tabular-nums;font-weight:600}
-  .info{margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1);font-size:11px;color:#c4c4d0;line-height:1.4}
-  .aws{color:#7dd3fc}
-  .col{position:absolute;top:var(--edge);right:var(--edge);width:min(300px,calc(100vw - 36px));display:flex;flex-direction:column;gap:var(--gap);max-height:calc(100vh - 36px);pointer-events:none}
-  .card{pointer-events:auto;padding:14px 16px 14px;min-height:0;overflow:auto}
-  h2{margin:0 26px 6px 0;font-size:12px;letter-spacing:1.5px;font-weight:700;text-transform:uppercase}
-  p{margin:0 0 10px;font-size:12px;line-height:1.45;color:#d0d0dc}
-  .x{position:absolute;top:8px;right:8px;width:26px;height:26px;border:0;border-radius:8px;background:transparent;color:#c8c8d4;font-size:16px;line-height:26px;cursor:pointer}
-  .x:hover,.x:focus-visible{background:rgba(255,255,255,.12);color:#fff;outline:none}
-  .btn{height:34px;padding:0 14px;border-radius:10px;border:1px solid rgba(125,211,252,.55);background:rgba(56,189,248,.22);color:#f0f9ff;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
-  .btn:hover{background:rgba(56,189,248,.38)}
-  .rows{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 10px;font-size:12px;align-items:center}
-  .rows dt{display:flex;align-items:center;gap:7px;margin:0;color:#e4e4ee}
-  .rows dd{margin:0;text-align:right;color:#c5c5d2;font-variant-numeric:tabular-nums}
-  .foot{margin-top:8px;font-size:10px;color:#b0b0be}
-  .label{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);color:#c6c6d2;font-size:11px;letter-spacing:1.4px;display:flex;align-items:center;gap:8px;white-space:nowrap}
-  .label .dot{background:#22c55e;box-shadow:0 0 8px #22c55e}
-  .help{position:absolute;left:var(--edge);bottom:16px;color:#9a9aaa;font-size:10px}
-  .dock{position:absolute;right:var(--edge);bottom:var(--edge);display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:min(420px,calc(100vw - 36px))}
-  .dock button{pointer-events:auto;height:30px;padding:0 11px;border-radius:999px;font-size:11px;color:#f0f9ff;cursor:pointer;border:1px solid rgba(255,255,255,.22);background:rgba(8,12,32,.28);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-  .dock button:hover{background:rgba(56,189,248,.28)}
-  .dock button[aria-pressed="true"]{background:rgba(250,204,21,.18);border-color:rgba(250,204,21,.45);color:#fde68a}
-  a:focus-visible,button:focus-visible{outline:2px solid rgba(125,211,252,.7);outline-offset:2px}
-  @media (max-width:720px){
-    #ui{--edge:10px;--gap:8px}
-    .hud{width:auto;right:10px;max-width:none;padding:10px 12px}
-    .col{top:auto;left:10px;right:10px;bottom:48px;width:auto;max-height:46vh;justify-content:flex-end}
-    .label,.help{display:none}
-    .grid{gap:6px 12px}
-    .dock{left:10px;right:10px;bottom:10px;max-width:none}
-  }
-</style>
+<meta name="description" content="Root Record is software, infrastructure, intelligent systems, and durable knowledge, built as one ecosystem from Hawaiʻi to the Mainland Server.">
+<title>Root Record</title>
+<link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
 <div id="globe"></div>
-<div id="ui">
-  <section class="hud glass" id="activity" aria-label="Live network activity">
-    <button class="x" type="button" data-close="activity" aria-label="Close activity">×</button>
-    <div class="title">LIVE NETWORK ACTIVITY</div>
-    <div class="status"><div class="dot" id="dot"></div><span id="status">CONNECTING</span></div>
-    <div class="grid">
-      <div class="metric"><span>Active flows</span><strong id="flows">—</strong></div>
-      <div class="metric"><span>Endpoints</span><strong id="endpoints">—</strong></div>
-      <div class="metric"><span>Hawaiʻi</span><strong id="hawaii">—</strong></div>
-      <div class="metric"><span>Mainland</span><strong id="mainland">—</strong></div>
+<header class="top top-clear">
+  <a class="brand" href="/">Root Record</a>
+  <nav aria-label="Primary">
+    <a href="/" aria-current="page">Home</a>
+    <a href="/ecosystem">Ecosystem</a>
+    <a href="/operations">Systems</a>
+    <a href="/intelligence">Intelligence</a>
+    <a href="/knowledge">Knowledge</a>
+    <a href="/security">Security</a>
+    <a href="/status">Status</a>
+  </nav>
+  <a class="enter" href="/login">Login</a>
+</header>
+<div class="stage">
+  <section class="hero" id="hero">
+    <h1>Root Record</h1>
+    <p class="kicker">Software · Infrastructure · Intelligence</p>
+    <p class="lede">Software, infrastructure, intelligent systems, and durable knowledge — built as one ecosystem.</p>
+    <div class="rel" aria-label="Hawaiʻi to Mainland Server">
+      <div class="rel-node">Hawaiʻi</div>
+      <div class="rel-spine"><i></i><span>Root Record Network</span></div>
+      <div class="rel-node">Mainland Server</div>
     </div>
-    <div class="info" id="origin">Origin: discovering…</div>
-    <div class="info" id="awsline">Mainland: checking…</div>
+    <p class="help">drag to rotate</p>
+    <button class="spin" id="spin" type="button">Stop spin</button>
   </section>
-  <div class="col" id="col">
-    <section class="card glass" id="signup" aria-label="Sign up">
-      <button class="x" type="button" data-close="signup" aria-label="Close sign up">×</button>
-      <h2>Join Root Record</h2>
-      <p>Solar-powered software, run from Hawaiʻi. Create an account or sign in on this site.</p>
-      <a class="btn" href="/login">Sign up / Log in</a>
+  <div class="hud-row">
+    <section class="panel" id="network" aria-label="Live network">
+      <h2>Live network</h2>
+      <div class="status-line"><i class="led" id="net-dot"></i><span id="net-status">CONNECTING</span></div>
+      <div class="metrics">
+        <div><span>Hawaiʻi</span><strong id="hi-flows">—</strong></div>
+        <div><span>Mainland Server</span><strong id="ms-flows">—</strong></div>
+        <div><span>Active flows</span><strong id="active-flows">—</strong></div>
+        <div><span>Endpoints</span><strong id="endpoints">—</strong></div>
+      </div>
+      <p class="fine">System status follows the public feed. Counts appear only when that feed reports them. <a href="/status">Open status</a></p>
     </section>
-    <section class="card glass" id="about" aria-label="What Root Record does">
-      <button class="x" type="button" data-close="about" aria-label="Close about">×</button>
-      <h2>Root Record</h2>
-      <p>We build software and run the systems it depends on. This globe is the live Hawaiʻi and Ohio network. Close any box to use the map.</p>
-    </section>
-    <section class="card glass" id="operations" aria-label="Last known operations">
-      <button class="x" type="button" data-close="operations" aria-label="Close operations">×</button>
-      <h2>Operations</h2>
-      <dl class="rows" id="ops"></dl>
-      <p class="foot" id="ops-asof">Last known · checking</p>
+    <section class="panel" id="ecosystem" aria-label="Ecosystem">
+      <h2>Ecosystem</h2>
+      <div class="nodes">
+        <button class="node-btn" type="button" aria-expanded="false" aria-controls="know-panel">Knowledge<small>RootRecord Library</small></button>
+        <button class="node-btn" type="button" aria-expanded="false" aria-controls="run-panel">Runtime<small>Pacific Solar Server</small></button>
+        <button class="node-btn" type="button" aria-expanded="false" aria-controls="data-panel">Data<small>RootRecord Database</small></button>
+      </div>
+      <div class="expand" id="know-panel" hidden>
+        <p>Persistent documentation, architecture, procedures, context, security material, work orders, and operational knowledge.</p>
+        <a href="/knowledge">Knowledge layer</a>
+      </div>
+      <div class="expand" id="run-panel" hidden>
+        <p>The systems that execute work. Pacific Solar Server is the runtime. Hawaiʻi and the Mainland Server are the two public sides of that runtime.</p>
+        <a href="/infrastructure">Infrastructure</a>
+      </div>
+      <div class="expand" id="data-panel" hidden>
+        <p>Persistent system information, telemetry, environmental information, logs, and state.</p>
+        <a href="/data">Data layer</a>
+      </div>
     </section>
   </div>
-  <div class="label"><div class="dot"></div>REAL NETWORK OBSERVATIONS · AUTO-UPDATING</div>
-  <div class="help">drag to rotate · scroll to zoom</div>
-  <div class="dock" aria-label="Closed panels and globe spin"></div>
+</div>
+<div class="below">
+  <section class="section" id="field">
+    <div class="split">
+      <div class="panel">
+        <h2>Field systems</h2>
+        <div class="quad" style="grid-template-columns:1fr 1fr">
+          <div>
+            <h3>Energy</h3>
+            <ul>
+              <li><span>River</span><b id="river">—</b></li>
+              <li><span>Delta</span><b id="delta">—</b></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Environment</h3>
+            <ul>
+              <li><span>Weather</span><b id="weather">—</b></li>
+              <li><span>Kīlauea</span><b id="kilauea">—</b></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Network</h3>
+            <ul>
+              <li><span>Hawaiʻi</span><b id="field-hi">—</b></li>
+              <li><span>Mainland Server</span><b id="field-ms">—</b></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Operations</h3>
+            <ul>
+              <li><span>Automation</span></li>
+              <li><span>Monitoring</span></li>
+              <li><span>Verification</span></li>
+            </ul>
+          </div>
+        </div>
+        <p class="fine" id="field-asof">Last known · checking</p>
+        <p class="fine"><a href="/operations">Systems</a></p>
+      </div>
+      <div class="panel" id="intelligence">
+        <h2>Intelligent systems</h2>
+        <div class="pairs">
+          <div><span>Agents</span><strong>Active</strong></div>
+          <div><span>Context</span><strong>Persistent</strong></div>
+          <div><span>Execution</span><strong>Controlled</strong></div>
+          <div><span>Verification</span><strong>Required</strong></div>
+        </div>
+        <p class="intro">Root Record treats intelligence as part of the system architecture rather than a standalone interface. Agents operate with persistent context, controlled execution, and verifiable results.</p>
+        <p class="fine"><a href="/intelligence">Intelligence</a></p>
+      </div>
+    </div>
+  </section>
+  <section class="section" id="builds">
+    <h2>What Root Record builds</h2>
+    <div class="taxonomy">
+      <article class="card"><h3>Software</h3><p class="tax-items">Applications · APIs · Services · Tools</p></article>
+      <a class="card" href="/infrastructure"><h3>Infrastructure</h3><p class="tax-items">Servers · Networks · Physical systems</p></a>
+      <a class="card" href="/operations"><h3>Automation</h3><p class="tax-items">Schedulers · Brokers · Monitoring · Workflows</p></a>
+      <a class="card" href="/intelligence"><h3>Intelligence</h3><p class="tax-items">Agents · Context · Reasoning · Execution</p></a>
+      <a class="card" href="/data"><h3>Data</h3><p class="tax-items">Telemetry · State · Logs · Environmental data</p></a>
+      <a class="card" href="/security"><h3>Security</h3><p class="tax-items">Boundaries · Evidence · Verification · Monitoring</p></a>
+      <a class="card" href="/operations#energy"><h3>Energy</h3><p class="tax-items">Generation · Telemetry · Physical infrastructure</p></a>
+    </div>
+  </section>
+  <section class="section" id="hawaii">
+    <div class="panel">
+      <h2>Built from Hawaiʻi</h2>
+      <p class="intro">Root Record is built from Hawaiʻi, where geography, connectivity, energy, weather, distance, and physical infrastructure are tangible engineering constraints.</p>
+      <ol class="flow">
+        <li>Hawaiʻi</li>
+        <li>Field systems</li>
+        <li>Network</li>
+        <li>Mainland Server</li>
+        <li>Continuity</li>
+      </ol>
+      <p class="fine"><a href="/about">Why Root Record exists</a> · <a href="/infrastructure">Infrastructure</a></p>
+    </div>
+  </section>
+  <section class="section" id="continuity">
+    <h2>Built for continuity</h2>
+    <div class="tri">
+      <article class="panel">
+        <h2>Understandable</h2>
+        <p class="intro">Systems should retain enough context to be understood by the people and agents operating them.</p>
+      </article>
+      <article class="panel">
+        <h2>Verifiable</h2>
+        <p class="intro">A commit is not proof of deployment. A command is not proof of execution. System state requires evidence.</p>
+      </article>
+      <article class="panel">
+        <h2>Repairable</h2>
+        <p class="intro">Systems should retain enough history and context to be operated, migrated, and repaired without starting from zero.</p>
+      </article>
+    </div>
+  </section>
+  <footer class="site-foot">
+    <a href="/ecosystem">Ecosystem</a>
+    <a href="/infrastructure">Infrastructure</a>
+    <a href="/operations">Operations</a>
+    <a href="/data">Data</a>
+    <a href="/intelligence">Intelligence</a>
+    <a href="/knowledge">Knowledge</a>
+    <a href="/security">Security</a>
+    <a href="/status">Status</a>
+    <a href="/about">About</a>
+  </footer>
 </div>
 <script src="https://unpkg.com/globe.gl@2.46.2"></script>
-<script>
-(function () {
-  var STATUS_API = "https://api.rootrecord.cloud";
-  var KEY = "rr-home:v2:";
-  var NAMES = { activity: "Activity", signup: "Sign up", about: "About", operations: "Operations" };
-  var globe = Globe()(document.getElementById("globe"))
-    .globeImageUrl("https://unpkg.com/three-globe/example/img/earth-night.jpg")
-    .backgroundColor("#000011")
-    .showAtmosphere(true)
-    .atmosphereColor("#3a1c71")
-    .atmosphereAltitude(0.18)
-    .arcColor(function (d) { return d.color || "#22c55e"; })
-    .arcAltitude(function (d) { return d.altitude || 0.16; })
-    .arcStroke(function (d) {
-      var s = Number(d && d.stroke);
-      if (!isFinite(s) || s <= 0) s = 1.2;
-      return Math.max(0.1, Math.min(0.22, s * 0.12));
-    })
-    .arcDashLength(0.4)
-    .arcDashGap(0.28)
-    .arcDashAnimateTime(2200)
-    .arcLabel(function (d) {
-      var place = [d.city, d.country].filter(Boolean).join(", ");
-      return place || d.org || "Connection";
-    })
-    .pointColor(function (d) { return d.type === "origin" ? "#fff" : d.type === "aws" ? "#38bdf8" : "#ff6b9d"; })
-    .pointAltitude(function (d) { return d.type === "origin" ? 0.02 : 0.01; })
-    .pointRadius(function (d) { return d.type === "origin" ? 0.35 : 0.18; })
-    .pointsMerge(false);
-  var controls = globe.controls();
-  controls.enableZoom = true;
-  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var spinOn = localStorage.getItem(KEY + "spin") === "off" ? false : !reduce;
-  var dock = document.querySelector(".dock");
-  var spinBtn = document.createElement("button");
-  spinBtn.type = "button";
-  spinBtn.id = "spin";
-  function applySpin() {
-    controls.autoRotate = spinOn;
-    controls.autoRotateSpeed = 0.35;
-    spinBtn.textContent = spinOn ? "Stop spin" : "Resume spin";
-    spinBtn.setAttribute("aria-pressed", spinOn ? "true" : "false");
-  }
-  spinBtn.addEventListener("click", function () {
-    spinOn = !spinOn;
-    localStorage.setItem(KEY + "spin", spinOn ? "on" : "off");
-    applySpin();
-  });
-  dock.appendChild(spinBtn);
-  applySpin();
-
-  function $(id) { return document.getElementById(id); }
-  function fmt(n) {
-    var v = Number(n);
-    return Number.isFinite(v) ? v.toLocaleString() : "—";
-  }
-  function paintHud(d) {
-    var s = (d && d.stats) || {};
-    var live = !!(d && (s.activeFlows != null || (d.arcs && d.arcs.length)));
-    $("flows").textContent = live ? fmt(s.activeFlows) : "—";
-    $("endpoints").textContent = live ? fmt(s.endpoints) : "—";
-    $("hawaii").textContent = live ? fmt(s.hawaiiActiveFlows) : "—";
-    $("mainland").textContent = live ? fmt(s.localActiveFlows) : "—";
-    $("origin").textContent = live
-      ? "Hawaiʻi " + fmt(s.hawaiiActiveFlows) + " flows · Mainland " + fmt(s.localActiveFlows) + " flows"
-      : "Origin: no data";
-    var a = (d && d.aws) || {};
-    $("awsline").textContent = a.ok ? "" : (a.reason ? "Mainland: " + a.reason : "Mainland: no telemetry");
-    if (a.ok) {
-      $("awsline").textContent = "";
-      var span = document.createElement("span");
-      span.className = "aws";
-      span.textContent = "Mainland measuring · " + (a.region || "us-east-2");
-      $("awsline").appendChild(span);
-    }
-    $("status").textContent = live ? "LIVE" : "OFFLINE";
-    $("dot").className = "dot " + (live ? "ok" : "bad");
-  }
-  function num(v, suffix) {
-    if (v === undefined || v === null || v === "") return null;
-    var n = Number(v);
-    if (!Number.isFinite(n)) return null;
-    return (Math.round(n * 10) / 10) + suffix;
-  }
-  function deviceBits(devices, name) {
-    var d = devices && devices[name];
-    if (!d) return "No data";
-    var soc = d.soc && num(d.soc.soc, "%");
-    var solar = d.watts && num(d.watts.solar_input_power, " W solar");
-    if (!soc && !solar) return "No data";
-    return [soc, solar].filter(Boolean).join(" · ");
-  }
-  function paintOps(data) {
-    var dl = $("ops");
-    while (dl.firstChild) dl.removeChild(dl.firstChild);
-    var power = data && data.power && data.power.devices;
-    var weather = data && data.weather;
-    var volcano = data && data.kilauea && data.kilauea.status;
-    [
-      ["River", power ? deviceBits(power, "river2pro") : "No data"],
-      ["Delta", power ? deviceBits(power, "delta2") : "No data"],
-      ["Weather", weather && weather.report && weather.report.generated ? String(weather.report.generated) : "No data"],
-      ["Kīlauea", volcano && (volcano.headline || volcano.alert_level) ? String(volcano.headline || volcano.alert_level) : "No data"]
-    ].forEach(function (pair) {
-      var dt = document.createElement("dt");
-      var dd = document.createElement("dd");
-      dt.textContent = pair[0];
-      dd.textContent = pair[1];
-      dl.appendChild(dt);
-      dl.appendChild(dd);
-    });
-    $("ops-asof").textContent = data && data.as_of ? "Last known · " + data.as_of : "Last known · No data";
-  }
-
-  var busy = false;
-  function loadGlobe() {
-    if (busy) return;
-    busy = true;
-    fetch(STATUS_API + "/api/state", { cache: "no-store", credentials: "omit" })
-      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-      .then(function (d) {
-        if (!d || d.ok === false) throw new Error("no_data");
-        var arcs = (d.arcs || []).map(function (a) {
-          var copy = {};
-          Object.keys(a).forEach(function (k) { copy[k] = a[k]; });
-          return copy;
-        });
-        globe.arcsData(arcs);
-        globe.pointsData(d.points || []);
-        paintHud(d);
-      })
-      .catch(function () { paintHud(null); })
-      .finally(function () { busy = false; });
-  }
-  function loadOps() {
-    fetch(STATUS_API + "/api/operations", { cache: "no-store", credentials: "omit" })
-      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-      .then(function (data) { if (!data || data.ok !== true) throw new Error("no_data"); paintOps(data); })
-      .catch(function () { paintOps(null); });
-  }
-  loadGlobe();
-  loadOps();
-  setInterval(loadGlobe, 5000);
-  setInterval(loadOps, 60000);
-
-  function setOpen(id, open) {
-    var panel = $(id);
-    panel.hidden = !open;
-    if (open) localStorage.removeItem(KEY + "closed:" + id);
-    else localStorage.setItem(KEY + "closed:" + id, "1");
-    var existing = dock.querySelector("[data-open='" + id + "']");
-    if (existing) existing.remove();
-    if (!open) {
-      var b = document.createElement("button");
-      b.type = "button";
-      b.dataset.open = id;
-      b.textContent = "+ " + NAMES[id];
-      b.addEventListener("click", function () { setOpen(id, true); });
-      dock.appendChild(b);
-    }
-  }
-  document.querySelectorAll("[data-close]").forEach(function (btn) {
-    btn.addEventListener("click", function () { setOpen(btn.getAttribute("data-close"), false); });
-  });
-  Object.keys(NAMES).forEach(function (id) {
-    if (localStorage.getItem(KEY + "closed:" + id) === "1") setOpen(id, false);
-  });
-})();
-</script>
+<script src="/assets/telemetry.js"></script>
+<script src="/assets/live.js"></script>
+<script src="/assets/home.js"></script>
 </body>
 </html>

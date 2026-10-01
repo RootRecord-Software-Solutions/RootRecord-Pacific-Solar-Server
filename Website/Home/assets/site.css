@@ -46,12 +46,7 @@ a:hover { color: #e0f2fe; }
   -webkit-backdrop-filter: blur(16px);
 }
 
-.top-clear {
-  position: absolute;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 17, 0.28);
-}
+.top-clear { background: rgba(0, 0, 17, 0.28); }
 
 .brand {
   color: #fff;
@@ -102,7 +97,7 @@ a:hover { color: #e0f2fe; }
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: 78px 22px 22px;
+  padding: 12px 22px 22px;
   pointer-events: none;
 }
 
