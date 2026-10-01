@@ -8,13 +8,15 @@
 # Kind: python
 # ==============================================================================
 #!/usr/bin/env python3
-"""Prebuild 24 hourly chimes. Ava, Bruce, and Carly leapfrog. No live Kokoro at chime time.
+"""Prebuild 48 chimes, every hour and half hour. Ava, Bruce, and Carly leapfrog by the hour. No live Kokoro at chime time.
 
-  python3 hourly_chimes.py            print the 24 sentences
-  python3 hourly_chimes.py --render   render speech, prepend the UI chime, write the wavs
+  python3 hourly_chimes.py                 print the 48 sentences
+  python3 hourly_chimes.py --render        render any missing wav; keep files that already exist
+  python3 hourly_chimes.py --render --force   render all 48 again
 
-Hawaii is the hour. Mountain Daylight Time is four hours ahead, Eastern time is six
+Hawaii is the clock. Mountain Daylight Time is four hours ahead, Eastern time is six
 hours ahead (daylight, paired with Mountain Daylight Time), and UTC is ten hours ahead.
+The minute is the same in each zone. Files are hour-HH-00.wav and hour-HH-30.wav.
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
@@ -37,6 +39,7 @@ ROSTER = ("ava", "bruce", "carly")  # info: set ROSTER
 MDT_AHEAD = 4  # info: Mountain Daylight Time is four hours ahead of Hawaii
 EASTERN_AHEAD = 6  # info: Eastern daylight is six hours ahead of Hawaii
 UTC_AHEAD = 10  # info: UTC is ten hours ahead of Hawaii
+SLOTS = tuple((hour, minute) for hour in range(24) for minute in (0, 30))  # info: set SLOTS
 
 
 # ====================================================
@@ -49,26 +52,41 @@ def persona_for(hour: int) -> str:  # info: def persona_for
 
 
 # ====================================================
-# SECTION: function wav_path
-# What it does: Path of the prebuilt wav for one Hawaii hour.
+# SECTION: function slot_minute
+# What it does: A chime slot is :00 or :30. Anything else is refused.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def wav_path(hour: int) -> Path:  # info: def wav_path
-    return CHIME_DIR / f"hour-{int(hour) % 24:02d}.wav"  # info: return CHIME_DIR / f" hour- { int ( hour ) % 24 : 02d } .wav "
+def slot_minute(minute: int) -> int:  # info: def slot_minute
+    m = int(minute)  # info: set m
+    if m not in (0, 30):  # info: if m not in ( 0 , 30 ) :
+        raise ValueError(f"chime minute must be 0 or 30, got {m}")  # info: raise ValueError ( f" chime minute must be 0 or 30, got { m } " )
+    return m  # info: return m
+
+
+# ====================================================
+# SECTION: function wav_path
+# What it does: Path of the prebuilt wav for one Hawaii hour and :00 or :30.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def wav_path(hour: int, minute: int = 0) -> Path:  # info: def wav_path
+    h = int(hour) % 24  # info: set h
+    m = slot_minute(minute)  # info: set m
+    return CHIME_DIR / f"hour-{h:02d}-{m:02d}.wav"  # info: return CHIME_DIR / f" hour- { h : 02d } - { m : 02d } .wav "
 
 
 # ====================================================
 # SECTION: function chime_sentence
-# What it does: Spoken line for one Hawaii hour, plus Mountain Daylight Time, Eastern time, and UTC.
+# What it does: Spoken line for one Hawaii slot, plus Mountain Daylight Time, Eastern time, and UTC.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def chime_sentence(hour: int) -> str:  # info: def chime_sentence
+def chime_sentence(hour: int, minute: int = 0) -> str:  # info: def chime_sentence
     h = int(hour) % 24  # info: set h
+    m = slot_minute(minute)  # info: set m
     return (  # info: return (
-        f"It is currently {spoken_clock(h, 0)} in Hawaii. "  # info: f" It is currently { spoken_clock ( h , 0 ) } in Hawaii. "
-        f"Mountain Daylight Time is {spoken_clock((h + MDT_AHEAD) % 24, 0)}. "  # info: f" Mountain Daylight Time is { spoken_clock ( ( h + MDT_AHEAD ) % 24 , 0 ) } . "
-        f"Eastern time is {spoken_clock((h + EASTERN_AHEAD) % 24, 0)}. "  # info: f" Eastern time is { spoken_clock ( ( h + EASTERN_AHEAD ) % 24 , 0 ) } . "
-        f"U.T.C. is {spoken_clock((h + UTC_AHEAD) % 24, 0)}."  # info: f" U.T.C. is { spoken_clock ( ( h + UTC_AHEAD ) % 24 , 0 ) } . "
+        f"It is currently {spoken_clock(h, m)} in Hawaii. "  # info: f" It is currently { spoken_clock ( h , m ) } in Hawaii. "
+        f"Mountain Daylight Time is {spoken_clock((h + MDT_AHEAD) % 24, m)}. "  # info: f" Mountain Daylight Time is { spoken_clock ( ( h + MDT_AHEAD ) % 24 , m ) } . "
+        f"Eastern time is {spoken_clock((h + EASTERN_AHEAD) % 24, m)}. "  # info: f" Eastern time is { spoken_clock ( ( h + EASTERN_AHEAD ) % 24 , m ) } . "
+        f"U.T.C. is {spoken_clock((h + UTC_AHEAD) % 24, m)}."  # info: f" U.T.C. is { spoken_clock ( ( h + UTC_AHEAD ) % 24 , m ) } . "
     ).replace("..", ".")  # info: ) . replace ( ".." , "." )
 
 
@@ -99,47 +117,69 @@ def load_chime():  # info: def load_chime
 
 
 # ====================================================
-# SECTION: function render_all
-# What it does: Render all 24 hours in one Kokoro load and write wavs with the chime in front.
+# SECTION: function adopt_legacy
+# What it does: Rename hour-HH.wav from the 24-file set to hour-HH-00.wav.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def render_all() -> list[dict]:  # info: def render_all
+def adopt_legacy() -> None:  # info: def adopt_legacy
+    for hour in range(24):  # info: for hour in range ( 24 ) :
+        old = CHIME_DIR / f"hour-{hour:02d}.wav"  # info: set old
+        new = wav_path(hour, 0)  # info: set new
+        if old.is_file() and not new.is_file():  # info: if old . is_file ( ) and not new . is_file ( ) :
+            old.replace(new)  # info: old . replace ( new )
+
+
+# ====================================================
+# SECTION: function render_all
+# What it does: Write any missing :00 and :30 wavs in one Kokoro load. Existing files stay unless force is set.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def render_all(force: bool = False) -> list[dict]:  # info: def render_all
     import numpy as np  # info: import numpy as np
     import voice_generate as vg  # info: import voice_generate as vg
-    tone = load_chime()  # info: set tone
-    gap = np.zeros(int(vg.SAMPLE_RATE * 0.25), dtype=np.float32)  # info: set gap
     CHIME_DIR.mkdir(parents=True, exist_ok=True)  # info: CHIME_DIR . mkdir ( parents = True , exist_ok = True )
+    adopt_legacy()  # info: call adopt_legacy
+    tone = None  # info: set tone
+    gap = None  # info: set gap
     rows = []  # info: set rows
-    for hour in range(24):  # info: for hour in range ( 24 ) :
+    for hour, minute in SLOTS:  # info: for hour , minute in SLOTS :
         who = persona_for(hour)  # info: set who
         voice = speakers.AGENTS[who]["kokoro"]  # info: set voice
         rate = float(speakers.AGENTS[who]["speed"])  # info: set rate
-        read = chime_sentence(hour)  # info: set read
+        read = chime_sentence(hour, minute)  # info: set read
         spoken = speakable(read)  # info: set spoken
+        dest = wav_path(hour, minute)  # info: set dest
+        row = {"hour": hour, "minute": minute, "persona": who, "voice": voice, "speed": rate, "text": read, "spoken": spoken, "wav": str(dest)}  # info: set row
+        if dest.is_file() and not force:  # info: if dest . is_file ( ) and not force :
+            rows.append(row)  # info: rows . append ( row )
+            print(json.dumps({"hour": hour, "minute": minute, "persona": who, "wav": str(dest), "kept": True}), flush=True)  # info: call print
+            continue  # info: continue
+        if tone is None:  # info: if tone is None :
+            tone = load_chime()  # info: set tone
+            gap = np.zeros(int(vg.SAMPLE_RATE * 0.25), dtype=np.float32)  # info: set gap
         speech = vg.synth(spoken, voice, rate)  # info: set speech
         if speech is None:  # info: if speech is None :
-            raise RuntimeError(f"no audio for hour {hour}")  # info: raise RuntimeError ( f" no audio for hour { hour } " )
+            raise RuntimeError(f"no audio for {hour:02d}:{minute:02d}")  # info: raise RuntimeError ( f" no audio for { hour : 02d } : { minute : 02d } " )
         body, _lead, _tail = vg.prepare(np.asarray(speech, dtype=np.float32))  # info: body , _lead , _tail = vg . prepare (
         mixed = np.concatenate([tone, gap, body])  # info: set mixed
-        dest = wav_path(hour)  # info: set dest
         vg.write_wav(dest, mixed)  # info: call vg . write_wav
-        rows.append({"hour": hour, "persona": who, "voice": voice, "speed": rate, "text": read, "spoken": spoken, "wav": str(dest)})  # info: rows . append ( { "hour" : hour
-        print(json.dumps({"hour": hour, "persona": who, "wav": str(dest)}), flush=True)  # info: call print
+        rows.append(row)  # info: rows . append ( row )
+        print(json.dumps({"hour": hour, "minute": minute, "persona": who, "wav": str(dest), "kept": False}), flush=True)  # info: call print
     (CHIME_DIR / "chimes.json").write_text(json.dumps({"ok": True, "count": len(rows), "chimes": rows}, indent=2) + "\n", encoding="utf-8")  # info: call (
     return rows  # info: return rows
 
 
 # ====================================================
 # SECTION: function main
-# What it does: Print the sentences, or render them when --render is passed.
+# What it does: Print the 48 sentences, or render missing wavs when --render is passed.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def main() -> int:  # info: def main
     if "--render" not in sys.argv:  # info: if "--render" not in sys . argv :
-        for hour in range(24):  # info: for hour in range ( 24 ) :
-            print(f"{hour:02d} {persona_for(hour)}: {chime_sentence(hour)}")  # info: call print
+        for hour, minute in SLOTS:  # info: for hour , minute in SLOTS :
+            print(f"{hour:02d}:{minute:02d} {persona_for(hour)}: {chime_sentence(hour, minute)}")  # info: call print
         return 0  # info: return 0
-    render_all()  # info: call render_all
+    render_all(force="--force" in sys.argv)  # info: call render_all
     return 0  # info: return 0
 
 
