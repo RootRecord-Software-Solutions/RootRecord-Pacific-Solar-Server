@@ -8,10 +8,10 @@
 # Kind: python
 # ==============================================================================
 #!/usr/bin/env python3
-"""Carly per-quake Telegram notices from hawaii-last.json.
+"""Carly per-quake Telegram notices from hawaii-last.json and global-last.json.
 
-Reads the existing Geology file. Does not fetch USGS. Dry-run by default:
-no Telegram, no Kokoro, no token load. The live job seeds once and posts nothing
+Reads the existing Geology files. Does not fetch USGS. Dry-run by default:
+no Telegram, no Kokoro, no token load. Each feed seeds once and posts nothing
 on that first pass. A fixture run with an empty seen list prints the notice.
 """
 from __future__ import annotations  # info: from __future__ import annotations
@@ -28,6 +28,7 @@ SCRIPTS = Path(__file__).resolve().parent  # info: set SCRIPTS
 PACIFIC = ROOT.parents[1]  # info: set PACIFIC
 DB = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database")  # info: set DB
 HAWAII = DB / "Geology" / "Earthquakes" / "hawaii-last.json"  # info: set HAWAII
+GLOBAL = DB / "Geology" / "Earthquakes" / "global-last.json"  # info: set GLOBAL
 DATA = DB / "Communications" / "CouncilQuake"  # info: set DATA
 LOG_DIR = DB / "Logs" / "Communications" / "CouncilQuake"  # info: set LOG_DIR
 SEEN_NAME = "seen.json"  # info: set SEEN_NAME
@@ -93,12 +94,13 @@ def _fmt_time(event: dict) -> str:  # info: def _fmt_time
 # What it does: format quake.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def format_quake(event: dict) -> str:  # info: def format_quake
+def format_quake(event: dict, region: str = "Hawaii region") -> str:  # info: def format_quake
     mag = _mag(event)  # info: set mag
     mag_s = f"{mag:.1f}" if mag is not None else "—"  # info: set mag_s
     place = str(event.get("place") or "location unknown").strip()  # info: set place
+    label = "worldwide" if region == "worldwide" else "Hawaii region"  # info: set label
     lines = [  # info: set lines
-        "Earthquake — USGS (Hawaii region)",  # info: "Earthquake — USGS (Hawaii region)" ,
+        f"Earthquake — USGS ({label})",  # info: f" Earthquake — USGS ( { label } ) " ,
         f"M {mag_s} · {place}",  # info: f" M { mag_s } · { place
         _fmt_time(event),  # info: call _fmt_time
     ]  # info: ]
@@ -120,13 +122,14 @@ def format_quake(event: dict) -> str:  # info: def format_quake
 # What it does: spoken quake.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def spoken_quake(event: dict) -> str:  # info: def spoken_quake
+def spoken_quake(event: dict, region: str = "Hawaii region") -> str:  # info: def spoken_quake
     mag = _mag(event)  # info: set mag
     mag_s = f"{mag:.1f}" if mag is not None else "unknown"  # info: set mag_s
     place = str(event.get("place") or "location unknown").strip()  # info: set place
+    survey = "U. S. Geological Survey worldwide." if region == "worldwide" else "U. S. Geological Survey Hawaii."  # info: set survey
     bits = [  # info: set bits
         "Earthquake.",  # info: "Earthquake." ,
-        "U. S. Geological Survey Hawaii.",  # info: "U. S. Geological Survey Hawaii." ,
+        survey,  # info: survey ,
         f"Magnitude {mag_s}.",  # info: f" Magnitude { mag_s } . " ,
         f"{place}.",  # info: f" { place } . " ,
     ]  # info: ]
@@ -192,7 +195,7 @@ def save_json(path: Path, data: dict) -> None:  # info: def save_json
 # What it does: Return posted texts. Live mode seeds once. Fixture mode posts new ids.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def tick(feed: dict, state: dict, *, seed_first: bool) -> dict:  # info: def tick
+def tick(feed: dict, state: dict, *, seed_first: bool, region: str = "Hawaii region") -> dict:  # info: def tick
     """Return posted texts. Live mode seeds once. Fixture mode posts new ids."""  # info: """Return posted texts. Live mode seeds once. Fixture mode posts new ids."""
     state = dict(state)  # info: set state
     seen = [str(x) for x in (state.get("seen") or []) if str(x).strip()]  # info: set seen
@@ -217,7 +220,7 @@ def tick(feed: dict, state: dict, *, seed_first: bool) -> dict:  # info: def tic
             continue  # info: continue
         if len(posted) >= MAX_POSTS:  # info: if len ( posted ) >= MAX_POSTS :
             break  # info: break
-        notices.append(format_quake(event))  # info: notices . append ( format_quake ( event )
+        notices.append(format_quake(event, region))  # info: notices . append ( format_quake ( event , region )
         posted.append(qid)  # info: posted . append ( qid )
         seen.append(qid)  # info: seen . append ( qid )
         seen_set.add(qid)  # info: seen_set . add ( qid )
@@ -316,10 +319,10 @@ def append_log(path: Path, row: dict) -> None:  # info: def append_log
 # What it does: run.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def run(feed_path: Path, seen_path: Path, log_path: Path, *, seed_first: bool) -> dict:  # info: def run
+def run(feed_path: Path, seen_path: Path, log_path: Path, *, seed_first: bool, region: str = "Hawaii region", last_name: str = LAST_NAME) -> dict:  # info: def run
     feed = load_json(feed_path, {})  # info: set feed
     state = load_json(seen_path, {"seen": [], "seeded": False})  # info: set state
-    out = tick(feed, state, seed_first=seed_first)  # info: set out
+    out = tick(feed, state, seed_first=seed_first, region=region)  # info: set out
     notices = list(out.get("notices") or [])  # info: set notices
     deliveries = []  # info: set deliveries
     for text in notices:  # info: for text in notices :
@@ -336,7 +339,7 @@ def run(feed_path: Path, seen_path: Path, log_path: Path, *, seed_first: bool) -
         "wav": bool(spoken),  # info: "wav" : bool ( spoken ) ,
     }  # info: }
     save_json(seen_path, {"seen": out.get("seen") or [], "seeded": True, "last_posted": out.get("posted") or []})  # info: call save_json
-    last_path = seen_path.parent / LAST_NAME  # info: set last_path
+    last_path = seen_path.parent / last_name  # info: set last_path
     save_json(last_path, {**row, "notices": notices})  # info: call save_json
     append_log(log_path, row)  # info: call append_log
     for text in notices:  # info: for text in notices :
@@ -377,7 +380,7 @@ def self_test() -> int:  # info: def self_test
             return 1  # info: return 1
         last = json.loads((seen_path.parent / LAST_NAME).read_text(encoding="utf-8"))  # info: set last
         notice = "\n".join(last.get("notices") or [])  # info: set notice
-        if "M 2.4 · 5 km SSW of Pahala, Hawaii" not in notice:  # info: if "M 2.4 · 5 km SSW of Pahala, Hawaii" not in notice :
+        if "Earthquake — USGS (Hawaii region)" not in notice or "M 2.4 · 5 km SSW of Pahala, Hawaii" not in notice:  # info: if "Earthquake — USGS (Hawaii region)" not in notice or "M 2.4 · 5 km SSW of Pahala, Hawaii" not in notice :
             print("FAIL notice body", file=sys.stderr)  # info: call print
             return 1  # info: return 1
         if "hv-small" in notice:  # info: if "hv-small" in notice :
@@ -390,6 +393,14 @@ def self_test() -> int:  # info: def self_test
         if HAWAII.exists() and "hv-test-1" in HAWAII.read_text(encoding="utf-8"):  # info: if HAWAII . exists ( ) and "hv-test-1"
             print("FAIL live quake file touched", file=sys.stderr)  # info: call print
             return 1  # info: return 1
+    world = format_quake({"id": "us-test-1", "mag": 5.0, "place": "south of the Fiji Islands"}, "worldwide")  # info: set world
+    if "Earthquake — USGS (worldwide)" not in world or "M 5.0" not in world:  # info: if "Earthquake — USGS (worldwide)" not in world or "M 5.0" not in world :
+        print("FAIL worldwide notice", file=sys.stderr)  # info: call print
+        return 1  # info: return 1
+    seeded = tick({"events": [event]}, {"seen": [], "seeded": False}, seed_first=True, region="worldwide")  # info: set seeded
+    if seeded.get("notices") or seeded.get("posted"):  # info: if seeded . get ( "notices" ) or seeded . get ( "posted" ) :
+        print("FAIL first seed posted", file=sys.stderr)  # info: call print
+        return 1  # info: return 1
     print("PASS council quake dry-run")  # info: call print
     return 0  # info: return 0
 
@@ -402,21 +413,22 @@ def self_test() -> int:  # info: def self_test
 def main(argv: list[str]) -> int:  # info: def main
     if "--self-test" in argv:  # info: if "--self-test" in argv :
         return self_test()  # info: return self_test ( )
-    feed = HAWAII  # info: set feed
-    seen = DATA / SEEN_NAME  # info: set seen
-    log_path = LOG_DIR / LOG_NAME  # info: set log_path
-    seed_first = True  # info: set seed_first
     if "--feed" in argv:  # info: if "--feed" in argv :
         feed = Path(argv[argv.index("--feed") + 1])  # info: set feed
-        seed_first = False  # info: set seed_first
-    if "--seen" in argv:  # info: if "--seen" in argv :
-        seen = Path(argv[argv.index("--seen") + 1])  # info: set seen
-    if "--log" in argv:  # info: if "--log" in argv :
-        log_path = Path(argv[argv.index("--log") + 1])  # info: set log_path
-    if not feed.is_file():  # info: if not feed . is_file ( ) :
-        print(f"No data: {feed}", file=sys.stderr)  # info: call print
+        seen = Path(argv[argv.index("--seen") + 1]) if "--seen" in argv else DATA / SEEN_NAME  # info: set seen
+        log_path = Path(argv[argv.index("--log") + 1]) if "--log" in argv else LOG_DIR / LOG_NAME  # info: set log_path
+        if not feed.is_file():  # info: if not feed . is_file ( ) :
+            print(f"No data: {feed}", file=sys.stderr)  # info: call print
+            return 2  # info: return 2
+        run(feed, seen, log_path, seed_first=False, region="Hawaii region")  # info: call run
+        return 0  # info: return 0
+    if not HAWAII.is_file() and not GLOBAL.is_file():  # info: if not HAWAII . is_file ( ) and not GLOBAL . is_file ( ) :
+        print(f"No data: {HAWAII}", file=sys.stderr)  # info: call print
         return 2  # info: return 2
-    run(feed, seen, log_path, seed_first=seed_first)  # info: call run
+    if HAWAII.is_file():  # info: if HAWAII . is_file ( ) :
+        run(HAWAII, DATA / SEEN_NAME, LOG_DIR / LOG_NAME, seed_first=True, region="Hawaii region", last_name=LAST_NAME)  # info: call run
+    if GLOBAL.is_file():  # info: if GLOBAL . is_file ( ) :
+        run(GLOBAL, DATA / "seen-global.json", LOG_DIR / LOG_NAME, seed_first=True, region="worldwide", last_name="last-global.json")  # info: call run
     return 0  # info: return 0
 
 

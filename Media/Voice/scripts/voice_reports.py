@@ -47,7 +47,7 @@ import subprocess  # info: import subprocess
 import sys  # info: import sys
 import tempfile  # info: import tempfile
 import time  # info: import time
-from datetime import datetime  # info: from datetime import datetime
+from datetime import datetime, timedelta  # info: from datetime import datetime , timedelta
 from pathlib import Path  # info: from pathlib import Path
 
 HERE = Path(__file__).resolve().parent  # info: set HERE
@@ -319,7 +319,14 @@ def b_energy_report(t: datetime):  # info: def b_energy_report
         sp.append(s + ".")  # info: sp . append ( s + "." )
         if f["age_min"] is not None and f["age_min"] > STALE_MIN:  # info: if f [ "age_min" ] is not None
             sp.append(f"That {f['name']} reading is {f['age_min']} minutes old.")  # info: sp . append ( f" That { f
-    md += ["", "_Source: Database Energy/soc + Energy/watts (*-last.json, EcoFlow BLE). Vision caption not used._", ""]  # info: set md
+    still = newest_ch1(t)  # info: set still
+    if still:  # info: if still :
+        md.append(f"- Solar panel still age: {still['age_min']} min (`{Path(still['path']).name}`)")  # info: md . append ( f" - Solar panel still age: { still
+        sp.append(f"Solar panel still is {still['age_min']} minutes old.")  # info: sp . append ( f" Solar panel still is { still
+    else:  # info: else :
+        md.append("- Solar panel still: not on file")  # info: md . append ( "- Solar panel still: not on file" )
+        sp.append("No solar panel still on file.")  # info: sp . append ( "No solar panel still on file." )
+    md += ["", "_Source: Database Energy/soc + Energy/watts (*-last.json, EcoFlow BLE) and the newest ch1 camera still. No vision caption._", ""]  # info: set md
     return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
@@ -763,17 +770,8 @@ def _say_code(code: str) -> str:  # info: def _say_code
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def b_remaining_tasks(t: datetime):  # info: def b_remaining_tasks
-    total, per = open_tasks()  # info: total , per = open_tasks ( )
-    md = [f"# Remaining tasks — {t.isoformat()}", "", f"Open checkboxes in Library `Documentation/06-development/Work-Orders/`: **{total}**", "",
-          "| Work order | Open |", "|---|---|"] + [f"| {c} | {n} |" for n, c in per] + [""]  # info: "| Work order | Open |" , "|---|---|" ] + [ f" |
-    sp = ["Remaining tasks."]  # info: set sp
-    if total:  # info: if total :
-        sp.append(f"{total} open items across {len(per)} work orders.")  # info: sp . append ( f" { total }
-        top = ", ".join(f"{_say_code(c)} {n}" for n, c in per[:3])  # info: set top
-        sp.append(f"Most open: {top}.")  # info: sp . append ( f" Most open: { top
-    else:  # info: else :
-        sp.append("No open tasks on file.")  # info: sp . append ( "No open tasks on file." )
-    return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
+    payload = board_status()  # info: set payload
+    return speak_board(t, payload)  # info: return speak_board ( t , payload )
 
 
 # ====================================================
@@ -1040,7 +1038,9 @@ def main() -> int:  # info: def main
         wav = (res.get("voice") or {}).get("wav")  # info: set wav
         if wav:  # info: if wav
             import voice_deliver  # info: import voice_deliver
-            res["deliver"] = voice_deliver.deliver(report, wav, " ".join(spoken), KIND[report])  # info: res [ "deliver" ] = voice_deliver . deliver
+            photo = newest_ch1(t) if report == "energy_report" else None  # info: set photo
+            caption = f"Solar panel still is {photo['age_min']} minutes old." if photo else ""  # info: set caption
+            res["deliver"] = voice_deliver.deliver(report, wav, " ".join(spoken), KIND[report], report_text=md, photo=(photo or {}).get("path"), photo_caption=caption)  # info: res [ "deliver" ] = voice_deliver . deliver
     print(json.dumps(res, ensure_ascii=False))  # info: call print
     return 0  # info: return 0
 
