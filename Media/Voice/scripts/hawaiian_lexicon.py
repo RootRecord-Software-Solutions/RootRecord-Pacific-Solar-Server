@@ -142,8 +142,8 @@ PLACE_IPA: dict[str, str] = {  # info: set PLACE_IPA
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 SPEAK_ENGLISH: dict[str, str] = {  # info: set SPEAK_ENGLISH
-    # "wye" not "why" — Kokoro stresses the English question word.
-    "Hawaiʻi": "hah wye ee",  # info: "Hawaiʻi" : "hah wye ee" ,
+    # One word. Spaced "hah wye ee" made Kokoro stress "wye" as its own word.
+    "Hawaiʻi": "hahwye-ee",  # info: "Hawaiʻi" : "hahwye-ee" ,
     "Hawaiian": "hah wye uhn",  # info: "Hawaiian" : "hah wye uhn" ,
     "Oʻahu": "oh ah hoo",  # info: "Oʻahu" : "oh ah hoo" ,
     "Maui": "mow ee",  # info: "Maui" : "mow ee" ,
