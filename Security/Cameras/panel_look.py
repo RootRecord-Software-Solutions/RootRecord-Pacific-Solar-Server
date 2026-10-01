@@ -16,6 +16,7 @@
 Left side up is morning prep for sunrise. Right side up is the evening position.
 Flat is the day position. Morning tilt is useful and not required. Overnight left tilt is correct.
 In the later half of the daytime window, left side up with low solar input is staged for sunrise.
+An infrared frame is night. Weather is dark. The gray picture is the illuminator, not cloud cover.
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
@@ -24,6 +25,7 @@ import fcntl  # info: import fcntl
 import json  # info: import json
 import os  # info: import os
 import re  # info: import re
+import subprocess  # info: import subprocess
 import sys  # info: import sys
 import urllib.request  # info: import urllib.request
 from datetime import datetime, timedelta  # info: from datetime import datetime, timedelta
@@ -36,6 +38,7 @@ WATTS = DB / "Energy" / "watts"  # info: set WATTS
 OUT = DB / "Energy" / "vision" / "ch1-look-last.json"  # info: set OUT
 LOW_SOLAR_W = 20  # info: combined solar input at or below this is low light
 FRESH_MIN = 30  # info: a watts file older than this does not count as a light reading
+IR_SPAN = 6  # info: mean channel span below this is an infrared grayscale frame
 LOCK = Path("/tmp/panel-look.lock")  # info: set LOCK
 MODEL = os.environ.get("RR_PANEL_LOOK_MODEL", "gemma4:e4b")  # info: set MODEL
 OLLAMA = os.environ.get("RR_OLLAMA_URL", "http://127.0.0.1:11434/api/chat")  # info: set OLLAMA
@@ -58,6 +61,7 @@ PROMPT = (  # info: set PROMPT
     'Keys: "weather" and "position". '  # info: 'Keys: "weather" and "position". '
     "weather is one of rain, fog, overcast, clear, dark. "  # info: "weather is one of rain, fog, overcast, clear, dark. "
     "Use rain when water beads or sheets are on the glass, even if no drops are falling. Use fog when mist hides the distance. "  # info: "Use rain when water beads or sheets are on the glass, even if no drops are falling. Use fog when mist hides the distance. "
+    "A grayscale infrared frame has no color. That is night, so weather is dark. Do not call it overcast, clear, fog, or rain. "  # info: "A grayscale infrared frame has no color. That is night, so weather is dark. Do not call it overcast, clear, fog, or rain. "
     "position is one of flat, left_up, right_up. "  # info: "position is one of flat, left_up, right_up. "
     "Look at which end of the panel is propped up. "  # info: "Look at which end of the panel is propped up. "
     "left_up means the left end in the image is raised and the right end is lower. A steep left half with a low right half is left_up, not flat. "  # info: "left_up means the left end in the image is raised and the right end is lower. A steep left half with a low right half is left_up, not flat. "
@@ -76,6 +80,48 @@ def newest_ch1() -> Path | None:  # info: def newest_ch1
     if not files:  # info: if not files
         return None  # info: return None
     return max(files, key=lambda p: p.stat().st_mtime)  # info: return max ( files , key = lambda p : p . stat ( ) . st_mtime )
+
+
+# ====================================================
+# SECTION: function infrared
+# What it does: True when the still is grayscale night vision. Color daylight sits well above the span line.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def infrared(path: Path) -> bool:  # info: def infrared
+    try:  # info: try
+        proc = subprocess.run(  # info: set proc
+            ["ffmpeg", "-v", "error", "-i", str(path), "-vf", "scale=80:48", "-f", "rawvideo", "-pix_fmt", "rgb24", "pipe:1"],  # info: ffmpeg scale to raw rgb
+            capture_output=True,  # info: capture_output = True
+            timeout=20,  # info: timeout = 20
+        )  # info: )
+    except (OSError, subprocess.TimeoutExpired):  # info: except ( OSError , subprocess . TimeoutExpired )
+        return False  # info: return False
+    raw = proc.stdout  # info: set raw
+    if proc.returncode != 0 or len(raw) < 3 or len(raw) % 3:  # info: if proc . returncode != 0 or len ( raw ) < 3 or len ( raw ) % 3
+        return False  # info: return False
+    total = 0  # info: set total
+    count = 0  # info: set count
+    for i in range(0, len(raw), 3):  # info: for i in range ( 0 , len ( raw ) , 3 )
+        red, green, blue = raw[i], raw[i + 1], raw[i + 2]  # info: red , green , blue = raw [ i ] , raw [ i + 1 ] , raw [ i + 2 ]
+        total += max(red, green, blue) - min(red, green, blue)  # info: set total
+        count += 1  # info: set count
+    return count > 0 and (total / count) < IR_SPAN  # info: return count > 0 and ( total / count ) < IR_SPAN
+
+
+# ====================================================
+# SECTION: function night_row
+# What it does: Force weather to dark when the newest still is infrared. Keep the tilt.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def night_row(row: dict, image: Path | None) -> dict:  # info: def night_row
+    out = dict(row)  # info: set out
+    if not image or not infrared(image):  # info: if not image or not infrared ( image )
+        return out  # info: return out
+    out["weather"] = "dark"  # info: out [ "weather" ] = "dark"
+    out["infrared"] = True  # info: out [ "infrared" ] = True
+    if not row.get("infrared"):  # info: if not row . get ( "infrared" )
+        out["image"] = image.name  # info: out [ "image" ] = image . name
+    return out  # info: return out
 
 
 # ====================================================
@@ -302,25 +348,26 @@ def store(row: dict) -> None:  # info: def store
 
 # ====================================================
 # SECTION: function observe
-# What it does: Return this hour's reading. Calls the vision model only when the hour has no reading yet.
+# What it does: Return this hour's reading. Calls the vision model only when the hour has no tilt yet. An infrared still forces the sky to dark.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def observe(t: datetime, force: bool = False) -> dict:  # info: def observe
     hour = t.strftime("%Y-%m-%dT%H")  # info: set hour
     cached = load_cache()  # info: set cached
-    if cached and cached.get("hour") == hour and cached.get("weather") and cached.get("position") and not force:  # info: if cached and cached . get ( "hour" ) == hour and cached . get ( "weather" ) and cached . get ( "position" ) and not force
-        ruled = apply_rules(cached, t)  # info: set ruled
+    image = newest_ch1()  # info: set image
+    if cached and cached.get("hour") == hour and cached.get("position") and not force:  # info: if cached and cached . get ( "hour" ) == hour and cached . get ( "position" ) and not force
+        ruled = apply_rules(night_row(cached, image), t)  # info: set ruled
         store(ruled)  # info: call store
         return ruled  # info: return ruled
     LOCK.parent.mkdir(parents=True, exist_ok=True)  # info: LOCK . parent . mkdir
     with LOCK.open("a+") as handle:  # info: with LOCK . open ( "a+" ) as handle
         fcntl.flock(handle.fileno(), fcntl.LOCK_EX)  # info: fcntl . flock ( handle . fileno ( ) , fcntl . LOCK_EX )
         cached = load_cache()  # info: set cached
-        if cached and cached.get("hour") == hour and cached.get("weather") and cached.get("position") and not force:  # info: if cached and cached . get ( "hour" ) == hour and cached . get ( "weather" ) and cached . get ( "position" ) and not force
-            ruled = apply_rules(cached, t)  # info: set ruled
+        image = newest_ch1()  # info: set image
+        if cached and cached.get("hour") == hour and cached.get("position") and not force:  # info: if cached and cached . get ( "hour" ) == hour and cached . get ( "position" ) and not force
+            ruled = apply_rules(night_row(cached, image), t)  # info: set ruled
             store(ruled)  # info: call store
             return ruled  # info: return ruled
-        image = newest_ch1()  # info: set image
         rise, sett = sun_clocks()  # info: rise , sett = sun_clocks ( )
         phase = phase_of(t, rise, sett) if rise and sett else ""  # info: set phase
         weather, position = ("", "")  # info: weather , position = ( "" , "" )
@@ -332,7 +379,7 @@ def observe(t: datetime, force: bool = False) -> dict:  # info: def observe
                 weather, position = ask(image)  # info: weather , position = ask ( image )
             except Exception as exc:  # info: except Exception as exc
                 error = type(exc).__name__  # info: set error
-        row = apply_rules({  # info: set row
+        row = apply_rules(night_row({  # info: set row
             "hour": hour,  # info: "hour" : hour
             "at": t.isoformat(timespec="seconds"),  # info: "at" : t . isoformat ( timespec = "seconds" )
             "image": image.name if image else "",  # info: "image" : image . name if image else ""
@@ -343,7 +390,7 @@ def observe(t: datetime, force: bool = False) -> dict:  # info: def observe
             "sunrise": rise,  # info: "sunrise" : rise
             "sunset": sett,  # info: "sunset" : sett
             "error": error,  # info: "error" : error
-        }, t)  # info: } , t )
+        }, image), t)  # info: } , image ) , t )
         if not row.get("sentence"):  # info: if not row . get ( "sentence" )
             row["hour"] = ""  # info: row [ "hour" ] = ""
         store(row)  # info: call store
