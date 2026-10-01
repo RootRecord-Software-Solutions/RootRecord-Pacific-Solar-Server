@@ -19,7 +19,7 @@ Production is [https://www.rootrecord.cloud/](https://www.rootrecord.cloud/).
 | `/knowledge` | RootRecord Library |
 | `/security` | Public security posture |
 | `/status` | Public system status |
-| `/reports` | Public reports from Ava, Bruce, and Carly |
+| `/reports` | Latest field and operations readings |
 | `/about` | Why Root Record exists |
 
 Navigation stays short: Home, Ecosystem, Systems, Intelligence, Knowledge, Security, Reports, Status, and Login. Deeper pages cross-link.

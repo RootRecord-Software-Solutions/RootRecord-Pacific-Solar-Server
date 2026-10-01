@@ -30,6 +30,11 @@ from lib.public_report import TITLES  # noqa: E402
 
 SITE = "https://www.rootrecord.cloud/reports"  # info: set SITE
 VOICE = Path("/home/rootrecord/RootRecord-Ecosystem/test-reports/Voice")  # info: set VOICE
+AREAS = (  # info: set AREAS
+    ("Field", ("nws_weather", "official_weather", "hurricane_desk", "kilauea_report", "earthquake_report")),  # info: field
+    ("Energy", ("energy_report", "solar_desk")),  # info: energy
+    ("Operations", ("system_perf", "security_desk", "bandwidth_desk", "remaining_tasks", "boot_brief", "morning_report", "midday_report", "late_report")),  # info: operations
+)  # info: )
 
 
 # ====================================================
@@ -44,17 +49,15 @@ def load_routes() -> list[dict]:  # info: def load_routes
 
 
 # ====================================================
-# SECTION: function public_body
-# What it does: Spoken public text for one report key. Empty when the file is missing.
+# SECTION: function area_for
+# What it does: Field, Energy, or Operations for a report key.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def public_body(key: str) -> str:  # info: def public_body
-    path = VOICE / f"{key}_current.md"  # info: set path
-    if not path.is_file():  # info: if not path . is_file
-        return ""  # info: return empty
-    read_path = path.with_name(path.name.replace(".md", ".read.txt"))  # info: set read_path
-    read = read_path.read_text(encoding="utf-8", errors="replace") if read_path.is_file() else ""  # info: set read
-    return spoken_text(path.read_text(encoding="utf-8", errors="replace"), read)  # info: return spoken_text
+def area_for(key: str) -> str:  # info: def area_for
+    for name, keys in AREAS:  # info: for name , keys in AREAS
+        if key in keys:  # info: if key in keys
+            return name  # info: return name
+    return "Operations"  # info: return Operations
 
 
 # ====================================================
@@ -84,56 +87,109 @@ def as_of(md: str) -> str:  # info: def as_of
 
 
 # ====================================================
-# SECTION: function measured
-# What it does: Public measured lines. Drops source paths, file names, and template notes.
+# SECTION: function clean_line
+# What it does: Drop markup, file names, and provenance. Empty when the line is not public.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def measured(md: str) -> list[str]:  # info: def measured
+def clean_line(raw: str) -> str:  # info: def clean_line
+    item = raw[2:].strip() if raw.startswith("- ") else raw  # info: set item
+    item = re.sub(r"`[^`]*`", "", item)  # info: drop code spans
+    item = item.replace("**", "")  # info: drop bold marks
+    item = re.sub(r"\(\s*\)", "", item)  # info: drop empty parens
+    item = " ".join(item.split()).strip(" -")  # info: collapse space
+    low = item.lower()  # info: set low
+    if not item or low.startswith(("alerts source", "forecast source", "collected", "source:", "llm summary")):  # info: if provenance
+        return ""  # info: return empty
+    if low.startswith("off (") or "rr_voice" in low:  # info: if gate note
+        return ""  # info: return empty
+    if any(token in low for token in ("database ", ".json", ".py", ".jpg", "/proc", "host_desks", "spoken")):  # info: if internal
+        return ""  # info: return empty
+    return item  # info: return item
+
+
+# ====================================================
+# SECTION: function sections
+# What it does: Measured sections as a heading plus lines. Spoken text is omitted.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def sections(md: str) -> list[tuple[str, list[str]]]:  # info: def sections
     body = md.split("\n## Spoken", 1)[0]  # info: set body
-    section = ""  # info: set section
-    rows = []  # info: set rows
+    heading = "Readings"  # info: set heading
+    bucket: list[str] = []  # info: set bucket
+    found: list[tuple[str, list[str]]] = []  # info: set found
+
+    def flush() -> None:  # info: def flush
+        if bucket:  # info: if bucket
+            found.append((heading, list(bucket)))  # info: append section
+        bucket.clear()  # info: clear bucket
+
     for line in body.splitlines():  # info: for line in body
         raw = line.strip()  # info: set raw
-        if raw.startswith("## "):  # info: if section heading
-            section = raw[3:].strip()  # info: set section
+        if raw.startswith("## "):  # info: if heading
+            flush()  # info: call flush
+            heading = raw[3:].strip()  # info: set heading
+            if heading.lower() in {"spoken", "llm summary"}:  # info: if spoken or llm
+                heading = ""  # info: clear heading
             continue  # info: continue
-        if not raw or raw.startswith("#") or raw.startswith("_") or raw.startswith("|---") or raw.startswith("| Metric") or raw.startswith("| Device"):  # info: if skip
+        if not heading or not raw or raw.startswith("#") or raw.startswith("_") or raw.startswith("|---") or raw.startswith("| Metric") or raw.startswith("| Device"):  # info: if skip
             continue  # info: continue
         if raw.startswith("|"):  # info: if table row
             cells = [cell.strip() for cell in raw.strip("|").split("|")]  # info: set cells
-            item = f"{cells[0]}: {cells[1]}" if len(cells) >= 2 else ""  # info: set item
+            item = clean_line(f"{cells[0]}: {cells[1]}") if len(cells) >= 2 else ""  # info: set item
         else:  # info: else
-            item = raw[2:].strip() if raw.startswith("- ") else raw  # info: set item
-        item = re.sub(r"`[^`]*`", "", item)  # info: drop code spans
-        item = item.replace("**", "")  # info: drop bold marks
-        item = re.sub(r"\(\s*\)", "", item)  # info: drop empty parens
-        item = " ".join(item.split()).strip(" -")  # info: collapse space
-        low = item.lower()  # info: set low
-        if not item or low.startswith(("alerts source", "forecast source", "collected", "source:")):  # info: if provenance
-            continue  # info: continue
-        if any(token in low for token in ("database ", ".json", ".py", ".jpg", "/proc", "host_desks")):  # info: if internal
-            continue  # info: continue
-        if section and not low.startswith(section.lower()):  # info: if section applies
-            item = f"{section}: {item}"  # info: prefix section
-        section = ""  # info: clear section
-        if item not in rows:  # info: if new
-            rows.append(item)  # info: append
-        if len(rows) >= 8:  # info: if cap
-            break  # info: break
-    return rows  # info: return rows
+            item = clean_line(raw)  # info: set item
+        if item and item not in bucket:  # info: if new
+            bucket.append(item)  # info: append
+    flush()  # info: call flush
+    return [(name, rows) for name, rows in found if name and rows]  # info: return sections
 
 
 # ====================================================
-# SECTION: function excerpt
-# What it does: Short public preview for one report card.
+# SECTION: function pair
+# What it does: Split a short label from its value. None when the line is a sentence.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def excerpt(text: str, limit: int = 220) -> str:  # info: def excerpt
-    words = " ".join((text or "").split())  # info: set words
-    if len(words) <= limit:  # info: if short
-        return words  # info: return words
-    cut = words[:limit].rsplit(" ", 1)[0]  # info: set cut
-    return cut.rstrip(".,;:") + "…"  # info: return cut
+def pair(line: str) -> tuple[str, str] | None:  # info: def pair
+    if ": " not in line:  # info: if no colon
+        return None  # info: return None
+    label, value = line.split(": ", 1)  # info: split label
+    if not label or len(label) > 42 or len(value) > 180:  # info: if not a field
+        return None  # info: return None
+    return label, value  # info: return pair
+
+
+# ====================================================
+# SECTION: function render_section
+# What it does: One report section as a field table or a reading list.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def render_section(heading: str, rows: list[str]) -> str:  # info: def render_section
+    pairs = [pair(row) for row in rows]  # info: set pairs
+    title = html.escape(heading)  # info: set title
+    if pairs and all(item is not None for item in pairs):  # info: if every row is a field
+        body = "\n".join(f"      <tr><th scope=\"row\">{html.escape(label)}</th><td>{html.escape(value)}</td></tr>" for label, value in pairs)  # info: set body
+        inner = f'    <table class="report-table">\n{body}\n    </table>'  # info: set inner
+    else:  # info: else
+        body = "\n".join(f"      <li>{html.escape(row)}</li>" for row in rows)  # info: set body
+        inner = f'    <ul class="facts">\n{body}\n    </ul>'  # info: set inner
+    return f'  <section class="sec">\n    <h2>{title}</h2>\n{inner}\n  </section>'  # info: return section
+
+
+# ====================================================
+# SECTION: function highlights
+# What it does: Up to three field pairs for an index card.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def highlights(parts: list[tuple[str, list[str]]]) -> list[tuple[str, str]]:  # info: def highlights
+    picked = []  # info: set picked
+    for _heading, rows in parts:  # info: for heading , rows
+        for row in rows:  # info: for row in rows
+            found = pair(row)  # info: set found
+            if found:  # info: if found
+                picked.append(found)  # info: append
+            if len(picked) >= 3:  # info: if three
+                return picked  # info: return picked
+    return picked  # info: return picked
 
 
 # ====================================================
