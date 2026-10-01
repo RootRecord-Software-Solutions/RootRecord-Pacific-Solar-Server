@@ -3,14 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Physical and computational infrastructure for Root Record: Hawaiʻi, the Root Record Network, and the Mainland Server.">
 <title>Infrastructure — Root Record</title>
+<meta name="description" content="Hawaiʻi, the Root Record Network, and the Mainland Server. Field systems stay with Hawaiʻi. Computation and services continue on the other side.">
+<link rel="canonical" href="https://www.rootrecord.cloud/infrastructure">
+<meta property="og:title" content="Infrastructure — Root Record">
+<meta property="og:description" content="Hawaiʻi, the Root Record Network, and the Mainland Server.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.rootrecord.cloud/infrastructure">
+<meta property="og:site_name" content="Root Record">
+<meta name="theme-color" content="#000011">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
+<a class="skip" href="#content">Skip to content</a>
+<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
-  <nav aria-label="Primary">
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+  <nav id="site-nav" aria-label="Primary">
     <a href="/">Home</a>
     <a href="/ecosystem">Ecosystem</a>
     <a href="/operations">Systems</a>
@@ -21,32 +32,31 @@
   </nav>
   <a class="enter" href="/login">Login</a>
 </header>
-<main class="page">
+<main class="page" id="content">
   <p class="eyebrow">Root Record Network</p>
   <h1>Infrastructure</h1>
   <p class="prose">Root Record runs across a real distance. Field systems and the Pacific Solar Server are in Hawaiʻi. The Mainland Server carries computation and services on the other side of the Root Record Network.</p>
-  <section class="panel diagram" aria-label="Hawaiʻi to computation">
+  <section class="panel diagram" aria-label="Hawaiʻi to the Mainland Server">
     <ol class="flow">
-      <li>Root Record Network</li>
       <li>Hawaiʻi</li>
       <li>Field systems</li>
-      <li>Network link</li>
+      <li>Root Record Network</li>
       <li>Mainland Server</li>
-      <li>Computation / services</li>
+      <li>Computation and services</li>
     </ol>
   </section>
   <ul class="layers">
-    <li>
-      <h2>Hawaiʻi infrastructure</h2>
+    <li id="hawaii">
+      <h2>Hawaiʻi</h2>
       <p class="prose">Hawaiʻi is an operating site, not a backdrop. Power, weather, geology, and the machines that measure them are part of the system. The Pacific Solar Server is the runtime that lives with those constraints.</p>
     </li>
-    <li>
+    <li id="mainland">
       <h2>Mainland Server</h2>
-      <p class="prose">The Mainland Server is the other public side of the runtime. It continues computation and services when the work has to cross the network. The public name stops there. Finer geography is not part of the site.</p>
+      <p class="prose">The Mainland Server is the other public side of the runtime. It continues computation and services when the work has to cross the network. The public name stops there.</p>
     </li>
     <li>
       <h2>Communications</h2>
-      <p class="prose">The Root Record Network is the link between Hawaiʻi and the Mainland Server. Public status uses that link. Private paths, addresses, and credentials are not published here.</p>
+      <p class="prose">The Root Record Network is the link between Hawaiʻi and the Mainland Server. Public status uses that link. Private paths are not published here.</p>
     </li>
     <li>
       <h2>Physical systems</h2>
@@ -54,7 +64,7 @@
     </li>
     <li>
       <h2>Network architecture</h2>
-      <p class="prose">The public shape is Hawaiʻi, field systems, the network link, the Mainland Server, then computation and services. Endpoints on the live globe are places the feed can name. They are not a map of private hosts.</p>
+      <p class="prose">The public shape is Hawaiʻi, field systems, the network link, then the Mainland Server. Endpoints on the live globe are places the feed can name. They are not a map of private hosts.</p>
     </li>
     <li>
       <h2>Resilience</h2>
@@ -68,10 +78,16 @@
 </main>
 <footer class="site-foot">
   <a href="/ecosystem">Ecosystem</a>
-  <a href="/operations">Operations</a>
-  <a href="/data">Data</a>
+  <a href="/operations">Systems</a>
+  <a href="/intelligence">Intelligence</a>
+  <a href="/knowledge">Knowledge</a>
+  <a href="/security">Security</a>
   <a href="/status">Status</a>
+  <a href="/data">Data</a>
   <a href="/about">About</a>
+  <a href="https://github.com/RootRecord-Software-Solutions/RootRecord-Pacific-Solar-Server" rel="noreferrer">Pacific Solar Server</a>
 </footer>
+<script src="/assets/starfield.js"></script>
+<script src="/assets/shell.js"></script>
 </body>
 </html>

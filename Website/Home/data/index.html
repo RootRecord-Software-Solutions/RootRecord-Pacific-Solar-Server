@@ -3,14 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="The Root Record data layer: telemetry, system state, energy, weather, geology, media, logs, and reports.">
 <title>Data — Root Record</title>
+<meta name="description" content="The Root Record data layer keeps telemetry, system state, energy, weather, geology, logs, and reports. This page does not publish a database health score.">
+<link rel="canonical" href="https://www.rootrecord.cloud/data">
+<meta property="og:title" content="Data — Root Record">
+<meta property="og:description" content="The RootRecord Database is the data layer. Field readings are observations, not a database health score.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.rootrecord.cloud/data">
+<meta property="og:site_name" content="Root Record">
+<meta name="theme-color" content="#000011">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
+<a class="skip" href="#content">Skip to content</a>
+<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
-  <nav aria-label="Primary">
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+  <nav id="site-nav" aria-label="Primary">
     <a href="/">Home</a>
     <a href="/ecosystem">Ecosystem</a>
     <a href="/operations">Systems</a>
@@ -21,27 +32,33 @@
   </nav>
   <a class="enter" href="/login">Login</a>
 </header>
-<main class="page">
+<main class="page" id="content">
   <p class="eyebrow">Data layer</p>
   <h1>Root Record data</h1>
-  <p class="prose">The data layer is persistent system state. The RootRecord Database is where that state lives. This page names the kinds of record. It does not publish private schema, credentials, or internal layout.</p>
+  <p class="prose">The data layer is persistent system state. The RootRecord Database is where that state lives. This page names the kinds of record. It does not publish a schema, credentials, or an internal layout. There is no public runtime signal for the database itself.</p>
   <div class="taxonomy">
     <article class="card"><h3>Telemetry</h3><p>Measurements reported by field systems and the network.</p></article>
     <article class="card"><h3>System state</h3><p>The retained picture of what the system last knew.</p></article>
     <article class="card"><h3>Energy</h3><p>Generation and storage readings from the physical plant.</p></article>
     <article class="card"><h3>Weather</h3><p>Environmental observations used as operating context.</p></article>
     <article class="card"><h3>Geology</h3><p>Volcanic and seismic context for the Hawaiʻi site.</p></article>
-    <article class="card"><h3>Media</h3><p>Captured records that belong with an operation, not loose files.</p></article>
+    <article class="card"><h3>Media</h3><p>Captured records that belong with an operation.</p></article>
     <article class="card"><h3>Logs</h3><p>What the system did, kept so it can be checked later.</p></article>
     <article class="card"><h3>Reports</h3><p>Summaries assembled from retained state.</p></article>
   </div>
-  <p class="prose">Public pages show a reading only when the feed has one. Absence is shown as absence. <a href="/status">Status</a> · <a href="/operations">Systems</a> · <a href="/ecosystem">Ecosystem</a></p>
+  <p class="prose">Public pages show a reading only when the feed has one. Absence is shown as absence. A field reading is not a database health score. <a href="/status">Status</a> · <a href="/operations">Systems</a> · <a href="/ecosystem">Ecosystem</a></p>
+  <p class="prose"><a href="https://github.com/RootRecord-Software-Solutions/RootRecord-Database" rel="noreferrer">Public database repository</a></p>
 </main>
 <footer class="site-foot">
-  <a href="/status">Status</a>
-  <a href="/operations">Operations</a>
-  <a href="/knowledge">Knowledge</a>
   <a href="/ecosystem">Ecosystem</a>
+  <a href="/operations">Systems</a>
+  <a href="/intelligence">Intelligence</a>
+  <a href="/knowledge">Knowledge</a>
+  <a href="/security">Security</a>
+  <a href="/status">Status</a>
+  <a href="https://github.com/RootRecord-Software-Solutions/RootRecord-Database" rel="noreferrer">RootRecord Database</a>
 </footer>
+<script src="/assets/starfield.js"></script>
+<script src="/assets/shell.js"></script>
 </body>
 </html>

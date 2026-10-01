@@ -3,14 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Why Root Record exists: continuity, durable knowledge, and systems that can be verified and repaired.">
 <title>About — Root Record</title>
+<meta name="description" content="Why Root Record exists: continuity, durable knowledge, and systems that can be verified and repaired from Hawaiʻi.">
+<link rel="canonical" href="https://www.rootrecord.cloud/about">
+<meta property="og:title" content="About — Root Record">
+<meta property="og:description" content="Root Record is built from Hawaiʻi so the system can stay understandable, verifiable, and repairable.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.rootrecord.cloud/about">
+<meta property="og:site_name" content="Root Record">
+<meta name="theme-color" content="#000011">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
+<a class="skip" href="#content">Skip to content</a>
+<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
-  <nav aria-label="Primary">
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+  <nav id="site-nav" aria-label="Primary">
     <a href="/">Home</a>
     <a href="/ecosystem">Ecosystem</a>
     <a href="/operations">Systems</a>
@@ -21,7 +32,7 @@
   </nav>
   <a class="enter" href="/login">Login</a>
 </header>
-<main class="page">
+<main class="page" id="content">
   <p class="eyebrow">Hawaiʻi</p>
   <h1>Why Root Record exists</h1>
   <p class="prose">Root Record is built from Hawaiʻi, where geography, connectivity, energy, weather, distance, and physical infrastructure are tangible engineering constraints. The work is to keep a technical ecosystem understandable and repairable across that distance.</p>
@@ -32,7 +43,7 @@
     </li>
     <li>
       <h2>Systems thinking</h2>
-      <p class="prose">Software, infrastructure, intelligence, knowledge, data, and energy are one ecosystem. A page for each repository would hide that. The site explains the architecture and links inward from there.</p>
+      <p class="prose">Software, infrastructure, intelligence, knowledge, data, and energy are one ecosystem. The site explains the architecture and links inward from there.</p>
     </li>
     <li>
       <h2>Durable knowledge</h2>
@@ -68,8 +79,14 @@
 <footer class="site-foot">
   <a href="/">Home</a>
   <a href="/ecosystem">Ecosystem</a>
-  <a href="/infrastructure">Infrastructure</a>
+  <a href="/operations">Systems</a>
+  <a href="/intelligence">Intelligence</a>
   <a href="/knowledge">Knowledge</a>
+  <a href="/security">Security</a>
+  <a href="/status">Status</a>
+  <a href="/infrastructure">Infrastructure</a>
 </footer>
+<script src="/assets/starfield.js"></script>
+<script src="/assets/shell.js"></script>
 </body>
 </html>

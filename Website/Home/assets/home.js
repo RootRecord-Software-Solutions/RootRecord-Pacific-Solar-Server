@@ -59,6 +59,17 @@
     });
     if (hawaii) points.push({ lat: hawaii.lat, lng: hawaii.lng, type: "hawaii", label: "Hawaiʻi" });
     if (mainland) points.push({ lat: mainland.lat, lng: mainland.lng, type: "mainland", label: "Mainland Server" });
+
+    // Vercel is rendered as a public deployment/edge node, not a physical
+    // infrastructure location. These coordinates are a visual anchor only.
+    var vercel = { lat: 37.7749, lng: -122.4194 };
+    points.push({
+      lat: vercel.lat,
+      lng: vercel.lng,
+      type: "vercel",
+      label: "Vercel · Public Edge"
+    });
+
     (d.points || []).forEach(function (p) {
       if (!p || (p.type !== "dest" && p.type !== "remote")) return;
       var pos = finitePair(p.lat, p.lng);
@@ -94,6 +105,37 @@
         label: label
       });
     });
+
+    // Architectural edges use the same globe arc renderer so Vercel feels
+    // native to the existing network. They are intentionally not telemetry
+    // and must never be counted as live traffic.
+    if (mainland) {
+      arcs.push({
+        startLat: mainland.lat,
+        startLng: mainland.lng,
+        endLat: vercel.lat,
+        endLng: vercel.lng,
+        color: "#7dd3fc",
+        altitude: 0.18,
+        stroke: 1.2,
+        label: "Vercel · Public Edge · Architecture",
+        kind: "architecture"
+      });
+    }
+    if (hawaii) {
+      arcs.push({
+        startLat: hawaii.lat,
+        startLng: hawaii.lng,
+        endLat: vercel.lat,
+        endLng: vercel.lng,
+        color: "#22c55e",
+        altitude: 0.2,
+        stroke: 1.1,
+        label: "Vercel · Public Edge · Architecture",
+        kind: "architecture"
+      });
+    }
+
     return { points: points, arcs: arcs };
   }
 
@@ -228,15 +270,25 @@
   }
 
   function spinStep() {
-    if (disposed || hidden || reduced() || !spinOn || !earthPivot) return;
-    earthPivot.rotation.y += 0.00055;
-    if (cloudsMesh) cloudsMesh.rotation.y += 0.00004;
+    if (disposed || hidden || reduced() || !spinOn || !globe) return;
+    var scene = globe.scene && globe.scene();
+    if (earthPivot && scene && earthPivot !== scene) {
+      earthPivot.rotation.y += 0.00055;
+      if (cloudsMesh) cloudsMesh.rotation.y += 0.00004;
+      return;
+    }
+    var controls = globe.controls && globe.controls();
+    if (controls) {
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.35;
+    }
   }
 
   function frame(now) {
     if (disposed) return;
     rafId = window.requestAnimationFrame(frame);
     if (hidden) return;
+    if (reduced() && cloudsMesh) cloudsMesh.rotation.y = 0;
     spinStep();
     placeBodies((now || 0) / 1000);
   }
@@ -273,10 +325,14 @@
         .pointColor(function (d) {
           if (d.type === "hawaii") return "#ffffff";
           if (d.type === "mainland") return "#7dd3fc";
+          if (d.type === "vercel") return "#ffffff";
           return "#ff6b9d";
         })
         .pointAltitude(function (d) { return d.type === "endpoint" ? 0.012 : 0.02; })
-        .pointRadius(function (d) { return d.type === "endpoint" ? 0.18 : 0.42; })
+        .pointRadius(function (d) {
+          if (d.type === "vercel") return 0.48;
+          return d.type === "endpoint" ? 0.18 : 0.42;
+        })
         .pointLabel(function (d) { return d.label || ""; })
         .pointsMerge(false);
 
@@ -315,9 +371,13 @@
         var mat = globe.globeMaterial && globe.globeMaterial();
         if (mat && mat.map) {
           if (mat.bumpScale !== undefined) mat.bumpScale = 8;
-          applyNight(sun);
-          findEarth();
-          addBodies(sun);
+          try {
+            applyNight(sun);
+            findEarth();
+            addBodies(sun);
+          } catch (err) {
+            /* Earth still renders if the extra layers fail. */
+          }
           return;
         }
         tries += 1;
