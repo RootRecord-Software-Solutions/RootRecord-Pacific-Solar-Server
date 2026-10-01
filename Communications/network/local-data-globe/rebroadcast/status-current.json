@@ -1,11 +1,11 @@
 {
   "ok": true,
   "kind": "last-known",
-  "as_of": "Thursday, October 1, 2026 \u00b7 01:15 Hawaiian Standard Time",
+  "as_of": "Thursday, October 1, 2026 \u00b7 01:18 Hawaiian Standard Time",
   "power": {
     "resource": "power",
     "title": "Power / solar",
-    "as_of": "Thursday, October 1, 2026 \u00b7 01:15 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 01:18 Hawaiian Standard Time",
     "devices": {
       "delta2": {
         "watts": {
@@ -44,16 +44,16 @@
   "weather": {
     "resource": "weather",
     "title": "Weather",
-    "as_of": "Thursday, October 1, 2026 \u00b7 01:15 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 01:18 Hawaiian Standard Time",
     "report": {
-      "generated": "2026-10-01T01:08:02-10:00 HST",
+      "generated": "2026-10-01T01:17:02-10:00 HST",
       "sections": 34
     }
   },
   "kilauea": {
     "resource": "kilauea",
     "title": "K\u012blauea",
-    "as_of": "Thursday, October 1, 2026 \u00b7 01:15 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 01:18 Hawaiian Standard Time",
     "status": {
       "at": "2026-10-01T01:12:20-10:00",
       "alert_level": "WATCH",

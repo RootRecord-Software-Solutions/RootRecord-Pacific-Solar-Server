@@ -147,7 +147,8 @@ class AutomationsPage:  # info: class AutomationsPage
             inner = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)  # info: set inner
             for job in items:  # info: for job in items
                 line = Gtk.Box(spacing=8)  # info: set line
-                text = lbl("", wrap=True, hexpand=True)  # info: set text
+                text = lbl("", wrap=True)  # info: set text
+                text.set_hexpand(True)  # info: text . set_hexpand ( True )
                 btn = state_toggle("Job", job["enabled"], lambda b, on, jid=job["id"]: self._job_toggled(b, on, jid))  # info: set btn
                 line.append(text)  # info: line . append ( text )
                 line.append(btn)  # info: line . append ( btn )
@@ -237,7 +238,8 @@ class AutomationsPage:  # info: class AutomationsPage
         now = datetime.now(self._actl.HST)  # info: set now
         for item in items:  # info: for item in items
             line = Gtk.Box(spacing=8)  # info: set line
-            text = lbl("", wrap=True, hexpand=True)  # info: set text
+            text = lbl("", wrap=True)  # info: set text
+            text.set_hexpand(True)  # info: text . set_hexpand ( True )
             text.set_markup(f"<b>{_esc(item.get('name') or item.get('id'))}</b>\n<span alpha='75%'>{_esc(self._actl.describe_item(item, now))}</span>")  # info: text . set_markup
             btn = state_toggle("Schedule", bool(item.get("enabled")), lambda b, on, iid=item["id"]: self._item_toggled(b, on, iid))  # info: set btn
             delete = Gtk.Button(label="Delete", valign=Gtk.Align.CENTER)  # info: set delete

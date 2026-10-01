@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108" role="img" aria-label="Kilauea Alerts">
+  <rect width="108" height="108" rx="24" fill="#12100E"/>
+  <path fill="#FF6B35" d="M54 24 L32 88 L76 88 Z"/>
+  <path fill="#E84830" d="M54 38 L40 82 L68 82 Z"/>
+  <circle cx="54" cy="48" r="8" fill="#FF8F5C"/>
+</svg>
