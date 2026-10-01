@@ -12,7 +12,7 @@
 
 Stays off unless RR_VOICE_DELIVER=1. Default chat is the sandbox in relay.conf.
 RR_TELEGRAM_DEST=council selects the live council chat. Does not poll getUpdates.
-Does not print tokens. Skips a report whose spoken text has not changed.
+Does not print tokens. Skips a report whose spoken text already went to this chat.
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
