@@ -6,7 +6,7 @@
   if (globeEl && typeof Globe === "function") {
     globe = Globe()(globeEl)
       .globeImageUrl("https://unpkg.com/three-globe/example/img/earth-night.jpg")
-      .backgroundColor("#000011")
+      .backgroundColor("rgba(0,0,0,0)")
       .showAtmosphere(true)
       .atmosphereColor("#3a1c71")
       .atmosphereAltitude(0.18)
