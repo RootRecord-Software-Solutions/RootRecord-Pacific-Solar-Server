@@ -15,6 +15,7 @@
 
 Left side up is morning prep for sunrise. Right side up is the evening position.
 Flat is the day position. Morning tilt is useful and not required. Overnight left tilt is correct.
+In the later half of the daytime window, left side up with low solar input is staged for sunrise.
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
@@ -31,7 +32,10 @@ from pathlib import Path  # info: from pathlib import Path
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB
 FRAMES = DB / "Media" / "Images"  # info: set FRAMES
 SUN = DB / "Energy" / "sun" / "sun-times-last.json"  # info: set SUN
+WATTS = DB / "Energy" / "watts"  # info: set WATTS
 OUT = DB / "Energy" / "vision" / "ch1-look-last.json"  # info: set OUT
+LOW_SOLAR_W = 20  # info: combined solar input at or below this is low light
+FRESH_MIN = 30  # info: a watts file older than this does not count as a light reading
 LOCK = Path("/tmp/panel-look.lock")  # info: set LOCK
 MODEL = os.environ.get("RR_PANEL_LOOK_MODEL", "gemma4:e4b")  # info: set MODEL
 OLLAMA = os.environ.get("RR_OLLAMA_URL", "http://127.0.0.1:11434/api/chat")  # info: set OLLAMA
