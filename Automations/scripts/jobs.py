@@ -665,7 +665,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         # is in the poller's environment at poller start. Text _current.md + stitched WAV; NO delivery.
         "id": "voice_system_perf",  # info: "id" : "voice_system_perf" ,
         "enabled": os.environ.get("RR_VOICE_SYSTEM_PERF", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "Bruce system report at :06. Host temperature is degrees Celsius. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Bruce system report at :06. Host temperature is degrees Celsius. Voice note when RR_VOICE_DELIVER=1." ,
+        "description": "Bruce system report at :00. Host temperature is degrees Celsius. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Bruce system report at :00. Host temperature is degrees Celsius. Voice note when RR_VOICE_DELIVER=1." ,
         "only_at_minutes": [0],  # info: "only_at_minutes" : [ 0 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/system_perf.py"',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/system_perf.py"
@@ -725,7 +725,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         # RR_VOICE_QUAKE=1 at poller start. Reads Database Geology/Earthquakes/*-last.json (needs geology_collect). No delivery.
         "id": "voice_earthquake_report",  # info: "id" : "voice_earthquake_report" ,
         "enabled": os.environ.get("RR_VOICE_QUAKE", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "Carly USGS earthquake report at :08 from Database Geology/. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Carly USGS earthquake report at :08 from Database Geology/. Voice note when RR_VOICE_DELIVER=1." ,
+        "description": "Carly USGS earthquake report at :00 from Database Geology/. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Carly USGS earthquake report at :00 from Database Geology/. Voice note when RR_VOICE_DELIVER=1." ,
         "only_at_minutes": [0],  # info: "only_at_minutes" : [ 0 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" earthquake_report',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" earthquake_report
@@ -735,11 +735,11 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
     },  # info: } ,
     {  # info: {
         # Kilauea voice report (2026-09-29, old-repo migration): G1 hourly Kilauea desk line + HVO notice excerpt, Carly.
-        # G1 ran it with the :02 hourly desks; :03 here so it never shares the single-flight lock with the :02 roll-ups.
+        # Hourly at :00 with the other full desks.
         # OFF unless RR_VOICE_KILAUEA=1 at poller start. Reads Database Geology/Volcanoes (needs geology_collect). No delivery.
         "id": "voice_kilauea_report",  # info: "id" : "voice_kilauea_report" ,
         "enabled": os.environ.get("RR_VOICE_KILAUEA", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "Carly Kilauea report at :03 from the HVO notice. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Carly Kilauea report at :03 from the HVO notice. Voice note when RR_VOICE_DELIVER=1." ,
+        "description": "Carly Kilauea report at :00 from the HVO notice. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Carly Kilauea report at :00 from the HVO notice. Voice note when RR_VOICE_DELIVER=1." ,
         "only_at_minutes": [0],  # info: "only_at_minutes" : [ 0 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" kilauea_report',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" kilauea_report
@@ -1032,12 +1032,12 @@ ON_AT = [  # info: set ON_AT
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
     {  # info: {
-        # 23:30 late-final (WO-MIG-02). Second fire of the optional late slot. OFF unless
+        # 23:00 late-final (WO-MIG-02). Second fire of the optional late slot. OFF unless
         # RR_VOICE_LATE_FINAL=1 at poller start. Text only. Skips when that slot is already done.
         # No delivery. Night-sleep skip is System/NightSleep when that Folder exists.
         "id": "voice_late_final_report",  # info: "id" : "voice_late_final_report" ,
         "enabled": os.environ.get("RR_VOICE_LATE_FINAL", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "23:30 second chance for the optional late roll-up if that board slot is not done. Text only. No delivery.",  # info: "description" : "23:30 second chance for the optional late roll-up if that board slot is not done. Text only. 
+        "description": "23:00 second chance for the optional late roll-up if that board slot is not done. Text only. No delivery.",  # info: "description" : "23:00 second chance for the optional late roll-up if that board slot is not done. Text only. No delivery." , 
         "at_times": ["23:00"],  # info: "at_times" : [ "23:00" ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Reports/Late-Final/scripts/late_final.py"',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Reports/Late-Final/scripts/late_final.py"
@@ -1052,7 +1052,7 @@ ON_AT = [  # info: set ON_AT
         "id": "voice_hurricane_desk",  # info: "id" : "voice_hurricane_desk" ,
         "enabled": os.environ.get("RR_VOICE_HURRICANE", "0") == "1",  # info: "enabled" : os . environ . get (
         "description": "Carly hurricane desk (nearest tracked storm to a Hawaiian island + NWS tropical alerts). No delivery.",  # info: "description" : "Carly hurricane desk (nearest tracked storm to a Hawaiian island + NWS tropical alerts). No d
-        "at_times": ["05:50", "09:50", "12:50", "16:55", "20:50"],  # info: "at_times" : [ "05:50" , "09:50" , "12:50"
+        "at_times": ["06:00", "10:00", "13:00", "17:00", "21:00"],  # info: "at_times" : [ "06:00" , "10:00" , "13:00" , "17:00" , "21:00" ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" hurricane_desk',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" hurricane_desk
         "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
@@ -1065,7 +1065,7 @@ ON_AT = [  # info: set ON_AT
         "id": "media_hurricane_radio",  # info: "id" : "media_hurricane_radio" ,
         "enabled": os.environ.get("RR_HURRICANE_RADIO", "0") == "1",  # info: "enabled" : os . environ . get (
         "description": "Request hurricane desk WAV through Report playback. No speaker.",  # info: "description" : "Request hurricane desk WAV through Report playback. No speaker." ,
-        "at_times": ["06:35", "13:12", "17:02"],  # info: "at_times" : [ "06:35" , "13:12" , "17:02"
+        "at_times": ["06:00", "13:00", "17:00"],  # info: "at_times" : [ "06:00" , "13:00" , "17:00" ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'python3 "{PACIFIC}/Media/HurricaneRadio/scripts/radio.py" run',  # info: "command" : f' python3 " { PACIFIC } /Media/HurricaneRadio/scripts/radio.py" run
         "timeout_sec": 60,  # info: "timeout_sec" : 60 ,
@@ -1078,7 +1078,7 @@ ON_AT = [  # info: set ON_AT
         "id": "bruce_stats_posts",  # info: "id" : "bruce_stats_posts" ,
         "enabled": os.environ.get("RR_BRUCE_STATS", "0") == "1",  # info: "enabled" : os . environ . get (
         "description": "Bruce measured host and EcoFlow desk sample. Dry-run unless RR_BRUCE_STATS_SEND=1.",  # info: "description" : "Bruce measured host and EcoFlow desk sample. Dry-run unless RR_BRUCE_STATS_SEND=1." ,
-        "at_times": ["07:18", "15:18", "21:18"],  # info: "at_times" : [ "07:18" , "15:18" , "21:18"
+        "at_times": ["07:00", "15:00", "21:00"],  # info: "at_times" : [ "07:00" , "15:00" , "21:00" ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Communications/BruceStats/scripts/bruce_stats.py"',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Communications/BruceStats/scripts/bruce_stats.py"
         "timeout_sec": 60,  # info: "timeout_sec" : 60 ,
@@ -1168,6 +1168,33 @@ ON_AT = [  # info: set ON_AT
         "needs_internet": False,  # info: "needs_internet" : False ,
         "cwd": f"{PACIFIC}/Reports",  # info: "cwd" : f" { PACIFIC } /Reports " ,
         "env": {},  # info: "env" : { } ,
+    },  # info: } ,
+    {  # info: {
+        # 8-hour public consolidations. Alexander asked for these on the hour, 2026-09-30.
+        # Averages only the readings already stored. Placeholder link until the site publishes the page.
+        "id": "discord_report_8h",  # info: "id" : "discord_report_8h" ,
+        "enabled": True,  # info: "enabled" : True ,
+        "description": "Public 8-hour summary of each voice report at 00:00, 08:00, and 16:00 HST.",  # info: "description" : "Public 8-hour summary of each voice report at 00:00, 08:00, and 16:00 HST." ,
+        "at_times": ["00:00", "08:00", "16:00"],  # info: "at_times" : [ "00:00" , "08:00" , "16:00" ] ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Communications/Discord/scripts/report_rollups.py" 8h',  # info: command
+        "timeout_sec": 180,  # info: "timeout_sec" : 180 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{PACIFIC}/Communications/Discord",  # info: cwd
+        "env": {"RR_DISCORD_POST": "1"},  # info: "env" : { "RR_DISCORD_POST" : "1" } ,
+    },  # info: } ,
+    {  # info: {
+        # Noon 24-hour public consolidations. One message per report channel.
+        "id": "discord_report_24h",  # info: "id" : "discord_report_24h" ,
+        "enabled": True,  # info: "enabled" : True ,
+        "description": "Public 24-hour summary of each voice report at 12:00 HST.",  # info: "description" : "Public 24-hour summary of each voice report at 12:00 HST." ,
+        "at_times": ["12:00"],  # info: "at_times" : [ "12:00" ] ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Communications/Discord/scripts/report_rollups.py" 24h',  # info: command
+        "timeout_sec": 180,  # info: "timeout_sec" : 180 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{PACIFIC}/Communications/Discord",  # info: cwd
+        "env": {"RR_DISCORD_POST": "1"},  # info: "env" : { "RR_DISCORD_POST" : "1" } ,
     },  # info: } ,
     # --- TEMPLATE (ON_AT) — copy from the next line through the closing brace, paste ABOVE this template, remove the leading # ---
     # {

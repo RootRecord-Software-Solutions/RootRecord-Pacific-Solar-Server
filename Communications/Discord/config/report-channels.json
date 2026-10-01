@@ -2,7 +2,7 @@
   "guild_id": "1497039564345442406",
   "category_id": "1555100597919944746",
   "category_name": "Reports",
-  "note": "One channel per automated report. The relay posts the current markdown when its digest changes. Help-desk is not in this list.",
+  "note": "Public voice reports. Ava, Bruce, or Carly. The relay posts the spoken transcript. 8-hour summaries post at 00:00, 08:00, and 16:00 HST. The 24-hour summary posts at 12:00 HST.",
   "reports": [
     {"key": "nws_weather", "name": "nws-weather", "channel_id": "1555100603846500414", "function": "NWS Hawaii weather report", "source": "test-reports/Voice/nws_weather_current.md"},
     {"key": "energy_report", "name": "energy-report", "channel_id": "1555100608221028435", "function": "Energy desk", "source": "test-reports/Voice/energy_report_current.md"},

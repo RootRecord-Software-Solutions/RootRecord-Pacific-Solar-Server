@@ -87,7 +87,7 @@
       "name": "Public site foundation + website repo sync",
       "wo": "WO-WEB-002 · WO-GH-2026-09-27",
       "state": "VERIFY PENDING",
-      "note": "The public page is Pacific Website/Home, published by the website mirror row to RootRecord-Software-Solutions/RootRecord-Website. Do not recreate 3 - RootRecord-Website or bind port 3001. Vercel still needs that repository connected. AWS /api/operations is in the mainland server source and is not deployed. https://rootserver.rootrecord.cloud/ is the poller, not the page.",
+      "note": "The public page is Pacific Website/Home, published to RootRecord-Software-Solutions/RootRecord-Website. Vercel hosts it. www is the AWS globe only because DNS has not moved. Data contract: Website/HANDOFF-vercel-homepage-2026-09-30.md. Do not recreate 3 - RootRecord-Website, bind port 3001, iframe www, or call port 8787. Vercel still needs the repository connected.",
       "settings": "services",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-WEB-002-Public-Site-Foundation.md"
