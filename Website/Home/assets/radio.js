@@ -3,6 +3,9 @@
   var OPEN_MS = 12000;
   var GAP_MS = 10 * 60 * 1000;
   var POLL_MS = 20000;
+  var WATCH_MS = 5000;
+  var STALL_MS = 15000;
+  var LEASE_MS = 12000;
   var DUCK = 0.25;
   var FULL = 1;
   var SILENCE = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
@@ -63,7 +66,11 @@
   var lastChime = "";
   var chimeTimer = 0;
   var chimeTry = 0;
+  var watchTimer = 0;
+  var musicTick = 0;
+  var TAB = String(Date.now()) + "-" + Math.floor(Math.random() * 1e6);
   var STORE = "rr-radio-local";
+  var OWNER = "rr-radio-owner";
 
   function rememberLocal(on) {
     try { localStorage.setItem(STORE, on ? "1" : "0"); }
@@ -124,6 +131,7 @@
     var name = row && row.name ? row.name : String(row || "");
     var mine = ++attempt;
     lastTrack = name;
+    musicTick = Date.now();
     music.src = BASE + "/music/" + encodeURIComponent(name);
     musicEl.textContent = (row && row.title) || trackLabel(name);
     if (blurbEl) blurbEl.textContent = (row && row.description) || "";
@@ -236,7 +244,10 @@
     clearChime();
     clearTimeout(gapTimer);
     clearInterval(pollTimer);
+    clearInterval(watchTimer);
     pollTimer = 0;
+    watchTimer = 0;
+    release();
     music.pause();
     report.pause();
     setState("OFF", false);
@@ -250,7 +261,10 @@
     clearChime();
     clearTimeout(gapTimer);
     clearInterval(pollTimer);
+    clearInterval(watchTimer);
     pollTimer = 0;
+    watchTimer = 0;
+    release();
     music.pause();
     report.pause();
     chime.pause();
@@ -272,7 +286,12 @@
 
   music.addEventListener("playing", function () {
     musicFails = 0;
+    musicTick = Date.now();
     setState("ON AIR", true);
+  });
+
+  music.addEventListener("timeupdate", function () {
+    musicTick = Date.now();
   });
 
   music.addEventListener("ended", function () {
@@ -439,6 +458,68 @@
     });
   }
 
+  function readOwner() {
+    try {
+      var parts = String(localStorage.getItem(OWNER) || "").split("|");
+      return { id: parts[0] || "", at: Number(parts[1]) || 0 };
+    } catch (e) {
+      return { id: "", at: 0 };
+    }
+  }
+
+  function otherTab() {
+    var row = readOwner();
+    return !!(row.id && row.id !== TAB && (Date.now() - row.at) < LEASE_MS);
+  }
+
+  function claim() {
+    try { localStorage.setItem(OWNER, TAB + "|" + Date.now()); }
+    catch (e) {}
+  }
+
+  function release() {
+    var row = readOwner();
+    if (row.id && row.id !== TAB) return;
+    try { localStorage.removeItem(OWNER); }
+    catch (e) {}
+  }
+
+  function nudge(el) {
+    var pending = el.play();
+    if (pending && pending.catch) {
+      pending.catch(function (err) {
+        if (err && err.name === "NotAllowedError") waitForListen();
+      });
+    }
+  }
+
+  function watchPlayback() {
+    if (!started) return;
+    if (otherTab()) {
+      stopPlayback();
+      musicEl.textContent = "Already playing in another tab.";
+      return;
+    }
+    claim();
+    if (!tracks.length) return;
+    var src = music.src || "";
+    var endedStuck = music.ended && musicTick && (Date.now() - musicTick) > 2000;
+    var broken = !src || src.indexOf("data:") === 0 || music.error || endedStuck;
+    var quiet = music.paused || (musicTick && (Date.now() - musicTick) > STALL_MS);
+    if (broken) playMusic();
+    else if (quiet) nudge(music);
+    if (chimeOn) {
+      if (chime.paused && !chime.ended && (chime.src || "").indexOf("/chimes/") !== -1) nudge(chime);
+      return;
+    }
+    if (playing && report.paused && !report.ended && (report.src || "").indexOf("/reports/") !== -1) nudge(report);
+  }
+
+  function armWatch() {
+    if (watchTimer) return;
+    watchTimer = setInterval(watchPlayback, WATCH_MS);
+  }
+
   function startPlayback() {
     if (!tracks.length) {
       listen.hidden = false;
@@ -449,6 +530,7 @@
       return;
     }
     started = true;
+    claim();
     music.volume = FULL;
     rememberLocal(true);
     paintToggle(true);
@@ -456,6 +538,7 @@
     playMusic();
     armGap();
     armChime();
+    armWatch();
     if (!pollTimer) pollTimer = setInterval(poll, POLL_MS);
   }
 
@@ -479,6 +562,8 @@
       }
       if (!pollTimer) pollTimer = setInterval(poll, POLL_MS);
       armChime();
+      armWatch();
+      claim();
       return;
     }
     startPlayback();
@@ -487,6 +572,11 @@
   listen.addEventListener("click", function () {
     if (started) {
       stopPlayback();
+      return;
+    }
+    if (otherTab()) {
+      setState("OFF", false);
+      musicEl.textContent = "Already playing in another tab.";
       return;
     }
     listen.disabled = true;

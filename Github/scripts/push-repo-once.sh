@@ -181,6 +181,9 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do  # info:
   git remote set-url "$remote_name" "$(remote_url "$slug")" 2>/dev/null \
     || git remote set-url origin "$(remote_url "$slug")"  # info: command
 
+  branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"  # info: set branch
+  [[ -n "$branch" && "$branch" != "HEAD" ]] || branch=main  # info: command
+
   # Mainland README carries an AWS-written status block. Keep the GitHub copy
   # of that block so a desk publish does not replace live numbers.
   if [[ "$id" == "mainland" && -f "$root/README.md" ]]; then  # info: if
@@ -219,9 +222,6 @@ PY
     echo "✗ $id aborted: file(s) over ${MAX_FILE_MB}MB"  # info: echo
     exit 1  # info: exit
   fi  # info: fi
-
-  branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"  # info: set branch
-  [[ -n "$branch" && "$branch" != "HEAD" ]] || branch=main  # info: command
 
   has_head=0  # info: set has_head
   if git rev-parse --verify HEAD >/dev/null 2>&1; then has_head=1; fi  # info: if
