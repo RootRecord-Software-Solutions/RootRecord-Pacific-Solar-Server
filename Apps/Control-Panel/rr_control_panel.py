@@ -20,7 +20,8 @@ INFO — MUST HAVE (future agents), added 2026-09-29:
 - Renamed "Root Monitor" 2026-09-29 (file paths + APP_ID unchanged so the existing launcher keeps working).
   New pages (rr_pages.py): Running, Network (+ Starlink), SSH, Not migrated, and the Settings hub
   (Lib/rr_registry.py + Lib/rr_config_io.py). Automations (rr_automations_page.py) toggles every poller
-  job and schedules EcoFlow action scripts at a clock time. Every page does nothing unless it is visible.
+  job, schedules EcoFlow action scripts at a clock time, and arms a polling rest that
+  stops the stack and starts it again later. Every page does nothing unless it is visible.
 - 2026-09-29 16:10 HST: NO switches. Every on/off control is a labelled Gtk.ToggleButton ("Camera viewer: Off" /
   "On", green = on, red outline = off) from rr_ui.state_toggle. The camera viewer button sits at the top of the
   Cameras page AND first on Settings → Panel (both stay in sync). Before this the only camera control was an

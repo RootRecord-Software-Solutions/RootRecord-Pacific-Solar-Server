@@ -10,8 +10,9 @@
 """Root Monitor Automations page. Mixed into Panel.
 
 Toggles write automation-overrides.json. New power schedules write
-power-automations.json. Neither button restarts the poller or runs a radio
-command itself. The poller reads both files.
+power-automations.json. A polling rest writes polling-rest.json and arms
+systemd timers. The rest timers stop and start the stack later. Saving one
+does not stop the poller now.
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
@@ -107,9 +108,11 @@ class AutomationsPage:  # info: class AutomationsPage
         self.auto_job_widgets = {}  # info: self . auto_job_widgets = { }
         self.auto_expanders = {}  # info: self . auto_expanders = { }
         self.auto_power_widgets = {}  # info: self . auto_power_widgets = { }
+        self.auto_rest_widgets = {}  # info: self . auto_rest_widgets = { }
         self.auto_note = lbl("", wrap=True)  # info: self . auto_note = lbl ( "" , wrap = True )
         box.append(self.auto_note)  # info: box . append ( self . auto_note )
         self._build_power(box, actl)  # info: self . _build_power ( box , actl )
+        self._build_rest(box)  # info: self . _build_rest ( box )
         search = Gtk.SearchEntry(placeholder_text="Filter jobs by name")  # info: set search
         search.connect("search-changed", self._filter_jobs)  # info: search . connect ( "search-changed" , self . _filter_jobs )
         box.append(search)  # info: box . append ( search )
@@ -178,6 +181,7 @@ class AutomationsPage:  # info: class AutomationsPage
         if not getattr(self.auto_master, "_rr_pending", False) and self.auto_master.get_active() != bool(doc.get("master_enabled", True)):  # info: if not getattr ( self . auto_master , "_rr_pending" , False ) and
             self.auto_master.rr_set(bool(doc.get("master_enabled", True)))  # info: self . auto_master . rr_set
         self._sync_power_rows(doc)  # info: self . _sync_power_rows ( doc )
+        self._sync_rest_rows()  # info: self . _sync_rest_rows ( )
         overrides = actl.load_overrides()  # info: set overrides
         counts: dict[str, list] = {}  # info: set counts
         for jid, meta in self.auto_rows.items():  # info: for jid , meta in self . auto_rows . items ( )
@@ -199,6 +203,7 @@ class AutomationsPage:  # info: class AutomationsPage
         self.report["automations"] = {  # info: self . report [ "automations" ] = {
             "jobs": len(self.auto_rows),  # info: "jobs"
             "power": len(doc.get("items") or []),  # info: "power"
+            "rest": len(self._rest_items()),  # info: "rest"
             "master": bool(doc.get("master_enabled", True)),  # info: "master"
             "poller": state,  # info: "poller"
         }  # info: }
@@ -338,6 +343,170 @@ class AutomationsPage:  # info: class AutomationsPage
             self.toast("Power schedule deleted")  # info: self . toast ( "Power schedule deleted" )
 
         self.confirm("Delete power schedule?", str(name), "Delete", yes)  # info: self . confirm
+
+    def _rest_lib(self):  # info: def _rest_lib
+        if getattr(self, "_rest", None) is not None:  # info: if getattr ( self , "_rest" , None ) is not None
+            return self._rest  # info: return self . _rest
+        scripts = Path(self.paths.pacific) / "Automations" / "scripts"  # info: set scripts
+        self._rest = _load_module("polling_rest", scripts / "polling_rest.py")  # info: self . _rest = _load_module
+        return self._rest  # info: return self . _rest
+
+    def _rest_items(self):  # info: def _rest_items
+        try:  # info: try
+            doc = self._rest_lib().load()  # info: set doc
+        except Exception:  # info: except Exception
+            return []  # info: return [ ]
+        return [it for it in doc.get("items") or [] if isinstance(it, dict)]  # info: return [ it for it in doc . get ( "items" ) or [ ] if isinstance ( it , dict ) ]
+
+    def _build_rest(self, box):  # info: def _build_rest
+        o, inner = section("Polling rest")  # info: o , inner = section ( "Polling rest" )
+        inner.append(lbl(  # info: inner . append ( lbl
+            "Stop the polling stack at one time and start it again later, so it uses less battery. The laptop stays on. The poller, tunnel, cameras, weather collector, and network globe stop. The EcoFlow radio stays on. Timers do this, so the stack can start again while the poller is stopped. Saving a rest does not stop anything now.",  # info: "Stop the polling stack at one time and start it again later, so it uses less battery. The laptop stays on. The poller, tunnel, cameras, weather collector, and network globe stop. The EcoFlow radio stays on. Timers do this, so the stack can start again while the poller is stopped. Saving a rest does not stop anything now." ,
+            "dim-label", wrap=True))  # info: "dim-label" , wrap = True ) )
+        new = Gtk.Button(label="New polling rest", halign=Gtk.Align.START)  # info: set new
+        new.connect("clicked", lambda *_: self._open_rest_form())  # info: new . connect
+        inner.append(new)  # info: inner . append ( new )
+        self.auto_rest_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)  # info: self . auto_rest_box = Gtk . Box
+        inner.append(self.auto_rest_box)  # info: inner . append ( self . auto_rest_box )
+        box.append(o)  # info: box . append ( o )
+        self._rebuild_rest_rows()  # info: self . _rebuild_rest_rows ( )
+
+    def _sync_rest_rows(self):  # info: def _sync_rest_rows
+        if not hasattr(self, "auto_rest_box"):  # info: if not hasattr ( self , "auto_rest_box" )
+            return  # info: return
+        items = self._rest_items()  # info: set items
+        if [it.get("id") for it in items] != list(self.auto_rest_widgets):  # info: if [ it . get ( "id" ) for it in items ] != list ( self . auto_rest_widgets )
+            self._rebuild_rest_rows()  # info: self . _rebuild_rest_rows ( )
+            return  # info: return
+        mod = self._rest_lib()  # info: set mod
+        for item in items:  # info: for item in items
+            widgets = self.auto_rest_widgets.get(item.get("id"))  # info: set widgets
+            if widgets:  # info: if widgets
+                widgets["text"].set_text(mod.describe(item))  # info: widgets [ "text" ] . set_text
+
+    def _rebuild_rest_rows(self):  # info: def _rebuild_rest_rows
+        while (child := self.auto_rest_box.get_first_child()) is not None:  # info: while ( child := self . auto_rest_box . get_first_child ( ) ) is not None
+            self.auto_rest_box.remove(child)  # info: self . auto_rest_box . remove ( child )
+        self.auto_rest_widgets = {}  # info: self . auto_rest_widgets = { }
+        try:  # info: try
+            mod = self._rest_lib()  # info: set mod
+            items = self._rest_items()  # info: set items
+        except Exception as exc:  # info: except Exception as exc
+            self.auto_rest_box.append(lbl(str(exc), "rr-fail", wrap=True))  # info: self . auto_rest_box . append
+            return  # info: return
+        if not items:  # info: if not items
+            self.auto_rest_box.append(lbl("No polling rest scheduled.", "dim-label"))  # info: self . auto_rest_box . append
+            return  # info: return
+        for item in items:  # info: for item in items
+            line = Gtk.Box(spacing=8)  # info: set line
+            text = lbl(mod.describe(item), wrap=True)  # info: set text
+            text.set_hexpand(True)  # info: text . set_hexpand ( True )
+            delete = Gtk.Button(label="Delete")  # info: set delete
+            delete.connect("clicked", lambda _b, iid=item["id"]: self._delete_rest(iid))  # info: delete . connect
+            line.append(text)  # info: line . append ( text )
+            line.append(delete)  # info: line . append ( delete )
+            self.auto_rest_box.append(line)  # info: self . auto_rest_box . append ( line )
+            self.auto_rest_widgets[item["id"]] = {"text": text}  # info: self . auto_rest_widgets [ item [ "id" ] ] = { "text" : text }
+
+    def _delete_rest(self, item_id):  # info: def _delete_rest
+        if self.win is None:  # info: if self . win is None
+            return  # info: return
+
+        def yes():  # info: def yes
+            try:  # info: try
+                self._rest_lib().delete_rest(item_id)  # info: self . _rest_lib ( ) . delete_rest
+            except Exception as exc:  # info: except Exception as exc
+                self.toast(str(exc))  # info: self . toast
+                return  # info: return
+            self._rebuild_rest_rows()  # info: self . _rebuild_rest_rows ( )
+            self.toast("Polling rest deleted")  # info: self . toast
+
+        self.confirm("Delete this polling rest?", "The timers are removed. The poller is left as it is.", "Delete", yes)  # info: self . confirm
+
+    def _open_rest_form(self):  # info: def _open_rest_form
+        if self.win is None:  # info: if self . win is None
+            return  # info: return
+        mod = self._rest_lib()  # info: set mod
+        now = datetime.now(mod.HST)  # info: set now
+        off = now.replace(hour=22, minute=0, second=0, microsecond=0)  # info: set off
+        if off <= now:  # info: if off <= now
+            off = off + timedelta(days=1)  # info: set off
+        back = (off + timedelta(days=1)).replace(hour=6, minute=0, second=0, microsecond=0)  # info: set back
+        form = Gtk.Window(title="New polling rest", modal=True, transient_for=self.win)  # info: set form
+        form.set_default_size(480, 360)  # info: form . set_default_size ( 480 , 360 )
+        root = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8, margin_top=12, margin_bottom=12, margin_start=12, margin_end=12)  # info: set root
+        root.append(lbl("Times are HST. The laptop stays on so the stack can start again.", "dim-label", wrap=True))  # info: root . append
+        repeat = _dropdown(["Once", "Every day"])  # info: set repeat
+        root.append(_labeled("Repeat", repeat))  # info: root . append
+        off_date = Gtk.Entry(text=off.date().isoformat())  # info: set off_date
+        back_date = Gtk.Entry(text=back.date().isoformat())  # info: set back_date
+        off_date_row = _labeled("Off date", off_date)  # info: set off_date_row
+        back_date_row = _labeled("Back date", back_date)  # info: set back_date_row
+        off_h, off_m = _spin(off.hour, 23), _spin(off.minute, 59)  # info: off_h , off_m = _spin
+        back_h, back_m = _spin(back.hour, 23), _spin(back.minute, 59)  # info: back_h , back_m = _spin
+        root.append(off_date_row)  # info: root . append ( off_date_row )
+        root.append(_clock_row("Off time", off_h, off_m))  # info: root . append
+        root.append(back_date_row)  # info: root . append ( back_date_row )
+        root.append(_clock_row("Back time", back_h, back_m))  # info: root . append
+
+        def on_repeat(*_a):  # info: def on_repeat
+            show = _selected(repeat) == 0  # info: set show
+            off_date_row.set_visible(show)  # info: off_date_row . set_visible ( show )
+            back_date_row.set_visible(show)  # info: back_date_row . set_visible ( show )
+
+        repeat.connect("notify::selected", on_repeat)  # info: repeat . connect
+        buttons = Gtk.Box(spacing=8, halign=Gtk.Align.END)  # info: set buttons
+        cancel = Gtk.Button(label="Cancel")  # info: set cancel
+        cancel.connect("clicked", lambda *_: form.close())  # info: cancel . connect
+        save = Gtk.Button(label="Schedule")  # info: set save
+        save.add_css_class("suggested-action")  # info: save . add_css_class
+        save.connect("clicked", lambda *_: self._submit_rest(form, mod, repeat, off_date, off_h, off_m, back_date, back_h, back_m))  # info: save . connect
+        buttons.append(cancel)  # info: buttons . append ( cancel )
+        buttons.append(save)  # info: buttons . append ( save )
+        root.append(buttons)  # info: root . append ( buttons )
+        form.set_child(root)  # info: form . set_child ( root )
+        form.present()  # info: form . present ( )
+
+    def _submit_rest(self, form, mod, repeat, off_date, off_h, off_m, back_date, back_h, back_m):  # info: def _submit_rest
+        kind = "once" if _selected(repeat) == 0 else "daily"  # info: set kind
+        now = datetime.now(mod.HST)  # info: set now
+        if kind == "once":  # info: if kind == "once"
+            off = mod._clock(off_date.get_text(), int(off_h.get_value()), int(off_m.get_value()))  # info: set off
+            back = mod._clock(back_date.get_text(), int(back_h.get_value()), int(back_m.get_value()))  # info: set back
+        else:  # info: else
+            off = now.replace(hour=int(off_h.get_value()), minute=int(off_m.get_value()), second=0, microsecond=0)  # info: set off
+            back = now.replace(hour=int(back_h.get_value()), minute=int(back_m.get_value()), second=0, microsecond=0)  # info: set back
+            if off <= now:  # info: if off <= now
+                off = off + timedelta(days=1)  # info: set off
+            if back <= off:  # info: if back <= off
+                back = back + timedelta(days=1)  # info: set back
+                if back <= off:  # info: if back <= off
+                    back = back + timedelta(days=1)  # info: set back
+        if off is None or back is None:  # info: if off is None or back is None
+            self.toast("Use a YYYY-MM-DD date and a valid clock time.")  # info: self . toast
+            return  # info: return
+        err = mod.validate(kind, off, back, now)  # info: set err
+        if err:  # info: if err
+            self.toast(err)  # info: self . toast
+            return  # info: return
+        when = "every day" if kind == "daily" else "once"  # info: set when
+        body = (  # info: set body
+            f"Off {off.strftime('%Y-%m-%d %H:%M')} HST\n"  # info: f" Off { off . strftime ( '%Y-%m-%d %H:%M' ) } HST \n"
+            f"Back {back.strftime('%Y-%m-%d %H:%M')} HST\n"  # info: f" Back { back . strftime ( '%Y-%m-%d %H:%M' ) } HST \n"
+            f"Repeat {when}\n\n"  # info: f" Repeat { when } \n \n"
+            "The laptop stays on. At the off time the polling stack stops. At the back time it starts again.")  # info: "The laptop stays on. At the off time the polling stack stops. At the back time it starts again." )
+
+        def yes():  # info: def yes
+            try:  # info: try
+                mod.add_rest(kind, off, back, now=now)  # info: mod . add_rest
+            except Exception as exc:  # info: except Exception as exc
+                self.toast(str(exc))  # info: self . toast
+                return  # info: return
+            form.close()  # info: form . close ( )
+            self._rebuild_rest_rows()  # info: self . _rebuild_rest_rows ( )
+            self.toast("Polling rest armed")  # info: self . toast
+
+        self.confirm("Schedule this polling rest?", body, "Schedule", yes)  # info: self . confirm
 
     def _open_power_form(self):  # info: def _open_power_form
         if self.win is None:  # info: if self . win is None
