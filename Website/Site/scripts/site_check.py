@@ -34,7 +34,7 @@ FORBIDDEN = frozenset(  # info: set FORBIDDEN
         "apikey",  # info: "apikey" ,
     }  # info: }
 )  # info: )
-GLOBE = "http://127.0.0.1:8090"  # info: set GLOBE
+VERCEL = "https://rootrecord.online/"  # info: set VERCEL
 SSH = "ssh://localhost:22"  # info: set SSH
 
 
@@ -126,8 +126,8 @@ def problems(data: dict) -> list[str]:  # info: def problems
         found.append("home_card must be off")  # info: found . append ( "home_card must be off" )
     if data.get("vercel_site") != "one":  # info: if data . get ( "vercel_site" ) !=
         found.append("vercel_site must be one")  # info: found . append ( "vercel_site must be one" )
-    if data.get("home_url") != "https://rootrecord.cloud/home":  # info: if data . get ( "home_url" ) !=
-        found.append("home_url must be the one site home")  # info: found . append ( "home_url must be the one site home" )
+    if data.get("home_url") != "https://rootrecord.online/":  # info: if data . get ( "home_url" ) !=
+        found.append("home_url must be the Vercel host")  # info: found . append ( "home_url must be the Vercel host" )
     routes = data.get("routes")  # info: set routes
     if not isinstance(routes, list):  # info: if not isinstance ( routes , list )
         found.append("routes missing")  # info: found . append ( "routes missing" )
@@ -143,8 +143,8 @@ def problems(data: dict) -> list[str]:  # info: def problems
         seen[host] = route  # info: seen [ host ] = route
     www = seen.get("www.rootrecord.cloud")  # info: set www
     ssh = seen.get("ssh.rootrecord.cloud")  # info: set ssh
-    if www is None or www.get("keep") != "true" or www.get("service") != GLOBE or www.get("role") != "globe":  # info: if www is None or www . get
-        found.append("www must stay on the globe")  # info: found . append ( "www must stay on the globe" )
+    if www is None or www.get("keep") != "true" or www.get("service") != VERCEL or www.get("role") != "redirect":  # info: if www is None or www . get
+        found.append("www must redirect to Vercel")  # info: found . append ( "www must redirect to Vercel" )
     if ssh is None or ssh.get("keep") != "true" or ssh.get("service") != SSH or ssh.get("role") != "ssh":  # info: if ssh is None or ssh . get
         found.append("ssh route must stay")  # info: found . append ( "ssh route must stay" )
     extra = sorted(set(seen) - {"www.rootrecord.cloud", "ssh.rootrecord.cloud"})  # info: set extra
@@ -168,13 +168,13 @@ def write_result(root: Path) -> None:  # info: def write_result
         "ok": True,  # info: "ok" : True ,
         "checked_at": stamp,  # info: "checked_at" : stamp ,
         "home_card": "off",  # info: "home_card" : "off" ,
-        "www": "globe",  # info: "www" : "globe" ,
+        "www": "redirect",  # info: "www" : "redirect" ,
         "ssh": "keep",  # info: "ssh" : "keep" ,
         "vercel_site": "one",  # info: "vercel_site" : "one" ,
     }  # info: }
     (data_dir / "routes-last.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")  # info: call (
     with (log_dir / "site_check.log").open("a", encoding="utf-8") as handle:  # info: with ( log_dir / "site_check.log" ) . open
-        handle.write(f"{stamp} ok home_card=off www=globe\n")  # info: handle . write ( f" { stamp }
+        handle.write(f"{stamp} ok home_card=off www=redirect\n")  # info: handle . write ( f" { stamp }
 
 
 # ====================================================
@@ -200,7 +200,7 @@ def main(argv: list[str] | None = None) -> int:  # info: def main
         return 2  # info: return 2
     if default:  # info: if default :
         write_result(ecosystem_root())  # info: call write_result
-    print(json.dumps({"ok": True, "home_card": "off", "www": "globe"}))  # info: call print
+    print(json.dumps({"ok": True, "home_card": "off", "www": "redirect"}))  # info: call print
     return 0  # info: return 0
 
 
