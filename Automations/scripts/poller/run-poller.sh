@@ -25,9 +25,9 @@ export CLOUDFLARED_BIN="${CLOUDFLARED_BIN:-$REPO/Communications/network/cloudfla
 export CLOUDFLARED_TOKEN_FILE="${CLOUDFLARED_TOKEN_FILE:-$HOME/.cloudflared/rootserver.token}"  # info: export
 # Armed 2026-09-30 after sign-off (WO-MIG-01). No night-mode.json still means not sleeping.
 export RR_NIGHT_SLEEP="${RR_NIGHT_SLEEP:-1}"  # info: export
-# Voice notes Alexander asked for on 2026-09-30. Sandbox chat. Takes effect at the next poller start.
+# Voice notes Alexander asked for on 2026-09-30. Original council chat as of 2026-09-30 evening. Takes effect at the next poller start.
 export RR_VOICE_DELIVER="${RR_VOICE_DELIVER:-1}"  # info: export
-export RR_TELEGRAM_DEST="${RR_TELEGRAM_DEST:-sandbox}"  # info: export
+export RR_TELEGRAM_DEST="${RR_TELEGRAM_DEST:-council}"  # info: export
 export RR_VOICE_NWS="${RR_VOICE_NWS:-1}"  # info: export
 export RR_VOICE_KILAUEA="${RR_VOICE_KILAUEA:-1}"  # info: export
 export RR_VOICE_SECURITY="${RR_VOICE_SECURITY:-1}"  # info: export
