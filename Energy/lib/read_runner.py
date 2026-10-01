@@ -32,6 +32,8 @@ from Energy.db.condense import condense_closed_periods  # noqa: E402
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 CLOUD_FALLBACK_SEC = 120  # info: set CLOUD_FALLBACK_SEC
+# Inverter watts live in one heartbeat. River 2 stops sending it while the AC outlet is off.
+POWER_FROM_CLOUD = ("ac_output_power", "ac_input_power")  # info: set POWER_FROM_CLOUD
 
 
 # ====================================================
@@ -144,6 +146,29 @@ def _has_data(fields: dict) -> bool:  # info: def _has_data
         fields.get(k) is not None  # info: fields . get ( k ) is not
         for k in ("soc", "ac_output_power", "ac_input_power", "solar_input_power", "usbc_output_power")  # info: for k in ( "soc" , "ac_output_power" ,
     )  # info: )
+
+
+# ====================================================
+# SECTION: function _missing_inverter_watts
+# What it does: True when BLE connected but the inverter heartbeat never arrived.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _missing_inverter_watts(fields: dict) -> bool:  # info: def _missing_inverter_watts
+    return any(fields.get(key) is None for key in POWER_FROM_CLOUD)  # info: return any ( fields . get ( key ) is None for key in POWER_FROM_CLOUD )
+
+
+# ====================================================
+# SECTION: function _fill_inverter_watts
+# What it does: Copy cloud AC watts into fields that BLE left empty. Measured BLE values stay.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _fill_inverter_watts(fields: dict, cloud: dict) -> bool:  # info: def _fill_inverter_watts
+    filled = False  # info: set filled
+    for key in POWER_FROM_CLOUD:  # info: for key in POWER_FROM_CLOUD :
+        if fields.get(key) is None and cloud.get(key) is not None:  # info: if fields . get ( key ) is None and cloud . get ( key ) is not None :
+            fields[key] = cloud[key]  # info: fields [ key ] = cloud [ key ]
+            filled = True  # info: set filled
+    return filled  # info: return filled
 
 
 # ====================================================
@@ -362,6 +387,28 @@ def main() -> int:  # info: def main
                 ble_err = f"{type(e).__name__}: {e}"  # info: set ble_err
         else:  # info: else :
             ble_err = reason  # info: set ble_err
+
+    # 1b) In range, but the inverter heartbeat never came. Fill only those watts from quota.
+    if source == "ble" and _missing_inverter_watts(fields):  # info: if source == "ble" and _missing_inverter_watts ( fields ) :
+        cloud_fields = None  # info: set cloud_fields
+        cached = _fresh_cloud_cache(alias)  # info: set cached
+        if cached:  # info: if cached :
+            cloud_fields = cached["fields"]  # info: set cloud_fields
+        elif not _cloud_throttled(alias):  # info: elif not _cloud_throttled ( alias ) :
+            try:  # info: try :
+                cloud_fields = _read_api(alias)  # info: set cloud_fields
+                _save_cloud_cache(alias, cloud_fields, datetime.now(HST).isoformat(timespec="seconds"))  # info: call _save_cloud_cache
+            except Exception:  # info: except Exception :
+                _save_cloud_cache(alias, None, None)  # info: call _save_cloud_cache
+        if cloud_fields and _fill_inverter_watts(fields, cloud_fields):  # info: if cloud_fields and _fill_inverter_watts ( fields , cloud_fields ) :
+            source = "ble+cloud"  # info: set source
+            if device is not None:  # info: if device is not None :
+                for key in POWER_FROM_CLOUD:  # info: for key in POWER_FROM_CLOUD :
+                    if getattr(device, key, None) is None and fields.get(key) is not None:  # info: if getattr ( device , key , None ) is None and fields . get ( key ) is not None :
+                        try:  # info: try :
+                            setattr(device, key, fields[key])  # info: call setattr
+                        except Exception:  # info: except Exception :
+                            pass  # info: pass
 
     # 2) Cloud fallback when BLE missed or prefer_api. Skip offline quota (it stays frozen).
     if source != "ble":  # info: if source != "ble" :

@@ -664,8 +664,8 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
     {  # info: {
         "id": "voice_hourly_chime",  # info: "id" : "voice_hourly_chime" ,
         "enabled": os.environ.get("RR_VOICE_HOURLY_CHIME", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "Prebuilt hourly chime at :00 (Ava, Bruce, Carly leapfrog). Plays Media/Audio/Voice/Chimes. No live render.",  # info: "description" : "Prebuilt hourly chime at :00 (Ava, Bruce, Carly leapfrog). Plays Media/Audio/Voice/Chimes. No live render." ,
-        "only_at_minutes": [0],  # info: "only_at_minutes" : [ 0 ] ,
+        "description": "Prebuilt chime at :00 and :30 (Ava, Bruce, Carly leapfrog by the hour). Plays Media/Audio/Voice/Chimes. No live render.",  # info: "description" : "Prebuilt chime at :00 and :30 (Ava, Bruce, Carly leapfrog by the hour). Plays Media/Audio/Voice/Chimes. No live render." ,
+        "only_at_minutes": [0, 30],  # info: "only_at_minutes" : [ 0 , 30 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" hourly_chime',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" hourly_chime
         "timeout_sec": 120,  # info: "timeout_sec" : 120 ,

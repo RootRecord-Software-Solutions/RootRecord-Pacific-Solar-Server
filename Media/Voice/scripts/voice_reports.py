@@ -1239,7 +1239,7 @@ def main() -> int:  # info: def main
         else:  # info: else :
             res["voice"] = {"ok": True, "mode": "prebuilt", "wav": str(path), "agent": who}  # info: res [ "voice" ] = { "ok" : True , "mode" : "prebuilt"
             import voice_deliver  # info: import voice_deliver
-            res["deliver"] = voice_deliver.deliver(report, path, " ".join(spoken), KIND[report], report_text=md, who=who, remember_as=t.strftime("%Y-%m-%dT%H"))  # info: res [ "deliver" ] = voice_deliver . deliver
+            res["deliver"] = voice_deliver.deliver(report, path, " ".join(spoken), KIND[report], report_text=md, who=who, remember_as=t.strftime("%Y-%m-%dT%H:%M"))  # info: res [ "deliver" ] = voice_deliver . deliver
     elif "--no-voice" not in sys.argv:  # info: elif "--no-voice" not in sys . argv :
         res["voice"] = voice(report, spoken)  # info: res [ "voice" ] = voice ( report
         wav = (res.get("voice") or {}).get("wav")  # info: set wav

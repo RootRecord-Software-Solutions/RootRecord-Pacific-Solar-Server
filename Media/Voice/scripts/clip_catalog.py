@@ -19,8 +19,6 @@ Sources name the G1 template the text comes from (old skills/…), or "G3" for n
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
-from speakable import spoken_clock  # info: from speakable import spoken_clock
-
 # ====================================================
 # SECTION: _FIXED
 # What it does: Set _FIXED.
@@ -85,15 +83,13 @@ PROPOSED_PRONUNCIATION = [  # info: set PROPOSED_PRONUNCIATION
 
 # ====================================================
 # SECTION: function chime_text
-# What it does: On-the-hour chime sentence from hourly_chimes.py. Half hours stay the short clock line.
+# What it does: :00 and :30 chime sentence from hourly_chimes.py. Playback uses the prebuilt wav.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def chime_text(hour: int, minute: int) -> str:  # info: def chime_text
-    """On-the-hour chime sentence. Half hours are not prebuilt."""  # info: """On-the-hour chime sentence. Half hours are not prebuilt."""
-    if int(minute) != 0:  # info: if int ( minute ) != 0 :
-        return f"It's {spoken_clock(hour, minute)}.".replace("..", ".")  # info: return f" It's { spoken_clock ( hour , minute ) } . " . replace
+    """Chime sentence for :00 and :30. Playback copies the prebuilt wav."""  # info: """Chime sentence for :00 and :30. Playback copies the prebuilt wav."""
     from hourly_chimes import chime_sentence  # info: from hourly_chimes import chime_sentence
-    return chime_sentence(int(hour))  # info: return chime_sentence ( int ( hour ) )
+    return chime_sentence(int(hour), int(minute))  # info: return chime_sentence ( int ( hour ) , int ( minute ) )
 
 
 # ====================================================
