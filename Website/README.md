@@ -23,7 +23,7 @@ Desk runtime for Stripe snapshots, Vercel failed-build records, and last-known o
 | `jobs.py` | `stripe_poll` every 1800 s behind `RR_STRIPE=1`. `vercel_builds` every 300 s behind `RR_VERCEL_BUILDS=1`. Both **gated off** |
 | Data | `2 - RootRecord-Database/Website/` — `stripe-snapshot.json`, `pages/{power,weather,kilauea}.json` |
 | Logs | `2 - RootRecord-Database/Logs/Website/` — failed-build JSON only. Empty until a token exists. No prune |
-| Public pages | `Website/Home/` is the Vercel source. See the table at the top of this file |
+| Public pages | `Website/Home/` is the Vercel source. See [Home/README.md](Home/README.md). Reports, the homepage service banner, and the operations charts are described there. `Home/service-notice.json` is the published service-window file |
 | Holding skin | Unchanged copy in `5 - RootRecord-Library/Archive/Website-Themes/holding/`. Out of the Vercel build |
 
 ### Scripts
@@ -33,6 +33,7 @@ Desk runtime for Stripe snapshots, Vercel failed-build records, and last-known o
 | `scripts/stripe_poll.py` | Stripe balance snapshot. No key writes `not_configured` and does not call Stripe. A failed live poll keeps the last `ok` file | `Website/stripe-snapshot.json` |
 | `scripts/vercel_builds.py` | Redacted failed-build records. No token writes nothing and does not call Vercel. Does not delete records | `Logs/Website/*.json` |
 | `scripts/live_data_pages.py` | Power from Energy last files, weather from the Hawaiʻi state report header, Kīlauea from `Geology/Volcanoes/kilauea-last.json`. Missing numbers are omitted. Also writes the operations bundle | `2 - RootRecord-Database/Website/pages/{power,weather,kilauea}.json` and `2 - RootRecord-Database/Website/operations.json` |
+| `scripts/publish_report_pages.py` | Public `/reports` pages from measured voice files. Spoken transcripts, persona names, and source paths stay off the page. Leaves a file untouched when the bytes match | `Website/Home/reports/` |
 
 Chat, voice packs, day board, Minecraft, and context are not built here.
 

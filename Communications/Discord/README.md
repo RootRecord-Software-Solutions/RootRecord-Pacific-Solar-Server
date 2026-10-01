@@ -2,7 +2,7 @@
 
 Discord poller under Pacific Communications. Package name `Discord`. One folder. No lowercase twin.
 
-**Status:** chat poller is not LIVE. Job `discord_poller` is `enabled: False`. `RR_DISCORD_POLLER`, `RR_DISCORD_REVIEW_PIPELINE`, and `RR_GLOBAL_UPDATER` stay unset. Job `discord_report_relay` posts the spoken Ava, Bruce, or Carly transcript when that file changes. `discord_report_8h` posts at 00:00, 08:00, and 16:00 HST. `discord_report_24h` posts at 12:00 HST. Each job sets `RR_DISCORD_POST=1` only for itself.
+**Status:** chat poller is not LIVE. Job `discord_poller` is `enabled: False`. `RR_DISCORD_POLLER`, `RR_DISCORD_REVIEW_PIPELINE`, and `RR_GLOBAL_UPDATER` stay unset. Job `discord_report_relay` posts the measured report (title, measured lines, and `https://www.rootrecord.cloud/reports/<slug>`) when that file changes. Spoken transcripts and persona names stay off the post. Before it posts, `scripts/report_relay.py` runs `Website/scripts/publish_report_pages.py`. `discord_report_8h` and `discord_report_24h` use the same measured text. `discord_report_8h` posts at 00:00, 08:00, and 16:00 HST. `discord_report_24h` posts at 12:00 HST. Each job sets `RR_DISCORD_POST=1` only for itself.
 
 ---
 

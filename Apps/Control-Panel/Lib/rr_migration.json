@@ -54,7 +54,7 @@
       "name": "Energy actuating actions (arm/disarm, AC)",
       "wo": "WO-ECO-001",
       "state": "VERIFY PENDING",
-      "note": "River 2 Pro reads are live (93% SOC at 19:02 HST, BLE and cloud). Delta 2 also read at 18:59 (74% SOC, BLE, not charging). Arm, disarm, and AC always-on still need Alexander to name the action.",
+      "note": "Scheduled catalog actions (AC, DC, USB, charging, backup, bypass, X-Boost, AC always-on) are on the Automations page as of 1 October 2026. The poller runs the matching script when the clock is due. Each schedule needs a confirm. Immediate arm or disarm from Controls is still unwired.",
       "settings": "services",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-ECO-001-Energy-Domain-Import.md"
@@ -76,7 +76,7 @@
       "name": "Public status / solar board",
       "wo": "WO-WEB-001",
       "state": "VERIFY PENDING",
-      "note": "Draft. The public board is not built against the Pacific readings.",
+      "note": "The operations page paints River and Delta charge, solar, and AC output from the public operations feed when those readings exist. A missing reading stays missing. WO-WEB-001 is still open.",
       "settings": "network",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-WEB-001-Public-Status-Solar-Board.md"
@@ -87,7 +87,7 @@
       "name": "Public site foundation + website repo sync",
       "wo": "WO-WEB-002 · WO-GH-2026-09-27",
       "state": "VERIFY PENDING",
-      "note": "Production is https://www.rootrecord.cloud/ on Vercel. Apex 308s there. ssh.rootrecord.cloud is A 18.118.30.226. rr-aws and rr-aws-ip use that address with no ProxyCommand. api.rootrecord.cloud has no public DNS yet. SSH carries Hawaii data to AWS. The API is to be served from AWS to Vercel. Contract: Website/HANDOFF-vercel-homepage-2026-09-30.md. Do not recreate 3 - RootRecord-Website, bind port 3001, or call port 8787.",
+      "note": "Production is https://www.rootrecord.cloud/ on Vercel. Apex 308s there. ssh.rootrecord.cloud is A 18.118.30.226. rr-aws and rr-aws-ip use that address with no ProxyCommand. api.rootrecord.cloud is A 18.118.30.226, proxy off. Caddy on AWS proxies it to 127.0.0.1:8091. Reports are at https://www.rootrecord.cloud/reports/. SSH carries Hawaii data to AWS. The API is to be served from AWS to Vercel. Contract: Website/HANDOFF-vercel-homepage-2026-09-30.md. Do not recreate 3 - RootRecord-Website, bind port 3001, or call port 8787.",
       "settings": "services",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-WEB-002-Public-Site-Foundation.md"
