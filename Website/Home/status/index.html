@@ -35,6 +35,16 @@
   <p class="eyebrow">Public feed</p>
   <h1>Root Record status</h1>
   <p class="prose" id="feed-line">Loading public telemetry...</p>
+  <p class="prose">This page is the public feed, not a health score. A row is filled only when that feed returns a value. Core services use a smaller vocabulary: documented, reporting, or no public signal. A green mark is used only when the network poll is live.</p>
+  <ul class="terms">
+    <li><strong>Live</strong> The network poll succeeded and is recent.</li>
+    <li><strong>Stale</strong> A later poll failed. The last reading is still shown.</li>
+    <li><strong>Offline</strong> This browser reports that it is offline.</li>
+    <li><strong>No public signal</strong> The feed did not return that fact.</li>
+    <li><strong>No reading</strong> The field is expected, and no value arrived.</li>
+    <li><strong>Documented</strong> The layer is described. That is not a runtime claim.</li>
+    <li><strong>Reporting</strong> A public feed is answering for that layer.</li>
+  </ul>
 
   <section class="sec" aria-label="Network">
     <h2>Network</h2>

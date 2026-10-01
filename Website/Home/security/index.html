@@ -49,31 +49,38 @@
   <p class="prose">Public visibility does not mean public control. A public page is not an operator console.</p>
   <section class="sec" id="boundaries">
     <h2>Access boundaries</h2>
-    <p class="prose">People, agents, and services reach systems through a boundary that matches the work. Crossing a boundary is a deliberate step.</p>
+    <p class="prose">People, agents, and services reach systems through a boundary that matches the work. The public site is one boundary. The runtime is another. The database is another. Crossing from a page to an operation is a deliberate step, not a side effect of reading.</p>
+    <p class="prose">Account entry on this site is not that crossing. Sign-in is not an operator console, and a public page cannot start, stop, or change a field system.</p>
   </section>
   <section class="sec" id="verification">
     <h2>Verification</h2>
-    <p class="prose">State is accepted when there is evidence for it. A claim, a commit, or a command is not that evidence by itself.</p>
+    <p class="prose">State is accepted when there is evidence for it. A claim, a commit, or a command is not that evidence by itself. The public test is simple: the feed returned a value, and the page can say when.</p>
+    <p class="prose">There is no numeric security rating on this site. A score would pretend a measurement that the public feed does not have.</p>
   </section>
   <section class="sec" id="evidence">
     <h2>Evidence</h2>
-    <p class="prose">Execution should leave a record that can be checked later: what was asked, what ran, and what the system reported back. The public form of that record is the status feed. It shows a reading when the feed has one.</p>
+    <p class="prose">Execution should leave a record that can be checked later: what was asked, what ran, and what the system reported back. The public form of that record is the status feed and the written reports. Each shows what it has. Neither is upgraded into a full audit log.</p>
+    <p class="prose">A report that names a battery percentage is a published text. The operations page is the current public reading. If they differ, they are two records, not one smoothed number. <a href="/operations">Systems</a> · <a href="/reports">Reports</a></p>
   </section>
   <section class="sec" id="deployment">
     <h2>Deployment distinction</h2>
-    <p class="prose">Source and the running system are different facts. Shipping a change and proving the running system took that change are separate steps. A commit is not proof of deployment.</p>
+    <p class="prose">Source and the running system are different facts. Shipping a change and proving the running system took that change are separate steps. A commit is not proof of deployment. A repository is not a healthy runtime.</p>
+    <p class="prose">The Website Node presents the public site. Seeing this page load means the page loaded. It does not mean the Pacific Solar Server, the VPS Node, or the database is healthy.</p>
   </section>
   <section class="sec" id="controls">
     <h2>Operational controls</h2>
     <p class="prose">Important operations stay controllable by people. Agents can prepare work inside a bound. The control that performs it stays visible. A change should remain understandable after it lands: what it was for, where it applies, and how someone can tell whether it took effect.</p>
+    <p class="prose">Those controls are not listed here. Naming them in public would describe the operator path. This page keeps the rule and leaves the path unpublished.</p>
   </section>
   <section class="sec" id="continuity">
     <h2>Continuity</h2>
-    <p class="prose">Security includes being able to operate and repair the system without starting from zero. History, context, and evidence are part of that. Security material belongs in the RootRecord Library. Private material stays there. <a href="/knowledge">Knowledge</a> · <a href="/about">About</a></p>
+    <p class="prose">Security includes being able to operate and repair the system without starting from zero. History, context, and evidence are part of that. Security material belongs in the RootRecord Library. Private material stays there.</p>
+    <p class="prose">Repair depends on knowing which layer holds the fact. A procedure in the library, a reading in the database, and a process on the runtime are three different things to restore. <a href="/knowledge">Knowledge</a> · <a href="/about">About</a></p>
   </section>
   <section class="sec" id="boundary">
     <h2>Public / private boundary</h2>
-    <p class="prose">The public site may describe architecture, public telemetry, public status, and public documentation. It does not describe private addresses, private names, credentials, or internal paths. If a detail is not clearly public, it is left out. <a href="/status">Status</a></p>
+    <p class="prose">The public site may describe architecture, public telemetry, public status, and public documentation. It does not describe private addresses, private names, credentials, or internal paths. If a detail is not clearly public, it is left out.</p>
+    <p class="prose">The public names stop at Hawaiʻi, the VPS Node, the Website Node, and the Root Record Network. A finer location, a host name, or a private route is not part of the public record. <a href="/status">Status</a></p>
   </section>
 </main>
 <footer class="site-foot">

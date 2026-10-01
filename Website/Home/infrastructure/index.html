@@ -47,31 +47,38 @@
   <ul class="layers">
     <li id="hawaii">
       <h2>Hawaiʻi</h2>
-      <p class="prose">Hawaiʻi is an operating site, not a backdrop. Power, weather, geology, and the machines that measure them are part of the system. The Pacific Solar Server is the runtime that lives with those constraints.</p>
+      <p class="prose">Hawaiʻi is an operating site, not a backdrop. Power, weather, geology, and the machines that measure them are part of the system. The Pacific Solar Server is the runtime that lives with those constraints. Distance and connectivity are design inputs, not scenery.</p>
+      <p class="prose">The public field systems there are River, Delta, the weather record, and Kīlauea. Each is shown on <a href="/operations">Systems</a> only when the feed has a reading.</p>
     </li>
     <li id="mainland">
       <h2>VPS Node</h2>
-      <p class="prose">The VPS Node is the other public side of the runtime. It continues computation and services when the work has to cross the network. The public name stops there.</p>
+      <p class="prose">The VPS Node is the other public side of the runtime. It continues computation and services when the work has to cross the network. The public name stops there. This page does not name a city, a provider, a host, or an address.</p>
+      <p class="prose">A flow count for the VPS Node, when the feed has one, means the public network poll reported that count. It does not describe what those flows are carrying.</p>
+    </li>
+    <li id="website">
+      <h2>Website Node</h2>
+      <p class="prose">The Website Node is the public site. It presents Root Record. It does not run the field systems, and it does not hold the database. The globe draws it as its own point, with architectural arcs from Hawaiʻi and the VPS Node.</p>
+      <p class="prose">Those arcs are not counted as live traffic. Seeing this website is evidence that the page loaded. It is not evidence that the runtime is healthy.</p>
     </li>
     <li>
       <h2>Communications</h2>
-      <p class="prose">The Root Record Network is the link between Hawaiʻi and the VPS Node. Public status uses that link. Private paths are not published here.</p>
+      <p class="prose">The Root Record Network is the link between Hawaiʻi and the VPS Node. Public status uses that link: active flows, endpoints, and the two sides. Private paths, tunnel names, and internal routes are not published here.</p>
     </li>
     <li>
       <h2>Physical systems</h2>
-      <p class="prose">Generation, storage, sensors, and the structures around them produce the energy and environmental record. Readings are shown only when a field system reports them. <a href="/operations#energy">Energy</a></p>
+      <p class="prose">Generation, storage, sensors, and the structures around them produce the energy and environmental record. River and Delta report state of charge, solar input, and output when the feed has those values. Weather on the public feed is an observation time, not a sensor panel. Kīlauea is a geological status, not a site health light. <a href="/operations#energy">Energy</a></p>
     </li>
     <li>
       <h2>Network architecture</h2>
-      <p class="prose">The public shape is Hawaiʻi, field systems, the network link, then the VPS Node. Endpoints on the live globe are places the feed can name. They are not a map of private hosts.</p>
+      <p class="prose">The public shape is Hawaiʻi, field systems, the network link, the VPS Node, and the Website Node as the presentation layer. Endpoints on the live globe are places the feed can name. They are not a map of private hosts.</p>
     </li>
     <li>
       <h2>Resilience</h2>
-      <p class="prose">The split exists because distance, power, and connectivity fail independently. One side should be able to keep a bounded part of the work alive when the other side is limited.</p>
+      <p class="prose">The split exists because distance, power, and connectivity fail independently. One side should be able to keep a bounded part of the work alive when the other side is limited. The public page does not claim that failover has been proven. It only describes why the split is there.</p>
     </li>
     <li>
       <h2>Continuity</h2>
-      <p class="prose">Infrastructure is there so the system can be understood, checked, and repaired later. State belongs in the data layer. Meaning belongs in the knowledge layer. <a href="/about">Continuity</a></p>
+      <p class="prose">Infrastructure is there so the system can be understood, checked, and repaired later. State belongs in the data layer. Meaning belongs in the knowledge layer. The machines belong to the runtime. <a href="/about">Continuity</a> · <a href="/data">Data</a> · <a href="/knowledge">Knowledge</a></p>
     </li>
   </ul>
 </main>

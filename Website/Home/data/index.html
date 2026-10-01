@@ -45,8 +45,37 @@
     <article class="card"><h3>Logs</h3><p>What the system did, kept so it can be checked later.</p></article>
     <article class="card"><h3>Reports</h3><p>Summaries assembled from retained state.</p></article>
   </div>
-  <p class="prose">Public pages show a reading only when the feed has one. Absence is shown as absence. A field reading is not a database health score. <a href="/status">Status</a> · <a href="/operations">Systems</a> · <a href="/ecosystem">Ecosystem</a></p>
-  <p class="prose"><a href="https://github.com/RootRecord-Software-Solutions/RootRecord-Database" rel="noreferrer">Public database repository</a></p>
+  <ul class="layers">
+    <li>
+      <h2>Telemetry</h2>
+      <p class="prose">Telemetry is a measurement with a time. On the public site that means network counts, River and Delta power values, the weather observation time, and the Kīlauea status. A missing measurement stays missing. The site does not draw a history when the feed has no series.</p>
+    </li>
+    <li>
+      <h2>System state</h2>
+      <p class="prose">System state is the retained picture of what the system last knew. The public pages show the last observation they were given. They do not show internal state files, process lists, or a database score.</p>
+    </li>
+    <li>
+      <h2>Energy</h2>
+      <p class="prose">Energy is generation and storage from the physical plant. The public values are current state of charge, solar input, AC output, and USB-C output for River and Delta, when those fields are present. Daily totals and a power history are not in the public feed.</p>
+    </li>
+    <li>
+      <h2>Weather</h2>
+      <p class="prose">The public weather record is an observation time and the fact that a Hawaiʻi report exists. Temperature, humidity, pressure, wind, and precipitation are not in that feed, so the operations page omits them. A written forecast, when one is published, lives on <a href="/reports">Reports</a>.</p>
+    </li>
+    <li>
+      <h2>Geology</h2>
+      <p class="prose">Geology on the public feed is the Kīlauea status: alert level, color code, headline, and whether an eruption is indicated. That is context for the Hawaiʻi site. It is not a health light for the computers.</p>
+    </li>
+    <li>
+      <h2>Media, logs, and reports</h2>
+      <p class="prose">Media and logs stay in the data layer so an operation can be checked later. They are not dumped onto this website. Reports are the public summaries. The latest text for each desk is linked from Reports. A report is not a live query of the database.</p>
+    </li>
+  </ul>
+  <section class="sec" id="public">
+    <h2>What this site will not claim</h2>
+    <p class="prose">There is no public runtime signal for the database itself. Field readings are observations, not a database health score. Uptime, row counts, and replication state are omitted because they are not in the public feed.</p>
+    <p class="prose">The public database repository is the published face of the layer. It is not the running store. <a href="/status">Status</a> · <a href="/operations">Systems</a> · <a href="/ecosystem">Ecosystem</a> · <a href="https://github.com/RootRecord-Software-Solutions/RootRecord-Database" rel="noreferrer">Public database repository</a></p>
+  </section>
 </main>
 <footer class="site-foot">
   <a href="/ecosystem">Ecosystem</a>

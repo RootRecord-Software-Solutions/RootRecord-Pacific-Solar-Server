@@ -37,22 +37,31 @@
   <p class="prose">The RootRecord Library is the knowledge layer. It holds the record of how the system is built and run, so people and agents are not starting from a blank session.</p>
   <section class="panel diagram" aria-label="Knowledge layer">
     <div class="know-grid">
-      <article><h2>Architecture</h2></article>
-      <article><h2>Agent context</h2></article>
-      <article><h2>Operations</h2></article>
-      <article><h2>Security</h2></article>
-      <article><h2>Work orders</h2></article>
-      <article><h2>Guides</h2></article>
-      <article><h2>System documentation</h2></article>
+      <article><h2>Architecture</h2><p>How the layers fit: knowledge, runtime, data, and the network between Hawaiʻi and the VPS Node.</p></article>
+      <article><h2>Agent context</h2><p>What an agent is expected to already know before it chooses bounded work.</p></article>
+      <article><h2>Operations</h2><p>How field systems, collection, and handoff are supposed to run.</p></article>
+      <article><h2>Security</h2><p>Boundaries, evidence, and what must not be treated as public control.</p></article>
+      <article><h2>Work orders</h2><p>The record of work that was asked for, so it can be checked later.</p></article>
+      <article><h2>Guides</h2><p>Procedures a person can follow without reconstructing them from chat.</p></article>
+      <article><h2>System documentation</h2><p>The standing description of the system as it is meant to be operated.</p></article>
     </div>
   </section>
   <p class="sig">Code should have a home. Data should have a home. Knowledge should have a home.</p>
+  <section class="sec" id="split">
+    <h2>The split</h2>
+    <p class="prose">Code is the runtime, on the Pacific Solar Server and the VPS Node. Data is the RootRecord Database. Knowledge is the RootRecord Library. Mixing them makes the next session guess which fact is a procedure, which fact is a measurement, and which fact is a running process.</p>
+    <p class="prose">This page explains that split. It does not publish private library material. <a href="/ecosystem">Ecosystem</a> · <a href="/intelligence">Intelligence</a> · <a href="/security">Security</a></p>
+  </section>
   <section class="sec" id="continuity">
     <h2>Continuity</h2>
     <p class="prose">The knowledge layer lets the system keep its understanding across interactions and operational changes. A new session can start from the record instead of from memory. That is the point of separating knowledge from the runtime and from the database.</p>
+    <p class="prose">A public page can name the categories. It cannot stand in for the library. If a procedure is not published here, it is not public.</p>
   </section>
-  <p class="prose">Code is the runtime. Data is the RootRecord Database. Knowledge is the RootRecord Library. This page explains that split. It does not publish private library material. <a href="/ecosystem">Ecosystem</a> · <a href="/intelligence">Intelligence</a> · <a href="/security">Security</a></p>
-  <p class="prose"><a href="https://github.com/RootRecord-Software-Solutions/RootRecord-Library" rel="noreferrer">Public library repository</a></p>
+  <section class="sec" id="public">
+    <h2>What is public</h2>
+    <p class="prose">The public library repository is the published face of the knowledge layer. This website explains the architecture in public language: Hawaiʻi, the VPS Node, the Website Node, the Root Record Network, and the three layers.</p>
+    <p class="prose">Private notes, operator procedures, and internal names stay out of these pages. A file existing in a repository is documented. It is not a live service. <a href="https://github.com/RootRecord-Software-Solutions/RootRecord-Library" rel="noreferrer">Public library repository</a></p>
+  </section>
 </main>
 <footer class="site-foot">
   <a href="/ecosystem">Ecosystem</a>

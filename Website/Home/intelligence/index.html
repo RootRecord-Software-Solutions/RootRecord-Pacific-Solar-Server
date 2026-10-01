@@ -34,7 +34,7 @@
 <main class="page" id="content">
   <p class="eyebrow">Intelligent systems</p>
   <h1>Intelligence</h1>
-  <p class="prose">Root Record treats intelligence as part of the system architecture rather than a standalone interface.</p>
+  <p class="prose">Root Record treats intelligence as part of the system architecture rather than a standalone interface. An agent is an operator inside that architecture. This page describes the path. It does not publish a live roster or a count of agents.</p>
   <section class="panel diagram" aria-label="From context to persisted state">
     <ol class="flow">
       <li>Context</li>
@@ -46,9 +46,43 @@
       <li>Persisted state</li>
     </ol>
   </section>
+  <section class="sec" id="path">
+    <h2>The path</h2>
+    <ul class="layers">
+      <li>
+        <h2>Context</h2>
+        <p class="prose">Context is what the system already knows: architecture, procedures, prior decisions, and the current public readings. It is read before work is chosen.</p>
+      </li>
+      <li>
+        <h2>Agent</h2>
+        <p class="prose">An agent uses that context to determine a bounded piece of work. The bound is part of the model. An agent is not a free actor over the whole system.</p>
+      </li>
+      <li>
+        <h2>Decision</h2>
+        <p class="prose">A decision is a proposed next step. It is not yet an action, and it is not yet evidence that anything changed.</p>
+      </li>
+      <li>
+        <h2>Control</h2>
+        <p class="prose">Control is the point where a decision becomes an allowed action. The control that fits the operation has to agree. Unrestricted execution is not the model.</p>
+      </li>
+      <li>
+        <h2>Execution</h2>
+        <p class="prose">Execution is the work itself, inside the runtime. A command being issued is not the same fact as the work having finished.</p>
+      </li>
+      <li>
+        <h2>Evidence</h2>
+        <p class="prose">Evidence is what can be checked later: what was asked, what ran, and what the system reported back. A successful request is not automatically that record.</p>
+      </li>
+      <li>
+        <h2>Persisted state</h2>
+        <p class="prose">The accepted result belongs in the data layer. The meaning of the work belongs in the knowledge layer. A sentence that something ran is neither of those records.</p>
+      </li>
+    </ul>
+  </section>
   <section class="sec" id="agents">
     <h2>Agents</h2>
-    <p class="prose">An agent reads context, determines bounded work, and carries that work through the controls that apply to it. An agent is an operator inside the system. This page has no public agent count.</p>
+    <p class="prose">Public reports are voiced by Ava, Bruce, and Carly. Those pages are the latest published texts. They are not a live headcount, and they are not proof that an agent is active right now.</p>
+    <p class="prose">No public signal on this site says how many agents are running. The homepage says the same thing. <a href="/reports">Reports</a></p>
     <div class="panel">
       <h2>Agent model</h2>
       <p class="fine">Architecture, not a live roster.</p>
@@ -65,19 +99,23 @@
   </section>
   <section class="sec" id="context">
     <h2>Persistent context</h2>
-    <p class="prose">Durable context is how the next person or agent can see what the system already learned. Architecture, procedures, and prior decisions stay in the knowledge layer. Without that layer, each session starts blank. <a href="/knowledge">Knowledge</a></p>
+    <p class="prose">Durable context is how the next person or agent can see what the system already learned. Architecture, procedures, and prior decisions stay in the knowledge layer. Without that layer, each session starts blank.</p>
+    <p class="prose">Current readings are not a substitute for that record. A power number explains the plant at one moment. It does not explain why the system is built the way it is. <a href="/knowledge">Knowledge</a></p>
   </section>
   <section class="sec" id="execution">
     <h2>Controlled execution</h2>
-    <p class="prose">Actions pass through the boundary that fits the operation. Control is the point where a decision becomes an allowed action. Unrestricted execution is not the model.</p>
+    <p class="prose">Actions pass through the boundary that fits the operation. People remain able to understand and stop important operations. An agent can prepare work inside a bound. The control that performs it stays visible.</p>
+    <p class="prose">The public site is not that control. Account entry on this site is not an operator console. <a href="/security">Security</a></p>
   </section>
   <section class="sec" id="verification">
     <h2>Verification</h2>
-    <p class="prose">A proposed action is not evidence. A command is not evidence. A commit is not proof of deployment. A successful request is not necessarily proof of system state. Evidence is what the system can actually report and what can be checked later. <a href="/security">Security</a></p>
+    <p class="prose">A proposed action is not evidence. A command is not evidence. A commit is not proof of deployment. A successful request is not necessarily proof of system state.</p>
+    <p class="prose">Evidence is what the system can actually report and what can be checked later. On the public site, that standard shows up as a reading with a time, or as the words no public signal. <a href="/status">Status</a></p>
   </section>
   <section class="sec" id="state">
     <h2>Persisted state</h2>
-    <p class="prose">The result of accepted work belongs in the data layer, where a later check can read it. A sentence that something ran is not that record. <a href="/data">Data</a></p>
+    <p class="prose">The result of accepted work belongs in the data layer, where a later check can read it. Logs, field readings, and reports are different kinds of that record. They are not interchangeable.</p>
+    <p class="prose">This page does not claim the database is healthy. There is no public runtime signal for that. <a href="/data">Data</a></p>
   </section>
 </main>
 <footer class="site-foot">
