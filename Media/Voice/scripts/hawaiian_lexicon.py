@@ -142,9 +142,9 @@ PLACE_IPA: dict[str, str] = {  # info: set PLACE_IPA
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 SPEAK_ENGLISH: dict[str, str] = {  # info: set SPEAK_ENGLISH
-    # One word. Spaced "hah wye ee" made Kokoro stress "wye" as its own word.
-    "Hawaiʻi": "hahwye-ee",  # info: "Hawaiʻi" : "hahwye-ee" ,
-    "Hawaiian": "hahwye-uhn",  # info: "Hawaiian" : "hahwye-uhn" ,
+    # Leave the English spellings. "hahwye-ee" came out wrong on every voice.
+    "Hawaiʻi": "Hawaii",  # info: "Hawaiʻi" : "Hawaii" ,
+    "Hawaiian": "Hawaiian",  # info: "Hawaiian" : "Hawaiian" ,
     "Oʻahu": "oh ah hoo",  # info: "Oʻahu" : "oh ah hoo" ,
     "Maui": "mow ee",  # info: "Maui" : "mow ee" ,
     # "kah wah ee" — "cow ah ee" came out livestock + why + ee.
@@ -176,8 +176,8 @@ SPEAK_ENGLISH: dict[str, str] = {  # info: set SPEAK_ENGLISH
     "Nāpōʻopoʻo": "nah poh oh poh oh",  # info: "Nāpōʻopoʻo" : "nah poh oh poh oh" ,
     "Captain Cook": "Captain Cook",  # info: "Captain Cook" : "Captain Cook" ,
     "Mountain View": "Mountain View",  # info: "Mountain View" : "Mountain View" ,
-    "Hawaiian Paradise Park": "hah wye uhn Paradise Park",  # info: "Hawaiian Paradise Park" : "hah wye uhn Paradise Park" ,
-    "Hawaiian Ocean View": "hah wye uhn Ocean View",  # info: "Hawaiian Ocean View" : "hah wye uhn Ocean View" ,
+    "Hawaiian Paradise Park": "Hawaiian Paradise Park",  # info: "Hawaiian Paradise Park" : "Hawaiian Paradise Park" ,
+    "Hawaiian Ocean View": "Hawaiian Ocean View",  # info: "Hawaiian Ocean View" : "Hawaiian Ocean View" ,
     "Ainaloa": "eye nah low ah",  # info: "Ainaloa" : "eye nah low ah" ,
     "Kurtistown": "Kurtistown",  # info: "Kurtistown" : "Kurtistown" ,
     "Paukaa": "pow kah ah",  # info: "Paukaa" : "pow kah ah" ,

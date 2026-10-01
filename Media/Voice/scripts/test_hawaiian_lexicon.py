@@ -42,7 +42,8 @@ def test_sentence_uses_english_syllables():  # info: def test_sentence_uses_engl
     assert "hee loh" in spoken  # info: assert "hee loh" in spoken
     assert "pah hoh ah" in spoken  # info: assert "pah hoh ah" in spoken
     assert "pah hah lah" in spoken  # info: assert "pah hah lah" in spoken
-    assert "hahwye-ee" in spoken  # info: assert "hahwye-ee" in spoken
+    assert "Hawaii" in spoken  # info: assert "Hawaii" in spoken
+    assert "hahwye-ee" not in spoken  # info: assert "hahwye-ee" not in spoken
 
 
 # ====================================================
@@ -58,7 +59,8 @@ def test_operator_ipa_tags_become_english():  # info: def test_operator_ipa_tags
     spoken = speakable(raw)  # info: set spoken
     assert "keelah-wayuh" in spoken  # info: assert "keelah-wayuh" in spoken
     assert "hee loh" in spoken  # info: assert "hee loh" in spoken
-    assert "hahwye-ee" in spoken  # info: assert "hahwye-ee" in spoken
+    assert "Hawaii" in spoken  # info: assert "Hawaii" in spoken
+    assert "hahwye-ee" not in spoken  # info: assert "hahwye-ee" not in spoken
     assert "](/" not in spoken  # info: assert "](/" not in spoken
 
 
