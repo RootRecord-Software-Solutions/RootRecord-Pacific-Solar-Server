@@ -178,6 +178,19 @@ def clean_reply(text: str | None) -> str:  # info: def clean_reply
 
 
 # ====================================================
+# SECTION: function claims_service
+# What it does: True when a sentence states a live service condition. Negated wording is not a claim.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def claims_service(sentence: str) -> bool:  # info: def claims_service
+    if not SERVICE_CLAIM.search(sentence or ""):  # info: if not SERVICE_CLAIM . search
+        return False  # info: return False
+    if re.search(r"\b(?:not|whether|without)\b", sentence, re.I):  # info: if re . search
+        return False  # info: return False
+    return True  # info: return True
+
+
+# ====================================================
 # SECTION: function metric_keys
 # What it does: Metric words present in one sentence.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -264,7 +277,7 @@ def stale_sentence(obs: HostObservation) -> str:  # info: def stale_sentence
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def honest_for(sentence: str, obs: HostObservation) -> str:  # info: def honest_for
-    if SERVICE_CLAIM.search(sentence):  # info: if SERVICE_CLAIM . search ( sentence )
+    if claims_service(sentence):  # info: if claims_service ( sentence )
         return "I don't currently have a service-status observation."  # info: return
     keys = metric_keys(sentence)  # info: set keys
     recorded = recorded_values(obs)  # info: set recorded
@@ -296,7 +309,7 @@ def numbers_in(sentence: str) -> list[float]:  # info: def numbers_in
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def sentence_allowed(sentence: str, obs: HostObservation) -> bool:  # info: def sentence_allowed
-    if SERVICE_CLAIM.search(sentence):  # info: if SERVICE_CLAIM . search ( sentence )
+    if claims_service(sentence):  # info: if claims_service ( sentence )
         return False  # info: return False
     keys = metric_keys(sentence)  # info: set keys
     if not keys:  # info: if not keys

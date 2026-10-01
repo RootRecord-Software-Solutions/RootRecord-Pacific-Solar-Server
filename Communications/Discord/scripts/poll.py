@@ -144,7 +144,7 @@ def run() -> dict:  # info: def run
         "channels": len(channels),  # info: "channels" : len ( channels ) ,
         "http_calls": http_calls,  # info: "http_calls" : http_calls ,
         "polled": polled,  # info: "polled" : polled ,
-        "posted": review_posted > 0,  # info: "posted" : review_posted > 0 ,
+        "posted": review_posted > 0 or updater_posted > 0,  # info: "posted" : review_posted > 0 or updater_posted > 0 ,
         "review_pipeline": "on" if review_on else "off",  # info: "review_pipeline" : "on" if review_on else "off" ,
         "review_handled": review_handled,  # info: "review_handled" : review_handled ,
         "review_posted": review_posted,  # info: "review_posted" : review_posted ,
