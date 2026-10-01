@@ -121,10 +121,12 @@ def sections(md: str) -> list[dict]:  # info: def sections
     found: list[dict] = []  # info: set found
 
     def flush() -> None:  # info: def flush
-        if table and columns:  # info: if table
+        had_table = bool(table and columns)  # info: set had_table
+        if had_table:  # info: if table
             found.append({"heading": heading, "kind": "table", "columns": list(columns), "rows": [list(row) for row in table]})  # info: append table
-        elif lines:  # info: elif lines
-            found.append({"heading": heading, "kind": "list", "rows": list(lines)})  # info: append list
+        if lines:  # info: if lines
+            label = "Notes" if had_table else heading  # info: set label
+            found.append({"heading": label, "kind": "list", "rows": list(lines)})  # info: append list
         lines.clear()  # info: clear lines
         columns.clear()  # info: clear columns
         table.clear()  # info: clear table
@@ -149,10 +151,31 @@ def sections(md: str) -> list[dict]:  # info: def sections
                 table.append(cells)  # info: append row
             continue  # info: continue
         item = clean_line(raw)  # info: set item
+        if item and len(item) > 180 and not raw.startswith("- "):  # info: if narrative
+            continue  # info: continue
         if item and item not in lines:  # info: if new
             lines.append(item)  # info: append
     flush()  # info: call flush
     return [part for part in found if part.get("heading")]  # info: return sections
+
+
+# ====================================================
+# SECTION: function show_heading
+# What it does: Public section title. Drops internal notes and title-case headings.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def show_heading(raw: str) -> str:  # info: def show_heading
+    text = re.sub(r"\s*\([^)]*(?:poller|database|g\d)[^)]*\)", "", raw, flags=re.I)  # info: drop internal notes
+    text = " ".join(text.split())  # info: collapse space
+    letters = [ch for ch in text if ch.isalpha()]  # info: set letters
+    uppers = sum(ch.isupper() for ch in letters)  # info: set uppers
+    if letters and uppers > 1 and uppers >= max(2, len(letters) // 6):  # info: if title case
+        text = text[:1].upper() + text[1:].lower()  # info: sentence case
+    text = re.sub(r"\bhawaii\b", "Hawaiʻi", text, flags=re.I)  # info: restore Hawaiʻi
+    text = re.sub(r"\bkīlauea\b", "Kīlauea", text, flags=re.I)  # info: restore Kīlauea
+    for token, shown in (("nws", "NWS"), ("usgs", "USGS"), ("cpu", "CPU"), ("ram", "RAM"), ("soc", "SOC"), ("hst", "HST")):  # info: for token , shown
+        text = re.sub(rf"\b{token}\b", shown, text, flags=re.I)  # info: restore token
+    return text  # info: return heading
 
 
 # ====================================================
@@ -175,9 +198,9 @@ def pair(line: str) -> tuple[str, str] | None:  # info: def pair
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def render_section(part: dict) -> str:  # info: def render_section
-    title = html.escape(str(part.get("heading") or "Readings"))  # info: set title
+    title = html.escape(show_heading(str(part.get("heading") or "Readings")))  # info: set title
     if part.get("kind") == "table":  # info: if table
-        columns = part.get("columns") or []  # info: set columns
+        columns = [show_heading(name) if name == name.title() else name for name in (part.get("columns") or [])]  # info: set columns
         head = "".join(f"<th scope=\"col\">{html.escape(name)}</th>" for name in columns)  # info: set head
         body_rows = []  # info: set body_rows
         for row in part.get("rows") or []:  # info: for row in rows
@@ -206,14 +229,14 @@ def highlights(parts: list[dict]) -> list[tuple[str, str]]:  # info: def highlig
     for part in parts:  # info: for part in parts
         if part.get("kind") == "table":  # info: if table
             columns = part.get("columns") or []  # info: set columns
-            for row in part.get("rows") or []:  # info: for row in rows
-                if row and columns:  # info: if row
-                    label = row[0]  # info: set label
-                    value = " · ".join(cell for cell in row[1:] if cell)  # info: set value
-                    if label and value:  # info: if field
-                        picked.append((label, value))  # info: append
-                if len(picked) >= 3:  # info: if three
-                    return picked  # info: return picked
+            rows = part.get("rows") or []  # info: set rows
+            if rows and columns:  # info: if row
+                row = rows[0]  # info: set row
+                for name, cell in list(zip(columns, row))[:3]:  # info: for name , cell
+                    if name and cell:  # info: if field
+                        picked.append((name, cell))  # info: append
+            if len(picked) >= 3:  # info: if three
+                return picked[:3]  # info: return picked
             continue  # info: continue
         for row in part.get("rows") or []:  # info: for row in rows
             found = pair(row)  # info: set found
@@ -229,7 +252,7 @@ def highlights(parts: list[dict]) -> list[tuple[str, str]]:  # info: def highlig
             line = rows[0]  # info: set line
             if len(line) > 140:  # info: if long
                 line = line[:140].rsplit(" ", 1)[0].rstrip(".,;:") + "…"  # info: shorten line
-            return [(str(part.get("heading") or "Reading"), line)]  # info: return lead
+            return [(show_heading(str(part.get("heading") or "Reading")), line)]  # info: return lead
     return []  # info: return empty
 
 
@@ -368,7 +391,7 @@ def report_page(row: dict) -> str:  # info: def report_page
   <h1>{html.escape(title)}</h1>
 {stamp}{body}
   <p class="fine"><a href="/reports">All reports</a></p>"""  # info: set main
-    return chrome(f"{title} — Root Record", f"{area} report. {title}.", f"{SITE}/{slug}", main)  # info: return chrome
+    return chrome(f"{title} — Root Record", f"Latest {title} reading.", f"{SITE}/{slug}", main)  # info: return chrome
 
 
 # ====================================================

@@ -7,9 +7,9 @@
 # banner from 5 - RootRecord-Library/prompts/How-To-Read-And-Edit-Code.md.
 # Kind: python
 # ==============================================================================
-"""Public Discord text for Ava, Bruce, and Carly voice reports.
+"""Public Discord text for Root Record reports.
 
-The spoken line is the public report, matching the Telegram transcript.
+Measured lines and the public page link. Spoken transcripts stay off the post.
 Internal source paths and file names stay off the message.
 """
 from __future__ import annotations  # info: from __future__ import annotations
