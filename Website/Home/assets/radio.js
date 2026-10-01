@@ -65,11 +65,6 @@
   var chimeTry = 0;
   var STORE = "rr-radio-local";
 
-  function localWanted() {
-    try { return localStorage.getItem(STORE) !== "0"; }
-    catch (e) { return true; }
-  }
-
   function rememberLocal(on) {
     try { localStorage.setItem(STORE, on ? "1" : "0"); }
     catch (e) {}
@@ -258,9 +253,17 @@
     pollTimer = 0;
     music.pause();
     report.pause();
+    chime.pause();
+    music.removeAttribute("src");
+    report.removeAttribute("src");
+    chime.removeAttribute("src");
+    try { music.load(); report.load(); chime.load(); } catch (e) {}
     rememberLocal(false);
     paintToggle(false);
     setState("OFF", false);
+    musicEl.textContent = "Waiting";
+    if (blurbEl) blurbEl.textContent = "";
+    reportEl.textContent = "";
   }
 
   function canResume(el) {
@@ -504,24 +507,24 @@
 
   paintToggle(false);
   listen.disabled = true;
-  setState("STARTING", false);
+  setState("OFF", false);
+  musicEl.textContent = "Waiting";
   fetchCatalog().then(function (data) {
     applyCatalog(data);
-    if (localWanted()) startPlayback();
-    else {
-      paintToggle(false);
-      setState("OFF", false);
-      musicEl.textContent = "Waiting";
-    }
+    listen.disabled = false;
+    paintToggle(false);
+    setState("OFF", false);
+    musicEl.textContent = tracks.length ? "Waiting" : "No music is on the stream.";
   }).catch(function () {
+    listen.disabled = false;
     paintToggle(false);
     setState("QUIET", false);
     musicEl.textContent = "The stream is not reachable.";
   });
 
-  window.addEventListener("pagehide", function () {
-    clearInterval(pollTimer);
-    clearTimeout(gapTimer);
-    clearTimeout(chimeTimer);
+  window.addEventListener("pagehide", stopPlayback);
+  window.addEventListener("freeze", stopPlayback);
+  window.addEventListener("pageshow", function (ev) {
+    if (ev.persisted) stopPlayback();
   });
 })();
