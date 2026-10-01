@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 import socket
 import time
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
 ECO = Path("/home/rootrecord/RootRecord-Ecosystem")
@@ -338,6 +338,7 @@ def _minecraft() -> dict:
             "host": "ava-core",
             "name": "OptiPlex",
             "online": False,
+            "probed": False,
             "detail": "Test host is ava-core on the OptiPlex. This desk does not probe it.",
         },
         "servers": [
