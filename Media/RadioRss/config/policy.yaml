@@ -1,0 +1,170 @@
+# Fetch, overlap, priority, and narration policy.
+# Change this file to retune the station. Do not hard-code these values in Python.
+
+fetch:
+  timeout_sec: 15
+  connect_timeout_sec: 5
+  retries: 3
+  backoff_sec: 1
+  max_bytes: 2000000
+  user_agent: "RootRecord Radio RSS/1.0"
+  max_redirects: 5
+  max_feeds_per_run: 6
+  max_items_per_feed: 20
+  max_broadcast_age_hours: 36
+  cluster_window_hours: 48
+  similarity: 0.62
+  unhealthy_after_failures: 5
+  intervals_minutes:
+    high: 10
+    medium: 30
+    low: 60
+
+# Applied only when a feed sets native_overlap: true.
+# Native RootRecord desks already cover weather, quakes, volcanoes, and site energy.
+overlap_patterns:
+  - earthquake
+  - "seismic"
+  - kilauea
+  - "hawaiian volcano observatory"
+  - "volcano alert"
+  - "marine forecast"
+  - "marine weather"
+  - "small craft advisory"
+  - "weather forecast"
+  - "nws honolulu"
+  - "gale warning"
+  - "storm warning"
+  - "tropical weather"
+  - "high surf advisory"
+
+# Item text that moves a story into another configured category.
+category_rules:
+  - category: maritime
+    patterns: ["coast guard", "maritime", "vessel", "shipping", "ship collision", "marine casualty", "imo "]
+  - category: aviation
+    patterns: ["aircraft", "airliner", "faa", "runway", "aviation"]
+  - category: cybersecurity
+    patterns: ["cve-", "ransomware", "zero-day", "vulnerability"]
+
+priority_floor:
+  high: high
+  medium: normal
+  low: low
+
+priority_signals:
+  urgent:
+    - "emergency directive"
+    - "actively exploited"
+    - "known exploited"
+    - "major outage"
+  high:
+    - "launch"
+    - "artemis"
+    - "vulnerability"
+    - "zero-day"
+    - "cve-"
+    - "investigation"
+    - "aircraft accident"
+    - "marine casualty"
+    - "discovery"
+    - "fomc"
+    - "rate decision"
+    - "press release"
+  low: []
+
+# science_offbeat stays under alerts, launches, and security items.
+category_priority_cap:
+  science_offbeat: normal
+
+political_patterns:
+  - election
+  - candidate
+  - parliament
+  - congress
+  - senator
+  - "white house"
+  - "prime minister"
+  - ballot
+  - "political party"
+  - campaign
+
+# Sentences matching these are left out of the spoken script.
+drop_sentence_patterns:
+  - "vote for"
+  - "you should vote"
+  - "cast your ballot"
+
+programs:
+  NEWS_BRIEF:
+    report: news_brief
+    voice: af_heart
+    lead: "News brief."
+  SCIENCE_BRIEF:
+    report: science_brief
+    voice: af_heart
+    lead: "Science brief."
+  SPACE_BRIEF:
+    report: space_brief
+    voice: am_echo
+    lead: "Space brief."
+  TECH_BRIEF:
+    report: tech_brief
+    voice: am_echo
+    lead: "Technology brief."
+  AI_BRIEF:
+    report: ai_brief
+    voice: af_heart
+    lead: "Artificial intelligence brief."
+  CYBER_BRIEF:
+    report: cyber_brief
+    voice: af_nova
+    lead: "Cybersecurity brief."
+  DEVELOPER_BRIEF:
+    report: developer_brief
+    voice: am_echo
+    lead: "Developer brief."
+  AVIATION_BRIEF:
+    report: aviation_brief
+    voice: af_nova
+    lead: "Transportation brief."
+  ENERGY_BRIEF:
+    report: energy_brief
+    voice: am_echo
+    lead: "Energy markets brief."
+  ECONOMICS_BRIEF:
+    report: economics_brief
+    voice: af_heart
+    lead: "Economics brief."
+  GLOBAL_NEWS_BRIEF:
+    report: global_news_brief
+    voice: af_heart
+    lead: "Global news brief."
+  OFFBEAT_BRIEF:
+    report: offbeat_brief
+    voice: af_nova
+    lead: "Science notebook."
+
+publishers:
+  NASA: "NASA"
+  "NASA JPL": "NASA's Jet Propulsion Laboratory"
+  ESA: "the European Space Agency"
+  NSF: "the National Science Foundation"
+  NIST: "the National Institute of Standards and Technology"
+  "Ars Technica": "Ars Technica"
+  "The Register": "The Register"
+  WIRED: "WIRED"
+  NVIDIA: "NVIDIA"
+  GitHub: "GitHub"
+  NTSB: "the National Transportation Safety Board"
+  EIA: "the Energy Information Administration"
+  "Federal Reserve": "the Federal Reserve"
+  NPR: "NPR"
+  "The Guardian": "The Guardian"
+  "Al Jazeera": "Al Jazeera"
+  Docker: "Docker"
+  Cloudflare: "Cloudflare"
+  "Linux Kernel": "the Linux kernel archive"
+  Microsoft: "Microsoft"
+  Google: "Google"
+  ScienceDaily: "ScienceDaily"

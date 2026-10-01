@@ -56,6 +56,24 @@
   var pollTimer = 0;
   var musicFails = 0;
   var attempt = 0;
+  var STORE = "rr-radio-local";
+
+  function localWanted() {
+    try { return localStorage.getItem(STORE) !== "0"; }
+    catch (e) { return true; }
+  }
+
+  function rememberLocal(on) {
+    try { localStorage.setItem(STORE, on ? "1" : "0"); }
+    catch (e) {}
+  }
+
+  function paintToggle(on) {
+    listen.hidden = false;
+    listen.disabled = false;
+    listen.setAttribute("aria-pressed", on ? "true" : "false");
+    listen.textContent = on ? "Local playback on" : "Local playback off";
+  }
 
   function setState(text, on) {
     stateEl.textContent = text;
@@ -132,11 +150,27 @@
     clearInterval(pollTimer);
     pollTimer = 0;
     music.pause();
+    report.pause();
     setState("OFF", false);
     musicEl.textContent = "Waiting";
     if (blurbEl) blurbEl.textContent = "";
-    listen.hidden = false;
-    listen.disabled = false;
+    paintToggle(false);
+  }
+
+  function stopPlayback() {
+    started = false;
+    clearTimeout(gapTimer);
+    clearInterval(pollTimer);
+    pollTimer = 0;
+    music.pause();
+    report.pause();
+    rememberLocal(false);
+    paintToggle(false);
+    setState("OFF", false);
+  }
+
+  function canResume(el) {
+    return !!(el.src && el.currentTime > 0 && !el.ended);
   }
 
   music.addEventListener("playing", function () {
@@ -303,35 +337,71 @@
     }
     started = true;
     music.volume = FULL;
-    listen.hidden = true;
+    rememberLocal(true);
+    paintToggle(true);
     playMusic();
     armGap();
     if (!pollTimer) pollTimer = setInterval(poll, POLL_MS);
   }
 
+  function resumePlayback() {
+    if (canResume(music)) {
+      started = true;
+      rememberLocal(true);
+      paintToggle(true);
+      music.volume = playing ? DUCK : FULL;
+      var pending = music.play();
+      if (pending && pending.catch) {
+        pending.catch(function (err) {
+          if (err && err.name === "NotAllowedError") waitForListen();
+        });
+      }
+      if (playing && canResume(report)) {
+        var reportPlay = report.play();
+        if (reportPlay && reportPlay.catch) reportPlay.catch(function () { finishReport(); });
+      } else if (!playing) {
+        pump();
+      }
+      if (!pollTimer) pollTimer = setInterval(poll, POLL_MS);
+      return;
+    }
+    startPlayback();
+  }
+
   listen.addEventListener("click", function () {
-    if (started) return;
+    if (started) {
+      stopPlayback();
+      return;
+    }
     listen.disabled = true;
     setState("STARTING", false);
-    unlock(music).then(function () { return unlock(report); }).then(function () {
+    var primed = music.src && music.src.indexOf("data:audio/wav") !== 0;
+    var ready = primed ? Promise.resolve() : unlock(music).then(function () { return unlock(report); });
+    ready.then(function () {
       return fetchCatalog();
     }).then(function (data) {
       applyCatalog(data);
-      startPlayback();
+      resumePlayback();
     }).catch(function () {
-      listen.disabled = false;
+      paintToggle(false);
       setState("QUIET", false);
       musicEl.textContent = "The stream is not reachable.";
     });
   });
 
+  paintToggle(false);
   listen.disabled = true;
   setState("STARTING", false);
   fetchCatalog().then(function (data) {
     applyCatalog(data);
-    startPlayback();
+    if (localWanted()) startPlayback();
+    else {
+      paintToggle(false);
+      setState("OFF", false);
+      musicEl.textContent = "Waiting";
+    }
   }).catch(function () {
-    listen.disabled = false;
+    paintToggle(false);
     setState("QUIET", false);
     musicEl.textContent = "The stream is not reachable.";
   });

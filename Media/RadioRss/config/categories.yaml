@@ -1,0 +1,60 @@
+# External RSS categories. Business logic reads this file.
+# culture_offbeat is omitted on purpose. These categories stay on
+# external science, operations, and official releases.
+categories:
+  - id: space
+    name: Space
+    program: SPACE_BRIEF
+    rank: 10
+  - id: science
+    name: Science
+    program: SCIENCE_BRIEF
+    rank: 20
+  - id: research
+    name: Research
+    program: SCIENCE_BRIEF
+    rank: 25
+  - id: cybersecurity
+    name: Cybersecurity
+    program: CYBER_BRIEF
+    rank: 15
+  - id: technology
+    name: Technology
+    program: TECH_BRIEF
+    rank: 30
+  - id: artificial_intelligence
+    name: Artificial intelligence
+    program: AI_BRIEF
+    rank: 28
+  - id: developer_ecosystem
+    name: Developer ecosystem
+    program: DEVELOPER_BRIEF
+    rank: 40
+  - id: aviation
+    name: Aviation
+    program: AVIATION_BRIEF
+    rank: 18
+  - id: maritime
+    name: Maritime
+    program: AVIATION_BRIEF
+    rank: 19
+  - id: transportation
+    name: Transportation
+    program: AVIATION_BRIEF
+    rank: 35
+  - id: energy_market
+    name: Energy market
+    program: ENERGY_BRIEF
+    rank: 32
+  - id: economics_finance
+    name: Economics and finance
+    program: ECONOMICS_BRIEF
+    rank: 34
+  - id: global_news
+    name: Global news
+    program: GLOBAL_NEWS_BRIEF
+    rank: 22
+  - id: science_offbeat
+    name: Science offbeat
+    program: OFFBEAT_BRIEF
+    rank: 90
