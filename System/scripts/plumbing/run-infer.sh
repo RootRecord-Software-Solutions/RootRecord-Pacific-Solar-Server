@@ -40,8 +40,8 @@ if [[ "${RR_SPECIALIST_ROUTING:-0}" == "1" && -x "$HERE/route-specialist.py" ]];
   fi  # info: fi
 fi  # info: fi
 # Council voices on the NPU (RR_NPU_PERSONA=1, set by ensure-relay.sh). FLM has no Modelfile format.
-# Each voice has its own file under Database/AI/FLM/Personas/. That file is the full system text plus
-# temperature, max_tokens, and top_p. The generic one-line prompt is not used when the file is present.
+# System text: RR_SPEC_SYS, else RR_PERSONA_SYSTEM (council-relay), else the JSON file under
+# Database/AI/FLM/Personas/, else the generic line. Temperature, max_tokens, and top_p still come from that JSON file.
 NPU_PERSONA_FILE=""  # info: set NPU_PERSONA_FILE
 if [[ "${RR_NPU_PERSONA:-0}" == "1" && "$TARGET" =~ ^(ava|bruce|carly)$ ]]; then  # info: if
   NPU_PERSONA_FILE="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/AI/FLM/Personas/${TARGET}.json"  # info: set NPU_PERSONA_FILE
@@ -135,7 +135,7 @@ do_ollama() {  # info: do_ollama
 # ====================================================
 do_flm() {  # info: do_flm
   RR_PROMPT_CHARS="${#PROMPT}" "$SF" run "$JOB" -- env FLM_URL="$FLM_URL" FLM_MODEL="$FLM_MODEL" RR_VOICE="$TARGET" RR_PROMPT="$PROMPT" \
-    RR_SPEC_SYS="$SPEC_SYS" RR_SPEC_TEMP="$SPEC_TEMP" RR_SPEC_MAXTOK="$SPEC_MAXTOK" RR_NPU_PERSONA_FILE="$NPU_PERSONA_FILE" python3 -c '  # info: set RR_SPEC_SYS
+    RR_SPEC_SYS="$SPEC_SYS" RR_SPEC_TEMP="$SPEC_TEMP" RR_SPEC_MAXTOK="$SPEC_MAXTOK" RR_NPU_PERSONA_FILE="$NPU_PERSONA_FILE" RR_PERSONA_SYSTEM="${RR_PERSONA_SYSTEM:-}" python3 -c '  # info: set RR_SPEC_SYS
 import json, os, re, urllib.request  # info: import json , os , re , urllib . request
 base = os.environ["FLM_URL"].rstrip("/")  # info: base
 model = os.environ["FLM_MODEL"]  # info: model
@@ -176,7 +176,17 @@ if desk_lines:  # info: if
   else:  # info: else
     user = "[desk: measured — cite only these lines]\n" + desk_lines + "\nUser: " + user  # info: user
   user += "\nThe DESK_LIVE lines above are measured. Cite one only when the person asked for a reading. Do not recite the desk on a greeting or a side comment."  # info: user
-system = (persona.get("system") if persona else None) or os.environ.get("RR_SPEC_SYS") or generic  # info: set system
+spec_sys = (os.environ.get("RR_SPEC_SYS") or "").strip()  # info: set spec_sys
+persona_sys = (os.environ.get("RR_PERSONA_SYSTEM") or "").strip()  # info: set persona_sys
+npu_sys = ((persona.get("system") if persona else "") or "").strip()  # info: set npu_sys
+if spec_sys:  # info: if spec_sys
+  system = spec_sys  # info: set system
+elif persona_sys:  # info: elif persona_sys
+  system = persona_sys  # info: set system
+elif npu_sys:  # info: elif npu_sys
+  system = npu_sys  # info: set system
+else:  # info: else
+  system = generic  # info: set system
 if desk_lines and list_desk:  # info: if desk_lines and list_desk
   system = (  # info: set system
     f"You are {voice}. The user message has a DESK_LIVE block. Those lines are the live readings. "  # info: f"You are { voice }

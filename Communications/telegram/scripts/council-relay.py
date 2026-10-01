@@ -11,7 +11,7 @@
 """Council relay: one getUpdates; single voice default; A>B>C>A on triggers.
 Posts only clean replies (never DESK_LIVE / instruction leaks). Prefer FLM/NPU via run-infer.sh."""
 from __future__ import annotations  # info: from __future__ import annotations
-import json, os, re, subprocess, sys, time, urllib.error, urllib.request  # info: import json , os , re , subprocess
+import importlib.util, json, os, re, subprocess, sys, time, urllib.error, urllib.request  # info: import importlib . util , json , os , re , subprocess
 from pathlib import Path  # info: from pathlib import Path
 from datetime import datetime  # info: from datetime import datetime
 
@@ -221,8 +221,22 @@ def refresh_desk(cfg):  # info: def refresh_desk
             print(f"[warn] state refresh failed: {type(e).__name__}", file=sys.stderr)  # info: call print
 
 # ====================================================
+# SECTION: function persona_system
+# What it does: Load the CouncilPersona system text for ava, bruce, or carly.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def persona_system(voice):  # info: def persona_system
+    loader = ROOT.parent / "CouncilPersona" / "scripts" / "personas.py"  # info: set loader
+    spec = importlib.util.spec_from_file_location("rr_council_persona", loader)  # info: set spec
+    if spec is None or spec.loader is None:  # info: if spec is None or spec . loader is None
+        raise RuntimeError("personas.py is missing")  # info: raise RuntimeError
+    mod = importlib.util.module_from_spec(spec)  # info: set mod
+    spec.loader.exec_module(mod)  # info: spec . loader . exec_module ( mod )
+    return mod.system_for(voice)  # info: return mod . system_for ( voice )
+
+# ====================================================
 # SECTION: function run_infer
-# What it does: run infer.
+# What it does: run infer with the voice persona when one exists.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def run_infer(cfg, voice, prompt, prior=""):  # info: def run_infer
@@ -230,7 +244,12 @@ def run_infer(cfg, voice, prompt, prior=""):  # info: def run_infer
     if not run or not Path(run).exists():  # info: if not run or not Path ( run
         run = str(ROOT.parent.parent.parent / "System" / "scripts" / "plumbing" / "run-infer.sh")  # info: set run
     full = prompt if not prior else f"Prior turns:\n{prior}\n\nYour turn as {voice}.\nUser:\n{prompt}"  # info: set full
-    p = subprocess.run([run, voice, full], capture_output=True, text=True, timeout=600)  # info: set p
+    env = os.environ.copy()  # info: set env
+    try:  # info: try
+        env["RR_PERSONA_SYSTEM"] = persona_system(voice)  # info: env [ "RR_PERSONA_SYSTEM" ] = persona_system ( voice )
+    except Exception as e:  # info: except Exception as e
+        print(f"[warn] persona load failed: {type(e).__name__}", file=sys.stderr)  # info: call print
+    p = subprocess.run([run, voice, full], capture_output=True, text=True, timeout=600, env=env)  # info: set p
     out = (p.stdout or "").strip()  # info: set out
     # stderr may have [ok] FLM lines — ignore
     return clean_reply(out)  # info: return clean_reply ( out )
