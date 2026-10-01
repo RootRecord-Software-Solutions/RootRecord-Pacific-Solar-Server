@@ -11,7 +11,7 @@ The globe is the page background. A compact activity readout sits on the left. S
 
 This repository does not hold measurements. The homepage is this Vercel app. AWS is not the site.
 
-Public page hosts point at this Vercel site. `rootrecord.info` is one of those hosts, so it is not a separate login site. The page reads last-known status from `https://api.rootrecord.cloud`. That host is the AWS status API, not a page. Do not iframe `www`. Do not call port 8787. That port serves a frozen append file.
+Public page hosts in the desk manifest point at `https://www.rootrecord.cloud/`. The page source requests `https://api.rootrecord.cloud`, and that name has no public DNS yet. SSH carries Hawaii snapshots to AWS at `18.118.30.226`. Do not call port 8787. Do not treat `www` as the API.
 
 The globe state file and the Hawaii status snapshot live on AWS. The contract is [HANDOFF-vercel-homepage-2026-09-30.md](../HANDOFF-vercel-homepage-2026-09-30.md). That file stays on the Pacific desk. It is not part of this Vercel repository.
 

@@ -34,17 +34,17 @@ FORBIDDEN = frozenset(  # info: set FORBIDDEN
         "apikey",  # info: "apikey" ,
     }  # info: }
 )  # info: )
-VERCEL = "https://rootrecord.online/"  # info: set VERCEL
-SSH = "ssh://localhost:22"  # info: set SSH
+VERCEL = "https://www.rootrecord.cloud/"  # info: set VERCEL
+SSH = "18.118.30.226:22"  # info: set SSH
 POLLER = "http://127.0.0.1:8799"  # info: set POLLER
 STATUS = "http://127.0.0.1:8091"  # info: set STATUS
 PAGE_REDIRECTS = frozenset(  # info: set PAGE_REDIRECTS
     {  # info: {
+        "rootrecord.online",  # info: "rootrecord.online" ,
         "www.rootrecord.online",  # info: "www.rootrecord.online" ,
         "rootrecord.info",  # info: "rootrecord.info" ,
         "www.rootrecord.info",  # info: "www.rootrecord.info" ,
         "rootrecord.cloud",  # info: "rootrecord.cloud" ,
-        "www.rootrecord.cloud",  # info: "www.rootrecord.cloud" ,
         "avaivy.cloud",  # info: "avaivy.cloud" ,
         "www.avaivy.cloud",  # info: "www.avaivy.cloud" ,
         "kilauea.cloud",  # info: "kilauea.cloud" ,
@@ -149,7 +149,7 @@ def problems(data: dict) -> list[str]:  # info: def problems
         found.append("home_card must be off")  # info: found . append ( "home_card must be off" )
     if data.get("vercel_site") != "one":  # info: if data . get ( "vercel_site" ) !=
         found.append("vercel_site must be one")  # info: found . append ( "vercel_site must be one" )
-    if data.get("home_url") != "https://rootrecord.online/":  # info: if data . get ( "home_url" ) !=
+    if data.get("home_url") != "https://www.rootrecord.cloud/":  # info: if data . get ( "home_url" ) !=
         found.append("home_url must be the Vercel host")  # info: found . append ( "home_url must be the Vercel host" )
     routes = data.get("routes")  # info: set routes
     if not isinstance(routes, list):  # info: if not isinstance ( routes , list )
@@ -165,9 +165,9 @@ def problems(data: dict) -> list[str]:  # info: def problems
         if role == "holding":  # info: if role == "holding" :
             found.append("holding page is not a route")  # info: found . append ( "holding page is not a route" )
         seen[host] = route  # info: seen [ host ] = route
-    site = seen.get("rootrecord.online")  # info: set site
+    site = seen.get("www.rootrecord.cloud")  # info: set site
     if site is None or site.get("keep") != "true" or site.get("service") != VERCEL or site.get("role") != "site":  # info: if site is None or site . get
-        found.append("rootrecord.online must be the Vercel site")  # info: found . append ( "rootrecord.online must be the Vercel site" )
+        found.append("www.rootrecord.cloud must be the Vercel site")  # info: found . append ( "www.rootrecord.cloud must be the Vercel site" )
     for host in sorted(PAGE_REDIRECTS):  # info: for host in sorted ( PAGE_REDIRECTS ) :
         route = seen.get(host)  # info: set route
         if route is None or route.get("keep") != "true" or route.get("service") != VERCEL or route.get("role") != "redirect":  # info: if route is None or route . get
@@ -178,7 +178,7 @@ def problems(data: dict) -> list[str]:  # info: def problems
         if route is None or route.get("keep") != "true" or route.get("role") != expect[0] or route.get("service") != expect[1]:  # info: if route is None or route . get
             found.append("kept host left its role")  # info: found . append ( "kept host left its role" )
             break  # info: break
-    allowed = set(PAGE_REDIRECTS) | set(STAYS) | {"rootrecord.online"}  # info: set allowed
+    allowed = set(PAGE_REDIRECTS) | set(STAYS) | {"www.rootrecord.cloud"}  # info: set allowed
     extra = sorted(set(seen) - allowed)  # info: set extra
     if extra:  # info: if extra :
         found.append("unexpected hostname")  # info: found . append ( "unexpected hostname" )

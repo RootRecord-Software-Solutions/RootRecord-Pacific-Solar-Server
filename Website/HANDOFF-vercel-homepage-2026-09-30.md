@@ -1,12 +1,31 @@
 ## Handoff — 2026-09-30 — Mainland → Vercel homepage
 
-### Confirmed facts
+### Current (2026-09-30 21:00 HST)
 
-- The public homepage is Vercel’s job. AWS must not be the homepage.
-- Right now that cutover has not happened. `https://rootrecord.cloud/` returns **301** to `https://www.rootrecord.cloud/`. `www` is still **200** from the AWS globe (`network-globe-web.service` on `127.0.0.1:8090`, Cloudflare tunnel ingress `www.rootrecord.cloud`).
-- `https://root-record-cloud.vercel.app/` returned **404** `DEPLOYMENT_NOT_FOUND` at 2026-10-01 06:20 UTC. No Vercel token and no Vercel CLI login are on this desk.
-- Do not use `www.rootrecord.cloud` as the site, an iframe, or the canonical origin. That host is the AWS globe page.
-- Do not use `http://<aws-ip>:8787/hawaii.ndjson`. That process is still listening, and it serves a **frozen** append file (`/home/ubuntu/network-globe/network-globe/data/hawaii.ndjson`, 60,371,626 bytes). It is not the live snapshot.
+The public page is Vercel project `rootrecord` (team `rrc-ore`). Production is `https://www.rootrecord.cloud/`. `https://rootrecord.vercel.app/` serves the same page. AWS is not the site.
+
+Cloudflare DNS for `rootrecord.cloud`, proxy off:
+
+| Name | Type | Value |
+| --- | --- | --- |
+| `@` | CNAME | `658fd2bfe7dcb292.vercel-dns-017.com` |
+| `www` | CNAME | `658fd2bfe7dcb292.vercel-dns-017.com` |
+| `ssh` | A | `18.118.30.226` |
+
+The apex answers from Vercel with **308** to `https://www.rootrecord.cloud/`. That host returns **200**, title “Root Record — Software Solutions”.
+
+SSH is direct. `ssh.rootrecord.cloud` is that A record, not the globe tunnel. Desk aliases `rr-aws` and `rr-aws-ip` in `~/.ssh/config` both use `HostName 18.118.30.226` and have no `ProxyCommand`. A login on 2026-09-30 returned the same address and an uptime of about 4 days 16 hours.
+
+Alexander’s data path for the clean slate: SSH carries Hawaii database snapshots to AWS. The public API is served from AWS to the Vercel page. That API hostname is not in DNS yet. The page source requests `https://api.rootrecord.cloud/api/state` and `/api/operations`. A public lookup of `api.rootrecord.cloud` returned no address. Do not call port 8787. Do not treat `www` as `/api/state`.
+
+`rootserver.rootrecord.cloud` was not retargeted. It remains the Hawaii poller tunnel (`127.0.0.1:8799`). `play.rootmc.net` stays the game. Do not recreate `3 - RootRecord-Website`. Do not bind port 3001.
+
+### Confirmed facts from earlier the same evening
+
+These were true before the DNS cutover. They are not the live hosts now.
+
+- `https://root-record-cloud.vercel.app/` returned **404** `DEPLOYMENT_NOT_FOUND`. That project was deleted. The live project is `rootrecord` on `rrc-ore`.
+- Do not use `http://<aws-ip>:8787/hawaii.ndjson`. That process serves a **frozen** append file (`/home/ubuntu/network-globe/network-globe/data/hawaii.ndjson`, 60,371,626 bytes). It is not the live snapshot.
 
 ### Live data the globe needs
 
@@ -41,7 +60,7 @@ Record shape (one JSON object per line):
 
 Hawaii rows also include `packets` and `bytes` (currently 0). AWS rows omit them. `source.publicIp` on Hawaii is null.
 
-Merged JSON the page already builds, `GET /api/state` on the globe process (today also `https://www.rootrecord.cloud/api/state` because that host is this process):
+Merged JSON the globe process built while `www` was still that process, `GET /api/state`:
 
 - `origin.label`: `"Hawaii + AWS Ohio"`
 - `stats.activeFlows`, `stats.localActiveFlows`, `stats.hawaiiActiveFlows`, `stats.endpoints`, `stats.packetRate`, `stats.bytesPerSec`, `stats.collector` = `"ss + hawaii snapshot"`
@@ -68,19 +87,17 @@ Merged JSON the page already builds, `GET /api/state` on the globe process (toda
 
 ### Still open / unresolved
 
-- Page hosts are the one Vercel site (`Website/Site/config/routes.yml`). `ssh.rootrecord.cloud`, `rootserver.rootrecord.cloud`, and `play.rootmc.net` stay. The AWS globe tunnel no longer lists `www`.
-- Last-known status is `https://api.rootrecord.cloud` (`/api/status`, `/api/operations`, `/api/state`). That host is not a page. DNS for it still has to be attached to the AWS tunnel.
-- `https://rootrecord.online/` has Vercel DNS and returns `DEPLOYMENT_NOT_FOUND` until the GitHub repository is connected.
-- Cloudflare worker in `Website/Cloudflare-Workers/` is not deployed. Its origin default is `https://root-record-cloud.vercel.app`.
+- The Vercel page requests `https://api.rootrecord.cloud`. That name has no public DNS yet. Alexander’s rule: SSH brings Hawaii data to AWS, and the API on AWS serves the Vercel page. Do not point the API at port 8787 or at `www`.
+- Other Cloudflare zones were given redirect rules toward `https://rootrecord.online/` earlier this evening. That retarget to `www.rootrecord.cloud` was not applied. `rootrecord.online` is the old Vercel DNS name and was `DEPLOYMENT_NOT_FOUND`. Do not treat it as the production host.
+- Cloudflare worker in `Website/Cloudflare-Workers/` is not deployed. Its origin default is still `https://root-record-cloud.vercel.app`.
 
 ### Explicitly historical (do not treat as current)
 
-- AWS as the public homepage, and the globe HTML on `www`, are not the target.
+- AWS as the public homepage, and the globe HTML on `www`, are not the target. `www` is the Vercel page.
 - The 60 MB `hawaii.ndjson` and `:8787` are the old append feed.
-- A signup link to `https://rootrecord.info/login` sends people through a page host. That host is the Vercel site.
+- `ssh.rootrecord.cloud` as a Cloudflare tunnel CNAME, and a `ProxyCommand` on `rr-aws`, are the previous SSH path.
 
 ### Next recommended action
 
-- Connect the `RootRecord-Website` repository to the Vercel project for `rootrecord.online` until that host returns 200.
-- Attach `api.rootrecord.cloud` to the AWS tunnel ingress for `127.0.0.1:8091` and start `status-api/rr-status-api.service`.
-- Hawaii already writes `status-current.json`. AWS `fetch-pacific.sh` keeps the last good copy when a pull fails.
+- Publish the AWS API on a hostname the Vercel page can call, using the two replaced snapshot files above. SSH is the Hawaii-to-AWS path (`rr-aws` / `rr-aws-ip` → `18.118.30.226`).
+- Leave `play.rootmc.net` and the `rootserver` poller tunnel alone unless Alexander asks.

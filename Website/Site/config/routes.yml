@@ -1,63 +1,64 @@
-# Local route manifest for the one Vercel site.
-# This file does not call Cloudflare and does not start cloudflared.
-# Every public page host is the one Vercel site. None of them is a holding page.
-# ssh, the Hawaii poller, the game, and the AWS status API stay off that site.
+# Production is https://www.rootrecord.cloud/ (Vercel project rootrecord, team rrc-ore).
+# Apex redirects there. Other page hosts in this file are the desk target, also that URL.
+# Live Cloudflare rules for those other zones were last aimed at rootrecord.online and were not retargeted.
+# ssh.rootrecord.cloud is A 18.118.30.226, proxy off. rootserver stays the poller. play.rootmc.net stays the game.
+# api.rootrecord.cloud is the intended AWS API for the Vercel page. It has no public DNS yet.
 
 home_card: off
 vercel_site: one
-home_url: https://rootrecord.online/
+home_url: https://www.rootrecord.cloud/
 routes:
   - hostname: rootrecord.online
     keep: true
-    service: https://rootrecord.online/
-    role: site
+    service: https://www.rootrecord.cloud/
+    role: redirect
   - hostname: www.rootrecord.online
     keep: true
-    service: https://rootrecord.online/
+    service: https://www.rootrecord.cloud/
     role: redirect
   - hostname: rootrecord.info
     keep: true
-    service: https://rootrecord.online/
+    service: https://www.rootrecord.cloud/
     role: redirect
   - hostname: www.rootrecord.info
     keep: true
-    service: https://rootrecord.online/
+    service: https://www.rootrecord.cloud/
     role: redirect
   - hostname: rootrecord.cloud
     keep: true
-    service: https://rootrecord.online/
+    service: https://www.rootrecord.cloud/
     role: redirect
   - hostname: www.rootrecord.cloud
     keep: true
-    service: https://rootrecord.online/
-    role: redirect
+    service: https://www.rootrecord.cloud/
+    role: site
   - hostname: avaivy.cloud
     keep: true
-    service: https://rootrecord.online/
+    service: https://www.rootrecord.cloud/
     role: redirect
   - hostname: www.avaivy.cloud
     keep: true
-    service: https://rootrecord.online/
+    service: https://www.rootrecord.cloud/
     role: redirect
   - hostname: kilauea.cloud
     keep: true
-    service: https://rootrecord.online/
+    service: https://www.rootrecord.cloud/
     role: redirect
   - hostname: www.kilauea.cloud
     keep: true
-    service: https://rootrecord.online/
+    service: https://www.rootrecord.cloud/
     role: redirect
   - hostname: rootmc.net
     keep: true
-    service: https://rootrecord.online/
+    service: https://www.rootrecord.cloud/
     role: redirect
   - hostname: www.rootmc.net
     keep: true
-    service: https://rootrecord.online/
+    service: https://www.rootrecord.cloud/
     role: redirect
   - hostname: ssh.rootrecord.cloud
     keep: true
-    service: ssh://localhost:22
+    service: 18.118.30.226:22
     role: ssh
   - hostname: rootserver.rootrecord.cloud
     keep: true

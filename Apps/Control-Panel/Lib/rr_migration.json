@@ -87,7 +87,7 @@
       "name": "Public site foundation + website repo sync",
       "wo": "WO-WEB-002 · WO-GH-2026-09-27",
       "state": "VERIFY PENDING",
-      "note": "The public page is Pacific Website/Home, published to RootRecord-Software-Solutions/RootRecord-Website. rootrecord.cloud and www 301 to https://rootrecord.online/. That Vercel host has no deployment yet. ssh and rootserver were not redirected. Data contract: Website/HANDOFF-vercel-homepage-2026-09-30.md. Do not recreate 3 - RootRecord-Website, bind port 3001, iframe www, or call port 8787.",
+      "note": "Production is https://www.rootrecord.cloud/ on Vercel. Apex 308s there. ssh.rootrecord.cloud is A 18.118.30.226. rr-aws and rr-aws-ip use that address with no ProxyCommand. api.rootrecord.cloud has no public DNS yet. SSH carries Hawaii data to AWS. The API is to be served from AWS to Vercel. Contract: Website/HANDOFF-vercel-homepage-2026-09-30.md. Do not recreate 3 - RootRecord-Website, bind port 3001, or call port 8787.",
       "settings": "services",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-WEB-002-Public-Site-Foundation.md"
