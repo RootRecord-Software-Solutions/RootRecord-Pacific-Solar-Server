@@ -38,7 +38,7 @@ Secrets / bot tokens stay local.
 
 ---
 
-*Updated 2026-09-30 02:00 HST — `council_relay` runs Pacific `scripts/ensure-relay.sh`. Replies stay off.*
+*Updated 2026-09-30 afternoon — sandbox replies on. Live council and private DMs stay off. Council inference is NPU llama3.2:3b, on demand.*
 
 ---
 

@@ -447,7 +447,7 @@ def inference_drift() -> dict:  # info: def inference_drift
         "configured_source": "Automations/scripts/jobs.py",  # info: "configured_source" : "Automations/scripts/jobs.py" ,
         "observed_model": observed_model,  # info: "observed_model" : observed_model ,
         "observed_source": "Communications/telegram/scripts/ensure-relay.sh",  # info: "observed_source" : "Communications/telegram/scripts/ensure-relay.sh" ,
-        "fallback_configured": "ollama" if fallback_configured else "unknown",  # info: "fallback_configured" : "ollama" if fallback_configured else "unknown" ,
+        "fallback_configured": fallback_configured,  # info: "fallback_configured" : fallback_configured ,
         "fallback_observed": fallback_observed,  # info: "fallback_observed" : fallback_observed ,
         "action": "documentation review required" if drifted else "none",  # info: "action" : "documentation review required" if drifted else "none" ,
         "confidence": "configured",  # info: "confidence" : "configured" ,
