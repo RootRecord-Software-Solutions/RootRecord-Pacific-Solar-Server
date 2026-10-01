@@ -28,6 +28,7 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 DATABASE = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database")  # info: set DATABASE
 OUT = DATABASE / "Website" / "pages"  # info: set OUT
+STATUS_FILE = Path("/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Communications/network/local-data-globe/rebroadcast/status-current.json")  # info: set STATUS_FILE
 ENERGY = DATABASE / "Energy"  # info: set ENERGY
 WEATHER_REPORT = DATABASE / "Weather" / "Hawai'i" / "reports" / "0 Level Processing" / "Hawaii_State_Weather_Report_current.md"  # info: set WEATHER_REPORT
 KILAUEA = DATABASE / "Geology" / "Volcanoes" / "kilauea-last.json"  # info: set KILAUEA
@@ -193,6 +194,7 @@ def write_all() -> list[Path]:  # info: def write_all
         weather["report"] = {k: v for k, v in report.items() if k != "file"}  # info: weather [ "report" ] = { k : v for k , v in report . items
     bundle = {  # info: set bundle
         "ok": True,  # info: "ok" : True ,
+        "kind": "last-known",  # info: "kind" : "last-known" ,
         "as_of": _now_line(),  # info: "as_of" : _now_line ( ) ,
         "power": pages["power"],  # info: "power" : pages [ "power" ] ,
         "weather": weather,  # info: "weather" : weather ,
@@ -202,6 +204,11 @@ def write_all() -> list[Path]:  # info: def write_all
     tmp.write_text(json.dumps(bundle, indent=2), encoding="utf-8")  # info: tmp . write_text ( json . dumps (
     tmp.replace(relay)  # info: tmp . replace ( relay )
     written.append(relay)  # info: written . append ( relay )
+    STATUS_FILE.parent.mkdir(parents=True, exist_ok=True)  # info: STATUS_FILE . parent . mkdir ( parents = True ,
+    status_tmp = STATUS_FILE.with_suffix(".json.tmp")  # info: set status_tmp
+    status_tmp.write_text(json.dumps(bundle, indent=2), encoding="utf-8")  # info: status_tmp . write_text ( json . dumps (
+    status_tmp.replace(STATUS_FILE)  # info: status_tmp . replace ( STATUS_FILE )
+    written.append(STATUS_FILE)  # info: written . append ( STATUS_FILE )
     return written  # info: return written
 
 

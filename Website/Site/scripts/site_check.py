@@ -36,6 +36,29 @@ FORBIDDEN = frozenset(  # info: set FORBIDDEN
 )  # info: )
 VERCEL = "https://rootrecord.online/"  # info: set VERCEL
 SSH = "ssh://localhost:22"  # info: set SSH
+POLLER = "http://127.0.0.1:8799"  # info: set POLLER
+STATUS = "http://127.0.0.1:8091"  # info: set STATUS
+PAGE_REDIRECTS = frozenset(  # info: set PAGE_REDIRECTS
+    {  # info: {
+        "www.rootrecord.online",  # info: "www.rootrecord.online" ,
+        "rootrecord.info",  # info: "rootrecord.info" ,
+        "www.rootrecord.info",  # info: "www.rootrecord.info" ,
+        "rootrecord.cloud",  # info: "rootrecord.cloud" ,
+        "www.rootrecord.cloud",  # info: "www.rootrecord.cloud" ,
+        "avaivy.cloud",  # info: "avaivy.cloud" ,
+        "www.avaivy.cloud",  # info: "www.avaivy.cloud" ,
+        "kilauea.cloud",  # info: "kilauea.cloud" ,
+        "www.kilauea.cloud",  # info: "www.kilauea.cloud" ,
+        "rootmc.net",  # info: "rootmc.net" ,
+        "www.rootmc.net",  # info: "www.rootmc.net" ,
+    }  # info: }
+)  # info: )
+STAYS = {  # info: set STAYS
+    "ssh.rootrecord.cloud": ("ssh", SSH),  # info: "ssh.rootrecord.cloud" : ( "ssh" , SSH ) ,
+    "rootserver.rootrecord.cloud": ("poller", POLLER),  # info: "rootserver.rootrecord.cloud" : ( "poller" , POLLER ) ,
+    "api.rootrecord.cloud": ("status", STATUS),  # info: "api.rootrecord.cloud" : ( "status" , STATUS ) ,
+    "play.rootmc.net": ("game", "stay"),  # info: "play.rootmc.net" : ( "game" , "stay" ) ,
+}  # info: }
 
 
 # ====================================================
@@ -138,16 +161,25 @@ def problems(data: dict) -> list[str]:  # info: def problems
             found.append("route is not a map")  # info: found . append ( "route is not a map" )
             continue  # info: continue
         host = str(route.get("hostname") or "")  # info: set host
-        if "avaivy" in host.lower():  # info: if "avaivy" in host . lower ( )
-            found.append("avaivy hostname is not applied")  # info: found . append ( "avaivy hostname is not applied" )
+        role = str(route.get("role") or "")  # info: set role
+        if role == "holding":  # info: if role == "holding" :
+            found.append("holding page is not a route")  # info: found . append ( "holding page is not a route" )
         seen[host] = route  # info: seen [ host ] = route
-    www = seen.get("www.rootrecord.cloud")  # info: set www
-    ssh = seen.get("ssh.rootrecord.cloud")  # info: set ssh
-    if www is None or www.get("keep") != "true" or www.get("service") != VERCEL or www.get("role") != "redirect":  # info: if www is None or www . get
-        found.append("www must redirect to Vercel")  # info: found . append ( "www must redirect to Vercel" )
-    if ssh is None or ssh.get("keep") != "true" or ssh.get("service") != SSH or ssh.get("role") != "ssh":  # info: if ssh is None or ssh . get
-        found.append("ssh route must stay")  # info: found . append ( "ssh route must stay" )
-    extra = sorted(set(seen) - {"www.rootrecord.cloud", "ssh.rootrecord.cloud"})  # info: set extra
+    site = seen.get("rootrecord.online")  # info: set site
+    if site is None or site.get("keep") != "true" or site.get("service") != VERCEL or site.get("role") != "site":  # info: if site is None or site . get
+        found.append("rootrecord.online must be the Vercel site")  # info: found . append ( "rootrecord.online must be the Vercel site" )
+    for host in sorted(PAGE_REDIRECTS):  # info: for host in sorted ( PAGE_REDIRECTS ) :
+        route = seen.get(host)  # info: set route
+        if route is None or route.get("keep") != "true" or route.get("service") != VERCEL or route.get("role") != "redirect":  # info: if route is None or route . get
+            found.append("page host must redirect to Vercel")  # info: found . append ( "page host must redirect to Vercel" )
+            break  # info: break
+    for host, expect in STAYS.items():  # info: for host , expect in STAYS . items ( ) :
+        route = seen.get(host)  # info: set route
+        if route is None or route.get("keep") != "true" or route.get("role") != expect[0] or route.get("service") != expect[1]:  # info: if route is None or route . get
+            found.append("kept host left its role")  # info: found . append ( "kept host left its role" )
+            break  # info: break
+    allowed = set(PAGE_REDIRECTS) | set(STAYS) | {"rootrecord.online"}  # info: set allowed
+    extra = sorted(set(seen) - allowed)  # info: set extra
     if extra:  # info: if extra :
         found.append("unexpected hostname")  # info: found . append ( "unexpected hostname" )
     return found  # info: return found
@@ -168,13 +200,14 @@ def write_result(root: Path) -> None:  # info: def write_result
         "ok": True,  # info: "ok" : True ,
         "checked_at": stamp,  # info: "checked_at" : stamp ,
         "home_card": "off",  # info: "home_card" : "off" ,
-        "www": "redirect",  # info: "www" : "redirect" ,
+        "pages": "vercel",  # info: "pages" : "vercel" ,
+        "status": "api.rootrecord.cloud",  # info: "status" : "api.rootrecord.cloud" ,
         "ssh": "keep",  # info: "ssh" : "keep" ,
         "vercel_site": "one",  # info: "vercel_site" : "one" ,
     }  # info: }
     (data_dir / "routes-last.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")  # info: call (
     with (log_dir / "site_check.log").open("a", encoding="utf-8") as handle:  # info: with ( log_dir / "site_check.log" ) . open
-        handle.write(f"{stamp} ok home_card=off www=redirect\n")  # info: handle . write ( f" { stamp }
+        handle.write(f"{stamp} ok home_card=off pages=vercel status=api.rootrecord.cloud\n")  # info: handle . write ( f" { stamp }
 
 
 # ====================================================
@@ -200,7 +233,7 @@ def main(argv: list[str] | None = None) -> int:  # info: def main
         return 2  # info: return 2
     if default:  # info: if default :
         write_result(ecosystem_root())  # info: call write_result
-    print(json.dumps({"ok": True, "home_card": "off", "www": "redirect"}))  # info: call print
+    print(json.dumps({"ok": True, "home_card": "off", "pages": "vercel", "status": "api.rootrecord.cloud"}))  # info: call print
     return 0  # info: return 0
 
 

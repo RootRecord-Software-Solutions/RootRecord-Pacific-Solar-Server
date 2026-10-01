@@ -75,8 +75,8 @@
     <section class="card glass" id="signup" aria-label="Sign up">
       <button class="x" type="button" data-close="signup" aria-label="Close sign up">×</button>
       <h2>Join Root Record</h2>
-      <p>Solar-powered software, run from Hawaiʻi. Create an account or sign in on the public account page.</p>
-      <a class="btn" href="https://rootrecord.info/login" rel="noopener">Sign up / Log in</a>
+      <p>Solar-powered software, run from Hawaiʻi. Create an account or sign in on this site.</p>
+      <a class="btn" href="/login">Sign up / Log in</a>
     </section>
     <section class="card glass" id="about" aria-label="What Root Record does">
       <button class="x" type="button" data-close="about" aria-label="Close about">×</button>
@@ -90,14 +90,14 @@
       <p class="foot" id="ops-asof">Last known · checking</p>
     </section>
   </div>
-  <div class="label"><div class="dot"></div>REAL NETWORK OBSERVATIONS · WAITING FOR DATA</div>
+  <div class="label"><div class="dot"></div>REAL NETWORK OBSERVATIONS · AUTO-UPDATING</div>
   <div class="help">drag to rotate · scroll to zoom</div>
   <div class="dock" aria-label="Closed panels and globe spin"></div>
 </div>
 <script src="https://unpkg.com/globe.gl@2.46.2"></script>
 <script>
 (function () {
-  // www and the apex 301 to https://rootrecord.online/. No data URL until the API redo.
+  var STATUS_API = "https://api.rootrecord.cloud";
   var KEY = "rr-home:v2:";
   var NAMES = { activity: "Activity", signup: "Sign up", about: "About", operations: "Operations" };
   var globe = Globe()(document.getElementById("globe"))
@@ -209,8 +209,36 @@
     $("ops-asof").textContent = data && data.as_of ? "Last known · " + data.as_of : "Last known · No data";
   }
 
-  paintHud(null);
-  paintOps(null);
+  var busy = false;
+  function loadGlobe() {
+    if (busy) return;
+    busy = true;
+    fetch(STATUS_API + "/api/state", { cache: "no-store", credentials: "omit" })
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (d) {
+        if (!d || d.ok === false) throw new Error("no_data");
+        var arcs = (d.arcs || []).map(function (a) {
+          var copy = {};
+          Object.keys(a).forEach(function (k) { copy[k] = a[k]; });
+          return copy;
+        });
+        globe.arcsData(arcs);
+        globe.pointsData(d.points || []);
+        paintHud(d);
+      })
+      .catch(function () { paintHud(null); })
+      .finally(function () { busy = false; });
+  }
+  function loadOps() {
+    fetch(STATUS_API + "/api/operations", { cache: "no-store", credentials: "omit" })
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (data) { if (!data || data.ok !== true) throw new Error("no_data"); paintOps(data); })
+      .catch(function () { paintOps(null); });
+  }
+  loadGlobe();
+  loadOps();
+  setInterval(loadGlobe, 5000);
+  setInterval(loadOps, 60000);
 
   function setOpen(id, open) {
     var panel = $(id);

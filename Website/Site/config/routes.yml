@@ -1,12 +1,57 @@
 # Local route manifest for the one Vercel site.
 # This file does not call Cloudflare and does not start cloudflared.
-# Public web hosts 301 to https://rootrecord.online/. ssh stays. The poller stays on rootserver.
+# Every public page host is the one Vercel site. None of them is a holding page.
+# ssh, the Hawaii poller, the game, and the AWS status API stay off that site.
 
 home_card: off
 vercel_site: one
 home_url: https://rootrecord.online/
 routes:
+  - hostname: rootrecord.online
+    keep: true
+    service: https://rootrecord.online/
+    role: site
+  - hostname: www.rootrecord.online
+    keep: true
+    service: https://rootrecord.online/
+    role: redirect
+  - hostname: rootrecord.info
+    keep: true
+    service: https://rootrecord.online/
+    role: redirect
+  - hostname: www.rootrecord.info
+    keep: true
+    service: https://rootrecord.online/
+    role: redirect
+  - hostname: rootrecord.cloud
+    keep: true
+    service: https://rootrecord.online/
+    role: redirect
   - hostname: www.rootrecord.cloud
+    keep: true
+    service: https://rootrecord.online/
+    role: redirect
+  - hostname: avaivy.cloud
+    keep: true
+    service: https://rootrecord.online/
+    role: redirect
+  - hostname: www.avaivy.cloud
+    keep: true
+    service: https://rootrecord.online/
+    role: redirect
+  - hostname: kilauea.cloud
+    keep: true
+    service: https://rootrecord.online/
+    role: redirect
+  - hostname: www.kilauea.cloud
+    keep: true
+    service: https://rootrecord.online/
+    role: redirect
+  - hostname: rootmc.net
+    keep: true
+    service: https://rootrecord.online/
+    role: redirect
+  - hostname: www.rootmc.net
     keep: true
     service: https://rootrecord.online/
     role: redirect
@@ -14,3 +59,15 @@ routes:
     keep: true
     service: ssh://localhost:22
     role: ssh
+  - hostname: rootserver.rootrecord.cloud
+    keep: true
+    service: http://127.0.0.1:8799
+    role: poller
+  - hostname: api.rootrecord.cloud
+    keep: true
+    service: http://127.0.0.1:8091
+    role: status
+  - hostname: play.rootmc.net
+    keep: true
+    service: stay
+    role: game
