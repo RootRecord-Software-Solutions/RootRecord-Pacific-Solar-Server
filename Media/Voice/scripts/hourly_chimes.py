@@ -39,6 +39,7 @@ ROSTER = ("ava", "bruce", "carly")  # info: set ROSTER
 MDT_AHEAD = 4  # info: Mountain Daylight Time is four hours ahead of Hawaii
 EASTERN_AHEAD = 6  # info: Eastern daylight is six hours ahead of Hawaii
 UTC_AHEAD = 10  # info: UTC is ten hours ahead of Hawaii
+PHRASE_GAP_S = 0.6  # info: silence between the Hawaii, Mountain, Eastern, and UTC lines
 SLOTS = tuple((hour, minute) for hour in range(24) for minute in (0, 30))  # info: set SLOTS
 
 
