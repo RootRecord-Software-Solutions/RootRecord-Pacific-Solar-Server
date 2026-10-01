@@ -283,6 +283,8 @@ def warning_for(phase: str, position: str, late: bool = False, low_light: bool =
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def sentence_for(weather: str, position: str, phase: str, late: bool = False, low_light: bool = False) -> str:  # info: def sentence_for
+    if not weather and not position:  # info: if not weather and not position
+        return "Security camera channel 1 still is black. The panel position is not visible."  # info: return "Security camera channel 1 still is black. The panel position is not visible."
     sky = WEATHER.get(weather, "conditions the camera could not settle")  # info: set sky
     tilt = POSITION.get(position, "a position the camera could not settle")  # info: set tilt
     line = f"Security camera observations indicate {sky}, with solar panels in {tilt}."  # info: set line
@@ -351,7 +353,9 @@ def apply_rules(row: dict, t: datetime) -> dict:  # info: def apply_rules
     late = late_day(t, rise, sett) if rise and sett else False  # info: set late
     watts = solar_watts(t)  # info: set watts
     low = watts is not None and watts <= LOW_SOLAR_W  # info: set low
-    if weather and position:  # info: if weather and position
+    if row.get("blank"):  # info: if row . get ( "blank" )
+        sentence = sentence_for("", "", phase, late, low)  # info: set sentence
+    elif weather and position:  # info: elif weather and position
         sentence = sentence_for(weather, position, phase, late, low)  # info: set sentence
     else:  # info: else
         sentence = ""  # info: set sentence
@@ -386,15 +390,37 @@ def store(row: dict) -> None:  # info: def store
 
 
 # ====================================================
+# SECTION: function reuse_hour
+# What it does: True when this hour's stored look still stands. A later visible frame replaces a black reading. A new black frame replaces a tilt.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def reuse_hour(cached: dict | None, image: Path | None, hour: str, force: bool) -> bool:  # info: def reuse_hour
+    if force or not cached or cached.get("hour") != hour:  # info: if force or not cached or cached . get ( "hour" ) != hour
+        return False  # info: return False
+    if not cached.get("position") and not cached.get("blank"):  # info: if not cached . get ( "position" ) and not cached . get ( "blank" )
+        return False  # info: return False
+    if image and blank(image) and not cached.get("blank"):  # info: if image and blank ( image ) and not cached . get ( "blank" )
+        return False  # info: return False
+    if cached.get("blank") and image and image.name != cached.get("image") and not blank(image):  # info: if cached . get ( "blank" ) and image and image . name != cached . get ( "image" ) and not blank ( image )
+        try:  # info: try
+            looked = datetime.fromisoformat(str(cached.get("at") or ""))  # info: set looked
+        except ValueError:  # info: except ValueError
+            return True  # info: return True
+        if image.stat().st_mtime > looked.timestamp():  # info: if image . stat ( ) . st_mtime > looked . timestamp ( )
+            return False  # info: return False
+    return True  # info: return True
+
+
+# ====================================================
 # SECTION: function observe
-# What it does: Return this hour's reading. Calls the vision model only when the hour has no tilt yet. An infrared still forces the sky to dark.
+# What it does: Return this hour's reading. A black still gets no model call and no tilt. An infrared still forces the sky to dark.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def observe(t: datetime, force: bool = False) -> dict:  # info: def observe
     hour = t.strftime("%Y-%m-%dT%H")  # info: set hour
     cached = load_cache()  # info: set cached
     image = newest_ch1()  # info: set image
-    if cached and cached.get("hour") == hour and cached.get("position") and not force:  # info: if cached and cached . get ( "hour" ) == hour and cached . get ( "position" ) and not force
+    if reuse_hour(cached, image, hour, force):  # info: if reuse_hour ( cached , image , hour , force )
         ruled = apply_rules(night_row(cached, image), t)  # info: set ruled
         store(ruled)  # info: call store
         return ruled  # info: return ruled
@@ -403,7 +429,7 @@ def observe(t: datetime, force: bool = False) -> dict:  # info: def observe
         fcntl.flock(handle.fileno(), fcntl.LOCK_EX)  # info: fcntl . flock ( handle . fileno ( ) , fcntl . LOCK_EX )
         cached = load_cache()  # info: set cached
         image = newest_ch1()  # info: set image
-        if cached and cached.get("hour") == hour and cached.get("position") and not force:  # info: if cached and cached . get ( "hour" ) == hour and cached . get ( "position" ) and not force
+        if reuse_hour(cached, image, hour, force):  # info: if reuse_hour ( cached , image , hour , force )
             ruled = apply_rules(night_row(cached, image), t)  # info: set ruled
             store(ruled)  # info: call store
             return ruled  # info: return ruled
@@ -413,6 +439,8 @@ def observe(t: datetime, force: bool = False) -> dict:  # info: def observe
         error = ""  # info: set error
         if image is None:  # info: if image is None
             error = "no channel 1 still"  # info: set error
+        elif blank(image):  # info: elif blank ( image )
+            weather, position = "", ""  # info: weather , position = "" , ""
         else:  # info: else
             try:  # info: try
                 weather, position = ask(image)  # info: weather , position = ask ( image )

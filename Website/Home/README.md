@@ -16,6 +16,9 @@ Production is [https://www.rootrecord.cloud/](https://www.rootrecord.cloud/).
 | `/solutions` | Customer problems those products and services address |
 | `/about` | Root Record as a software company |
 | `/security` | Security, privacy, operations, and the public boundary |
+| `/terms` | Terms of Service |
+| `/privacy` | Privacy Policy |
+| `/data-deletion` | Request deletion of server-stored data without closing the account |
 | `/status` | Public system status |
 | `/reports` | Index of the latest field, energy, and operations readings |
 | `/reports/<slug>` | One measured report. Spoken transcripts and persona names stay off the page |

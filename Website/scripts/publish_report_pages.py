@@ -321,6 +321,8 @@ def chrome(title: str, description: str, canonical: str, main: str, wide: bool =
   <a href="/reports">Reports</a>
   <a href="/status">Status</a>
   <a href="/about">About</a>
+  <a href="/terms">Terms</a>
+  <a href="/privacy">Privacy</a>
 </footer>
 <script src="/assets/shell.js"></script>
 </body>
