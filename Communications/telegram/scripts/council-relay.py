@@ -260,10 +260,10 @@ def run_infer(cfg, voice, prompt, prior=""):  # info: def run_infer
 
 # ====================================================
 # SECTION: function post_as
-# What it does: Post one reply. allow=False keeps a chat quiet. Never prints the token.
+# What it does: Post one reply on the user's message. allow=False keeps a chat quiet. Never prints the token.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def post_as(voice_id, voices, chat_id, text, max_text, allow=None):  # info: def post_as
+def post_as(voice_id, voices, chat_id, text, max_text, allow=None, reply_to=None, thread_id=None):  # info: def post_as
     if allow is None:  # info: if allow is None :
         allow = replies_enabled()  # info: set allow
     if not allow:  # info: if not allow :
@@ -277,7 +277,12 @@ def post_as(voice_id, voices, chat_id, text, max_text, allow=None):  # info: def
     if not tok:  # info: if not tok :
         print(f"[fail] no token {voice_id}", file=sys.stderr)  # info: call print
         return False  # info: return False
-    api(tok, "sendMessage", {"chat_id": chat_id, "text": text[:max_text], "disable_web_page_preview": True})  # info: call api
+    payload = {"chat_id": chat_id, "text": text[:max_text], "disable_web_page_preview": True}  # info: set payload
+    if reply_to:  # info: if reply_to
+        payload["reply_to_message_id"] = reply_to  # info: payload [ "reply_to_message_id" ] = reply_to
+    if thread_id:  # info: if thread_id
+        payload["message_thread_id"] = thread_id  # info: payload [ "message_thread_id" ] = thread_id
+    api(tok, "sendMessage", payload)  # info: call api
     print(f"[ok] posted as {voice_id}")  # info: call print
     return True  # info: return True
 
