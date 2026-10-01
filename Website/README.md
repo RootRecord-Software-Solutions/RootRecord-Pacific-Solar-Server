@@ -31,7 +31,7 @@ Desk runtime for Stripe snapshots, Vercel failed-build records, and last-known o
 | --- | --- | --- |
 | `scripts/stripe_poll.py` | Stripe balance snapshot. No key writes `not_configured` and does not call Stripe. A failed live poll keeps the last `ok` file | `Website/stripe-snapshot.json` |
 | `scripts/vercel_builds.py` | Redacted failed-build records. No token writes nothing and does not call Vercel. Does not delete records | `Logs/Website/*.json` |
-| `scripts/live_data_pages.py` | Power from Energy last files, weather from the Hawaiʻi state report header, Kīlauea from `Geology/Volcanoes/kilauea-last.json`. Missing numbers are omitted. Also writes `Website/operations.json` for the AWS relay | `Website/pages/{power,weather,kilauea}.json` and `Website/operations.json` |
+| `scripts/live_data_pages.py` | Power from Energy last files, weather from the Hawaiʻi state report header, Kīlauea from `Geology/Volcanoes/kilauea-last.json`. Missing numbers are omitted. Also writes the operations bundle for the AWS relay | `2 - RootRecord-Database/Website/pages/{power,weather,kilauea}.json` and `2 - RootRecord-Database/Website/operations.json` |
 
 Chat, voice packs, day board, Minecraft, and context are not built here.
 
