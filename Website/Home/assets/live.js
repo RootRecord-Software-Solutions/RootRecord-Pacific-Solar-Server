@@ -43,7 +43,12 @@
     led("led-ms", main !== null);
 
     var clock = T.utcClock(s.updated || (d && d.ts));
-    if (clock) text("last-update", clock);
+    var last = document.getElementById("last-update");
+    if (clock && last) {
+      last.textContent = clock;
+      last.dataset.source = "state";
+      text("last-label", "Last update");
+    }
     var feed = document.getElementById("feed-line");
     if (feed) feed.textContent = live ? "Network feed live" : "Network feed has no counts";
     stateSeen = true;
@@ -84,8 +89,11 @@
     led("led-energy", !!energy);
     led("led-weather", !!r.weather);
     led("led-geology", !!r.kilauea);
-    if (!document.getElementById("last-update") || document.getElementById("last-update").textContent === "—") {
-      if (r.asOf) text("last-update", r.asOf);
+    var last = document.getElementById("last-update");
+    if (r.asOf && last && last.dataset.source !== "state" && (last.textContent === "—" || last.dataset.source === "ops")) {
+      last.textContent = r.asOf;
+      last.dataset.source = "ops";
+      text("last-label", "Last known");
     }
     opsSeen = true;
   }
