@@ -2,7 +2,7 @@
 
 Discord poller under Pacific Communications. Package name `Discord`. One folder. No lowercase twin.
 
-**Status:** poller landed, not LIVE. Job `discord_poller` is `enabled: False`. `RR_DISCORD_POLLER`, `RR_DISCORD_POST`, and `RR_DISCORD_REVIEW_PIPELINE` stay unset. No token means no Discord HTTP.
+**Status:** poller landed, not LIVE. Job `discord_poller` is `enabled: False`. `RR_DISCORD_POLLER`, `RR_DISCORD_POST`, `RR_DISCORD_REVIEW_PIPELINE`, and `RR_GLOBAL_UPDATER` stay unset. No token means no Discord HTTP.
 
 ---
 
@@ -32,6 +32,9 @@ Draft: `5 - RootRecord-Library/Documentation/06-development/Work-Orders/drafts/D
 | Allowlist | `Communications/Discord/lib/envload.py` (`DISCORD_BOT_TOKEN` only) |
 | Channels | `Communications/Discord/config/channels.json` |
 | Persona loader | `Communications/CouncilPersona/scripts/personas.py` reads Library `Agent Context/` |
+| Global Updater | `Communications/Discord/scripts/global_updater.py` (gate `RR_GLOBAL_UPDATER`) |
+| Guild allowlist | `Communications/Discord/config/guilds.json` (empty until a professional guild id is accepted) |
+| Application label | `Communications/Discord/config/global-updater.json` (name and application id; not a token, not a bot user id) |
 | Inference | `System/scripts/plumbing/run-infer.sh` |
 | Database | `2 - RootRecord-Database/Communications/Discord/` |
 | Logs | `2 - RootRecord-Database/Logs/Communications/Discord/` |
@@ -77,8 +80,51 @@ Offline check:
 
 ```text
 python3 Communications/Discord/tests/test_review.py
+python3 Communications/Discord/tests/test_global_updater.py
 ```
 
 ---
 
-*WO-MIG-21 2026-09-30 HST. Review pipeline 2026-09-30 HST. No secrets in this file.*
+## Root Record Global Updater
+
+This Discord application is **Root Record Global Updater** (application id `150028956034740566`). It is the professional RootRecord help desk: factual data, measured observations, operational information, and documentation answers.
+
+It is not Ava Ivy. Ava Ivy remains the Minecraft / RootMC personality. This folder does not use `AVA_DISCORD_BOT_TOKEN`. The professional token name stays `DISCORD_BOT_TOKEN`.
+
+Canonical identity:
+
+```text
+5 - RootRecord-Library/Agent Context/Global-Updater-Agent-Context/
+```
+
+`scripts/global_updater.py` loads that pack through `CouncilPersona/scripts/personas.py` and passes it as `RR_PERSONA_SYSTEM`. The turn wrapper in `lib/updater.py` is not a second persona. When a model reply claims to be Ava, Bruce, or Carly, the public text is replaced with the Public introduction section of `IDENTITY.md`.
+
+The gate is `RR_GLOBAL_UPDATER=1`. Unset means the poller does not run this path. A message is answered only when all of these are true:
+
+- the gate is on
+- the channel id is in `config/channels.json`
+- the guild id is in `config/guilds.json`
+- the message names Root Record Global Updater, or a mention username matches that name
+- the author is not a bot
+
+An empty guild list answers nothing. Direct messages have no guild id, so they are ignored. The application id is not a bot user id and does not by itself trigger a reply. Other channel traffic is left alone.
+
+The reply is one `run-infer.sh` call for the voice `global-updater`, on the existing NPU single-flight path (`RR_NPU_ONLY=1`, `llama3.2:3b`). It does not call Ava, Bruce, or Carly. Host figures come from the recorded file `2 - RootRecord-Database/System/last/host-last.json`. Discord does not sample the host. A missing or old sample is unavailable. A sample older than 15 minutes and no older than 6 hours is reported as stale. A host sample is not a service-status claim.
+
+Posting still requires `RR_DISCORD_POST=1`. Do not set either gate, and do not enable `discord_poller`, until a manual test is signed off. Do not send a live Discord message from this work without that sign-off.
+
+```text
+Ava Ivy
+→ Minecraft / RootMC
+→ personality-driven gamer/community agent
+
+Global Updater
+→ professional RootRecord Discord
+→ factual operational/data/help-desk agent
+```
+
+The Ava review pipeline above is unchanged and stays off. A Global Updater reply is not fed through that pipeline.
+
+---
+
+*WO-MIG-21 2026-09-30 HST. Review pipeline 2026-09-30 HST. Global Updater persona 2026-09-30 HST. No secrets in this file.*

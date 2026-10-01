@@ -16,6 +16,9 @@ unless RR_DISCORD_POST=1. That gate stays unset.
 The Ava review pipeline stays off unless RR_DISCORD_REVIEW_PIPELINE=1.
 It does not run for traffic that does not name Ava.
 
+The Global Updater stays off unless RR_GLOBAL_UPDATER=1. It answers a
+mention of itself in an allowed guild. It does not run the Ava review.
+
   python3 poll.py
 """
 from __future__ import annotations  # info: from __future__ import annotations
@@ -37,6 +40,7 @@ sys.path.insert(0, str(SCRIPTS))  # info: sys . path . insert ( 0 , str ( SCRIPT
 from lib.api import post_message  # noqa: E402
 from lib.envload import bot_token  # noqa: E402
 import review  # noqa: E402
+import global_updater  # noqa: E402
 
 CHANNELS = HERE / "config" / "channels.json"  # info: set CHANNELS
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB
@@ -112,15 +116,23 @@ def run() -> dict:  # info: def run
     polled: list[str] = []  # info: set polled
     review_handled = 0  # info: set review_handled
     review_posted = 0  # info: set review_posted
+    updater_handled = 0  # info: set updater_handled
+    updater_posted = 0  # info: set updater_posted
     review_on = review.pipeline_enabled()  # info: set review_on
+    updater_on = global_updater.enabled()  # info: set updater_on
     if token and channels:  # info: if token and channels :
         for channel_id in channels:  # info: for channel_id in channels :
             messages = fetch_messages(token, channel_id)  # info: set messages
             http_calls += 1  # info: set http_calls
             polled.append(channel_id)  # info: polled . append ( channel_id )
+            updater = global_updater.apply(channel_id, messages, enabled=updater_on, post=post_message)  # info: set updater
+            updater_handled += int(updater.get("handled") or 0)  # info: set updater_handled
+            updater_posted += int(updater.get("posted") or 0)  # info: set updater_posted
+            taken = {str(item) for item in (updater.get("ids") or [])}  # info: set taken
+            remaining = [item for item in messages if str((item or {}).get("id") or "") not in taken]  # info: set remaining
             outcome = review.apply_review(  # info: set outcome
                 channel_id,  # info: channel_id
-                messages,  # info: messages
+                remaining,  # info: remaining
                 enabled=review_on,  # info: enabled = review_on
                 respond_fn=lambda cid, msgs: review.respond(cid, msgs, post=post_message, log=review.stage_log),  # info: respond_fn = lambda cid , msgs : review . respond
             )  # info: )
@@ -136,12 +148,15 @@ def run() -> dict:  # info: def run
         "review_pipeline": "on" if review_on else "off",  # info: "review_pipeline" : "on" if review_on else "off" ,
         "review_handled": review_handled,  # info: "review_handled" : review_handled ,
         "review_posted": review_posted,  # info: "review_posted" : review_posted ,
+        "global_updater": "on" if updater_on else "off",  # info: "global_updater" : "on" if updater_on else "off" ,
+        "global_updater_handled": updater_handled,  # info: "global_updater_handled" : updater_handled ,
+        "global_updater_posted": updater_posted,  # info: "global_updater_posted" : updater_posted ,
         "updated_at": datetime.now(HST).isoformat(timespec="seconds"),  # info: "updated_at" : datetime . now ( HST )
     }  # info: }
     write_json(STATUS_PATH, payload)  # info: call write_json
     with LOG_PATH.open("a", encoding="utf-8") as log:  # info: with LOG_PATH . open ( "a" , encoding
         log.write(  # info: log . write (
-            f"{payload['updated_at']} token={payload['token']} channels={payload['channels']} http_calls={payload['http_calls']} review={payload['review_pipeline']}\n"  # info: f" { payload [ 'updated_at' ] } token=
+            f"{payload['updated_at']} token={payload['token']} channels={payload['channels']} http_calls={payload['http_calls']} review={payload['review_pipeline']} global_updater={payload['global_updater']}\n"  # info: log line without message text or the token value
         )  # info: )
     return payload  # info: return payload
 

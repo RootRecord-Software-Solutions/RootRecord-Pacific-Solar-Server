@@ -5,14 +5,14 @@ Communication adapter. It does not own agent identity.
 `scripts/personas.py` reads, in place:
 
 ```text
-5 - RootRecord-Library/Agent Context/{Ava,Bruce,Carly}-Agent-Context/
+5 - RootRecord-Library/Agent Context/{Ava,Bruce,Carly,Global-Updater}-Agent-Context/
     IDENTITY.md
     ROLE-AND-BOUNDS.md
     PRINCIPLES.md
     WORKFLOW.md
 ```
 
-`council-relay.py` passes that text as `RR_PERSONA_SYSTEM`. Discord `scripts/review.py` uses the same loader when `RR_DISCORD_REVIEW_PIPELINE=1`. There is no prompt copy in this folder.
+`council-relay.py` passes ava, bruce, or carly as `RR_PERSONA_SYSTEM`. It does not request `global-updater`. Discord `scripts/review.py` uses ava, bruce, and carly when `RR_DISCORD_REVIEW_PIPELINE=1`. Discord `scripts/global_updater.py` uses `global-updater` when `RR_GLOBAL_UPDATER=1`. There is no prompt copy in this folder.
 
 `CONTEXT/`, `README.md`, `CHANGELOG.md`, and `HANDOFF-TEMPLATE.md` stay in the Library. They are not pasted into each Telegram turn. Council chat context is 4096 tokens (`0002`).
 

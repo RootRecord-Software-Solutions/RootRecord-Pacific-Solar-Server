@@ -7,4 +7,4 @@
 # banner from 5 - RootRecord-Library/prompts/How-To-Read-And-Edit-Code.md.
 # Kind: python
 # ==============================================================================
-"""Discord poller. Posts stay off unless RR_DISCORD_POST=1. Ava review stays off unless RR_DISCORD_REVIEW_PIPELINE=1."""  # info: """Discord poller. Posts stay off unless RR_DISCORD_POST=1. Ava review stays off unless RR_DISCORD_REVIEW_PIPELINE=1."""
+"""Discord poller. Posts stay off unless RR_DISCORD_POST=1. Ava review stays off unless RR_DISCORD_REVIEW_PIPELINE=1. Global Updater stays off unless RR_GLOBAL_UPDATER=1."""  # info: """Discord poller. Posts stay off unless RR_DISCORD_POST=1. Ava review and Global Updater stay off unless their gates are set."""

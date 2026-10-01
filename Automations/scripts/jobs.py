@@ -463,7 +463,7 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
         # RR_DISCORD_REVIEW_PIPELINE stays unset. Timeout fits four sequential inferences when that gate is later turned on.
         "id": "discord_poller",  # info: "id" : "discord_poller" ,
         "enabled": False,  # info: "enabled" : False ,
-        "description": "Discord poller (WO-MIG-21). OFF. No token and no post. Gates RR_DISCORD_POLLER and RR_DISCORD_REVIEW_PIPELINE stay unset.",  # info: "description" : "Discord poller (WO-MIG-21). OFF. No token and no post. Gates RR_DISCORD_POLLER and RR_DISCORD_REVIEW_PIPELINE stay unset." ,
+        "description": "Discord poller (WO-MIG-21). OFF. No token and no post. Gates RR_DISCORD_POLLER, RR_DISCORD_REVIEW_PIPELINE, and RR_GLOBAL_UPDATER stay unset.",  # info: "description" : "Discord poller (WO-MIG-21). OFF. No token and no post. Gates stay unset." ,
         "interval_sec": 60,  # info: "interval_sec" : 60 ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Communications/Discord/scripts/poll.py"',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Communications/Discord/scripts/poll.py"

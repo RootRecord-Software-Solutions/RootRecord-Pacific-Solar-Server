@@ -7,10 +7,12 @@
 # banner from 5 - RootRecord-Library/prompts/How-To-Read-And-Edit-Code.md.
 # Kind: python
 # ==============================================================================
-"""Read council chat system text from Library Agent Context.
+"""Read agent system text from Library Agent Context.
 
 This module does not store identity. SPEAK_LOCK is a speech rule from
 speech_scrub.py. The paragraphs come from the Library pack, in place.
+Telegram asks for ava, bruce, and carly. global-updater is the professional
+Discord voice. Listing it here does not add it to the Telegram council.
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
@@ -25,6 +27,7 @@ VOICES = {  # info: set VOICES
     "ava": "Ava-Agent-Context",  # info: "ava" : "Ava-Agent-Context"
     "bruce": "Bruce-Agent-Context",  # info: "bruce" : "Bruce-Agent-Context"
     "carly": "Carly-Agent-Context",  # info: "carly" : "Carly-Agent-Context"
+    "global-updater": "Global-Updater-Agent-Context",  # info: "global-updater" : "Global-Updater-Agent-Context"
 }  # info: }
 # Who the agent is. CONTEXT/, README, CHANGELOG, and HANDOFF-TEMPLATE stay in
 # the Library and are not pasted into a 4096-token Telegram turn.

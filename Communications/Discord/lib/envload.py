@@ -8,7 +8,7 @@
 # Kind: python
 # ==============================================================================
 #!/usr/bin/env python3
-"""Load the Discord bot token from central master-key.env only. Never print secrets."""  # info: """Load the Discord bot token from central master-key.env only. Never print secrets."""
+"""Load the Global Updater Discord token from central master-key.env only. Allowlist is DISCORD_BOT_TOKEN. AVA_DISCORD_BOT_TOKEN is not read. Never print secrets."""  # info: """Load DISCORD_BOT_TOKEN only. Do not read AVA_DISCORD_BOT_TOKEN. Never print secrets."""
 from __future__ import annotations  # info: from __future__ import annotations
 
 import os  # info: import os
