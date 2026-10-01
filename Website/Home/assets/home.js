@@ -249,11 +249,19 @@
     globe.arcsData(scene.arcs);
   }
 
+  function plainEarth() {
+    return Globe()(globeEl)
+      .globeImageUrl("https://unpkg.com/three-globe/example/img/earth-night.jpg")
+      .backgroundColor("rgba(0,0,0,0)")
+      .showAtmosphere(true)
+      .atmosphereColor("#3a1c71")
+      .atmosphereAltitude(0.18);
+  }
+
   if (globeEl && typeof Globe === "function") {
     try {
       globe = Globe()(globeEl)
         .globeImageUrl("/assets/earth/night.jpg")
-        .bumpImageUrl("/assets/earth/topology.png")
         .backgroundColor("rgba(0,0,0,0)")
         .showAtmosphere(true)
         .atmosphereColor("#8eb6ff")
@@ -339,8 +347,17 @@
         });
       }
     } catch (err) {
-      globe = null;
-      failGlobe();
+      try {
+        globe = plainEarth();
+        var fallbackControls = globe.controls();
+        fallbackControls.enableZoom = false;
+        fallbackControls.autoRotate = !reduced();
+        fallbackControls.autoRotateSpeed = 0.35;
+        globe.pointOfView({ lat: 16, lng: -156, altitude: 2.15 });
+      } catch (err2) {
+        globe = null;
+        failGlobe();
+      }
     }
   } else {
     failGlobe();
