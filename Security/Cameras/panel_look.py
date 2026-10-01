@@ -366,6 +366,7 @@ def main() -> int:  # info: def main
             print(phase, position, sentence_for("rain", position, phase))  # info: call print
         print("day", "left_up", "late-low", sentence_for("rain", "left_up", "day", True, True))  # info: call print
         print("day", "right_up", "late-low", sentence_for("rain", "right_up", "day", True, True))  # info: call print
+        print("evening", "left_up", "late-low", sentence_for("rain", "left_up", "evening", True, True))  # info: call print
         return 0  # info: return 0
     now = datetime.now().astimezone().replace(microsecond=0)  # info: set now
     print(json.dumps(observe(now, force="--force" in sys.argv), ensure_ascii=False))  # info: call print
