@@ -13,6 +13,9 @@
 Does not post. post_message stays in lib/api.py and returns without HTTP
 unless RR_DISCORD_POST=1. That gate stays unset.
 
+The Ava review pipeline stays off unless RR_DISCORD_REVIEW_PIPELINE=1.
+It does not run for traffic that does not name Ava.
+
   python3 poll.py
 """
 from __future__ import annotations  # info: from __future__ import annotations
@@ -27,9 +30,13 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 HERE = Path(__file__).resolve().parent.parent  # info: set HERE
+SCRIPTS = HERE / "scripts"  # info: set SCRIPTS
 sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 ,
+sys.path.insert(0, str(SCRIPTS))  # info: sys . path . insert ( 0 , str ( SCRIPTS ) )
 
+from lib.api import post_message  # noqa: E402
 from lib.envload import bot_token  # noqa: E402
+import review  # noqa: E402
 
 CHANNELS = HERE / "config" / "channels.json"  # info: set CHANNELS
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB

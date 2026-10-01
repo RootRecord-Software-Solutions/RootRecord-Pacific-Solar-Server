@@ -1,16 +1,16 @@
 {
-  "_info": "Root Monitor 'Not migrated' placeholders. Closed work orders were removed 2026-09-30 02:35 HST: WO-RPT-001, WO-ARCH, WO-CF, WO-GH-001, WO-AGENT, WO-MAP, WO-SYS-001 (they live in Work-Orders/Complete/). The panel only displays this file.",
-  "as_of": "2026-09-30 02:35 HST",
+  "_info": "Root Monitor 'Not migrated' placeholders. Refreshed 2026-09-30 19:02 HST from the live desk. Removed this pass: FLM / NPU own-session fix (PASS 2026-09-29 22:16 HST, setsid, exit 0, no flm left) and Geology collect (poller job geology_collect cycling, last ok 19:01 HST). Closed work orders stay in Work-Orders/Complete/. The panel only displays this file.",
+  "as_of": "2026-09-30 19:02 HST",
   "items": [
     {
       "id": "telegram-replies",
       "name": "Telegram council replies",
       "wo": "WO-SRV-2026-09-27 · G3 checklist A",
       "state": "BLOCKED",
-      "note": "Login and polling are up on Pacific after the 01:09 HST boot. Models are present. Replies stay off because RR_RELAY_REPLIES=0. Alexander has not turned that flag on.",
+      "note": "Sandbox replies are on. Live council and private DMs stay quiet because RR_RELAY_REPLIES defaults to 0. Council inference is NPU llama3.2:3b on demand. Alexander has not opted the live room in.",
       "settings": "messaging",
       "sources": [
-        "5 - RootRecord-Library/Documentation/00-architecture/G3-Runtime-Verification-Checklist-2026-09-28.md",
+        "5 - RootRecord-Library/Documentation/02-Runtime-Jobs-and-Control/G3-Runtime-Verification-Checklist-2026-09-28.md",
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/Servers_Cutover_Work_Order_WO-SRV-2026-09-27.md"
       ]
     },
@@ -19,7 +19,7 @@
       "name": "Discord bot",
       "wo": "WO-COM-002",
       "state": "BLOCKED",
-      "note": "Still the migration gate. No Discord runtime on Pacific. A fresh token is required before any enable. Do not load a token from archive history.",
+      "note": "Poller code is on Pacific and the job stays off (discord_poller enabled false, no token). A fresh token is required before any enable. Do not load a token from archive history.",
       "settings": "messaging",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-COM-002-Discord-Bot-Credential-Rotation.md"
@@ -30,10 +30,11 @@
       "name": "Slack / communications surface",
       "wo": "WO-COM-001",
       "state": "VERIFY PENDING",
-      "note": "Draft. Tunnel, globe, and the quiet relay are on Pacific. Slack is not wired. Notify policy is still unsealed.",
+      "note": "Tunnel, globe, and the quiet relay are on Pacific. The Slack poller is on Pacific (communications_slack) and stays off unless RR_SLACK=1. No token, no HTTP, and no post. Notify policy is still unsealed, so this draft is not promoted.",
       "settings": "messaging",
       "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-COM-001-Communications-Surface.md"
+        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-COM-001-Communications-Surface.md",
+        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/drafts/Slack_poller_Work_Order_WO-MIG-22-2026-09-29.md"
       ]
     },
     {
@@ -41,10 +42,11 @@
       "name": "Security timelapse compile",
       "wo": "WO-SRV · WO-AEYES-2026-09-27",
       "state": "VERIFY PENDING",
-      "note": "Grabs pass. Timelapse folders stay empty until the 05:00–19:00 HST window. Capture interval is still 1 second. The 5-second proposal was not applied.",
+      "note": "Daylight compiles ran today: hour_12.mp4 through hour_18.mp4 in Database Media/Timelapses/video_chunks (hour 18 at 19:01 HST). Capture interval is still 1 second. The 5-second proposal was not applied.",
       "settings": "cameras",
       "sources": [
-        "5 - RootRecord-Library/Documentation/00-architecture/Residual-Path-Retirement-Table-2026-09-28.md"
+        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/A-EYES_Work_Order_WO-AEYES-2026-09-27.md",
+        "5 - RootRecord-Library/Documentation/04-Migration-and-Legacy-Recovery/Residual-Path-Retirement-Table-2026-09-28.md"
       ]
     },
     {
@@ -52,32 +54,10 @@
       "name": "Energy actuating actions (arm/disarm, AC)",
       "wo": "WO-ECO-001",
       "state": "VERIFY PENDING",
-      "note": "River 2 Pro reads are live. Delta 2 is dead and does not transmit; do not schedule a Delta 2 actuation test. River arm/disarm and AC always-on still need Alexander to name the action.",
+      "note": "River 2 Pro reads are live (93% SOC at 19:02 HST, BLE and cloud). Delta 2 also read at 18:59 (74% SOC, BLE, not charging). Arm, disarm, and AC always-on still need Alexander to name the action.",
       "settings": "services",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-ECO-001-Energy-Domain-Import.md"
-      ]
-    },
-    {
-      "id": "flm-own-session",
-      "name": "FLM / NPU own-session fix",
-      "wo": "WO-SRV (NPU record)",
-      "state": "VERIFY PENDING",
-      "note": "Install and the on-demand llama3.2:1b route passed. The own-session fix is still unverified.",
-      "settings": "ai",
-      "sources": [
-        "5 - RootRecord-Library/Documentation/07-testing/2026-09-29-npu-flm-install-validate.md"
-      ]
-    },
-    {
-      "id": "geology",
-      "name": "Geology (earthquake) domain",
-      "wo": "WO-WXG-001",
-      "state": "VERIFY PENDING",
-      "note": "Manual collect passed earlier. The poller job stays off (RR_GEOLOGY=0). The weather poller was recycled at 02:24:58 HST. The new cycle has not cleared NOAA: noaa_homepage failed a bot-check at 02:33.",
-      "settings": "weather",
-      "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-WXG-001-Weather-Geology-Import.md"
       ]
     },
     {
@@ -85,16 +65,18 @@
       "name": "Weather retention apply",
       "wo": "weather_retention job",
       "state": "VERIFY PENDING",
-      "note": "Dry run around 02:02 HST would have moved 0 files. The job stays gated. Nothing was applied.",
+      "note": "Dry run at 02:02 HST would have moved 0 files. The job stays disabled and the command stays --dry-run. Nothing was applied.",
       "settings": "weather",
-      "sources": []
+      "sources": [
+        "5 - RootRecord-Library/Documentation/01-operations/2026-09-30-whats-left-for-alexander.md"
+      ]
     },
     {
       "id": "public-status",
       "name": "Public status / solar board",
       "wo": "WO-WEB-001",
       "state": "VERIFY PENDING",
-      "note": "Draft. Public board alignment with Pacific data is not built.",
+      "note": "Draft. The public board is not built against the Pacific readings.",
       "settings": "network",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-WEB-001-Public-Status-Solar-Board.md"
@@ -116,7 +98,7 @@
       "name": "US-Mainland-Server (continuity node)",
       "wo": "WO-ECO-2026-09-27 · WO-GH-2026-09-27",
       "state": "BLOCKED",
-      "note": "Mainland sync row stays disabled. No SSH Host alias for it on this desk. Stub only.",
+      "note": "Mainland sync row stays disabled. Its catalog path is the archived G2 tree under Old repos deleted and merged, not a live desk. Stub only.",
       "settings": "network",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/Ecosystem_Migration_Work_Order_WO-ECO-2026-09-27.md"
@@ -127,7 +109,7 @@
       "name": "G1 selective recovery packets (Solar-Pacific-…-Old)",
       "wo": "WO-OLD-2026-09-28",
       "state": "BLOCKED",
-      "note": "Scheduler trio is migrated. Other G1 packets stay blocked. Do not retire G1 without Alexander naming the tree.",
+      "note": "Scheduler trio is migrated. Other G1 packets stay blocked. The G2 skills checkout was moved on 2026-09-30 and is not a G1 recovery. Do not retire G1 without Alexander naming the tree.",
       "settings": "services",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/Old_Server_Selective_Recovery_Work_Order_WO-OLD-2026-09-28.md"
@@ -138,10 +120,10 @@
       "name": "G2 residual paths (27 dormant files)",
       "wo": "Residual-Path-Retirement-Table",
       "state": "VERIFY PENDING",
-      "note": "Not a full retirement. On 2026-09-30 Alexander allowed removal of skills files that were byte-identical to Pacific. Unique and diverged skills files stayed. Dangerous leftover skills scripts were fail-closed. The 27 GB old-skills tree was not touched.",
+      "note": "~/.ollama/skills was given back to Ollama at 17:45 HST (desk folders only). The G2 checkout, HEAD 6483586, is at Old repos deleted and merged/ollama-skills-g2-2026-09-30. The skills sync row is off. That checkout is not retired.",
       "settings": "services",
       "sources": [
-        "5 - RootRecord-Library/Documentation/00-architecture/Residual-Path-Retirement-Table-2026-09-28.md"
+        "5 - RootRecord-Library/Documentation/04-Migration-and-Legacy-Recovery/Residual-Path-Retirement-Table-2026-09-28.md"
       ]
     },
     {
@@ -160,9 +142,11 @@
       "name": "Database boundary & publication policy",
       "wo": "WO-DATA-2026-09-27",
       "state": "VERIFY PENDING",
-      "note": "The canonical Database path is in use. Publication choices (geology last-files, users/PII, timelapse masters, the cloudflared binary) are still Alexander's.",
+      "note": "The canonical Database path is in use. Geology last-files are updating on the poller. Publication choices (those files, users/PII, timelapse masters, the cloudflared binary) are still Alexander's.",
       "settings": "environment",
-      "sources": []
+      "sources": [
+        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/Database_Boundary_Work_Order_WO-DATA-2026-09-27.md"
+      ]
     },
     {
       "id": "wogen",

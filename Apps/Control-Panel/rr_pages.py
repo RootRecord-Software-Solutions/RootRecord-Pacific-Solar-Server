@@ -361,7 +361,7 @@ class ExtraPages:  # info: class ExtraPages
             data = {"items": [], "as_of": "?"}  # info: set data
         items = data.get("items", [])  # info: set items
         box.append(lbl(f"{len(items)} items not yet migrated from G2 / G1 (as of {data.get('as_of')}). Placeholders only — "  # info: box . append ( lbl ( f" {
-                       "no controls. Source: Library Work-Orders README, Residual-Path-Retirement-Table (all G2 KEPT), "  # info: "no controls. Source: Library Work-Orders README, Residual-Path-Retirement-Table (all G2 KEPT), "
+                       "no controls. Source: Library Work-Orders README, Residual-Path-Retirement-Table, "  # info: "no controls. Source: Library Work-Orders README, Residual-Path-Retirement-Table, "
                        "G3-Runtime-Verification-Checklist. Data file: Lib/rr_migration.json.", "dim-label", wrap=True))  # info: "G3-Runtime-Verification-Checklist. Data file: Lib/rr_migration.json." , "dim-label" , wrap = True )
         st = _sub_stack(box, 260)  # info: set st
         self.mig_stack, self.mig_items, self.mig_built = st, {}, set()  # info: self . mig_stack , self . mig_items ,

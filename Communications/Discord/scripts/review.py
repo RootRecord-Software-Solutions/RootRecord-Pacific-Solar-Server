@@ -21,7 +21,6 @@ import json  # info: import json
 import os  # info: import os
 import re  # info: import re
 import subprocess  # info: import subprocess
-import sys  # info: import sys
 from dataclasses import dataclass  # info: from dataclasses import dataclass
 from datetime import datetime  # info: from datetime import datetime
 from pathlib import Path  # info: from pathlib import Path
@@ -355,15 +354,17 @@ def run_pipeline(user_message: str, conversation_context: str = "", infer=None, 
     bruce = review_stage("bruce", bruce_prompt(req), speak, write)  # info: set bruce
     carly = review_stage("carly", carly_prompt(req, bruce), speak, write)  # info: set carly
     final = ""  # info: set final
+    final_error = False  # info: set final_error
     try:  # info: try
         final = clean_reply(speak("ava", final_prompt(req, bruce, carly)))  # info: set final
     except Exception as exc:  # info: except Exception as exc
+        final_error = True  # info: set final_error
         write(f"Ava final unavailable {type(exc).__name__}")  # info: call write
     if final:  # info: if final
         write(f"Ava final completed chars={len(final)}")  # info: call write
         final_status = "completed"  # info: set final_status
     else:  # info: else
-        if not any(isinstance(arg, str) and arg.startswith("Ava final unavailable") for arg in ()):  # info: if not any ( isinstance ( arg , str ) and arg . startswith ( "Ava final unavailable" ) for arg in ( ) )
+        if not final_error:  # info: if not final_error
             write("Ava final unavailable empty")  # info: call write
         final_status = "unavailable"  # info: set final_status
     public = choose_public(final, draft, bruce, carly)  # info: set public
