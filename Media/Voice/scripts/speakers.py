@@ -9,7 +9,7 @@
 # ==============================================================================
 """Locked Kokoro voices, report-kind personas and live-data gate (G3 port of G1 speakers.py).
 
-Bruce = Echo (am_echo, 0.92) · Ava = Heart (af_heart, 0.82, default) · Carly = Nova (af_nova, 0.74)
+Bruce = Echo (am_echo, 0.92) · Ava = Heart (af_heart, 0.82, default) · Carly = Nova (af_nova, 1.0)
 
 G3 changes (2026-09-29, g3-voice-ailog): retire pattern is now
   <report>_current.wav  ->  Archive/<report>_YYYYMMDDTHHMM.wav  (+ .read.txt / .speak.txt sidecars)
@@ -36,7 +36,7 @@ HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 AGENTS = {  # info: set AGENTS
     "ava": {"name": "Ava", "kokoro": "af_heart", "speed": 0.82},  # info: "ava" : { "name" : "Ava" , "kokoro"
     "bruce": {"name": "Bruce", "kokoro": "am_echo", "speed": 0.92},  # info: "bruce" : { "name" : "Bruce" , "kokoro"
-    "carly": {"name": "Carly", "kokoro": "af_nova", "speed": 0.74},  # info: "carly" : { "name" : "Carly" , "kokoro"
+    "carly": {"name": "Carly", "kokoro": "af_nova", "speed": 1.0},  # info: "carly" : { "name" : "Carly" , "kokoro" : "af_nova" , "speed" : 1.0 } ,
 }  # info: }
 
 # Automated spoken desks. Keep the three loads even. (verbatim from G1)

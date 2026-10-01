@@ -25,7 +25,7 @@ Run through voice-render.sh (single-flight inference lock + nice 10), with Media
           Pre-render the phrase catalog (clip_catalog.py) into Clips/<Persona>/<slug>.wav with QC and
           update Clips/clips_manifest.json.
 
-Voices (locked, from G1): Ava af_heart 0.82 (default) · Bruce am_echo 0.92 · Carly af_nova 0.74.
+Voices (locked): Ava af_heart 0.82 (default) · Bruce am_echo 0.92 · Carly af_nova 1.0.
 Output: 24 kHz, 16-bit PCM, mono WAV. Lexicon: Ava/Ayeva/Avaivy fixes + hawaiian_lexicon (verbatim G1).
 Delivery (Telegram sendVoice, speaker playback, AWS radio) is NOT implemented here — OFF by design.
 Env: RR_DATABASE_ROOT, RR_KOKORO_MODEL_DIR, RR_VOICE_OUT_DIR, RR_VOICE_THREADS (4), RR_VOICE_GAP_MS (180).
@@ -58,7 +58,7 @@ CLIPS_DIR = OUT_DIR / "Clips"  # info: set CLIPS_DIR
 MANIFEST = CLIPS_DIR / "clips_manifest.json"  # info: set MANIFEST
 SAMPLE_RATE = 24000  # info: set SAMPLE_RATE
 DEFAULT_VOICE = "af_heart"  # info: set DEFAULT_VOICE
-SPEEDS = {"af_heart": 0.82, "am_echo": 0.92, "af_nova": 0.74}  # info: set SPEEDS
+SPEEDS = {"af_heart": 0.82, "am_echo": 0.92, "af_nova": 1.0}  # info: set SPEEDS
 # ====================================================
 # SECTION: VOICE_ALIASES
 # What it does: Set VOICE_ALIASES.
@@ -464,7 +464,7 @@ def mode_stitch(a) -> dict:  # info: def mode_stitch
     persona = PERSONA_DIR[agent]  # info: set persona
     index = {}  # info: set index
     for key, c in load_manifest().get("clips", {}).items():  # info: for key , c in load_manifest ( )
-        if c.get("persona") == persona and c.get("qc") == "PASS" and c.get("voice") == voice and not c.get("proposed"):  # info: if c . get ( "persona" ) ==
+        if c.get("persona") == persona and c.get("qc") == "PASS" and c.get("voice") == voice and c.get("speed") == rate and not c.get("proposed"):  # info: if c . get ( "persona" ) == persona and speed matches
             index[norm_key(c["text"])] = CLIPS_DIR / persona / f"{c['slug']}.wav"  # info: index [ norm_key ( c [ "text" ]
     gap = np.zeros(int(SAMPLE_RATE * GAP_MS / 1000), dtype=np.float32)  # info: set gap
     parts, plan, spoken_all = [], [], []  # info: parts , plan , spoken_all = [ ]
