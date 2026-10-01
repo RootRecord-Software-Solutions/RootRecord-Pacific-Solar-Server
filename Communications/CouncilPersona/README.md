@@ -1,16 +1,21 @@
 # CouncilPersona
 
-Telegram chat prompts for the council voices `ava`, `bruce`, and `carly`.
+Communication adapter. It does not own agent identity.
 
-This folder is the runtime loader. It is not a second identity pack.
+`scripts/personas.py` reads, in place:
 
-| Layer | Path |
-| --- | --- |
-| Canonical identity | `5 - RootRecord-Library/Agent Context/{Ava,Bruce,Carly}-Agent-Context/` |
-| Operational wiring | Old skills packets `agents/{ava-ivy,bruce-monitor,carly-mal}/SKILL.md` (not on the live Pacific tree) |
-| Chat prompts | `prompts/{ava,bruce,carly}.md` |
-| Loader | `scripts/personas.py` → `system_for(voice)` |
+```text
+5 - RootRecord-Library/Agent Context/{Ava,Bruce,Carly}-Agent-Context/
+    IDENTITY.md
+    ROLE-AND-BOUNDS.md
+    PRINCIPLES.md
+    WORKFLOW.md
+```
 
-`council-relay.py` passes `system_for` as `RR_PERSONA_SYSTEM`. `run-infer.sh` uses that text on the NPU path only when `RR_SPEC_SYS` is empty. Sampling settings still come from `2 - RootRecord-Database/AI/FLM/Personas/{ava,bruce,carly}.json` when `RR_NPU_PERSONA=1`. Those JSON files are not this loader. The `*-telegram` Ollama Modelfiles are unchanged and apply only on the Ollama fallback.
+`council-relay.py` passes that text as `RR_PERSONA_SYSTEM`. There is no prompt copy in this folder.
 
-`system_for` prefixes `SPEAK_LOCK` from `Media/Voice/scripts/speech_scrub.py`.
+`CONTEXT/`, `README.md`, `CHANGELOG.md`, and `HANDOFF-TEMPLATE.md` stay in the Library. They are not pasted into each Telegram turn. Council chat context is 4096 tokens (`0002`).
+
+`SPEAK_LOCK` in `Media/Voice/scripts/speech_scrub.py` is a speech rule, not identity.
+
+Sampling settings stay in `2 - RootRecord-Database/AI/FLM/Personas/{ava,bruce,carly}.json`. The `system` field in those files is an old Modelfile copy. It is not the identity. The relay uses it only when `RR_PERSONA_SYSTEM` is empty. Do not edit it to change who an agent is.

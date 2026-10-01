@@ -24,14 +24,13 @@ Messaging, the live Cloudflare tunnel, the Hawaii network-globe collector, and c
 | `PublicHealth/` | HTTP probes of the public radio origin and `127.0.0.1:8787`, plus an optional Telegram line. Does not start port 8787. | **Off** unless `RR_PUBLIC_HEALTH=1`. Send stays off. |
 | `live-wx/` | Chat lines from NWS and the weather poller's hurricane files. | **On demand.** No job. Not wired to the relay. |
 | `web-facts/` | Allowlisted HTTPS GET for chat. | **On demand.** No job. Not wired to the relay. |
-| `CouncilPersona/` | Chat system text for voices `ava`, `bruce`, `carly`. Loaded by the relay as `RR_PERSONA_SYSTEM`. | **Loader.** Does not poll or send. |
+| `CouncilPersona/` | Reads Library `Agent Context/` and passes it as `RR_PERSONA_SYSTEM`. No identity copy. | **Loader.** Does not poll or send. |
 
 ## Does not own
 
 | Concern | Where it lives |
 | --- | --- |
-| Agent identity | Library `Agent Context/{Ava,Bruce,Carly}-Agent-Context/` |
-| Telegram chat prompts | `CouncilPersona/prompts/` (rendering of those packs, not a second identity) |
+| Agent identity | Library `Agent Context/{Ava,Bruce,Carly}-Agent-Context/` only. Do not keep a second editable copy. |
 | Telegram Modelfiles | Database `AI/Ollama/Modelfiles/Production/` |
 | Local inference | `System/scripts/plumbing/` (`run-infer.sh`) |
 | Earthquake and volcano collection | `Geology/` |
@@ -47,7 +46,7 @@ Messaging, the live Cloudflare tunnel, the Hawaii network-globe collector, and c
 - Relay settings: `telegram/config/relay.conf`, `telegram/config/voices.conf`
 - Discord channels: `Discord/config/channels.json` (empty)
 
-Identity packs are not a Communications contract. `CouncilPersona/` is only the chat rendering the relay loads.
+Identity packs are not a Communications contract. `CouncilPersona/` only reads the Library packs.
 
 ---
 
