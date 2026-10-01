@@ -68,9 +68,9 @@ Merged JSON the page already builds, `GET /api/state` on the globe process (toda
 
 ### Still open / unresolved
 
-- DNS and the tunnel ingress still send the apex and `www` to the AWS globe. This handoff does not move them.
-- There is no second hostname for globe JSON. When `www` leaves AWS, `https://www.rootrecord.cloud/api/state` leaves with it.
-- The recorded Vercel origin has no deployment.
+- Public web redirects are on (2026-09-30). Apex and `www` 301 to `https://rootrecord.online/`. The globe tunnel ingress for `www` is still in the AWS config, and HTTP no longer uses it. `ssh.rootrecord.cloud` and `rootserver.rootrecord.cloud` were not redirected.
+- There is no second hostname for globe JSON. `https://www.rootrecord.cloud/api/state` now 301s to the Vercel host and is not a data URL.
+- `https://rootrecord.online/` has Vercel DNS and returns `DEPLOYMENT_NOT_FOUND`. The GitHub repository is not connected to a deployment.
 - Cloudflare worker in `Website/Cloudflare-Workers/` is not deployed. Its origin default is `https://root-record-cloud.vercel.app`. It does not allow `/api/state`.
 
 ### Explicitly historical (do not treat as current)

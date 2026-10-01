@@ -7,7 +7,7 @@ Desk runtime for Stripe snapshots, Vercel failed-build records, and last-known o
 | Public page | [Home/](Home/) — globe background, closable services and operations panels |
 | GitHub / Vercel | Org `RootRecord-Software-Solutions/RootRecord-Website` (row `website`, Vercel) and personal `rootrecordsoftwaresolutions/RootRecord-Website` (row `website-personal`). Both pull and push from `Github/scripts/repos.conf` |
 | Data contract | [HANDOFF-vercel-homepage-2026-09-30.md](HANDOFF-vercel-homepage-2026-09-30.md). Two replaced ndjson files, or a future data-only URL with the same `/api/state` object |
-| Temporary read | `https://www.rootrecord.cloud/api/state` and `/api/operations` while DNS still sends `www` to the globe process on `127.0.0.1:8090`. That host is not the site and is not a data hostname |
+| Public redirect | `https://rootrecord.cloud/` and `https://www.rootrecord.cloud/` 301 to `https://rootrecord.online/`. `ssh.rootrecord.cloud` and `rootserver.rootrecord.cloud` stay |
 | Last-known file | `2 - RootRecord-Database/Website/operations.json` |
 
 `3 - RootRecord-Website/` is not on this desk. Do not recreate it. Do not bind port 3001. `https://rootserver.rootrecord.cloud/` is the poller on `127.0.0.1:8799`, not this page.

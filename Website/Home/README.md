@@ -11,7 +11,7 @@ The globe is the page background. A compact activity readout sits on the left. S
 
 This repository does not hold measurements. The homepage is this Vercel app. AWS is not the site.
 
-`https://www.rootrecord.cloud/` is still the AWS globe on `127.0.0.1:8090` only because DNS has not moved. The page currently reads `/api/state` and `/api/operations` there because that host is the globe process. Those URLs are not a data hostname. When `www` moves to this deployment, they go away with it. Do not iframe `www`. Do not call port 8787. That port serves a frozen append file.
+`https://rootrecord.cloud/` and `https://www.rootrecord.cloud/` 301 to `https://rootrecord.online/`. That host is the Vercel DNS target. It currently returns `DEPLOYMENT_NOT_FOUND` until the repository is connected there. The page does not read `www` for globe data. Do not iframe `www`. Do not call port 8787. That port serves a frozen append file.
 
 The globe inputs are two replaced files on the mainland host, or a future data-only URL that returns the same `/api/state` object. The contract is [HANDOFF-vercel-homepage-2026-09-30.md](../HANDOFF-vercel-homepage-2026-09-30.md). That file stays on the Pacific desk. It is not part of this Vercel repository.
 

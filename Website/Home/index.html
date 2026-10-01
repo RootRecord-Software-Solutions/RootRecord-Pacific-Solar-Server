@@ -90,14 +90,14 @@
       <p class="foot" id="ops-asof">Last known · checking</p>
     </section>
   </div>
-  <div class="label"><div class="dot"></div>REAL NETWORK OBSERVATIONS · AUTO-UPDATING</div>
+  <div class="label"><div class="dot"></div>REAL NETWORK OBSERVATIONS · WAITING FOR DATA</div>
   <div class="help">drag to rotate · scroll to zoom</div>
   <div class="dock" aria-label="Closed panels and globe spin"></div>
 </div>
 <script src="https://unpkg.com/globe.gl@2.46.2"></script>
 <script>
 (function () {
-  var RELAY = "https://www.rootrecord.cloud";
+  // www and the apex 301 to https://rootrecord.online/. No data URL until the API redo.
   var KEY = "rr-home:v2:";
   var NAMES = { activity: "Activity", signup: "Sign up", about: "About", operations: "Operations" };
   var globe = Globe()(document.getElementById("globe"))
@@ -209,35 +209,8 @@
     $("ops-asof").textContent = data && data.as_of ? "Last known · " + data.as_of : "Last known · No data";
   }
 
-  var busy = false;
-  function loadGlobe() {
-    if (busy) return;
-    busy = true;
-    fetch(RELAY + "/api/state", { cache: "no-store", credentials: "omit" })
-      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-      .then(function (d) {
-        var arcs = (d.arcs || []).map(function (a) {
-          var copy = {};
-          Object.keys(a).forEach(function (k) { copy[k] = a[k]; });
-          return copy;
-        });
-        globe.arcsData(arcs);
-        globe.pointsData(d.points || []);
-        paintHud(d);
-      })
-      .catch(function () { paintHud(null); })
-      .finally(function () { busy = false; });
-  }
-  function loadOps() {
-    fetch(RELAY + "/api/operations", { cache: "no-store", credentials: "omit" })
-      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-      .then(function (data) { if (!data || data.ok !== true) throw new Error("no_data"); paintOps(data); })
-      .catch(function () { paintOps(null); });
-  }
-  loadGlobe();
-  loadOps();
-  setInterval(loadGlobe, 5000);
-  setInterval(loadOps, 60000);
+  paintHud(null);
+  paintOps(null);
 
   function setOpen(id, open) {
     var panel = $(id);
