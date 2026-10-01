@@ -37,6 +37,8 @@ RELOAD_SCRIPT="/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-
 # ====================================================
 is_runtime_code_tree() {  # info: is_runtime_code_tree
   local id="$1" local_path="$2"  # info: local
+  # The public page lives under Pacific but is not poller code. A website merge must not reload the stack.
+  [[ "$id" == "website" ]] && return 1  # info: command
   # G2 (~/.ollama/skills) pulls are NOT runtime code: syncs must not restart the poller (2026-09-29).
   [[ "$id" == "pacific" ]] && return 0  # info: command
   [[ "$local_path" == *"RootRecord-Pacific-Solar-Server"* ]] && return 0  # info: command
@@ -211,6 +213,17 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do  # info:
   else  # info: else
     n=0  # info: set n
     echo "— [$id] no local changes"  # info: echo
+  fi  # info: fi
+
+  if ! git ls-remote --exit-code --heads "$remote_name" "$branch" >/dev/null 2>&1; then  # info: if
+    echo "↑ [$id] remote has no $branch; creating it"  # info: echo
+    if git push -u "$remote_name" "HEAD:refs/heads/$branch" 2>&1 | redact; then  # info: if
+      echo "↑ [$id] $n files → $slug ($branch)"  # info: echo
+      echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [$id] pushed $branch ($n file(s)) → $slug" >> "$BAK_ROOT/logs/$id.log"  # info: echo
+      exit 0  # info: exit
+    fi  # info: fi
+    echo "✗ [$id] first push failed; local history preserved" >&2  # info: echo
+    exit 1  # info: exit
   fi  # info: fi
 
   echo "↓ [$id] fetching $remote_name/$branch"  # info: echo

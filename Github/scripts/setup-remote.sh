@@ -31,7 +31,12 @@ if [[ "$mode" == "mirror" ]]; then  # info: if
   if [[ ! -d "$work/.git" ]]; then  # info: if
     rm -rf "$work"  # info: rm
     echo "[clone] $id → $work"  # info: echo
-    git clone --branch main "git@github.com:${slug}.git" "$work"  # info: git
+    if ! git clone --branch main "git@github.com:${slug}.git" "$work"; then  # info: if
+      echo "[init] $id has no main yet → $work"  # info: echo
+      mkdir -p "$work"  # info: mkdir
+      git -C "$work" init -b main  # info: git
+      git -C "$work" remote add origin "git@github.com:${slug}.git"  # info: git
+    fi  # info: fi
   fi  # info: fi
   git -C "$work" remote set-url "$remote_name" "git@github.com:${slug}.git" 2>/dev/null \
     || git -C "$work" remote add "$remote_name" "git@github.com:${slug}.git"  # info: command
