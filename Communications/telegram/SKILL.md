@@ -10,7 +10,9 @@ description: >-
 # ------------------------------------------------------------------------------
 # What: one council-relay (getUpdates) + per-voice post; mediate = Bruce
 # Config: config/{voices,relay,bots}.conf
-# DESK_LIVE_FILE → Database/intake/desk-live.txt (measured or No data)
+# DESK_LIVE_FILE → Database/Intake/desk-live.txt (measured lines, refreshed before each reply)
+# Council model: llama3.2:3b on the NPU via ensure-relay.sh. RR_NPU_ONLY=1. Context 4096.
+# State snapshot: Database/System/status/rootrecord-state.json (generated, not committed).
 # Bak: /home/rootrecord/Database/GITHUB/
 # Style bar: automations/scripts/jobs.py
 # Walls: billing → Carly · AWS → US-MAINLAND · public wording → Ava
@@ -29,7 +31,7 @@ description: >-
 
 Set `COUNCIL_CHAT_ID` before live poll. Stop legacy `apps.council` first.
 Sandbox tests use `SANDBOX_CHAT_ID` (`-1004406495175`, https://t.me/c/4406495175/2). `SANDBOX_REPLIES=1` answers that chat while the live council stays quiet. Reports, statuses, and commands target it with `RR_TELEGRAM_DEST=sandbox`.
-`DESK_LIVE_FILE` must point at the measured desk file (or leave empty = No data).
+`DESK_LIVE_FILE` is refreshed before each sandbox reply. A power question cites those lines. A scope question cites the state slice. Live council replies stay off until `RR_RELAY_REPLIES=1`.
 
 # ------------------------------------------------------------------------------
 # SECTION: HOW TO ADD A VOICE

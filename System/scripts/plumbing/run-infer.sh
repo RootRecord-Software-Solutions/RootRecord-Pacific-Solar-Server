@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# # INFO — FLM/NPU chat first; Ollama fallback. Single-flight. DESK_LIVE honest.
+# # INFO — FLM/NPU chat first. Council sets RR_NPU_ONLY=1 (no Ollama fallback) and llama3.2:3b.
+# Other callers default to llama3.2:1b and may fall back to Ollama. Single-flight. DESK_LIVE honest.
 # Usage: run-infer.sh <voice|model> [prompt...]
 # Voices ava|bruce|carly map to *-telegram Ollama models on fallback.
 # RR_SPECIALIST_ROUTING=1 (default OFF): route voices to rr-* specialists; RR_SPECIALIST=<rr-name> (or TARGET=rr-*) forces one.
 # HOW TO ADD: wrap new callers with single-flight; never stack gens; refuse busy.
 # Bak: /home/rootrecord/Database/GITHUB/
 # ==============================================================================
-# FLM NPU (/v1/chat/completions) first; Ollama fallback. Never abort the host.
+# FLM NPU (/v1/chat/completions) first. RR_NPU_ONLY=1 stays on the NPU. Otherwise Ollama is the fallback. Never abort the host.
 set -u  # info: set
 # No resident models (Alexander 03:12 HST 2026-09-29): ollama run unloads right after reply (keepalive 0).
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  # info: set HERE

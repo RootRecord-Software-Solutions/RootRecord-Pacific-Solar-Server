@@ -10,7 +10,7 @@ Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messagin
 | --- | --- |
 | `network/cloudflare/` | **Live.** `jobs.py` starts `Communications/network/cloudflare/bin/cloudflared` (token file `~/.cloudflared/rootserver.token`, public host `rootserver.rootrecord.cloud` → `127.0.0.1:8799`). The binary stays untracked and is on `Github/scripts/ecosystem-skip-autocommit.txt`. Do not commit it. |
 | `network/scripts/ensure-network-globe-hawaii.sh` | **Live.** Job cwd is Pacific `Communications/network`. Collector is `network/local-data-globe/collector.js`. |
-| telegram | **Live and quiet.** `council_relay` runs `Communications/telegram/scripts/ensure-relay.sh`. `RR_RELAY_REPLIES` stays `0` (poll and log only; no infer, no post). |
+| telegram | **Live.** `council_relay` runs `ensure-relay.sh`. Sandbox replies are on. Live council and private DMs stay quiet (`RR_RELAY_REPLIES` default 0). Council inference is NPU `llama3.2:3b`, on demand. Contract: `telegram/CONTRACT.md`. |
 | discord | Poller at `Communications/Discord/` (WO-MIG-21). Job `discord_poller` is off. No token, no post. **WO-COM-002** before LIVE |
 | slack | Poller at `Communications/Slack/` (WO-MIG-22). Job `communications_slack` stays off unless `RR_SLACK=1`. No token, no post. Not a second live relay. |
 | email | Shell only. Not a second live relay. |
@@ -28,7 +28,7 @@ Communication subsystem: network (Cloudflare tunnel, Hawaii globe), and messagin
 | --- | --- |
 | `cloudflare_tunnel` | Pacific `bin/cloudflared`. ON_BOOT builtin `tunnel_start`. |
 | `network_globe_hawaii` | Pacific `network/scripts/ensure-network-globe-hawaii.sh` |
-| `council_relay` | Pacific `telegram/scripts/ensure-relay.sh`. Replies stay off. |
+| `council_relay` | Pacific `telegram/scripts/ensure-relay.sh`. Sandbox replies on. Live council quiet. One getUpdates owner. |
 | `council_health` | Pacific `CouncilHealth/scripts/council_health.py --no-alert --no-probe`. Off unless `RR_COUNCIL_HEALTH=1`. |
 | `communications_slack` | Pacific `Slack/scripts/poll.py`. Off unless `RR_SLACK=1` at poller start. No HTTP and no post. |
 

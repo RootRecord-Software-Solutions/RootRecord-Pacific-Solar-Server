@@ -78,6 +78,8 @@ The corresponding database tree is:
 
 This directory is inside the umbrella git root. It does not have its own `.git`. Desk publish uses the `ecosystem` row and the `pacific` mirror row in `Github/scripts/repos.conf`.
 
+Council inference on this desk is NPU `llama3.2:3b`, on demand, context 4096. The sandbox answers. The live council stays quiet. Continuity for a new agent is Library `Documentation/01-operations/HANDOFF.md`. Check the live desk with `bash verify.sh` from the ecosystem root.
+
 **2026-09-30 01:24 HST:** this path was the live poller cwd after boot. River 2 Pro BLE reads are the live energy path. Delta 2 is dead and does not transmit. What still needs Alexander: [What's left for Alexander](../../5%20-%20RootRecord-Library/Documentation/01-operations/2026-09-30-whats-left-for-alexander.md).
 
 ---

@@ -9,7 +9,7 @@ Telegram communication integration, alerts, and council-relay services.
 | Item | State |
 | --- | --- |
 | Folder in this repo | Live relay scripts under `Communications/telegram/` |
-| Live relay today | Poller boot job `council_relay` runs `Communications/telegram/scripts/ensure-relay.sh`. Live council replies stay off (`RR_RELAY_REPLIES=0`) |
+| Live relay today | Poller boot job `council_relay` runs `ensure-relay.sh`. Sandbox replies are on. Live council and private DMs stay off (`RR_RELAY_REPLIES` default 0). Inference is NPU `llama3.2:3b`, on demand, context 4096. |
 | Sandbox | `SANDBOX_CHAT_ID=-1004406495175` ([t.me/c/4406495175/2](https://t.me/c/4406495175/2)). `SANDBOX_REPLIES=1` answers that chat only. Reports and statuses use it when `RR_TELEGRAM_DEST=sandbox` |
 | Standing rule | **One** getUpdates owner (council-relay) |
 | Contract | [CONTRACT.md](CONTRACT.md) |
@@ -18,7 +18,7 @@ Telegram communication integration, alerts, and council-relay services.
 
 ## jobs.py
 
-`council_relay` runs Pacific `Communications/telegram/scripts/ensure-relay.sh` (cwd `Communications/telegram`). Replies stay off (`RR_RELAY_REPLIES=0`).
+`council_relay` runs Pacific `Communications/telegram/scripts/ensure-relay.sh` (cwd `Communications/telegram`). Sandbox replies are on. Live council and private DMs stay off (`RR_RELAY_REPLIES` default 0). Council inference is NPU `llama3.2:3b`, on demand, context 4096.
 
 Do not run a second Telegram poller against the same bot token.
 

@@ -18,7 +18,7 @@ if [[ "${FLM_WARMUP_RESIDENT:-0}" != "1" ]]; then  # info: if
   exit 0  # info: exit
 fi  # info: fi
 PORT=52625  # info: set PORT
-FLM_MODEL="${FLM_MODEL:-llama3.2:1b}"  # 1b chosen by Alexander 03:27 HST 2026-09-29 (3b stays installed, unused)
+FLM_MODEL="${FLM_MODEL:-llama3.2:1b}"  # 1b is the non-council default (Alexander 03:27 HST 2026-09-29). Council relay overrides to llama3.2:3b.
 # Log holds full request bodies (prompts): git-ignored Logs/AI/FLM/ (2026-09-29; was tracked GITHUB/logs/flm.log).
 LOG="${FLM_LOG:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/AI/FLM/flm.log}"  # info: set LOG
 mkdir -p "$(dirname "$LOG")"  # info: mkdir
