@@ -686,7 +686,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
     {  # info: {
         "id": "voice_energy_report",  # info: "id" : "voice_energy_report" ,
         "enabled": os.environ.get("RR_VOICE_ENERGY", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "Carly energy report from Database Energy/ EcoFlow BLE last readings (no vision caption). No delivery.",  # info: "description" : "Carly energy report from Database Energy/ EcoFlow BLE last readings (no vision caption). No d
+        "description": "Carly energy report from Database Energy/ EcoFlow BLE last readings, with the hourly channel-1 solar look in the same report.",  # info: "description" : "Carly energy report from Database Energy/ EcoFlow BLE last readings, with the hourly channel-1 solar look in the same report." ,
         "only_at_minutes": [15, 45],  # info: "only_at_minutes" : [ 15 , 45 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" energy_report',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" energy_report

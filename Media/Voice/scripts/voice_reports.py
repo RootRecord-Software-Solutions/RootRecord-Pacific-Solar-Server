@@ -1246,7 +1246,9 @@ def main() -> int:  # info: def main
         if wav:  # info: if wav
             import voice_deliver  # info: import voice_deliver
             photo = newest_ch1(t) if report == "energy_report" else None  # info: set photo
-            caption = f"Solar panel still is {photo['age_min']} minutes old." if photo and photo["age_min"] > 0 else ""  # info: set caption
+            look = camera_observation(t) if report == "energy_report" else ""  # info: set look
+            age_line = f"Solar panel still is {photo['age_min']} minutes old." if photo and photo["age_min"] > 0 else ""  # info: set age_line
+            caption = " ".join(part for part in (look, age_line) if part)  # info: set caption
             res["deliver"] = voice_deliver.deliver(report, wav, " ".join(spoken), KIND[report], report_text=md, photo=(photo or {}).get("path"), photo_caption=caption)  # info: res [ "deliver" ] = voice_deliver . deliver
     print(json.dumps(res, ensure_ascii=False))  # info: call print
     return 0  # info: return 0
