@@ -194,16 +194,17 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do  # info:
     exit 1  # info: exit
   fi  # info: fi
 
-  branch=$(git rev-parse --abbrev-ref HEAD)  # info: set branch
+  branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"  # info: set branch
+  [[ -n "$branch" && "$branch" != "HEAD" ]] || branch=main  # info: command
 
   has_head=0  # info: set has_head
-  git rev-parse --verify HEAD >/dev/null 2>&1 && has_head=1  # info: command
+  if git rev-parse --verify HEAD >/dev/null 2>&1; then has_head=1; fi  # info: if
   if [[ "$has_head" == 0 ]] || ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then  # info: if
     git add -A  # info: git
     if [[ "$id" == "ecosystem" ]]; then  # info: if
       unstage_ecosystem_runtime  # info: unstage_ecosystem_runtime
     fi  # info: fi
-    if git diff --cached --quiet; then  # info: if
+    if [[ "$has_head" == 1 ]] && git diff --cached --quiet; then  # info: if
       n=0  # info: set n
       echo "— [$id] no committable local changes"  # info: echo
     else  # info: else
