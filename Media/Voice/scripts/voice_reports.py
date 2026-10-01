@@ -388,6 +388,23 @@ def newest_ch1(t: datetime) -> dict | None:  # info: def newest_ch1
 
 
 # ====================================================
+# SECTION: function camera_observation
+# What it does: This hour's channel-1 weather and panel-tilt sentence. Looks only when the hour has no reading.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def camera_observation(t: datetime) -> str:  # info: def camera_observation
+    cam = PACIFIC / "Security" / "Cameras"  # info: set cam
+    if str(cam) not in sys.path:  # info: if str ( cam ) not in sys . path :
+        sys.path.insert(0, str(cam))  # info: sys . path . insert ( 0 , str ( cam ) )
+    try:  # info: try :
+        import panel_look  # info: import panel_look
+        row = panel_look.observe(t)  # info: set row
+    except Exception:  # info: except Exception :
+        return ""  # info: return ""
+    return str((row or {}).get("sentence") or "")  # info: return str ( ( row or { } ) . get ( "sentence" ) or "" )
+
+
+# ====================================================
 # SECTION: function board_status
 # What it does: Read report_board.py status. Morning 09:02, midday 12:02, late 21:02.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -451,7 +468,7 @@ def speak_board(t: datetime, payload: dict | None):  # info: def speak_board
 
 # ====================================================
 # SECTION: function b_energy_report
-# What it does: Pack watts plus the newest ch1 still age. No vision caption.
+# What it does: Pack watts, the newest ch1 still, and one hourly camera observation.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def b_energy_report(t: datetime):  # info: def b_energy_report
@@ -486,7 +503,11 @@ def b_energy_report(t: datetime):  # info: def b_energy_report
     else:  # info: else :
         md.append("- Solar panel still: not on file")  # info: md . append ( "- Solar panel still: not on file" )
         sp.append("No solar panel still on file.")  # info: sp . append ( "No solar panel still on file." )
-    md += ["", "_Source: Database Energy/soc + Energy/watts (*-last.json, EcoFlow BLE) and the newest ch1 camera still. No vision caption._", ""]  # info: set md
+    look = camera_observation(t)  # info: set look
+    if look:  # info: if look :
+        md.append(f"- {look}")  # info: md . append ( f" - { look } " )
+        sp.append(look)  # info: sp . append ( look )
+    md += ["", "_Source: Database Energy/soc + Energy/watts (*-last.json, EcoFlow BLE), the newest ch1 camera still, and one hourly Gemma look at that still._", ""]  # info: set md
     return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
