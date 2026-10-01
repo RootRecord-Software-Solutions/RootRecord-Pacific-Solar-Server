@@ -295,8 +295,85 @@ def b_nws_weather(t: datetime):  # info: def b_nws_weather
 
 
 # ====================================================
+# SECTION: function newest_ch1
+# What it does: Newest ch1 camera still and its age in minutes. Does not describe the picture.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def newest_ch1(t: datetime) -> dict | None:  # info: def newest_ch1
+    frames = DB / "Media" / "Images"  # info: set frames
+    files = [p for p in frames.glob("ch1-*.jpg") if p.is_file()] if frames.is_dir() else []  # info: set files
+    if not files:  # info: if not files :
+        return None  # info: return None
+    latest = max(files, key=lambda p: p.stat().st_mtime)  # info: set latest
+    age = max(0, int((t.timestamp() - latest.stat().st_mtime) // 60))  # info: set age
+    return {"path": str(latest), "age_min": age}  # info: return { "path" : str ( latest ) , "age_min" : age }
+
+
+# ====================================================
+# SECTION: function board_status
+# What it does: Read report_board.py status. Morning 09:02, midday 12:02, late 21:02.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def board_status() -> dict | None:  # info: def board_status
+    script = PACIFIC / "Reports" / "scripts" / "report_board.py"  # info: set script
+    if not script.is_file():  # info: if not script . is_file ( ) :
+        return None  # info: return None
+    try:  # info: try :
+        proc = subprocess.run([sys.executable, str(script), "status"], capture_output=True, text=True, timeout=30)  # info: set proc
+    except (OSError, subprocess.TimeoutExpired):  # info: except ( OSError , subprocess . TimeoutExpired ) :
+        return None  # info: return None
+    if proc.returncode != 0:  # info: if proc . returncode != 0 :
+        return None  # info: return None
+    try:  # info: try :
+        data = json.loads(proc.stdout)  # info: set data
+    except ValueError:  # info: except ValueError :
+        return None  # info: return None
+    return data if isinstance(data, dict) and data.get("ok") else None  # info: return data if isinstance ( data , dict ) and data . get ( "ok" ) else None
+
+
+# ====================================================
+# SECTION: function speak_board
+# What it does: Spoken remaining tasks from report-board slots. Does not play audio.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def speak_board(t: datetime, payload: dict | None):  # info: def speak_board
+    labels = {"morning": "Morning report", "midday": "Midday report", "late": "Late report"}  # info: set labels
+    closed = {"done", "missed", "skipped_optional"}  # info: set closed
+    rows = []  # info: set rows
+    for key, row in ((payload or {}).get("slots") or {}).items():  # info: for key , row in ( ( payload or { } ) . get ( "slots" ) or { } ) . items ( ) :
+        if not isinstance(row, dict):  # info: if not isinstance ( row , dict ) :
+            continue  # info: continue
+        try:  # info: try :
+            when = datetime.fromisoformat(str(row.get("scheduled_at")))  # info: set when
+        except (TypeError, ValueError):  # info: except ( TypeError , ValueError ) :
+            continue  # info: continue
+        if when.tzinfo is None and t.tzinfo is not None:  # info: if when . tzinfo is None and t . tzinfo is not None :
+            when = when.replace(tzinfo=t.tzinfo)  # info: set when
+        rows.append((when, str(key), str(row.get("status") or "unknown")))  # info: rows . append ( ( when , str ( key ) , str ( row . get ( "status" ) or "unknown" ) ) )
+    rows.sort()  # info: rows . sort ( )
+    hour = [row for row in rows if t < row[0] <= t + timedelta(hours=1) and row[2] not in closed]  # info: set hour
+    sp = [f"Remaining tasks at {clock(t)} Hawaiian Standard Time.".replace("..", ".")]  # info: set sp
+    if payload is None:  # info: if payload is None :
+        sp.append("The report board is not on file.")  # info: sp . append ( "The report board is not on file." )
+    else:  # info: else :
+        sp.append(f"{len(hour)} item{'s' if len(hour) != 1 else ''} in the next hour.")  # info: sp . append ( f" { len ( hour ) } item { 's' if len ( hour ) != 1 else '' } in the next hour. " )
+        for when, key, _status in hour:  # info: for when , key , _status in hour :
+            sp.append(f"{clock(when)} {labels.get(key, key)}.")  # info: sp . append ( f" { clock ( when ) } { labels . get ( key , key ) } . " )
+        if not hour:  # info: if not hour :
+            later = [row for row in rows if row[0] > t and row[2] not in closed]  # info: set later
+            if later:  # info: if later :
+                sp.append(f"Next is {clock(later[0][0])} {labels.get(later[0][1], later[0][1])}.")  # info: sp . append ( f" Next is { clock ( later [ 0 ] [ 0 ] ) } { labels . get ( later [ 0 ] [ 1 ] , later [ 0 ] [ 1 ] ) } . " )
+            else:  # info: else :
+                sp.append("No later report slots are open.")  # info: sp . append ( "No later report slots are open." )
+    md = [f"# Remaining tasks — {t.isoformat()}", "", "Source: report_board.py status (morning 09:02, midday 12:02, late 21:02).", ""]  # info: set md
+    md += [f"- {labels.get(key, key)} {when.isoformat()} {status}" for when, key, status in rows]  # info: set md
+    md += ["", "## Spoken", "", " ".join(sp), ""]  # info: set md
+    return "\n".join(md), sp  # info: return "\n" . join ( md ) , sp
+
+
+# ====================================================
 # SECTION: function b_energy_report
-# What it does: b energy report.
+# What it does: Pack watts plus the newest ch1 still age. No vision caption.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def b_energy_report(t: datetime):  # info: def b_energy_report

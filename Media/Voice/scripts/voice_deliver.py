@@ -138,13 +138,13 @@ def to_ogg(wav: Path) -> Path:  # info: def to_ogg
 # What it does: Build one multipart body. Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def form_body(fields: dict, file_field: str, filename: str, data: bytes) -> tuple[bytes, str]:  # info: def form_body
+def form_body(fields: dict, file_field: str, filename: str, data: bytes, mime: str = "audio/ogg") -> tuple[bytes, str]:  # info: def form_body
     boundary = "----RootRecordVoice" + uuid.uuid4().hex  # info: set boundary
     parts = []  # info: set parts
     for key, val in fields.items():  # info: for key , val in fields . items
         parts.append(f"--{boundary}\r\nContent-Disposition: form-data; name=\"{key}\"\r\n\r\n{val}\r\n".encode())  # info: parts . append
     parts.append(  # info: parts . append
-        f"--{boundary}\r\nContent-Disposition: form-data; name=\"{file_field}\"; filename=\"{filename}\"\r\nContent-Type: audio/ogg\r\n\r\n".encode()  # info: f" -- { boundary }
+        f"--{boundary}\r\nContent-Disposition: form-data; name=\"{file_field}\"; filename=\"{filename}\"\r\nContent-Type: {mime}\r\n\r\n".encode()  # info: f" -- { boundary }
         + data  # info: + data
         + b"\r\n"  # info: + b"\r\n"
     )  # info: )
@@ -237,11 +237,38 @@ def remember(report: str, digest: str, message_id: int) -> None:  # info: def re
     os.replace(tmp, STATE)  # info: os . replace
 
 # ====================================================
-# SECTION: function deliver
-# What it does: Send the voice note and the transcript reply. Skips when the gate is off or the words are unchanged.
+# SECTION: function dest_name
+# What it does: sandbox unless RR_TELEGRAM_DEST names another chat. Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def deliver(report: str, wav: str | Path, spoken: str, kind: str) -> dict:  # info: def deliver
+def dest_name() -> str:  # info: def dest_name
+    name = os.environ.get("RR_TELEGRAM_DEST", "sandbox").strip().lower()  # info: set name
+    return name or "sandbox"  # info: return name or "sandbox"
+
+# ====================================================
+# SECTION: function posts_for
+# What it does: Sandbox sends voice, transcript, and report. Any other chat sends voice and report only.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def posts_for(dest: str) -> dict:  # info: def posts_for
+    live = (dest or "sandbox").strip().lower() != "sandbox"  # info: set live
+    return {"voice": True, "transcript": not live, "report": True}  # info: return { "voice" : True , "transcript" : not live , "report" : True }
+
+# ====================================================
+# SECTION: function measured_text
+# What it does: Report body without the spoken section. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def measured_text(report_text: str, title: str) -> str:  # info: def measured_text
+    body = (report_text or "").split("## Spoken", 1)[0].strip()  # info: set body
+    return (body or title)[:3500]  # info: return ( body or title ) [ : 3500 ]
+
+# ====================================================
+# SECTION: function deliver
+# What it does: Sandbox sends voice, transcript, and report. Live sends voice and report. Skips when the gate is off or the words are unchanged.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def deliver(report: str, wav: str | Path, spoken: str, kind: str, report_text: str = "", photo: str | None = None, photo_caption: str = "") -> dict:  # info: def deliver
     if not deliver_enabled():  # info: if not deliver_enabled
         return {"ok": True, "sent": False, "detail": "deliver gate off"}  # info: return { "ok" : True , "sent" : False , "detail" : "deliver gate off" }
     text = " ".join(spoken.split())  # info: set text
@@ -267,18 +294,32 @@ def deliver(report: str, wav: str | Path, spoken: str, kind: str) -> dict:  # in
     except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired):  # info: except
         return {"ok": False, "sent": False, "detail": "ogg convert failed"}  # info: return { "ok" : False , "sent" : False , "detail" : "ogg convert failed" }
     title = TITLES.get(report, report.replace("_", " "))  # info: set title
+    plan = posts_for(dest_name())  # info: set plan
     body, boundary = form_body(  # info: body , boundary = form_body
         {"chat_id": chat, "caption": f"{title}\n{NOTES}"[:1024]},  # info: { "chat_id" : chat , "caption" : f" { title } \n { NOTES } " [ : 1024 ] }
         "voice",  # info: "voice"
         f"{report}.ogg",  # info: f" { report } .ogg "
         ogg.read_bytes(),  # info: ogg . read_bytes ( )
     )  # info: )
-    voice = post(token, "sendVoice", body, f"multipart/form-data; boundary={boundary}")  # info: set voice
+    voice = post(token, "sendVoice", body, f"multipart/form-data; boundary={boundary}") if plan["voice"] else {"ok": False}  # info: set voice
     if not voice.get("ok"):  # info: if not voice . get ( "ok" )
-        return {"ok": False, "sent": False, "detail": voice.get("detail") or "sendVoice failed", "persona": who}  # info: return { "ok" : False , "sent" : False
+        return {"ok": False, "sent": False, "detail": voice.get("detail") or "sendVoice failed", "persona": who, "plan": plan}  # info: return { "ok" : False , "sent" : False
     message_id = ((voice.get("result") or {}).get("message_id"))  # info: set message_id
-    transcript = json.dumps({"chat_id": chat, "text": f"{title} — transcript\n\n{text}"[:3900], "reply_to_message_id": message_id, "disable_web_page_preview": True}).encode()  # info: set transcript
-    note = post(token, "sendMessage", transcript, "application/json")  # info: set note
+    transcript_ok = False  # info: set transcript_ok
+    if plan["transcript"]:  # info: if plan [ "transcript" ] :
+        transcript = json.dumps({"chat_id": chat, "text": f"{title} — transcript\n\n{text}"[:3900], "reply_to_message_id": message_id, "disable_web_page_preview": True}).encode()  # info: set transcript
+        note = post(token, "sendMessage", transcript, "application/json")  # info: set note
+        transcript_ok = bool(note.get("ok"))  # info: set transcript_ok
+    report_ok = False  # info: set report_ok
+    if plan["report"]:  # info: if plan [ "report" ] :
+        report_body = json.dumps({"chat_id": chat, "text": measured_text(report_text, title)[:3900], "disable_web_page_preview": True}).encode()  # info: set report_body
+        report_note = post(token, "sendMessage", report_body, "application/json")  # info: set report_note
+        report_ok = bool(report_note.get("ok"))  # info: set report_ok
+    photo_ok = False  # info: set photo_ok
+    photo_path = Path(photo) if photo else None  # info: set photo_path
+    if photo_path and photo_path.is_file():  # info: if photo_path and photo_path . is_file ( ) :
+        shot, shot_boundary = form_body({"chat_id": chat, "caption": (photo_caption or title)[:1024]}, "photo", photo_path.name, photo_path.read_bytes(), "image/jpeg")  # info: shot , shot_boundary = form_body
+        photo_ok = bool(post(token, "sendPhoto", shot, f"multipart/form-data; boundary={shot_boundary}").get("ok"))  # info: set photo_ok
     if message_id:  # info: if message_id
         remember(report, digest, int(message_id))  # info: call remember
-    return {"ok": bool(note.get("ok")), "sent": True, "persona": who, "chat": chat, "message_id": message_id, "transcript": bool(note.get("ok"))}  # info: return { "ok" : bool ( note . get ( "ok" ) ) , "sent" : True
+    return {"ok": report_ok if plan["report"] else True, "sent": True, "persona": who, "chat": chat, "message_id": message_id, "transcript": transcript_ok, "report": report_ok, "photo": photo_ok, "plan": plan}  # info: return { "ok" : report_ok if plan [ "report" ] else True , "sent" : True

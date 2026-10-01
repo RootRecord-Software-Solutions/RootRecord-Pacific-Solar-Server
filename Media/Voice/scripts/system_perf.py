@@ -227,7 +227,7 @@ def main() -> int:  # info: def main
             wav = (res.get("voice") or {}).get("wav")  # info: set wav
             if wav:  # info: if wav
                 import voice_deliver  # info: import voice_deliver
-                res["deliver"] = voice_deliver.deliver(REPORT, wav, spoken, "system")  # info: res [ "deliver" ] = voice_deliver . deliver
+                res["deliver"] = voice_deliver.deliver(REPORT, wav, spoken, "system", report_text=md)  # info: res [ "deliver" ] = voice_deliver . deliver
         finally:  # info: finally :
             os.unlink(f.name)  # info: os . unlink ( f . name )
     print(json.dumps(res))  # info: call print
