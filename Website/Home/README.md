@@ -9,12 +9,11 @@ The globe is the page background. Services and operations are glass panels on to
 | [index.html](index.html) | The page |
 | [vercel.json](vercel.json) | Static hosting headers |
 
-This repository does not hold measurements. The page reads two feeds from the AWS relay:
+This repository does not hold measurements. The homepage is this Vercel app. AWS is not the site.
 
-| Feed | URL |
-| --- | --- |
-| Globe arcs | `https://www.rootrecord.cloud/api/state` |
-| Last-known operations | `https://www.rootrecord.cloud/api/operations` |
+`https://www.rootrecord.cloud/` is still the AWS globe on `127.0.0.1:8090` only because DNS has not moved. The page currently reads `/api/state` and `/api/operations` there because that host is the globe process. Those URLs are not a data hostname. When `www` moves to this deployment, they go away with it. Do not iframe `www`. Do not call port 8787. That port serves a frozen append file.
+
+The globe inputs are two replaced files on the mainland host, or a future data-only URL that returns the same `/api/state` object. The contract is [HANDOFF-vercel-homepage-2026-09-30.md](../HANDOFF-vercel-homepage-2026-09-30.md). That file stays on the Pacific desk. It is not part of this Vercel repository.
 
 On the desk, edit `1 - Servers/1 - RootRecord-Pacific-Solar-Server/Website/Home/`. The `website` row in `Github/scripts/repos.conf` mirror-publishes that folder here. Do not put a `.git` directory in the umbrella tree. Do not bind port 3001.
 

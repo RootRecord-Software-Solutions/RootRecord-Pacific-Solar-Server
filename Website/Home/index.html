@@ -49,7 +49,7 @@
     <h1>We build software and run the systems it depends on.</h1>
     <p>Root Record Software Solutions is a Hawaiʻi practice. This view is the public door: a live network globe, with the work named beside it. Close either panel to use the globe.</p>
     <div class="svc"><strong>Operated systems</strong><p>A solar-powered desk in Hawaiʻi records energy, weather, and geology. A figure is shown when it was measured.</p></div>
-    <div class="svc"><strong>Mainland relay</strong><p>The globe feed and the last-known operation status come from AWS in Ohio. The page itself is served separately.</p></div>
+    <div class="svc"><strong>Mainland</strong><p>AWS Ohio is a measured point on this globe. This page is the site. The arcs are the current Hawaiʻi and Ohio connection snapshots.</p></div>
     <div class="svc"><strong>Software</strong><p>We write the software for that operation. Client work is software work. Client sites are not hosted here.</p></div>
   </section>
   <section class="panel glass" id="operations" aria-label="Last known operations">
@@ -65,6 +65,8 @@
 <script src="https://unpkg.com/globe.gl@2.46.2"></script>
 <script>
 (function () {
+  // www is the globe process only while DNS still points there. It is not a data hostname.
+  // When that host moves to this page, /api/state leaves with it. Contract: Website/HANDOFF-vercel-homepage-2026-09-30.md
   var RELAY = "https://www.rootrecord.cloud";
   var KEY = "rr-home:v1:";
   var globe = Globe()(document.getElementById("globe"))

@@ -28,6 +28,7 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 HERE = Path(__file__).resolve().parent.parent  # info: set HERE
 sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 , str ( HERE ) )
 from lib.api import post_message  # noqa: E402
+from lib.public_report import public_message  # noqa: E402
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 ECOSYSTEM = HERE.parents[3]  # info: set ECOSYSTEM
@@ -128,10 +129,13 @@ def plan(routes: list[dict], posted: dict, root: Path) -> list[dict]:  # info: d
         if not key or not path.is_file():  # info: if not key or not path
             continue  # info: continue
         text = path.read_text(encoding="utf-8", errors="replace")  # info: set text
-        snap = digest(text)  # info: set snap
+        read_path = path.with_name(path.name.replace(".md", ".read.txt"))  # info: set read_path
+        read = read_path.read_text(encoding="utf-8", errors="replace") if read_path.is_file() else ""  # info: set read
+        slug = str(row.get("name") or key)  # info: set slug
+        body = clip(public_message(key, slug, text, read))  # info: set body
+        snap = digest(body)  # info: set snap
         if posted.get(key) == snap:  # info: if already posted
             continue  # info: continue
-        body = clip(text)  # info: set body
         if not body:  # info: if not body
             continue  # info: continue
         ready.append({"key": key, "channel_id": str(row["channel_id"]), "digest": snap, "body": body})  # info: append

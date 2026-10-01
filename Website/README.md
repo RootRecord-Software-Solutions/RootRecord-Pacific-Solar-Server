@@ -6,8 +6,8 @@ Desk runtime for Stripe snapshots, Vercel failed-build records, and last-known o
 | --- | --- |
 | Public page | [Home/](Home/) — globe background, closable services and operations panels |
 | GitHub / Vercel | `RootRecord-Software-Solutions/RootRecord-Website`, mirror row `website` in `Github/scripts/repos.conf` |
-| Globe feed | `https://www.rootrecord.cloud/api/state` on AWS |
-| Operations feed | `https://www.rootrecord.cloud/api/operations` on AWS. The route is in the mainland server source and is not deployed, so the panel reads No data until that file is on AWS |
+| Data contract | [HANDOFF-vercel-homepage-2026-09-30.md](HANDOFF-vercel-homepage-2026-09-30.md). Two replaced ndjson files, or a future data-only URL with the same `/api/state` object |
+| Temporary read | `https://www.rootrecord.cloud/api/state` and `/api/operations` while DNS still sends `www` to the globe process on `127.0.0.1:8090`. That host is not the site and is not a data hostname |
 | Last-known file | `2 - RootRecord-Database/Website/operations.json` |
 
 `3 - RootRecord-Website/` is not on this desk. Do not recreate it. Do not bind port 3001. `https://rootserver.rootrecord.cloud/` is the poller on `127.0.0.1:8799`, not this page.
@@ -31,7 +31,7 @@ Desk runtime for Stripe snapshots, Vercel failed-build records, and last-known o
 | --- | --- | --- |
 | `scripts/stripe_poll.py` | Stripe balance snapshot. No key writes `not_configured` and does not call Stripe. A failed live poll keeps the last `ok` file | `Website/stripe-snapshot.json` |
 | `scripts/vercel_builds.py` | Redacted failed-build records. No token writes nothing and does not call Vercel. Does not delete records | `Logs/Website/*.json` |
-| `scripts/live_data_pages.py` | Power from Energy last files, weather from the Hawaiʻi state report header, Kīlauea from `Geology/Volcanoes/kilauea-last.json`. Missing numbers are omitted. Also writes the operations bundle for the AWS relay | `2 - RootRecord-Database/Website/pages/{power,weather,kilauea}.json` and `2 - RootRecord-Database/Website/operations.json` |
+| `scripts/live_data_pages.py` | Power from Energy last files, weather from the Hawaiʻi state report header, Kīlauea from `Geology/Volcanoes/kilauea-last.json`. Missing numbers are omitted. Also writes the operations bundle | `2 - RootRecord-Database/Website/pages/{power,weather,kilauea}.json` and `2 - RootRecord-Database/Website/operations.json` |
 
 Chat, voice packs, day board, Minecraft, and context are not built here.
 
