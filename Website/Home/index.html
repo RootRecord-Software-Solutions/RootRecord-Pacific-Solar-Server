@@ -17,6 +17,15 @@
 </head>
 <body>
 <a class="skip" href="#content">Skip to content</a>
+<div id="service-banner" class="service-banner" hidden role="dialog" aria-labelledby="service-banner-title" aria-modal="false">
+  <div class="service-banner-card">
+    <p class="eyebrow" id="service-banner-kicker">Service window</p>
+    <h2 id="service-banner-title">Planned service window</h2>
+    <p id="service-banner-body"></p>
+    <p class="fine" id="service-banner-back"></p>
+    <button type="button" id="service-banner-close">Dismiss</button>
+  </div>
+</div>
 <canvas id="starfield" aria-hidden="true"></canvas>
 <div id="globe"></div>
 <header class="top top-clear">
@@ -332,5 +341,6 @@
 <script src="/assets/starfield.js"></script>
 <script src="/assets/home.js"></script>
 <script src="/assets/shell.js"></script>
+<script src="/assets/service-banner.js"></script>
 </body>
 </html>

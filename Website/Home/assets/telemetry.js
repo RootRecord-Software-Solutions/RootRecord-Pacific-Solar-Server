@@ -136,6 +136,38 @@
     });
   }
 
+  var SOON_MS = 24 * 60 * 60 * 1000;
+
+  function noticePhase(doc, nowMs) {
+    var list = doc && Array.isArray(doc.windows) ? doc.windows : [];
+    var chosen = null;
+    list.forEach(function (item) {
+      if (!item || item.enabled === false) return;
+      var down = parseTime(item.down_at);
+      var up = parseTime(item.up_at);
+      if (down === null || up === null || up <= down || nowMs >= up) return;
+      var phase = nowMs >= down ? "down" : "upcoming";
+      if (phase === "upcoming" && down - nowMs > SOON_MS) return;
+      if (!chosen) {
+        chosen = { phase: phase, window: item, down: down, up: up };
+        return;
+      }
+      var activeWins = phase === "down" && chosen.phase !== "down";
+      var sooner = phase === chosen.phase && up < chosen.up;
+      if (activeWins || sooner) chosen = { phase: phase, window: item, down: down, up: up };
+    });
+    return chosen;
+  }
+
+  function readNotice() {
+    return fetch("/service-notice.json", { cache: "no-store", credentials: "omit" }).then(function (r) {
+      if (!r.ok) return { windows: [] };
+      return r.json();
+    }).catch(function () {
+      return { windows: [] };
+    });
+  }
+
   global.RRTelemetry = {
     finite: finite,
     fmt: fmt,
@@ -146,6 +178,8 @@
     watts: watts,
     fieldReadings: fieldReadings,
     readState: readState,
-    readOps: readOps
+    readOps: readOps,
+    noticePhase: noticePhase,
+    readNotice: readNotice
   };
 })(window);

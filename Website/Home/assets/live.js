@@ -259,6 +259,74 @@
     }
   }
 
+  var noticeDoc = { windows: [] };
+
+  function planNode() {
+    var node = document.getElementById("net-plan");
+    if (node) return node;
+    var fresh = document.getElementById("net-fresh");
+    if (!fresh || !fresh.parentNode) return null;
+    node = document.createElement("p");
+    node.id = "net-plan";
+    node.className = "fine";
+    node.hidden = true;
+    fresh.parentNode.insertBefore(node, fresh.nextSibling);
+    return node;
+  }
+
+  function countText(value) {
+    var n = T.finite(value);
+    return n === null ? null : T.fmt(n);
+  }
+
+  function applyNotice() {
+    var chosen = T.noticePhase ? T.noticePhase(noticeDoc, Date.now()) : null;
+    var plan = planNode();
+    var feed = document.getElementById("feed-line");
+    if (!chosen) {
+      if (plan) plan.hidden = true;
+      return;
+    }
+    var back = T.formatHst(chosen.up, true);
+    var down = T.formatHst(chosen.down, true);
+    var known = chosen.window.last_known || {};
+    var knownAt = T.formatHst(known.at, true);
+    if (chosen.phase === "down") {
+      stateWord = "PLANNED DOWN";
+      text("net-status", stateWord);
+      led("net-dot", "stale");
+      var hi = countText(known.hawaii);
+      var main = countText(known.mainland);
+      var flows = countText(known.flows);
+      var ends = countText(known.endpoints);
+      if (hi !== null) {
+        text("hi-flows", hi);
+        text("field-hi", hi + " flows");
+        text("val-hi", hi + " flows");
+      }
+      if (main !== null) {
+        text("ms-flows", main);
+        text("field-ms", main + " flows");
+        text("val-ms", main + " flows");
+      }
+      if (flows !== null) text("active-flows", flows);
+      if (ends !== null) text("endpoints", ends);
+      text("last-label", "Last known");
+      text("last-update", knownAt || "—");
+      text("net-fresh", back ? "Expected back online · " + back : "Expected back online");
+      if (plan) {
+        plan.hidden = false;
+        plan.textContent = "Planned service window. The counts above are the last known network state.";
+      }
+      if (feed) feed.textContent = back ? "Planned service window · expected back " + back : "Planned service window";
+      return;
+    }
+    if (plan) {
+      plan.hidden = false;
+      plan.textContent = "Planned pause " + (down || "soon") + ". Expected back online " + (back || "later") + ".";
+    }
+  }
+
   function tickState() {
     if (stateAt && Date.now() - stateAt > STATE_STALE_MS && stateWord === "LIVE") {
       stateWord = navigator.onLine ? "STALE" : "OFFLINE";
@@ -268,21 +336,41 @@
       if (feed) feed.textContent = "Last known observation";
     }
     paintAge();
-    T.readState().then(paintState).catch(paintStateMiss);
+    T.readState().then(function (d) {
+      paintState(d);
+      applyNotice();
+    }).catch(function () {
+      paintStateMiss();
+      applyNotice();
+    });
+  }
+
+  function tickNotice() {
+    if (!T.readNotice) return;
+    T.readNotice().then(function (doc) {
+      noticeDoc = doc || { windows: [] };
+      applyNotice();
+    });
   }
 
   function tickOps() {
     T.readOps().then(paintOps).catch(paintOpsMiss);
   }
 
+  tickNotice();
   tickState();
   tickOps();
   var stateTimer = setInterval(tickState, 5000);
   var opsTimer = setInterval(tickOps, 60000);
-  window.addEventListener("offline", paintStateMiss);
+  var noticeTimer = setInterval(tickNotice, 60000);
+  window.addEventListener("offline", function () {
+    paintStateMiss();
+    applyNotice();
+  });
   window.addEventListener("online", tickState);
   window.addEventListener("pagehide", function () {
     clearInterval(stateTimer);
     clearInterval(opsTimer);
+    clearInterval(noticeTimer);
   });
 })();
