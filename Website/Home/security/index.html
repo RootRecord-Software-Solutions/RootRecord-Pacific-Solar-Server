@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Security — Root Record</title>
-<meta name="description" content="Public security posture for Root Record: access boundaries, verification, evidence, and the line between a public page and operator control.">
+<meta name="description" content="How Root Record treats security, privacy, operations, and public status. Live numbers are shown only when a feed reports them.">
 <link rel="canonical" href="https://www.rootrecord.cloud/security">
 <meta property="og:title" content="Security — Root Record">
-<meta property="og:description" content="Boundaries, verification, and evidence. Public visibility is not public control.">
+<meta property="og:description" content="Security is part of the system from the beginning.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.rootrecord.cloud/security">
 <meta property="og:site_name" content="Root Record">
@@ -22,74 +22,50 @@
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
   <nav id="site-nav" aria-label="Primary">
     <a href="/">Home</a>
-    <a href="/ecosystem">Ecosystem</a>
-    <a href="/operations">Systems</a>
-    <a href="/intelligence">Intelligence</a>
-    <a href="/knowledge">Knowledge</a>
+    <a href="/products">Products</a>
+    <a href="/services">Services</a>
+    <a href="/solutions">Solutions</a>
+    <a href="/about">About</a>
     <a href="/security" aria-current="page">Security</a>
-    <a href="/reports">Reports</a>
     <a href="/status">Status</a>
   </nav>
 </header>
-<main class="page" id="content">
-  <p class="eyebrow">Posture</p>
+<main class="page catalog" id="content">
+  <p class="eyebrow">Trust</p>
   <h1>Security</h1>
-  <p class="prose">This page is the public shape of the security architecture. It describes boundaries and the standard of evidence. It does not publish addresses, host names, credentials, or private endpoints. There is no numeric security rating.</p>
-  <section class="panel diagram" aria-label="From a person to persisted state">
-    <ol class="flow">
-      <li>Person</li>
-      <li>Agent</li>
-      <li>Boundary</li>
-      <li>Control</li>
-      <li>Execution</li>
-      <li>Evidence</li>
-      <li>Persisted state</li>
-    </ol>
+  <p class="prose">Security is part of the system from the beginning. This page describes how Root Record treats that for customers. It does not publish addresses, host names, credentials, or private endpoints, and it does not offer a security score.</p>
+
+  <section class="sec" id="security">
+    <h2>Security</h2>
+    <p class="prose">People, services, and automated tools reach a system through a boundary that matches the work. Reading a public page is not the same as operating a system. A public page cannot start, stop, or change a field system.</p>
+    <p class="prose">A claim, a commit, or a command is not evidence by itself. State is accepted when there is something to check. Shipping a change and proving the running system took that change are separate steps.</p>
   </section>
-  <p class="prose">Public visibility does not mean public control. A public page is not an operator console.</p>
-  <section class="sec" id="boundaries">
-    <h2>Access boundaries</h2>
-    <p class="prose">People, agents, and services reach systems through a boundary that matches the work. The public site is one boundary. The runtime is another. The database is another. Crossing from a page to an operation is a deliberate step, not a side effect of reading.</p>
-    <p class="prose">Account entry on this site is not that crossing. Sign-in is not an operator console, and a public page cannot start, stop, or change a field system.</p>
+
+  <section class="sec" id="privacy">
+    <h2>Privacy</h2>
+    <p class="prose">Handle information intentionally and minimize unnecessary exposure. The public site may describe products, services, and public readings. If a detail is not clearly public, it is left out.</p>
+    <p class="prose">The public names for where systems run stop at Hawaiʻi and the Mainland Server, linked as the Root Record Network. A finer location, a host name, or a private route is not part of this site.</p>
   </section>
-  <section class="sec" id="verification">
-    <h2>Verification</h2>
-    <p class="prose">State is accepted when there is evidence for it. A claim, a commit, or a command is not that evidence by itself. The public test is simple: the feed returned a value, and the page can say when.</p>
-    <p class="prose">There is no numeric security rating on this site. A score would pretend a measurement that the public feed does not have.</p>
+
+  <section class="sec" id="operations">
+    <h2>Operations</h2>
+    <p class="prose">Build, monitor, maintain, and improve the systems people depend on. Important operations stay understandable: what the change was for, where it applies, and how someone can tell whether it took effect. Those operator paths are not listed here.</p>
+    <p class="prose">Written field and operations reports stay available as published records. <a href="/reports">Reports</a> · <a href="/operations">Field readings</a></p>
   </section>
-  <section class="sec" id="evidence">
-    <h2>Evidence</h2>
-    <p class="prose">Execution should leave a record that can be checked later: what was asked, what ran, and what the system reported back. The public form of that record is the status feed and the written reports. Each shows what it has. Neither is upgraded into a full audit log.</p>
-    <p class="prose">A report that names a battery percentage is a published text. The operations page is the current public reading. If they differ, they are two records, not one smoothed number. <a href="/operations">Systems</a> · <a href="/reports">Reports</a></p>
-  </section>
-  <section class="sec" id="deployment">
-    <h2>Deployment distinction</h2>
-    <p class="prose">Source and the running system are different facts. Shipping a change and proving the running system took that change are separate steps. A commit is not proof of deployment. A repository is not a healthy runtime.</p>
-    <p class="prose">The Website Node presents the public site. Seeing this page load means the page loaded. It does not mean the Pacific Solar Server, the VPS Node, or the database is healthy.</p>
-  </section>
-  <section class="sec" id="controls">
-    <h2>Operational controls</h2>
-    <p class="prose">Important operations stay controllable by people. Agents can prepare work inside a bound. The control that performs it stays visible. A change should remain understandable after it lands: what it was for, where it applies, and how someone can tell whether it took effect.</p>
-    <p class="prose">Those controls are not listed here. Naming them in public would describe the operator path. This page keeps the rule and leaves the path unpublished.</p>
-  </section>
-  <section class="sec" id="continuity">
-    <h2>Continuity</h2>
-    <p class="prose">Security includes being able to operate and repair the system without starting from zero. History, context, and evidence are part of that. Security material belongs in the RootRecord Library. Private material stays there.</p>
-    <p class="prose">Repair depends on knowing which layer holds the fact. A procedure in the library, a reading in the database, and a process on the runtime are three different things to restore. <a href="/knowledge">Knowledge</a> · <a href="/about">About</a></p>
-  </section>
-  <section class="sec" id="boundary">
-    <h2>Public / private boundary</h2>
-    <p class="prose">The public site may describe architecture, public telemetry, public status, and public documentation. It does not describe private addresses, private names, credentials, or internal paths. If a detail is not clearly public, it is left out.</p>
-    <p class="prose">The public names stop at Hawaiʻi, the VPS Node, the Website Node, and the Root Record Network. A finer location, a host name, or a private route is not part of the public record. <a href="/status">Status</a></p>
+
+  <section class="sec" id="status">
+    <h2>Status</h2>
+    <p class="prose">See the current public operational state where live reporting is available. A row is filled only when the public feed returns a value. This site does not fabricate uptime, traffic, server counts, energy totals, user counts, or certifications.</p>
+    <p class="prose"><a href="/status">Open status</a></p>
   </section>
 </main>
 <footer class="site-foot">
-  <a href="/ecosystem">Ecosystem</a>
-  <a href="/operations">Systems</a>
-  <a href="/intelligence">Intelligence</a>
-  <a href="/knowledge">Knowledge</a>
-  <a href="/status">Status</a>
+  <a href="/">Home</a>
+  <a href="/products">Products</a>
+  <a href="/services">Services</a>
+  <a href="/solutions">Solutions</a>
   <a href="/about">About</a>
+  <a href="/status">Status</a>
 </footer>
 <script src="/assets/shell.js"></script>
 </body>
