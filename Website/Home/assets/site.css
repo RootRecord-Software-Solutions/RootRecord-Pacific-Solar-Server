@@ -1582,3 +1582,7 @@ p .enter { display: inline-block; }
 .legal .toc a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 .legal a { text-underline-offset: 3px; }
+
+.radio-go { margin: 16px 0 0; }
+
+#radio-report:empty { min-height: 1.2em; }

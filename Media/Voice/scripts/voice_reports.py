@@ -18,7 +18,7 @@
 Each run writes Database Media/Audio/Voice/Reports/<report>_current.md (old copy -> Reports/Archive/
 <report>_YYYYMMDDTHHMM.md) and a stitched WAV Media/Audio/Voice/<report>_current.wav via voice-render.sh
 (single-flight lock, nice 10, phrase-clip cache, non-resident). If the lock is busy the WAV is skipped
-(rc 75 recorded) and the text still lands. A Telegram voice note posts only when RR_VOICE_DELIVER=1. RR_TELEGRAM_DEST=council selects the original council chat. Radio and speakers stay off.
+(rc 75 recorded) and the text still lands. A Telegram voice note posts only when RR_VOICE_DELIVER=1. RR_TELEGRAM_DEST=council selects the original council chat. After a finished WAV, radio_push.py sends that one _current file to the Mainland library over SSH unless RR_RADIO_PUSH=0. Speakers stay off. The Mainland host does not fetch.
 Only G3 data that exists is read: Database Energy/{soc,watts}/*-last.json (EcoFlow BLE), Database
 Weather/Hawai'i (NWS alerts + SFP state forecast, Pacific weather poller), Library Work-Order checkboxes,
 /proc, and Database Geology/Earthquakes/{hawaii,global}-last.json (Pacific Geology/scripts/geology_collect.py,
@@ -1462,6 +1462,10 @@ def main() -> int:  # info: def main
             age_line = f"Solar panel still is {photo['age_min']} minutes old." if photo and photo["age_min"] > 0 else ""  # info: set age_line
             caption = " ".join(part for part in (look, age_line) if part)  # info: set caption
             res["deliver"] = voice_deliver.deliver(report, wav, " ".join(spoken), KIND[report], report_text=md, photo=(photo or {}).get("path"), photo_caption=caption)  # info: res [ "deliver" ] = voice_deliver . deliver
+        voice_res = res.get("voice") or {}  # info: set voice_res
+        if os.environ.get("RR_RADIO_PUSH", "1") == "1" and voice_res.get("ok") and not voice_res.get("skipped") and voice_res.get("rc") == 0 and voice_res.get("wav"):  # info: if os . environ . get ( "RR_RADIO_PUSH" , "1" ) == "1" and voice_res . get ( "ok" ) and not voice_res . get ( "skipped" ) and voice_res . get ( "rc" ) == 0 and voice_res . get ( "wav" )
+            import radio_push  # info: import radio_push
+            res["radio"] = radio_push.push_report(report)  # info: res [ "radio" ] = radio_push . push_report ( report )
     print(json.dumps(res, ensure_ascii=False))  # info: call print
     return 0  # info: return 0
 
