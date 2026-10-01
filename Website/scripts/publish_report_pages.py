@@ -8,10 +8,11 @@
 # Kind: python
 # ==============================================================================
 #!/usr/bin/env python3
-"""Write the public /reports pages from the same text Discord posts.
+"""Write the public /reports pages from measured report files.
 
 Pages live in Website/Home/reports. The address is https://www.rootrecord.cloud/reports/<slug>.
-Spoken text only. Source paths stay off the page. A file is left untouched when the bytes match.
+Measured fields and sections only. Spoken transcripts and persona names stay off the page.
+Source paths stay off the page. A file is left untouched when the bytes match.
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
@@ -25,7 +26,7 @@ PACIFIC = Path(__file__).resolve().parents[2]  # info: set PACIFIC
 HOME = PACIFIC / "Website" / "Home"  # info: set HOME
 ROUTES = PACIFIC / "Communications" / "Discord" / "config" / "report-channels.json"  # info: set ROUTES
 sys.path.insert(0, str(PACIFIC / "Communications" / "Discord"))  # info: sys . path . insert
-from lib.public_report import TITLES, persona_name, spoken_text  # noqa: E402
+from lib.public_report import TITLES  # noqa: E402
 
 SITE = "https://www.rootrecord.cloud/reports"  # info: set SITE
 VOICE = Path("/home/rootrecord/RootRecord-Ecosystem/test-reports/Voice")  # info: set VOICE
