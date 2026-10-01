@@ -17,6 +17,7 @@ Left side up is morning prep for sunrise. Right side up is the evening position.
 Flat is the day position. Morning tilt is useful and not required. Overnight left tilt is correct.
 In the later half of the daytime window, left side up with low solar input is staged for sunrise.
 An infrared frame is night. Weather is dark. The gray picture is the illuminator, not cloud cover.
+A near-black frame has no picture. It is not night vision. Weather and tilt stay unset.
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
@@ -39,6 +40,7 @@ OUT = DB / "Energy" / "vision" / "ch1-look-last.json"  # info: set OUT
 LOW_SOLAR_W = 20  # info: combined solar input at or below this is low light
 FRESH_MIN = 30  # info: a watts file older than this does not count as a light reading
 IR_SPAN = 6  # info: mean channel span below this is an infrared grayscale frame
+BLANK_LUM = 8  # info: mean brightness below this is a black still, not a night picture
 LOCK = Path("/tmp/panel-look.lock")  # info: set LOCK
 MODEL = os.environ.get("RR_PANEL_LOOK_MODEL", "gemma4:e4b")  # info: set MODEL
 OLLAMA = os.environ.get("RR_OLLAMA_URL", "http://127.0.0.1:11434/api/chat")  # info: set OLLAMA
@@ -83,11 +85,11 @@ def newest_ch1() -> Path | None:  # info: def newest_ch1
 
 
 # ====================================================
-# SECTION: function infrared
-# What it does: True when the still is grayscale night vision. Color daylight sits well above the span line.
+# SECTION: function frame_stats
+# What it does: Mean color span and mean brightness of one still. None when the frame cannot be read.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def infrared(path: Path) -> bool:  # info: def infrared
+def frame_stats(path: Path) -> tuple[float, float] | None:  # info: def frame_stats
     try:  # info: try
         proc = subprocess.run(  # info: set proc
             ["ffmpeg", "-v", "error", "-i", str(path), "-vf", "scale=80:48", "-f", "rawvideo", "-pix_fmt", "rgb24", "pipe:1"],  # info: ffmpeg scale to raw rgb
@@ -95,28 +97,65 @@ def infrared(path: Path) -> bool:  # info: def infrared
             timeout=20,  # info: timeout = 20
         )  # info: )
     except (OSError, subprocess.TimeoutExpired):  # info: except ( OSError , subprocess . TimeoutExpired )
-        return False  # info: return False
+        return None  # info: return None
     raw = proc.stdout  # info: set raw
     if proc.returncode != 0 or len(raw) < 3 or len(raw) % 3:  # info: if proc . returncode != 0 or len ( raw ) < 3 or len ( raw ) % 3
-        return False  # info: return False
-    total = 0  # info: set total
+        return None  # info: return None
+    span = 0  # info: set span
+    bright = 0  # info: set bright
     count = 0  # info: set count
     for i in range(0, len(raw), 3):  # info: for i in range ( 0 , len ( raw ) , 3 )
         red, green, blue = raw[i], raw[i + 1], raw[i + 2]  # info: red , green , blue = raw [ i ] , raw [ i + 1 ] , raw [ i + 2 ]
-        total += max(red, green, blue) - min(red, green, blue)  # info: set total
+        span += max(red, green, blue) - min(red, green, blue)  # info: set span
+        bright += (red + green + blue) / 3  # info: set bright
         count += 1  # info: set count
-    return count > 0 and (total / count) < IR_SPAN  # info: return count > 0 and ( total / count ) < IR_SPAN
+    if count == 0:  # info: if count == 0
+        return None  # info: return None
+    return span / count, bright / count  # info: return span / count , bright / count
+
+
+# ====================================================
+# SECTION: function infrared
+# What it does: True when the still is grayscale night vision with a visible scene. A black frame is not night vision.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def infrared(path: Path) -> bool:  # info: def infrared
+    stats = frame_stats(path)  # info: set stats
+    return stats is not None and stats[1] >= BLANK_LUM and stats[0] < IR_SPAN  # info: return stats is not None and stats [ 1 ] >= BLANK_LUM and stats [ 0 ] < IR_SPAN
+
+
+# ====================================================
+# SECTION: function blank
+# What it does: True when the still is near black and has no panel picture.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def blank(path: Path) -> bool:  # info: def blank
+    stats = frame_stats(path)  # info: set stats
+    return stats is not None and stats[1] < BLANK_LUM  # info: return stats is not None and stats [ 1 ] < BLANK_LUM
 
 
 # ====================================================
 # SECTION: function night_row
-# What it does: Force weather to dark when the newest still is infrared. Keep the tilt.
+# What it does: A black still clears weather and tilt. An infrared still forces weather to dark and keeps the tilt.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def night_row(row: dict, image: Path | None) -> dict:  # info: def night_row
     out = dict(row)  # info: set out
-    if not image or not infrared(image):  # info: if not image or not infrared ( image )
+    if row.get("blank") and image and row.get("image") and image.name != row.get("image"):  # info: if row . get ( "blank" ) and image and row . get ( "image" ) and image . name != row . get ( "image" )
         return out  # info: return out
+    if not image:  # info: if not image
+        return out  # info: return out
+    stats = frame_stats(image)  # info: set stats
+    if stats is not None and stats[1] < BLANK_LUM:  # info: if stats is not None and stats [ 1 ] < BLANK_LUM
+        out["blank"] = True  # info: out [ "blank" ] = True
+        out["infrared"] = False  # info: out [ "infrared" ] = False
+        out["weather"] = ""  # info: out [ "weather" ] = ""
+        out["position"] = ""  # info: out [ "position" ] = ""
+        out["image"] = image.name  # info: out [ "image" ] = image . name
+        return out  # info: return out
+    if not stats or stats[0] >= IR_SPAN:  # info: if not stats or stats [ 0 ] >= IR_SPAN
+        return out  # info: return out
+    out["blank"] = False  # info: out [ "blank" ] = False
     out["weather"] = "dark"  # info: out [ "weather" ] = "dark"
     out["infrared"] = True  # info: out [ "infrared" ] = True
     if not row.get("infrared"):  # info: if not row . get ( "infrared" )
