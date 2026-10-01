@@ -24,6 +24,7 @@ Added 2026-09-29 (g3-voice-ailog).
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
+import importlib.util  # info: import importlib . util
 import json  # info: import json
 import os  # info: import os
 import re  # info: import re
@@ -85,6 +86,29 @@ def read(path: str) -> str | None:  # info: def read
 
 
 # ====================================================
+# SECTION: function load_hw
+# What it does: Read temperature, iGPU, and NPU from host_hw. Missing values stay None. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def load_hw() -> dict:  # info: def load_hw
+    empty = {"temp_c": None, "temp_source": None, "gpu_name": None, "gpu_pct": None, "npu_present": None, "npu_pct": None}  # info: set empty
+    path = HERE.parents[2] / "System" / "scripts" / "host_hw.py"  # info: set path
+    if not path.is_file():  # info: if not path . is_file
+        return empty  # info: return empty
+    try:  # info: try
+        spec = importlib.util.spec_from_file_location("rr_host_hw", path)  # info: set spec
+        mod = importlib.util.module_from_spec(spec)  # info: set mod
+        spec.loader.exec_module(mod)  # info: spec . loader . exec_module
+        row = mod.snapshot()  # info: set row
+    except Exception:  # info: except Exception
+        return empty  # info: return empty
+    if not isinstance(row, dict):  # info: if not isinstance ( row , dict )
+        return empty  # info: return empty
+    empty.update({key: row.get(key) for key in empty})  # info: empty . update
+    return empty  # info: return empty
+
+
+# ====================================================
 # SECTION: function sample
 # What it does: sample.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -106,6 +130,7 @@ def sample() -> dict:  # info: def sample
         "battery_status": read(f"{bat}/status") if bat else None,  # info: "battery_status" : read ( f" { bat }
         "on_ac": (read(f"{ac}/online") == "1") if ac else None,  # info: call "on_ac"
         "uptime_s": int(up),  # info: "uptime_s" : int ( up ) ,
+        **load_hw(),  # info: call load_hw
     }  # info: }
 
 
@@ -126,8 +151,7 @@ def texts(s: dict, now: datetime) -> tuple[str, str]:  # info: def texts
         f"| RAM | {s['mem_pct']}% used ({s['mem_used_gb']} / {s['mem_total_gb']} GB); swap used {s['swap_used_gb']} GB |\n"  # info: f" | RAM | { s [ 'mem_pct' ] }
         f"| Disk / | {s['disk_pct']}% used ({s['disk_used_gb']} / {s['disk_total_gb']} GB) |\n"  # info: f" | Disk / | { s [ 'disk_pct' ] }
         f"| Host battery | {batt} |\n"  # info: f" | Host battery | { batt } |\n "
-        f"| Uptime | {up_h}h {up_m}m |\n\n"  # info: f" | Uptime | { up_h } h { up_m
-        f"_Template report (no LLM). Measured on the desk at {ts}._\n"  # info: f" _Template report (no LLM). Measured on the desk at { ts } ._\n "
+        f"| Uptime | {up_h}h {up_m}m |\n"  # info: f" | Uptime | { up_h } h { up_m
     )  # info: )
     spoken = [  # info: set spoken
         "System performance report.",  # info: "System performance report." ,
@@ -139,6 +163,26 @@ def texts(s: dict, now: datetime) -> tuple[str, str]:  # info: def texts
     if s["battery_pct"] is not None:  # info: if s [ "battery_pct" ] is not None
         spoken.append(f"Host battery {s['battery_pct']}%, {'on AC' if s['on_ac'] else 'on battery'}.")  # info: spoken . append ( f" Host battery { s
     spoken.append(f"Uptime {up_h} hour{'s' if up_h != 1 else ''} {up_m} minute{'s' if up_m != 1 else ''}.")  # info: spoken . append ( f" Uptime { up_h
+    if s.get("temp_c") is not None:  # info: if s . get ( "temp_c" ) is not None
+        src = f" ({s['temp_source']})" if s.get("temp_source") else ""  # info: set src
+        md += f"| Temp | {s['temp_c']}°C{src} |\n"  # info: set md
+        spoken.append(f"Temperature {s['temp_c']} degrees.")  # info: spoken . append
+    if s.get("gpu_pct") is not None:  # info: if s . get ( "gpu_pct" ) is not None
+        name = s.get("gpu_name") or "iGPU"  # info: set name
+        md += f"| iGPU | {name} — {s['gpu_pct']}% |\n"  # info: set md
+        spoken.append(f"Integrated GPU {s['gpu_pct']} percent.")  # info: spoken . append
+    elif s.get("gpu_name"):  # info: elif s . get ( "gpu_name" )
+        md += f"| iGPU | {s['gpu_name']} |\n"  # info: set md
+    if s.get("npu_present") is True and s.get("npu_pct") is not None:  # info: if s . get ( "npu_present" ) is True and s . get ( "npu_pct" )
+        md += f"| NPU | {s['npu_pct']}% (present) |\n"  # info: set md
+        spoken.append(f"NPU {s['npu_pct']} percent, present.")  # info: spoken . append
+    elif s.get("npu_present") is True:  # info: elif s . get ( "npu_present" ) is True
+        md += "| NPU | present, busy percent not sampled |\n"  # info: set md
+        spoken.append("NPU is present. Busy percent was not sampled.")  # info: spoken . append
+    elif s.get("npu_present") is False:  # info: elif s . get ( "npu_present" ) is False
+        md += "| NPU | not present |\n"  # info: set md
+        spoken.append("NPU is not present.")  # info: spoken . append
+    md += f"\n_Template report (no LLM). Measured on the desk at {ts}. A missing hardware row was not sampled._\n"  # info: set md
     spoken.append("End of system report.")  # info: spoken . append ( "End of system report." )
     return md, " ".join(spoken)  # info: return md , " " . join ( spoken
 
