@@ -23,7 +23,7 @@ import json  # info: import json
 import math  # info: import math
 import os  # info: import os
 import sys  # info: import sys
-from datetime import datetime  # info: from datetime import datetime
+from datetime import datetime, timedelta  # info: from datetime import datetime , timedelta
 from pathlib import Path  # info: from pathlib import Path
 from urllib.request import Request, urlopen  # info: from urllib . request import Request , urlopen
 from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
@@ -131,68 +131,63 @@ def illumination_pct(phase: float) -> int:  # info: def illumination_pct
     return int(round(lit * 100))  # info: return int ( round ( lit * 100 ) )
 
 
-# ====================================================
-# SECTION: function _phase_now
-# What it does: Move today's phase toward tomorrow by the fraction of the HST day.
-# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
-# ====================================================
-def _phase_now(today_phase: float, next_phase, now: datetime) -> float:  # info: def _phase_now
-    if next_phase is None:  # info: if next_phase is None :
-        return float(today_phase) % 1  # info: return float ( today_phase ) % 1
-    start = now.replace(hour=0, minute=0, second=0, microsecond=0)  # info: set start
-    frac = (now - start).total_seconds() / 86400  # info: set frac
-    start_phase = float(today_phase)  # info: set start_phase
-    end_phase = float(next_phase)  # info: set end_phase
-    if end_phase < start_phase - 0.5:  # info: if end_phase < start_phase - 0.5 :
-        end_phase += 1  # info: set end_phase
-    return (start_phase + (end_phase - start_phase) * frac) % 1  # info: return ( start_phase + ( end_phase - start_phase
+_RAD = math.pi / 180  # info: set _RAD
+_OBLIQ = _RAD * 23.4397  # info: set _OBLIQ
+_J1970 = 2440588  # info: set _J1970
+_J2000 = 2451545  # info: set _J2000
 
 
 # ====================================================
-# SECTION: function _unwrap
-# What it does: Keep the daily phase series increasing across a new moon.
+# SECTION: function _sky
+# What it does: Phase 0–1 and lit fraction at an instant. 0 is new, 0.5 is full.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def _unwrap(dates: list, phases: list) -> list[tuple[str, float]]:  # info: def _unwrap
-    rows: list[tuple[str, float]] = []  # info: set rows
-    previous = None  # info: set previous
-    for date, phase in zip(dates, phases):  # info: for date , phase in zip ( dates , phases )
-        if phase is None:  # info: if phase is None :
-            continue  # info: continue
-        try:  # info: try :
-            value = float(phase)  # info: set value
-        except (TypeError, ValueError):  # info: except ( TypeError , ValueError ) :
-            continue  # info: continue
-        carried = value  # info: set carried
-        if previous is not None and value < previous - 0.5:  # info: if previous is not None and value < previous
-            carried = value + 1  # info: set carried
-        rows.append((str(date), carried))  # info: rows . append ( ( str ( date ) , carried
-        previous = carried  # info: set previous
-    return rows  # info: return rows
+def _sky(moment: datetime) -> tuple[float, float]:  # info: def _sky
+    instant = moment.astimezone(HST)  # info: set instant
+    day = instant.timestamp() / 86400 - 0.5 + _J1970 - _J2000  # info: set day
+
+    def right_ascension(lng: float, lat: float) -> float:  # info: def right_ascension
+        return math.atan2(math.sin(lng) * math.cos(_OBLIQ) - math.tan(lat) * math.sin(_OBLIQ), math.cos(lng))  # info: return math . atan2 ( math . sin ( lng ) * math . cos ( _OBLIQ ) - math . tan ( lat ) * math . sin ( _OBLIQ ) , math . cos ( lng ) )
+
+    def declination(lng: float, lat: float) -> float:  # info: def declination
+        return math.asin(math.sin(lat) * math.cos(_OBLIQ) + math.cos(lat) * math.sin(_OBLIQ) * math.sin(lng))  # info: return math . asin ( math . sin ( lat ) * math . cos ( _OBLIQ ) + math . cos ( lat ) * math . sin ( _OBLIQ ) * math . sin ( lng ) )
+
+    mean = _RAD * (357.5291 + 0.98560028 * day)  # info: set mean
+    center = _RAD * (1.9148 * math.sin(mean) + 0.02 * math.sin(2 * mean) + 0.0003 * math.sin(3 * mean))  # info: set center
+    sun_lng = mean + center + _RAD * 102.9372 + math.pi  # info: set sun_lng
+    sun_dec, sun_ra = declination(sun_lng, 0.0), right_ascension(sun_lng, 0.0)  # info: sun_dec , sun_ra = declination ( sun_lng , 0.0 ) , right_ascension ( sun_lng , 0.0 )
+    moon_mean = _RAD * (134.963 + 13.064993 * day)  # info: set moon_mean
+    moon_lng = _RAD * (218.316 + 13.176396 * day) + _RAD * 6.289 * math.sin(moon_mean)  # info: set moon_lng
+    moon_lat = _RAD * 5.128 * math.sin(_RAD * (93.272 + 13.229350 * day))  # info: set moon_lat
+    moon_ra, moon_dec = right_ascension(moon_lng, moon_lat), declination(moon_lng, moon_lat)  # info: moon_ra , moon_dec = right_ascension ( moon_lng , moon_lat ) , declination ( moon_lng , moon_lat )
+    moon_dist = 385001 - 20905 * math.cos(moon_mean)  # info: set moon_dist
+    sep = math.acos(max(-1.0, min(1.0, math.sin(sun_dec) * math.sin(moon_dec) + math.cos(sun_dec) * math.cos(moon_dec) * math.cos(sun_ra - moon_ra))))  # info: set sep
+    inc = math.atan2(149598000 * math.sin(sep), moon_dist - 149598000 * math.cos(sep))  # info: set inc
+    angle = math.atan2(math.cos(sun_dec) * math.sin(sun_ra - moon_ra), math.sin(sun_dec) * math.cos(moon_dec) - math.cos(sun_dec) * math.sin(moon_dec) * math.cos(sun_ra - moon_ra))  # info: set angle
+    phase = (0.5 + 0.5 * inc * (-1 if angle < 0 else 1) / math.pi) % 1  # info: set phase
+    lit = (1 + math.cos(inc)) / 2  # info: set lit
+    return phase, lit  # info: return phase , lit
 
 
 # ====================================================
 # SECTION: function _next_named
-# What it does: Date of the next new, quarter, or full moon in the pulled series.
+# What it does: Hawaiʻi date of the next new, quarter, or full moon after now.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def _next_named(rows: list[tuple[str, float]], today: str, current: float) -> tuple[str | None, str | None]:  # info: def _next_named
-    today_row = next((row for row in rows if row[0] == today), None)  # info: set today_row
-    base = today_row[1] if today_row else current  # info: set base
-    target = next((mark for mark, _name in _TARGETS if mark > base + 0.02), None)  # info: set target
+def _next_named(now: datetime, phase: float) -> tuple[str | None, str | None]:  # info: def _next_named
+    target = next((mark for mark, _name in _TARGETS if mark > phase + 0.01), None)  # info: set target
     if target is None:  # info: if target is None :
         return None, None  # info: return None , None
     name = dict(_TARGETS)[target]  # info: set name
-    best = None  # info: set best
-    for date, value in rows:  # info: for date , value in rows :
-        if date <= today:  # info: if date <= today :
-            continue  # info: continue
-        dist = abs(value - target)  # info: set dist
-        if best is None or dist < best[0]:  # info: if best is None or dist < best [ 0 ] :
-            best = (dist, date)  # info: set best
-    if best is None or best[0] > 0.08:  # info: if best is None or best [ 0 ] > 0.08 :
-        return None, None  # info: return None , None
-    return name, best[1]  # info: return name , best [ 1 ]
+    previous = phase  # info: set previous
+    for step in range(1, 20 * 48):  # info: for step in range ( 1 , 20 * 48 ) :
+        moment = now + timedelta(minutes=30 * step)  # info: set moment
+        current, _lit = _sky(moment)  # info: current , _lit = _sky ( moment )
+        crossed = previous < target <= current or (target == 1 and current < previous)  # info: set crossed
+        if crossed:  # info: if crossed :
+            return name, moment.astimezone(HST).strftime("%Y-%m-%d")  # info: return name , moment . astimezone ( HST ) . strftime ( "%Y-%m-%d" )
+        previous = current  # info: set previous
+    return None, None  # info: return None , None
 
 
 # ====================================================
@@ -226,32 +221,23 @@ def refresh_if_stale(*, force: bool = False) -> dict:  # info: def refresh_if_st
         with urlopen(Request(OPEN_METEO, headers={"User-Agent": UA}), timeout=10) as response:  # info: with urlopen ( Request ( OPEN_METEO , headers
             daily = (json.loads(response.read().decode("utf-8")) or {}).get("daily") or {}  # info: set daily
         dates = daily.get("time") or []  # info: set dates
-        phases = daily.get("moon_phase") or []  # info: set phases
         rises = daily.get("moonrise") or []  # info: set rises
         sets = daily.get("moonset") or []  # info: set sets
         today = _today()  # info: set today
-        if today not in dates:  # info: if today not in dates :
-            return dict(stored, ok=bool(stored.get("phase") is not None), refreshed=False, error="no phase for today")  # info: return dict ( stored , ok = bool (
-        index = dates.index(today)  # info: set index
-        today_phase = phases[index] if index < len(phases) else None  # info: set today_phase
-        if today_phase is None:  # info: if today_phase is None :
-            return dict(stored, ok=bool(stored.get("phase") is not None), refreshed=False, error="empty moon phase")  # info: return dict ( stored , ok = bool (
-        tomorrow = phases[index + 1] if index + 1 < len(phases) else None  # info: set tomorrow
+        index = dates.index(today) if today in dates else -1  # info: set index
         now = _now()  # info: set now
-        phase = _phase_now(float(today_phase), tomorrow, now)  # info: set phase
-        rows = _unwrap(dates, phases)  # info: set rows
-        next_name, next_date = _next_named(rows, today, phase)  # info: next_name , next_date = _next_named ( rows , today , phase
+        phase, lit = _sky(now)  # info: phase , lit = _sky ( now )
+        next_name, next_date = _next_named(now, phase)  # info: next_name , next_date = _next_named ( now , phase )
         payload = {  # info: set payload
             "date": today,  # info: "date" : today ,
             "phase": round(phase, 4),  # info: "phase" : round ( phase , 4 ) ,
-            "phase_day": round(float(today_phase), 4),  # info: "phase_day" : round ( float ( today_phase ) , 4 ) ,
             "phase_name": phase_name(phase),  # info: "phase_name" : phase_name ( phase ) ,
-            "illumination": illumination_pct(phase),  # info: "illumination" : illumination_pct ( phase ) ,
+            "illumination": int(round(lit * 100)),  # info: "illumination" : int ( round ( lit * 100 ) ) ,
             "moonrise": _hhmm_from_iso(rises[index] if index < len(rises) else None),  # info: "moonrise" : _hhmm_from_iso ( rises [ index ] if
             "moonset": _hhmm_from_iso(sets[index] if index < len(sets) else None),  # info: "moonset" : _hhmm_from_iso ( sets [ index ] if
             "next_phase": next_name,  # info: "next_phase" : next_name ,
             "next_phase_date": next_date,  # info: "next_phase_date" : next_date ,
-            "source": "open-meteo",  # info: "source" : "open-meteo" ,
+            "source": "calculated",  # info: "source" : "calculated" ,
             "lat": LAT,  # info: "lat" : LAT ,
             "lon": LON,  # info: "lon" : LON ,
             "fetched_at": now.isoformat(),  # info: "fetched_at" : now . isoformat ( ) ,

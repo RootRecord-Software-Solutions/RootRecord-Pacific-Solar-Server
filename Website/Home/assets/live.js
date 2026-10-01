@@ -213,13 +213,13 @@
     var cy = 50;
     if (p < 0.005 || p > 0.995) return "";
     if (Math.abs(p - 0.5) < 0.008) {
-      return "M " + cx + " " + (cy - radius) + " a " + radius + " " + radius + " 0 1 1 0 " + (2 * radius) + " a " + radius + " " + radius + " 0 1 1 0 " + (-2 * radius) + " Z";
+      return "M " + cx + " " + (cy - radius) + " A " + radius + " " + radius + " 0 1 1 " + (cx - 0.01) + " " + (cy - radius) + " Z";
     }
     var waxing = p < 0.5;
     var curve = Math.cos(2 * Math.PI * p);
     var rx = Math.max(0.4, Math.abs(curve) * radius);
     var outer = waxing ? 1 : 0;
-    var term = curve >= 0 ? outer : (outer ? 0 : 1);
+    var term = curve >= 0 ? (outer ? 0 : 1) : outer;
     return "M " + cx + " " + (cy - radius)
       + " A " + radius + " " + radius + " 0 0 " + outer + " " + cx + " " + (cy + radius)
       + " A " + rx.toFixed(2) + " " + radius + " 0 0 " + term + " " + cx + " " + (cy - radius)
