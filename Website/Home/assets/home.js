@@ -273,17 +273,53 @@
     return out;
   }
 
+  function cleanRing(ring) {
+    var out = [];
+    (ring || []).forEach(function (c) {
+      if (!c || c.length < 2) return;
+      var lng = Number(c[0]);
+      var lat = Number(c[1]);
+      if (!Number.isFinite(lng) || !Number.isFinite(lat) || Math.abs(lat) > 90) return;
+      if (lng > 180) lng = 180;
+      if (lng < -180) lng = -180;
+      var prev = out[out.length - 1];
+      if (prev && Math.abs(prev[0] - lng) < 0.08 && Math.abs(prev[1] - lat) < 0.08) return;
+      if (prev && Math.abs(prev[0] - lng) > 180) return;
+      out.push([lng, lat]);
+    });
+    if (out.length < 4) return null;
+    var first = out[0];
+    var last = out[out.length - 1];
+    if (first[0] !== last[0] || first[1] !== last[1]) out.push([first[0], first[1]]);
+    return out;
+  }
+
+  function cleanPolygons(geometry) {
+    if (!geometry) return [];
+    var parts = [];
+    if (geometry.type === "Polygon") parts = [geometry.coordinates];
+    else if (geometry.type === "MultiPolygon") parts = geometry.coordinates;
+    var out = [];
+    parts.forEach(function (poly) {
+      if (!poly || !poly.length) return;
+      var outer = cleanRing(poly[0]);
+      if (!outer) return;
+      out.push({ type: "Polygon", coordinates: [outer] });
+    });
+    return out;
+  }
+
   function zoneFeatures(geo, kind) {
     var out = [];
     var features = geo && geo.features;
     if (!Array.isArray(features)) return out;
     features.forEach(function (f) {
       if (!f || !f.geometry) return;
-      var t = f.geometry.type;
-      if (t !== "Polygon" && t !== "MultiPolygon") return;
       var props = f.properties || {};
       if (kind === "wind" && Number(props.tau) !== 0) return;
-      out.push({ kind: kind, geometry: f.geometry, props: props });
+      cleanPolygons(f.geometry).forEach(function (geometry) {
+        out.push({ kind: kind, geometry: geometry, props: props });
+      });
     });
     return out;
   }
@@ -347,7 +383,8 @@
       .pathLabel(trackLabel)
       .pathTransitionDuration(0)
       .polygonGeoJsonGeometry(function (d) { return d.geometry; })
-      .polygonAltitude(0.003)
+      .polygonCapCurvatureResolution(3)
+      .polygonAltitude(0.001)
       .polygonCapColor(zoneFill)
       .polygonSideColor(function () { return "rgba(0,0,0,0)"; })
       .polygonStrokeColor(zoneStroke)
