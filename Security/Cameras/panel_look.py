@@ -53,11 +53,12 @@ PROMPT = (  # info: set PROMPT
     "Reply with one JSON object only, no other words. "  # info: "Reply with one JSON object only, no other words. "
     'Keys: "weather" and "position". '  # info: 'Keys: "weather" and "position". '
     "weather is one of rain, fog, overcast, clear, dark. "  # info: "weather is one of rain, fog, overcast, clear, dark. "
-    "Use rain when water is on the glass or rain is falling. Use fog when mist hides the distance. "  # info: "Use rain when water is on the glass or rain is falling. Use fog when mist hides the distance. "
-    "position is one of flat, left_up, right_up. Judge the whole panel, not the camera angle. "  # info: "position is one of flat, left_up, right_up. Judge the whole panel, not the camera angle. "
-    "left_up means the left end of the panel is higher off the ground than the right end. "  # info: "left_up means the left end of the panel is higher off the ground than the right end. "
-    "right_up means the right end is higher off the ground than the left end. "  # info: "right_up means the right end is higher off the ground than the left end. "
-    "flat means both ends sit at the same height. Do not invent numbers."  # info: "flat means both ends sit at the same height. Do not invent numbers."
+    "Use rain when water beads or sheets are on the glass, even if no drops are falling. Use fog when mist hides the distance. "  # info: "Use rain when water beads or sheets are on the glass, even if no drops are falling. Use fog when mist hides the distance. "
+    "position is one of flat, left_up, right_up. "  # info: "position is one of flat, left_up, right_up. "
+    "Look at which end of the panel is propped up. "  # info: "Look at which end of the panel is propped up. "
+    "left_up means the left end in the image is raised and the right end is lower. A steep left half with a low right half is left_up, not flat. "  # info: "left_up means the left end in the image is raised and the right end is lower. A steep left half with a low right half is left_up, not flat. "
+    "right_up means the right end is raised and the left end is lower. "  # info: "right_up means the right end is raised and the left end is lower. "
+    "flat means both ends are at the same height and neither half is propped up. Do not invent numbers."  # info: "flat means both ends are at the same height and neither half is propped up. Do not invent numbers."
 )  # info: )
 
 
