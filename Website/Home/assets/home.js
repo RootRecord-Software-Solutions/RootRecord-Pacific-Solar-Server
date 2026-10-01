@@ -6,6 +6,8 @@
   var hidden = false;
   var spinOn = false;
   var pullTimer = 0;
+  var quakeTimer = 0;
+  var quakeSig = "";
 
   function reduced() {
     return !!(reduceQuery && reduceQuery.matches);
@@ -125,6 +127,105 @@
     return { points: points, arcs: arcs };
   }
 
+  function quakeLabel(d) {
+    var mag = Number(d.mag);
+    var magText = Number.isFinite(mag) ? "M" + (Math.round(mag * 10) / 10).toFixed(1) : "Earthquake";
+    var place = typeof d.place === "string" ? d.place.replace(/\s+/g, " ").trim() : "";
+    if (place.length > 140) place = place.slice(0, 140);
+    return place ? magText + ", " + place : magText;
+  }
+
+  function quakeElement(d) {
+    var hold = document.createElement("span");
+    hold.className = "quake-dot";
+    var core = document.createElement("span");
+    core.className = "quake-core";
+    var mag = Number(d.mag);
+    if (mag >= 6) core.classList.add("quake-m6");
+    else if (mag >= 5) core.classList.add("quake-m5");
+    else if (mag >= 4) core.classList.add("quake-m4");
+    var shift = 0;
+    var id = String(d.id || "");
+    for (var i = 0; i < id.length; i++) shift = (shift + id.charCodeAt(i)) % 16;
+    core.style.animationDelay = (-shift / 10) + "s";
+    var label = quakeLabel(d);
+    core.title = label;
+    core.setAttribute("role", "img");
+    core.setAttribute("aria-label", label);
+    hold.appendChild(core);
+    return hold;
+  }
+
+  function eventsFromGeo(geo, into, seen) {
+    var features = geo && geo.features;
+    if (!Array.isArray(features)) return;
+    features.forEach(function (f) {
+      if (!f || !f.geometry || f.geometry.type !== "Point") return;
+      var coords = f.geometry.coordinates || [];
+      var pos = finitePair(coords[1], coords[0]);
+      if (!pos) return;
+      var props = f.properties || {};
+      if (props.type && props.type !== "earthquake") return;
+      var id = String(f.id || props.code || (pos.lat + "," + pos.lng));
+      if (seen[id]) return;
+      seen[id] = true;
+      var mag = Number(props.mag);
+      into.push({
+        id: id,
+        lat: pos.lat,
+        lng: pos.lng,
+        mag: Number.isFinite(mag) ? mag : null,
+        place: typeof props.place === "string" ? props.place : ""
+      });
+    });
+  }
+
+  function showQuakes(list) {
+    if (!globe || typeof globe.htmlElementsData !== "function") return;
+    var sig = list.map(function (d) { return d.id; }).join("|");
+    if (sig === quakeSig) return;
+    quakeSig = sig;
+    globe
+      .htmlElementsData(list)
+      .htmlAltitude(0.012)
+      .htmlTransitionDuration(0)
+      .htmlElement(quakeElement);
+  }
+
+  function readQuakeFeed(url) {
+    return fetch(url, { cache: "no-store", credentials: "omit" }).then(function (r) {
+      if (r.status === 204) return { features: [] };
+      if (!r.ok) throw new Error("http");
+      return r.json();
+    });
+  }
+
+  function pullQuakes() {
+    if (!globe || disposed) return;
+    var start = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 19);
+    var hawaii = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&orderby=time&minmagnitude=1&minlatitude=18.5&maxlatitude=22.5&minlongitude=-160.5&maxlongitude=-154.5&starttime=" + encodeURIComponent(start);
+    var globalFeed = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson";
+    Promise.all([
+      readQuakeFeed(globalFeed).catch(function () { return null; }),
+      readQuakeFeed(hawaii).catch(function () { return null; })
+    ]).then(function (packs) {
+      if (!globe || disposed) return;
+      if (!packs[0] && !packs[1]) return;
+      var list = [];
+      var seen = {};
+      eventsFromGeo(packs[0], list, seen);
+      eventsFromGeo(packs[1], list, seen);
+      if (list.length > 250) list = list.slice(0, 250);
+      showQuakes(list);
+    }).catch(function () {});
+  }
+
+  function startQuakes() {
+    if (!globe || quakeTimer) return;
+    pullQuakes();
+    quakeTimer = window.setInterval(pullQuakes, 5 * 60 * 1000);
+  }
+
   function draw(d) {
     if (!globe || !d) return;
     var scene = publicScene(d);
@@ -202,6 +303,7 @@
       }
       applySpin();
       globe._rrApplySpin = applySpin;
+      startQuakes();
 
       var canvas = globeEl.querySelector("canvas");
       if (canvas) {
@@ -218,6 +320,7 @@
         fallbackControls.autoRotate = !reduced();
         fallbackControls.autoRotateSpeed = document.body.classList.contains("broadcast") ? 1.05 : 0.35;
         globe.pointOfView({ lat: 16, lng: -156, altitude: 2.15 });
+        startQuakes();
       } catch (err2) {
         globe = null;
         failGlobe();
@@ -259,6 +362,7 @@
     if (disposed) return;
     disposed = true;
     if (pullTimer) window.clearInterval(pullTimer);
+    if (quakeTimer) window.clearInterval(quakeTimer);
     document.removeEventListener("visibilitychange", onVisibility);
     window.removeEventListener("resize", fitGlobe);
     if (window.visualViewport) window.visualViewport.removeEventListener("resize", fitGlobe);

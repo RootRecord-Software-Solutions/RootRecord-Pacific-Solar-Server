@@ -20,7 +20,7 @@ Production is [https://www.rootrecord.cloud/](https://www.rootrecord.cloud/).
 | `/privacy` | Privacy Policy |
 | `/data-deletion` | Request deletion of server-stored data without closing the account |
 | `/status` | Public system status |
-| `/radio` | Continuous stream. Music shuffles. Reports play in full over music at a quarter volume |
+| `/radio` | One station. The page only listens. Music and reports are mixed on the Mainland host |
 | `/live` | Livestream canvas. The homepage globe, with the solar-desk overlay (charge rings, totals, and the public comparison graphs) |
 | `/reports` | Index of the latest field, energy, and operations readings |
 | `/reports/<slug>` | One measured report. Spoken transcripts and persona names stay off the page |

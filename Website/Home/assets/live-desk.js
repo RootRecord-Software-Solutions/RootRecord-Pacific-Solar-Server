@@ -2,21 +2,27 @@
   var T = window.RRTelemetry;
 
   function viewportSize() {
-    var root = document.documentElement;
-    var vw = root && root.clientWidth ? root.clientWidth : window.innerWidth;
-    var vh = root && root.clientHeight ? root.clientHeight : window.innerHeight;
-    return { vw: vw, vh: vh };
+    // Layout viewport, same box OBS uses for the browser source.
+    // documentElement.clientWidth/clientHeight can be smaller and, with a
+    // negative translate, slide the desk off the left edge.
+    return {
+      vw: window.innerWidth,
+      vh: window.innerHeight
+    };
   }
 
   function fitDesk() {
     var hud = document.querySelector(".broadcast-hud");
     if (!hud) return;
     var view = viewportSize();
-    // Cover the browser source. Math.min would contain the 1920×1080 frame and letterbox it.
-    var scale = Math.max(view.vw / 1920, view.vh / 1080);
+    if (view.vw < 2 || view.vh < 2) return;
+    // Contain the 1920×1080 desk. Cover (Math.max) crops the gauges.
+    var scale = Math.min(view.vw / 1920, view.vh / 1080);
     if (!isFinite(scale) || scale <= 0) scale = 1;
     var x = (view.vw - 1920 * scale) / 2;
     var y = (view.vh - 1080 * scale) / 2;
+    if (x < 0) x = 0;
+    if (y < 0) y = 0;
     hud.style.transform = "translate(" + x + "px," + y + "px) scale(" + scale + ")";
   }
 
