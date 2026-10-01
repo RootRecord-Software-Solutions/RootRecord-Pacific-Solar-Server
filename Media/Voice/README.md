@@ -1,11 +1,17 @@
 # Media/Voice — G3 Kokoro-82M voice (non-resident)
 
-Full doc: Library `Documentation/00-architecture/Voice-Reports-G3.md`.
+Current behavior: Library [2026-09-30 voice desk](../../../5%20-%20RootRecord-Library/Documentation/01-operations/2026-09-30-voice-desk.md). The 2026-09-29 port record is [Voice-Reports-G3](../../../5%20-%20RootRecord-Library/Documentation/00-architecture/Voice-Reports-G3.md).
 
 - `scripts/voice-render.sh render|stitch|clips|asr …` runs `voice_generate.py` in `.venv` through the single-flight inference lock at nice 10. The model loads per process and is gone when it exits.
-- Voices: Ava `af_heart` 1.0 (default) · Bruce `am_echo` 1.0 · Carly `af_nova` 1.0. Output: 24 kHz 16-bit mono WAV.
-- Model: Database `AI/Kokoro/Kokoro-82M/` (git-ignored). Audio: Database `Media/Audio/Voice/<report>_current.wav`, history in `Archive/<report>_YYYYMMDDTHHMM.wav`, phrase clips in `Clips/<Persona>/<slug>.wav` + tracked `Clips/clips_manifest.json`.
-- `scripts/system_perf.py`: the first ported report (Bruce). jobs.py id `voice_system_perf` is gated OFF (`RR_VOICE_SYSTEM_PERF=1`, read at poller start).
+- Voices: Ava `af_heart` 1.0 · Bruce `am_echo` 1.0 · Carly `af_nova` 1.0. Output: 24 kHz 16-bit mono WAV.
+- `Hawaii` and `Hawaiian` are spoken as those words. Other place names use the English respell in `scripts/hawaiian_lexicon.py`.
+- Model: Database `AI/Kokoro/Kokoro-82M/` (git-ignored). Audio: Database `Media/Audio/Voice/<report>_current.wav`. Prebuilt chimes: `Media/Audio/Voice/Chimes/hour-00.wav` through `hour-23.wav`.
+- Sandbox delivery is on from `run-poller.sh` (`RR_VOICE_DELIVER=1`). On in that file: NWS, Kīlauea, solar, security, bandwidth, system, energy, remaining tasks, earthquakes, geology, net samples. Off until the flag is added: hourly chime, hurricane, roll-ups, official weather, boot brief.
+- System temperature is Celsius. A bare "degrees" is still spoken as Fahrenheit for weather numbers.
+- Energy at :15 and :45 includes one channel 1 look per hour. Delta AC in above 550 W, or River AC in above 300 W, is generator. A matching Delta output and River input is a transfer. A reading older than 30 minutes is "out of range."
+- The :00 chime plays a prebuilt file. It does not render. The job stays off until `RR_VOICE_HOURLY_CHIME=1` at poller start.
+- Speakers stay off. `Media/Playback/scripts/play.py` is dry-run unless `RR_PLAYBACK=1` and `--play`.
+- `.venv/` is git-ignored. Rebuild it with:
 - `scripts/voice_reports.py earthquake_report` (Carly, G1 `earthquake-hourly` spoken script): reads Database `Geology/Earthquakes/{hawaii,global}-last.json` from Pacific `Geology/scripts/geology_collect.py`; "new since last report" state in `<report out>/earthquake_report_seen.json`. jobs.py id `voice_earthquake_report` (:08) gated OFF (`RR_VOICE_QUAKE=1`). Text PASS 2026-09-29 13:20 HST (`--no-voice`); WAV not rendered yet (VERIFY PENDING).
 - `scripts/voice_reports.py hurricane_desk` (Carly, G1 `weather/hurricane-desk` Hawaiʻi block): nearest tracked storm to Honolulu / Hilo / Līhuʻe / Kona from Database `Weather/Hawai'i/hurricanes/tracking/*/track.json` (weather poller) + NWS HI tropical alerts. jobs.py id `voice_hurricane_desk` (05:50, 09:50, 12:50, 16:55, 20:50) gated OFF (`RR_VOICE_HURRICANE=1`). G1 global JTWC/RAMMB board not collected in G3. Text PASS 2026-09-29 13:43 HST; WAV VERIFY PENDING.
 - `scripts/voice_reports.py kilauea_report` (Carly, G1 hourly Kīlauea desk + cached HVO-notice lead-in): Database `Geology/Volcanoes/{kilauea,mauna-loa}-last.json` + `Geology/Earthquakes/hawaii-last.json`. jobs.py id `voice_kilauea_report` (:03) gated OFF (`RR_VOICE_KILAUEA=1`). Text PASS 2026-09-29 13:43 HST; WAV VERIFY PENDING.
