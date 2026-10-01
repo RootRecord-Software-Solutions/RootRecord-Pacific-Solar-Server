@@ -1,18 +1,28 @@
 (function () {
   var T = window.RRTelemetry;
 
+  function viewportSize() {
+    var root = document.documentElement;
+    var vw = root && root.clientWidth ? root.clientWidth : window.innerWidth;
+    var vh = root && root.clientHeight ? root.clientHeight : window.innerHeight;
+    return { vw: vw, vh: vh };
+  }
+
   function fitDesk() {
     var hud = document.querySelector(".broadcast-hud");
     if (!hud) return;
-    var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    var view = viewportSize();
+    // Cover the browser source. Math.min would contain the 1920×1080 frame and letterbox it.
+    var scale = Math.max(view.vw / 1920, view.vh / 1080);
     if (!isFinite(scale) || scale <= 0) scale = 1;
-    var x = Math.max(0, (window.innerWidth - 1920 * scale) / 2);
-    var y = Math.max(0, (window.innerHeight - 1080 * scale) / 2);
+    var x = (view.vw - 1920 * scale) / 2;
+    var y = (view.vh - 1080 * scale) / 2;
     hud.style.transform = "translate(" + x + "px," + y + "px) scale(" + scale + ")";
   }
 
   fitDesk();
   window.addEventListener("resize", fitDesk);
+  if (window.visualViewport) window.visualViewport.addEventListener("resize", fitDesk);
 
   function text(id) {
     var node = document.getElementById(id);

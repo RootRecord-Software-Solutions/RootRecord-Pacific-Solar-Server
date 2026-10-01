@@ -1609,10 +1609,26 @@ p .enter { display: inline-block; }
 
 #radio-report:empty { min-height: 1.2em; }
 
+html:has(body.broadcast) {
+  overflow: hidden;
+  height: 100%;
+  background: #000011;
+  scrollbar-width: none;
+}
+
 body.broadcast {
   overflow: hidden;
+  width: 100%;
   height: 100vh;
   height: 100dvh;
+  background: #000011;
+  scrollbar-width: none;
+}
+
+body.broadcast #starfield,
+body.broadcast #globe {
+  width: 100%;
+  height: 100%;
 }
 
 .broadcast-hud {
