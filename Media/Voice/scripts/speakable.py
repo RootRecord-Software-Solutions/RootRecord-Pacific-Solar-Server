@@ -126,11 +126,10 @@ _DATE_CLOCK = re.compile(  # info: set _DATE_CLOCK
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 _CLOCK = re.compile(  # info: set _CLOCK
-    r"(?<![\d\-])(?:at\s+|about\s+)?"  # info: r"(?<![\d\-])(?:at\s+|about\s+)?"
-    r"(?:"  # info: r"(?:"
-    r"([01]?\d|2[0-3]):([0-5]\d)(?::[0-5]\d)?"  # info: r"([01]?\d|2[0-3]):([0-5]\d)(?::[0-5]\d)?"
+    r"(?<![\d\-])(?:"  # info: r"(?<![\d\-])(?:"
+    r"(?:at\s+|about\s+)?([01]?\d|2[0-3]):([0-5]\d)(?::[0-5]\d)?"  # info: colon clock, optional at or about
     r"|"  # info: r"|"
-    r"([01]?\d|2[0-3])\s+([0-5]\d)"  # info: r"([01]?\d|2[0-3])\s+([0-5]\d)"
+    r"(?:at\s+|about\s+)([01]?\d|2[0-3])\s+([0-5]\d)"  # info: spaced clock only after at or about, so "12 km" stays a distance
     r")"  # info: r")"
     r"(?:\s*([AaPp])\.?\s*[Mm]\.?)?\b"  # info: r"(?:\s*([AaPp])\.?\s*[Mm]\.?)?\b"
 )  # info: )
