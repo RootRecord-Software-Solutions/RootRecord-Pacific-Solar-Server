@@ -22,15 +22,11 @@ const AWS_FEED_MAX_BYTES = Number(process.env.AWS_FEED_MAX_BYTES || 64 * 1024 * 
 const AWS_FEED_TARGET_BYTES = Number(process.env.AWS_FEED_TARGET_BYTES || 48 * 1024 * 1024);
 const AWS_FEED_MAINTENANCE_MS = Number(process.env.AWS_FEED_MAINTENANCE_MS || 15 * 60 * 1000);
 const AWS_FEED_MAINTENANCE_SCRIPT = process.env.AWS_FEED_MAINTENANCE_SCRIPT || '/home/ubuntu/network-globe/network-globe/scripts/maintain-hawaii-feed.sh';
+const SNAPSHOT_DIR = path.join(__dirname, 'rebroadcast');
+const SNAPSHOT_FILE = path.join(SNAPSHOT_DIR, 'hawaii-current.ndjson');
 
-// NOTE: intentionally no on-disk outbox/ledger and no MAX_BUFFERED cap.
-// This collector is a live-state pusher, not a store-and-forward system:
-// - SSH reachable -> record streams to AWS immediately.
-// - SSH unreachable, general internet up -> record goes to the Telegram
-//   insurance channel instead (see telegram-relay.js), batched in memory only.
-// - No internet at all -> the record is simply not observed by anything
-//   downstream. Nothing is queued to disk for later replay into AWS, by design:
-//   AWS must never show a backfilled/caught-up gap, only live state.
+// Live state is one replaced file. AWS pulls that file over SSH and keeps
+// only the latest copy. This process does not append a feed on AWS.
 
 let localAddresses = new Set(['127.0.0.1', '::1']);
 let flows = new Map();
@@ -243,6 +239,16 @@ function makeRecord(flow) {
   };
 }
 
+function writeSnapshot() {
+  const lines = [];
+  for (const flow of flows.values()) lines.push(JSON.stringify(makeRecord(flow)));
+  const body = lines.length ? lines.join('\n') + '\n' : '';
+  fs.mkdirSync(SNAPSHOT_DIR, { recursive: true });
+  const tmp = SNAPSHOT_FILE + '.tmp';
+  fs.writeFileSync(tmp, body);
+  fs.renameSync(tmp, SNAPSHOT_FILE);
+}
+
 function queueRecord(record) {
   const line = JSON.stringify(record) + '\n';
   if (sshReady && sshProc?.stdin?.writable) {
@@ -448,20 +454,16 @@ function connectSsh() {
 async function collect() {
   await refreshLocalAddresses();
   updateFlows(await runSs());
-  for (const flow of flows.values()) queueRecord(makeRecord(flow));
-  maintainAwsFeed();
+  writeSnapshot();
 }
 
 async function boot() {
   await refreshLocalAddresses();
   await discoverOrigin();
   startTcpdump();
-  telegramRelay.start();
-  connectSsh();
   await collect();
   setInterval(() => collect().catch(() => {}), POLL_MS);
-  setInterval(() => connectSsh(), 3000);
-  console.log(`Hawaii data collector → ${AWS_USER}@${AWS_HOST}:${AWS_PORT}${AWS_REMOTE_DIR}/data/hawaii.ndjson`);
+  console.log(`Hawaii snapshot → ${SNAPSHOT_FILE}`);
   console.log(`origin: ${origin?.label || ORIGIN_LABEL}`);
 }
 

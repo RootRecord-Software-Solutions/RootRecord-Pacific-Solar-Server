@@ -1,0 +1,13 @@
+[Unit]
+Description=Reverse SSH so AWS can pull the Pacific rebroadcast snapshot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ssh -N -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -R 127.0.0.1:17022:127.0.0.1:22 rr-aws-ip
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
