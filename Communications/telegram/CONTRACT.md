@@ -5,6 +5,7 @@ Component: `Communications/telegram/scripts/council-relay.py`, started by `ensur
 ## Promises
 
 - Exactly one long-poll, Ava's token, chats listed in `config/relay.conf`.
+- Ava's replies use the `flm_model` column in `config/voices.conf` (`gemma3:4b`). Bruce and Carly stay on the relay default `llama3.2:3b`. Context stays 4096. The model loads for a reply and then stops.
 - The original council chat replies when `COUNCIL_REPLIES=1`.
 - The sandbox replies when `SANDBOX_REPLIES=1`.
 - Private DMs are held, not answered, while `RR_RELAY_REPLIES` is 0.

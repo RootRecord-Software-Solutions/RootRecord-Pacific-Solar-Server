@@ -4,7 +4,7 @@ Desk runtime for Stripe snapshots, Vercel failed-build records, and last-known o
 
 | Item | Where |
 | --- | --- |
-| Public page | [Home/](Home/) — globe background, closable services and operations panels |
+| Public page | [Home/](Home/) — the RootRecord-Website presentation layer. Home, ecosystem, infrastructure, systems, intelligence, data, knowledge, security, status, and about. Public names are Hawaiʻi and Mainland Server |
 | GitHub / Vercel | Org `RootRecord-Software-Solutions/RootRecord-Website` (row `website`, Vercel) and personal `rootrecordsoftwaresolutions/RootRecord-Website` (row `website-personal`). Both pull and push from `Github/scripts/repos.conf` |
 | Public page | `https://www.rootrecord.cloud/` on Vercel. Apex CNAME matches `www` and 308s there. Contract: [HANDOFF-vercel-homepage-2026-09-30.md](HANDOFF-vercel-homepage-2026-09-30.md) |
 | SSH | `ssh.rootrecord.cloud` A `18.118.30.226`, proxy off. `rr-aws` and `rr-aws-ip` use that address. Hawaii snapshots go to AWS over SSH |

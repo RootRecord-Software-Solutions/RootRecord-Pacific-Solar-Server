@@ -9,7 +9,7 @@ Telegram communication integration, alerts, and council-relay services.
 | Item | State |
 | --- | --- |
 | Folder in this repo | Live relay scripts under `Communications/telegram/` |
-| Live relay today | Poller boot job `council_relay` runs `ensure-relay.sh`. Original council replies are on (`COUNCIL_REPLIES=1`). Sandbox replies are off. Private DMs stay off (`RR_RELAY_REPLIES` default 0). Reports use `RR_TELEGRAM_DEST=council`. Inference is NPU `llama3.2:3b`, on demand, context 4096. |
+| Live relay today | Poller boot job `council_relay` runs `ensure-relay.sh`. Original council replies are on (`COUNCIL_REPLIES=1`). Sandbox replies are off. Private DMs stay off (`RR_RELAY_REPLIES` default 0). Reports use `RR_TELEGRAM_DEST=council`. Ava replies on NPU `gemma3:4b`. Bruce and Carly stay on `llama3.2:3b`. On demand, context 4096. |
 | Sandbox | `SANDBOX_CHAT_ID=-1004406495175` ([t.me/c/4406495175/2](https://t.me/c/4406495175/2)). `SANDBOX_REPLIES=0` does not answer that chat. |
 | Standing rule | **One** getUpdates owner (council-relay) |
 | Contract | [CONTRACT.md](CONTRACT.md) |
@@ -18,7 +18,7 @@ Telegram communication integration, alerts, and council-relay services.
 
 ## jobs.py
 
-`council_relay` runs Pacific `Communications/telegram/scripts/ensure-relay.sh` (cwd `Communications/telegram`). Original council replies are on. Sandbox replies are off. Private DMs stay off (`RR_RELAY_REPLIES` default 0). Council inference is NPU `llama3.2:3b`, on demand, context 4096.
+`council_relay` runs Pacific `Communications/telegram/scripts/ensure-relay.sh` (cwd `Communications/telegram`). Original council replies are on. Sandbox replies are off. Private DMs stay off (`RR_RELAY_REPLIES` default 0). Ava's replies use NPU `gemma3:4b` from `config/voices.conf`. Bruce and Carly stay on `llama3.2:3b`. On demand, context 4096.
 
 Do not run a second Telegram poller against the same bot token.
 
@@ -38,7 +38,7 @@ Secrets / bot tokens stay local.
 
 ---
 
-*Updated 2026-09-30 afternoon — sandbox replies on. Live council and private DMs stay off. Council inference is NPU llama3.2:3b, on demand.*
+*Updated 2026-09-30 evening — Ava replies on NPU gemma3:4b. Bruce and Carly stay on llama3.2:3b. On demand, context 4096.*
 
 ---
 

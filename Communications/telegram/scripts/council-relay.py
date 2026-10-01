@@ -118,9 +118,10 @@ def load_voices():  # info: def load_voices
         if len(parts) < 6:  # info: if len ( parts ) < 6 :
             continue  # info: continue
         vid, enabled, user, token_env, model, fallback = parts[:6]  # info: vid , enabled , user , token_env ,
+        flm = parts[6].strip() if len(parts) > 6 else ""  # info: set flm
         if enabled != "1":  # info: if enabled != "1" :
             continue  # info: continue
-        voices[vid] = {"user": user, "token_env": token_env, "model": model, "fallback": fallback}  # info: voices [ vid ] = { "user" :
+        voices[vid] = {"user": user, "token_env": token_env, "model": model, "fallback": fallback, "flm": flm}  # info: voices [ vid ] = { "user" :
     return voices  # info: return voices
 
 # ====================================================
@@ -254,15 +255,17 @@ def persona_system(voice):  # info: def persona_system
 
 # ====================================================
 # SECTION: function run_infer
-# What it does: run infer with the voice persona when one exists.
+# What it does: run infer with the voice persona. flm_model overrides FLM_MODEL for that voice.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def run_infer(cfg, voice, prompt, prior=""):  # info: def run_infer
+def run_infer(cfg, voice, prompt, prior="", flm_model=""):  # info: def run_infer
     run = cfg.get("RUN_INFER") or cfg.get("RUN_OLLAMA", "").replace("run-ollama.sh", "run-infer.sh")  # info: set run
     if not run or not Path(run).exists():  # info: if not run or not Path ( run
         run = str(ROOT.parent.parent.parent / "System" / "scripts" / "plumbing" / "run-infer.sh")  # info: set run
     full = prompt if not prior else f"Prior turns:\n{prior}\n\nYour turn as {voice}.\nUser:\n{prompt}"  # info: set full
     env = os.environ.copy()  # info: set env
+    if flm_model:  # info: if flm_model
+        env["FLM_MODEL"] = flm_model  # info: env [ "FLM_MODEL" ] = flm_model
     try:  # info: try
         env["RR_PERSONA_SYSTEM"] = persona_system(voice)  # info: env [ "RR_PERSONA_SYSTEM" ] = persona_system ( voice )
     except Exception as e:  # info: except Exception as e
@@ -700,7 +703,7 @@ def continue_reply(cfg, state_dir, voices, voice, msg, text, max_text):  # info:
     remember_turn(state_dir, ch, sender, text, mid)  # info: call remember_turn
     mark_seen(voice, voices, ch, mid)  # info: call mark_seen
     mark_typing(voice, voices, ch)  # info: call mark_typing
-    reply = run_infer(cfg, voice, continue_prompt(prior, quote, text, voice, state_dir))  # info: set reply
+    reply = run_infer(cfg, voice, continue_prompt(prior, quote, text, voice, state_dir), flm_model=(voices.get(voice) or {}).get("flm") or "")  # info: set reply
     if not reply:  # info: if not reply
         return False  # info: return False
     posted = post_as(voice, voices, ch, reply, max_text, allow=True, reply_to=mid, thread_id=thread_id)  # info: set posted
@@ -748,7 +751,8 @@ def main():  # info: def main
     timeout = int(cfg.get("POLL_TIMEOUT", "20") or "20")  # info: set timeout
     sandbox_note = f" sandbox={sandbox_id} sandbox_replies={'ON' if replies_for_chat(cfg, sandbox_id) else 'OFF'}" if sandbox_id else ""  # info: set sandbox_note
     council_note = f" council_replies={'ON' if replies_for_chat(cfg, chat_id) else 'OFF'}"  # info: set council_note
-    print(f"[ok] relay chat={chat_id}{council_note}{sandbox_note} poll={poll_voice} infer=FLM-prefer replies={'ON' if replies_enabled() else 'OFF (private DMs quiet; RR_RELAY_REPLIES=0)'}")  # info: call print
+    ava_flm = (voices.get("ava") or {}).get("flm") or os.environ.get("FLM_MODEL", "llama3.2:3b")  # info: set ava_flm
+    print(f"[ok] relay chat={chat_id}{council_note}{sandbox_note} poll={poll_voice} ava_model={ava_flm} infer=FLM-prefer replies={'ON' if replies_enabled() else 'OFF (private DMs quiet; RR_RELAY_REPLIES=0)'}")  # info: call print
 
     last_rotate = 0.0  # info: set last_rotate
     while True:  # info: while True :
@@ -828,7 +832,7 @@ def main():  # info: def main
                         continue  # info: continue
                     mark_seen(hop, voices, ch, mid)  # info: call mark_seen
                     hop_prompt = turn_preamble(hop, state_dir) + "\n\nRecent chat:\n" + prior + "\n\nUser: " + text  # info: set hop_prompt
-                    reply = run_infer(cfg, hop, hop_prompt)  # info: set reply
+                    reply = run_infer(cfg, hop, hop_prompt, flm_model=(voices.get(hop) or {}).get("flm") or "")  # info: set reply
                     if reply:  # info: if reply :
                         mark_typing(hop, voices, ch)  # info: call mark_typing
                         post_as(hop, voices, ch, reply, max_text, allow=True, reply_to=mid, thread_id=thread_id)  # info: call post_as
@@ -853,7 +857,7 @@ def main():  # info: def main
                     if quote:  # info: if quote
                         ask += "\n\nThis message replies to:\n" + quote  # info: set ask
                     ask += "\n\nUser: " + text  # info: set ask
-                    reply = run_infer(cfg, hop, ask)  # info: set reply
+                    reply = run_infer(cfg, hop, ask, flm_model=(voices.get(hop) or {}).get("flm") or "")  # info: set reply
                     if reply:  # info: if reply :
                         mark_typing(hop, voices, ch)  # info: call mark_typing
                         if post_as(hop, voices, ch, reply, max_text, allow=True, reply_to=mid, thread_id=thread_id):  # info: if post_as
