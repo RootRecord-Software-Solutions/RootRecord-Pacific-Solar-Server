@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live — Root Record</title>
+<meta name="description" content="Root Record live desk. The globe with solar, network, weather, and geology readings.">
+<link rel="canonical" href="https://www.rootrecord.cloud/live">
+<meta property="og:title" content="Live — Root Record">
+<meta property="og:description" content="The globe with the live desk: charge, solar, network, weather, and geology.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.rootrecord.cloud/live">
+<meta property="og:site_name" content="Root Record">
+<meta name="theme-color" content="#000011">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/site.css?v=20261001e">
+</head>
+<body class="broadcast">
+<a class="skip" href="#content">Skip to content</a>
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="globe"></div>
+<div class="broadcast-hud" id="content">
+  <header class="b-top">
+    <div>
+      <div class="b-brand"><span>ROOT RECORD</span> · live desk</div>
+      <div class="b-live"><i class="led" id="net-dot" aria-hidden="true"></i><span id="net-status" data-live-label="LIVE">LOADING</span></div>
+    </div>
+    <div class="b-clock">
+      <div class="d" id="b-date">HST</div>
+      <div class="t" id="b-time">—</div>
+    </div>
+  </header>
+  <div class="b-cols">
+    <div class="b-col">
+      <section class="b-card" aria-label="Battery bank">
+        <h2 class="b-k">Battery bank</h2>
+        <div class="b-rings">
+          <div class="b-ring">
+            <div class="b-gauge" id="gauge-river"><div id="river-soc">—</div></div>
+            <div class="b-lab">River</div>
+            <div class="b-sub" id="ring-river-sub">—</div>
+          </div>
+          <div class="b-ring">
+            <div class="b-gauge" id="gauge-delta"><div id="delta-soc">—</div></div>
+            <div class="b-lab">Delta</div>
+            <div class="b-sub" id="ring-delta-sub">—</div>
+          </div>
+        </div>
+      </section>
+      <section class="b-card" aria-label="Totals now">
+        <h2 class="b-k">Totals now</h2>
+        <div class="b-split">
+          <div class="b-tile"><div class="n">River solar</div><div class="x b-solar" id="river-solar">—</div></div>
+          <div class="b-tile"><div class="n">Delta solar</div><div class="x b-solar" id="delta-solar">—</div></div>
+          <div class="b-tile"><div class="n">River AC</div><div class="x" id="river-ac">—</div></div>
+          <div class="b-tile"><div class="n">Delta AC</div><div class="x" id="delta-ac">—</div></div>
+          <div class="b-tile"><div class="n">River USB-C</div><div class="x b-cyan" id="river-usb">—</div></div>
+          <div class="b-tile"><div class="n">Delta USB-C</div><div class="x b-cyan" id="delta-usb">—</div></div>
+        </div>
+      </section>
+      <div class="b-charts">
+        <section class="b-card" aria-label="State of charge">
+          <h2 class="b-k">State of charge</h2>
+          <div id="chart-soc"></div>
+        </section>
+        <section class="b-card" aria-label="Solar input">
+          <h2 class="b-k">Solar input</h2>
+          <div id="chart-solar"></div>
+        </section>
+        <section class="b-card" aria-label="AC output">
+          <h2 class="b-k">AC output</h2>
+          <div id="chart-output"></div>
+        </section>
+      </div>
+    </div>
+    <div aria-hidden="true"></div>
+    <div class="b-col">
+      <section class="b-card" aria-label="Live network">
+        <h2 class="b-k">Live network</h2>
+        <div class="b-metrics">
+          <div><span>Hawaiʻi</span><strong id="hi-flows">—</strong></div>
+          <div><span>Mainland</span><strong id="ms-flows">—</strong></div>
+          <div><span>Active flows</span><strong id="active-flows">—</strong></div>
+          <div><span>Endpoints</span><strong id="endpoints">—</strong></div>
+        </div>
+        <p class="b-src" id="net-fresh">Loading public telemetry...</p>
+        <p class="b-src" id="last-update">—</p>
+      </section>
+      <section class="b-card" aria-label="Site and volcano">
+        <h2 class="b-k">Site and volcano</h2>
+        <div class="b-row"><span>Weather</span><b id="weather-at">—</b></div>
+        <div class="b-row"><span>Kīlauea</span><b id="kilauea-line">—</b></div>
+        <div class="b-row"><span>Alert</span><b id="kilauea-level">—</b></div>
+        <div class="b-row"><span>Color</span><b id="kilauea-code">—</b></div>
+        <div class="b-row"><span>Eruption</span><b id="kilauea-erupt">—</b></div>
+      </section>
+      <section class="b-card" aria-label="Current moon">
+        <h2 class="b-k">Current moon</h2>
+        <div class="b-moon">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <defs>
+              <radialGradient id="moon-shade" cx="32%" cy="38%" r="78%">
+                <stop offset="0%" stop-color="#f7f8fb"/>
+                <stop offset="72%" stop-color="#e6ebf2"/>
+                <stop offset="100%" stop-color="#d7dee8"/>
+              </radialGradient>
+              <clipPath id="moon-disc"><circle cx="50" cy="50" r="46"/></clipPath>
+              <clipPath id="moon-lit-clip"><path id="moon-lit-shape"/></clipPath>
+            </defs>
+            <circle cx="50" cy="50" r="46" fill="#10131c" stroke="rgba(0,229,255,0.4)" stroke-width="1"/>
+            <g clip-path="url(#moon-disc)">
+              <path id="moon-lit" fill="url(#moon-shade)"/>
+              <g id="moon-craters" clip-path="url(#moon-lit-clip)" fill="rgba(20, 24, 36, 0.2)">
+                <circle cx="34" cy="44" r="6"/>
+                <circle cx="44" cy="60" r="3.4"/>
+                <circle cx="30" cy="62" r="2.2"/>
+                <circle cx="66" cy="42" r="5"/>
+                <circle cx="58" cy="58" r="3"/>
+                <circle cx="70" cy="64" r="2"/>
+              </g>
+            </g>
+          </svg>
+          <div>
+            <p class="phase" id="moon-phase-name">Moon reading</p>
+            <p class="illum" id="moon-illum">Waiting for the saved reading</p>
+            <p class="when" id="moon-when">—</p>
+            <p class="when" id="moon-next">Next phase</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <footer class="b-bottom">
+    <div>Root Record · Hawaiʻi · Mainland Server</div>
+    <div class="b-flow"><span>Solar <b id="flow-in">—</b></span><span>→ bank <b id="flow-bank">—</b></span><span>→ AC <b id="flow-out">—</b></span></div>
+    <div class="b-src">rootrecord.cloud</div>
+  </footer>
+</div>
+<p class="fine" id="globe-fallback" hidden>Planetary view is unavailable in this browser.</p>
+<script src="https://unpkg.com/globe.gl@2.46.2"></script>
+<script src="/assets/telemetry.js?v=20261001"></script>
+<script src="/assets/charts.js"></script>
+<script src="/assets/live.js?v=20261001d"></script>
+<script src="/assets/live-desk.js?v=20261001e"></script>
+<script src="/assets/starfield.js"></script>
+<script src="/assets/home.js"></script>
+</body>
+</html>

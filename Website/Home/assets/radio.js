@@ -35,8 +35,10 @@
 
   var music = new Audio();
   var report = new Audio();
+  var chime = new Audio();
   music.preload = "auto";
   report.preload = "auto";
+  chime.preload = "auto";
 
   var tracks = [];
   var order = [];
@@ -56,7 +58,14 @@
   var pollTimer = 0;
   var musicFails = 0;
   var attempt = 0;
+  var chimeOn = false;
+  var reportHeld = false;
+  var lastChime = "";
+  var chimeTimer = 0;
+  var chimeTry = 0;
   var STORE = "rr-radio-local";
+  // Area forecast discussion plays when the file is new. It is not in the repeating cycle.
+  var FRESH = { official_weather: true };
 
   function localWanted() {
     try { return localStorage.getItem(STORE) !== "0"; }
@@ -144,8 +153,94 @@
     }
   }
 
+  function pad2(n) {
+    n = Number(n) || 0;
+    return (n < 10 ? "0" : "") + n;
+  }
+
+  function hawaiiClock(now) {
+    var parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Pacific/Honolulu",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: "h23"
+    }).formatToParts(now || new Date());
+    var clock = { hour: 0, minute: 0, second: 0 };
+    parts.forEach(function (part) {
+      if (part.type === "hour") clock.hour = Number(part.value) % 24;
+      if (part.type === "minute") clock.minute = Number(part.value);
+      if (part.type === "second") clock.second = Number(part.value);
+    });
+    return clock;
+  }
+
+  function clearChime() {
+    chimeOn = false;
+    reportHeld = false;
+    chimeTry += 1;
+    clearTimeout(chimeTimer);
+    chimeTimer = 0;
+    chime.pause();
+  }
+
+  function finishChime() {
+    var held = reportHeld && playing && started;
+    chimeOn = false;
+    reportHeld = false;
+    if (!started) return;
+    if (held) {
+      reportEl.textContent = reportTitle(playing.id);
+      ramp(DUCK);
+      var pending = report.play();
+      if (pending && pending.catch) pending.catch(function () { finishReport(); });
+      return;
+    }
+    if (playing) {
+      reportEl.textContent = reportTitle(playing.id);
+      ramp(DUCK);
+    } else {
+      reportEl.textContent = "";
+      ramp(FULL);
+    }
+    pump();
+  }
+
+  function playChime(slot) {
+    if (!started || chimeOn || slot === lastChime) return;
+    lastChime = slot;
+    chimeOn = true;
+    reportHeld = !!(playing && !report.ended);
+    if (reportHeld) report.pause();
+    reportEl.textContent = "Time";
+    ramp(DUCK);
+    var mine = ++chimeTry;
+    chime.src = BASE + "/chimes/hour-" + slot + ".wav";
+    var pending = chime.play();
+    if (pending && pending.catch) {
+      pending.catch(function () {
+        if (mine === chimeTry && chimeOn) finishChime();
+      });
+    }
+  }
+
+  function tickChime() {
+    if (!started || chimeOn) return;
+    var clock = hawaiiClock(new Date());
+    if (clock.minute !== 0 && clock.minute !== 30) return;
+    playChime(pad2(clock.hour) + "-" + pad2(clock.minute));
+  }
+
+  function armChime() {
+    clearTimeout(chimeTimer);
+    if (!started) return;
+    tickChime();
+    chimeTimer = setTimeout(armChime, 1000);
+  }
+
   function waitForListen() {
     started = false;
+    clearChime();
     clearTimeout(gapTimer);
     clearInterval(pollTimer);
     pollTimer = 0;
@@ -159,6 +254,7 @@
 
   function stopPlayback() {
     started = false;
+    clearChime();
     clearTimeout(gapTimer);
     clearInterval(pollTimer);
     pollTimer = 0;
@@ -184,7 +280,7 @@
 
   function armGap() {
     clearTimeout(gapTimer);
-    if (!started || playing || updates.length || rotation.length) return;
+    if (!started || playing || chimeOn || updates.length || rotation.length) return;
     var wait = opened ? GAP_MS : OPEN_MS;
     opened = true;
     gapTimer = setTimeout(function () {
@@ -208,11 +304,12 @@
 
   function finishReport() {
     if (!playing) return;
+    if (chimeOn && reportHeld) return;
     var done = playing;
     playing = null;
     reportEl.textContent = "";
-    ramp(FULL);
-    if (replay && done && replay.id === done.id && replay.mtime > done.mtime) {
+    if (!chimeOn) ramp(FULL);
+    if (!FRESH[done.id] && replay && replay.id === done.id && replay.mtime > done.mtime) {
       var again = replay;
       replay = null;
       beginReport(again);
@@ -224,11 +321,19 @@
 
   report.addEventListener("ended", finishReport);
   report.addEventListener("error", function () {
+    if (chimeOn && reportHeld) return;
     if (playing) finishReport();
   });
 
+  chime.addEventListener("ended", function () {
+    if (chimeOn) finishChime();
+  });
+  chime.addEventListener("error", function () {
+    if (chimeOn && chime.src.indexOf("/chimes/") !== -1) finishChime();
+  });
+
   function pump() {
-    if (!started || playing) return;
+    if (!started || playing || chimeOn) return;
     if (updates.length) {
       clearTimeout(gapTimer);
       beginReport(updates.shift());
@@ -252,7 +357,7 @@
 
   function enqueueUpdate(item) {
     if (playing && playing.id === item.id) {
-      if (item.mtime > playing.mtime) replay = item;
+      if (!FRESH[item.id] && item.mtime > playing.mtime) replay = item;
       return;
     }
     var at = queued(updates, item.id);
@@ -262,20 +367,22 @@
     }
     rotation = rotation.filter(function (row) { return row.id !== item.id; });
     updates.push(item);
-    if (started && !playing) pump();
+    if (started && !playing && !chimeOn) pump();
   }
 
   function enqueueRotation() {
     if (!reports.length) return;
-    var item = reports[rotAt % reports.length];
-    rotAt += 1;
-    if (playing && playing.id === item.id) {
-      if (reports.length < 2) return;
-      item = reports[rotAt % reports.length];
+    var guard = 0;
+    while (guard < reports.length) {
+      var item = reports[rotAt % reports.length];
       rotAt += 1;
+      guard += 1;
+      if (!item || FRESH[item.id]) continue;
+      if (playing && playing.id === item.id) continue;
+      if (queued(updates, item.id) >= 0 || queued(rotation, item.id) >= 0) return;
+      rotation.push(item);
+      return;
     }
-    if (queued(updates, item.id) >= 0 || queued(rotation, item.id) >= 0) return;
-    rotation.push(item);
   }
 
   function applyCatalog(data) {
@@ -290,7 +397,7 @@
     var live = {};
     reports.forEach(function (row) { live[row.id] = true; });
     updates = updates.filter(function (row) { return live[row.id]; });
-    rotation = rotation.filter(function (row) { return live[row.id]; });
+    rotation = rotation.filter(function (row) { return live[row.id] && !FRESH[row.id]; });
     Object.keys(seen).forEach(function (id) {
       if (!live[id]) delete seen[id];
     });
@@ -348,6 +455,7 @@
     paintToggle(true);
     playMusic();
     armGap();
+    armChime();
     if (!pollTimer) pollTimer = setInterval(poll, POLL_MS);
   }
 
@@ -370,6 +478,7 @@
         pump();
       }
       if (!pollTimer) pollTimer = setInterval(poll, POLL_MS);
+      armChime();
       return;
     }
     startPlayback();
@@ -383,7 +492,7 @@
     listen.disabled = true;
     setState("STARTING", false);
     var primed = music.src && music.src.indexOf("data:audio/wav") !== 0;
-    var ready = primed ? Promise.resolve() : unlock(music).then(function () { return unlock(report); });
+    var ready = primed ? Promise.resolve() : unlock(music).then(function () { return unlock(report); }).then(function () { return unlock(chime); });
     ready.then(function () {
       return fetchCatalog();
     }).then(function (data) {
@@ -416,5 +525,6 @@
   window.addEventListener("pagehide", function () {
     clearInterval(pollTimer);
     clearTimeout(gapTimer);
+    clearTimeout(chimeTimer);
   });
 })();
