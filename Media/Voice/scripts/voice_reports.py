@@ -35,7 +35,7 @@ Gates PROPOSED (RR_VOICE_SOLAR / RR_VOICE_SECURITY / RR_VOICE_BANDWIDTH) - not r
 official_weather = G1 official-weather-media spoken statement (Ava): HLS (Pacific Weather/scripts/official_statement.py ->
 Database Weather/Hawai'i/official/) or HWO / AFD (weather poller text products). boot_brief = G1 boot-prelims Boot Report
 (file-only, no Grok) as a template brief (Ava). Both PROPOSED (RR_VOICE_OFFICIAL / RR_VOICE_BOOT), not in jobs.py.
-Roll-ups can append an LLM summary via run-infer.sh only when RR_VOICE_ROLLUP_LLM=1 (off by default).
+Roll-ups append an LLM summary via run-infer.sh only when RR_VOICE_ROLLUP_LLM=1 (off by default). The off state is not written into the report.
 Scheduling: jobs.py, one env gate per report (read at poller start). Added 2026-09-29 (g3-voice-reports2).
 """
 from __future__ import annotations  # info: from __future__ import annotations
@@ -1215,7 +1215,8 @@ def _rollup(t: datetime, slot: str):  # info: def _rollup
         sp.append(summary)  # info: sp . append ( summary )
     sp.append("End of report.")  # info: sp . append ( "End of report." )
     md = [f"# {title[:-1]} — {t.isoformat()}", "", "## Measured", ""] + [f"- {x}" for x in lines]
-    md += ["", "## LLM summary", "", f"{summary} _(run-infer.sh, RR_VOICE_ROLLUP_LLM=1)_" if summary else "_off (RR_VOICE_ROLLUP_LLM != 1)_", ""]
+    if summary:  # info: if summary
+        md += ["", "## LLM summary", "", summary, ""]  # info: md += the summary only
     return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
