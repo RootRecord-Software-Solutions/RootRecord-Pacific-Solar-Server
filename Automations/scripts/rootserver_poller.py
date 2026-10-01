@@ -34,6 +34,10 @@ SKILLS_ROOT = REPO_ROOT  # alias: domain folders live at repo root
 sys.path.insert(0, str(SCRIPTS))  # info: sys . path . insert ( 0 ,
 sys.path.insert(0, str(REPO_ROOT))  # info: sys . path . insert ( 0 ,
 import jobs as jobmod  # noqa: E402
+try:  # info: try
+    import automation_control as actl  # info: import automation_control as actl
+except Exception:  # info: except Exception
+    actl = None  # info: set actl
 
 INTERVAL_FALLBACK = float(os.environ.get("POLLER_INTERVAL_SEC", "5"))  # info: set INTERVAL_FALLBACK
 HOST = os.environ.get("POLLER_BIND", "127.0.0.1")  # info: set HOST
@@ -78,6 +82,7 @@ except Exception:  # info: except Exception :
 _latest = "starting"  # info: set _latest
 _lock = threading.Lock()  # info: set _lock
 _stop = threading.Event()  # info: set _stop
+_power_busy = threading.Lock()  # info: set _power_busy
 _tunnel_ready = threading.Event()  # info: set _tunnel_ready
 _tunnel_proc: subprocess.Popen | None = None  # info: set _tunnel_proc
 _internet_ok = False  # info: set _internet_ok
@@ -669,7 +674,7 @@ def run_builtin(job: dict) -> None:  # info: def run_builtin
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def run_job(job: dict) -> None:  # info: def run_job
-    if not job.get("enabled"):  # info: if not job . get ( "enabled" )
+    if not _job_on(job):  # info: if not _job_on ( job )
         return  # info: return
     # After SIGTERM, start no new jobs (the rest of the scheduler pass used to re-launch the tunnel and
     # wait 45 s for it, so every stop hit TimeoutStopSec=30 + SIGKILL). 2026-09-29.
