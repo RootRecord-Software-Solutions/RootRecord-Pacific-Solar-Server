@@ -523,9 +523,14 @@ def remember_turn(state_dir, chat_id, who, text, message_id):  # info: def remem
 def chat_transcript(state_dir, chat_id) -> str:  # info: def chat_transcript
     rows = load_context(state_dir).get(str(chat_id)) or []  # info: set rows
     lines = []  # info: set lines
+    prev = ""  # info: set prev
     for row in rows:  # info: for row in rows
         if isinstance(row, dict) and row.get("text"):  # info: if isinstance ( row , dict ) and row . get ( "text" )
-            lines.append(f"{row.get('who') or 'user'}: {row['text']}")  # info: lines . append
+            line = f"{row.get('who') or 'user'}: {row['text']}"  # info: set line
+            if line == prev:  # info: if line == prev
+                continue  # info: continue
+            prev = line  # info: set prev
+            lines.append(line)  # info: lines . append
     return "\n".join(lines)  # info: return "\n" . join ( lines )
 
 # ====================================================
@@ -691,7 +696,7 @@ def continue_prompt(transcript, quoted, text, voice, state_dir) -> str:  # info:
     if quoted:  # info: if quoted
         parts.append("They are asking about this earlier line:\n" + quoted)  # info: parts . append
         parts.append("Explain that earlier line in plain words. Do not repeat it unchanged.")  # info: parts . append
-    parts.append("One or two short sentences.")  # info: parts . append
+    parts.append("Answer the latest User line in one or two sentences. Do not summarize these instructions. Do not repeat your previous reply.")  # info: parts . append
     parts.append("User: " + text)  # info: parts . append
     return "\n\n".join(parts)  # info: return "\n\n" . join ( parts )
 
