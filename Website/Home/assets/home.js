@@ -273,6 +273,22 @@
     return out;
   }
 
+  function ringArea(ring) {
+    var total = 0;
+    var i;
+    for (i = 1; i < ring.length; i++) {
+      var lon1 = ring[i - 1][0] * Math.PI / 180;
+      var lat1 = ring[i - 1][1] * Math.PI / 180;
+      var lon2 = ring[i][0] * Math.PI / 180;
+      var lat2 = ring[i][1] * Math.PI / 180;
+      var dlon = lon2 - lon1;
+      if (dlon > Math.PI) dlon -= 2 * Math.PI;
+      if (dlon < -Math.PI) dlon += 2 * Math.PI;
+      total += dlon * (Math.sin(lat1) + Math.sin(lat2));
+    }
+    return Math.abs(total) / 2;
+  }
+
   function cleanRing(ring) {
     var out = [];
     (ring || []).forEach(function (c) {
@@ -280,16 +296,24 @@
       var lng = Number(c[0]);
       var lat = Number(c[1]);
       if (!Number.isFinite(lng) || !Number.isFinite(lat) || Math.abs(lat) > 90) return;
-      if (lng > 180) lng = 180;
-      if (lng < -180) lng = -180;
+      // Keep the ring off the exact dateline so the fill stays the cone,
+      // not the rest of the planet.
+      if (lng >= 180) lng = 179.9;
+      if (lng <= -180) lng = -179.9;
       var prev = out[out.length - 1];
       if (prev && Math.abs(prev[0] - lng) < 0.08 && Math.abs(prev[1] - lat) < 0.08) return;
       if (prev && Math.abs(prev[0] - lng) > 180) return;
       out.push([lng, lat]);
     });
     if (out.length < 4) return null;
-    // Keep the ring's own winding. Reversing it fills the rest of the planet
-    // and the forecast cone paints over the earth.
+    // The cone has to stay the small patch. A ring that encloses most of the
+    // sphere is the same outline wound the other way, and that fill paints the earth.
+    var area = ringArea(out);
+    if (area > 2 * Math.PI) {
+      out.reverse();
+      area = ringArea(out);
+    }
+    if (area > 0.5) return null;
     var minLng = 180;
     var maxLng = -180;
     var minLat = 90;
@@ -396,7 +420,7 @@
       .pathLabel(trackLabel)
       .pathTransitionDuration(0)
       .polygonGeoJsonGeometry(function (d) { return d.geometry; })
-      .polygonCapCurvatureResolution(8)
+      .polygonCapCurvatureResolution(45)
       .polygonAltitude(0.001)
       .polygonCapColor(zoneFill)
       .polygonSideColor(function () { return "rgba(0,0,0,0)"; })
@@ -449,7 +473,7 @@
     globe.arcsData(scene.arcs);
   }
 
-  var NIGHT_EARTH = "/assets/earth/night.jpg?v=20261001y";
+  var NIGHT_EARTH = "/assets/earth/night.jpg?v=20261001z";
 
   function storedSpin() {
     try {
@@ -459,53 +483,19 @@
     }
   }
 
-  function repairNightEarth() {
-    if (!globe || typeof globe.globeMaterial !== "function") return;
-    var mat = globe.globeMaterial();
-    if (!mat) return;
-    var source = mat.map && mat.map.image;
-    function apply(img) {
-      var w = img.naturalWidth || img.width;
-      var h = img.naturalHeight || img.height;
-      if (!w || !h || !mat.map) return;
-      var copy = document.createElement("canvas");
-      copy.width = w;
-      copy.height = h;
-      var ctx = copy.getContext("2d");
-      if (!ctx) return;
-      ctx.drawImage(img, 0, 0, w, h);
-      mat.map.image = copy;
-      mat.map.needsUpdate = true;
-      if (!mat.color || !mat.color.isColor) {
-        if (mat.specular && mat.specular.clone) mat.color = mat.specular.clone();
-      }
-      if (mat.color && mat.color.setHex) mat.color.setHex(0xffffff);
-      mat.needsUpdate = true;
-    }
-    if (source && (source.naturalWidth || source.width)) {
-      apply(source);
-      return;
-    }
-    var img = new Image();
-    img.onload = function () { apply(img); };
-    img.src = NIGHT_EARTH;
-  }
-
   function plainEarth() {
     return Globe()(globeEl)
       .globeImageUrl(NIGHT_EARTH)
       .backgroundColor("rgba(0,0,0,0)")
       .showAtmosphere(true)
       .atmosphereColor("#8eb6ff")
-      .atmosphereAltitude(0.13)
-      .onGlobeReady(repairNightEarth);
+      .atmosphereAltitude(0.13);
   }
 
   if (globeEl && typeof Globe === "function") {
     try {
       globe = Globe()(globeEl)
         .globeImageUrl(NIGHT_EARTH)
-        .onGlobeReady(repairNightEarth)
         .backgroundColor("rgba(0,0,0,0)")
         .showAtmosphere(true)
         .atmosphereColor("#8eb6ff")
@@ -578,7 +568,6 @@
     } catch (err) {
       try {
         if (globe) {
-          repairNightEarth();
           var kept = globe.controls();
           kept.autoRotate = !reduced();
           kept.autoRotateSpeed = document.body.classList.contains("broadcast") ? 1.05 : 0.35;
