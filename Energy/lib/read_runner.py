@@ -410,8 +410,8 @@ def main() -> int:  # info: def main
                         except Exception:  # info: except Exception :
                             pass  # info: pass
 
-    # 2) Cloud fallback when BLE missed or prefer_api. Skip offline quota (it stays frozen).
-    if source != "ble":  # info: if source != "ble" :
+    # 2) Cloud fallback when BLE missed or prefer_api. A ble+cloud fill is already a reading.
+    if source == "none":  # info: if source == "none" :
         cached = _fresh_cloud_cache(alias)  # info: set cached
         if cached:  # info: if cached :
             fields = cached["fields"]  # info: set fields
