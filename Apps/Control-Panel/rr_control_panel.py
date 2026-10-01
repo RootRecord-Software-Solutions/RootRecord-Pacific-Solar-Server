@@ -40,6 +40,7 @@ from pathlib import Path  # info: from pathlib import Path
 HERE = Path(__file__).resolve().parent  # info: set HERE
 sys.path.insert(0, str(HERE / "Lib"))  # info: sys . path . insert ( 0 ,
 import rr_settings  # noqa: E402
+import rr_gates  # noqa: E402
 import rr_sources as src  # noqa: E402
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)  # info: warnings . filterwarnings ( "ignore" , category =
@@ -783,6 +784,27 @@ class Panel(ExtraPages, AwsFallbackPage):  # info: class Panel
         row.set_activatable_widget(b)  # info: row . set_activatable_widget ( b )
         self.risky_row = b  # info: self . risky_row = b
         g.add(row)  # info: g . add ( row )
+        page.add(g)  # info: page . add ( g )
+        g = Adw.PreferencesGroup(title="Execution gates", description="The broker reads this file on its own. Opening a gate needs confirm. Agents cannot toggle these.")  # info: set g
+        gate_doc = rr_gates.load()  # info: set gate_doc
+        for dotted, title in rr_gates.LABELS:  # info: for dotted , title in rr_gates . LABELS
+            row = Adw.ActionRow(title=title, subtitle=dotted)  # info: set row
+            def ch(_btn, active, key=dotted):  # info: def ch
+                if active:  # info: if active
+                    if self.win is None:  # info: if self . win is None
+                        _btn.rr_set(False)  # info: _btn . rr_set ( False )
+                        return  # info: return
+                    def yes(k=key):  # info: def yes
+                        rr_gates.set_gate(k, True, confirmed=True)  # info: call rr_gates . set_gate
+                    def no(b=_btn):  # info: def no
+                        b.rr_set(False)  # info: b . rr_set ( False )
+                    self.confirm(f"Enable {key}?", "The execution broker enforces this gate. Confirm to open it.", "Enable", yes, no)  # info: call self . confirm
+                else:  # info: else
+                    rr_gates.set_gate(key, False, confirmed=False)  # info: call rr_gates . set_gate
+            b = state_toggle(title, rr_gates.lookup(gate_doc, dotted), ch)  # info: set b
+            row.add_suffix(b)  # info: row . add_suffix ( b )
+            row.set_activatable_widget(b)  # info: row . set_activatable_widget ( b )
+            g.add(row)  # info: g . add ( row )
         page.add(g)  # info: page . add ( g )
         self.url_group = Adw.PreferencesGroup(title="Known URLs", description="Name + URL only. No credentials or tokens are stored. Click to open with xdg-open.")  # info: self . url_group = Adw . PreferencesGroup (
         add = Gtk.Button(icon_name="list-add-symbolic", valign=Gtk.Align.CENTER, tooltip_text="Add URL")  # info: set add
