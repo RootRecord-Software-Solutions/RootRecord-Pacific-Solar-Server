@@ -1,25 +1,25 @@
 {
   "ok": true,
   "kind": "last-known",
-  "as_of": "Thursday, October 1, 2026 \u00b7 09:00 Hawaiian Standard Time",
+  "as_of": "Thursday, October 1, 2026 \u00b7 09:09 Hawaiian Standard Time",
   "power": {
     "resource": "power",
     "title": "Power / solar",
-    "as_of": "Thursday, October 1, 2026 \u00b7 09:00 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 09:09 Hawaiian Standard Time",
     "devices": {
       "delta2": {
         "watts": {
-          "solar_input_power": 35,
+          "solar_input_power": 124,
           "ac_output_power": 94.0,
           "ac_input_power": 0,
           "usbc_output_power": 0,
-          "at": "2026-10-01T08:59:46-10:00",
+          "at": "2026-10-01T09:07:30-10:00",
           "source": "ble+cloud",
           "charge_source": "none"
         },
         "soc": {
-          "soc": 0.4,
-          "at": "2026-10-01T08:59:46-10:00",
+          "soc": 1.61,
+          "at": "2026-10-01T09:07:30-10:00",
           "source": "ble+cloud"
         }
       },
@@ -44,23 +44,23 @@
   "weather": {
     "resource": "weather",
     "title": "Weather",
-    "as_of": "Thursday, October 1, 2026 \u00b7 09:00 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 09:09 Hawaiian Standard Time",
     "report": {
-      "generated": "2026-10-01T01:41:47-10:00 HST",
-      "sections": 34
+      "generated": "2026-10-01T09:03:30-10:00 HST",
+      "sections": 35
     }
   },
   "kilauea": {
     "resource": "kilauea",
     "title": "K\u012blauea",
-    "as_of": "Thursday, October 1, 2026 \u00b7 09:00 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 09:09 Hawaiian Standard Time",
     "status": {
-      "at": "2026-10-01T08:57:56-10:00",
+      "at": "2026-10-01T09:09:12-10:00",
       "alert_level": "WATCH",
       "color_code": "ORANGE",
       "headline": "WATCH \u2014 elevated unrest",
       "erupting": true,
-      "status_sent_utc": "2026-10-01 09:01:09"
+      "status_sent_utc": "2026-10-01 19:05:15"
     }
   }
 }
