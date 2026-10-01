@@ -19,6 +19,7 @@ from __future__ import annotations  # info: from __future__ import annotations
 import hashlib  # info: import hashlib
 import json  # info: import json
 import os  # info: import os
+import subprocess  # info: import subprocess
 import sys  # info: import sys
 import time  # info: import time
 from datetime import datetime  # info: from datetime import datetime
@@ -143,12 +144,26 @@ def plan(routes: list[dict], posted: dict, root: Path) -> list[dict]:  # info: d
 
 
 # ====================================================
+# SECTION: function refresh_pages
+# What it does: Rewrite Website/Home/reports when the public text changed. Does not post.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def refresh_pages() -> None:  # info: def refresh_pages
+    """Rewrite Website/Home/reports when the public text changed. Does not post."""  # info: docstring
+    script = ECOSYSTEM / "1 - Servers" / "1 - RootRecord-Pacific-Solar-Server" / "Website" / "scripts" / "publish_report_pages.py"  # info: set script
+    if not script.is_file():  # info: if not script . is_file
+        return  # info: return
+    subprocess.run([sys.executable, str(script)], check=False, timeout=30, capture_output=True, text=True)  # info: subprocess . run
+
+
+# ====================================================
 # SECTION: function relay
 # What it does: Post planned reports and remember the digests that Discord accepted.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def relay(routes: list[dict] | None = None, posted: dict | None = None, root: Path | None = None, post=post_message) -> list[str]:  # info: def relay
     """Post planned reports and remember the digests that Discord accepted."""  # info: docstring
+    refresh_pages()  # info: call refresh_pages
     rows = routes if routes is not None else load_routes()  # info: set rows
     ledger = dict(posted if posted is not None else load_ledger())  # info: set ledger
     base = root or ECOSYSTEM  # info: set base

@@ -58,7 +58,7 @@
       lat: vercel.lat,
       lng: vercel.lng,
       type: "vercel",
-      label: "Vercel · Transmitter / Receiver"
+      label: "Website Node"
     });
 
     (d.points || []).forEach(function (p) {
@@ -106,7 +106,7 @@
         color: "#7dd3fc",
         altitude: 0.18,
         stroke: 1.2,
-        label: "Vercel · Transmitter / Receiver"
+        label: "Website Node"
       });
     }
     if (hawaii) {
@@ -118,7 +118,7 @@
         color: "#22c55e",
         altitude: 0.2,
         stroke: 1.1,
-        label: "Vercel · Transmitter / Receiver"
+        label: "Website Node"
       });
     }
 

@@ -20,7 +20,7 @@ from pathlib import Path  # info: from pathlib import Path
 from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
-SITE = "https://rootrecord.info/reports"  # info: set SITE
+SITE = "https://www.rootrecord.cloud/reports"  # info: set SITE
 KIND = {  # info: set KIND
     "nws_weather": "nws", "energy_report": "energy", "remaining_tasks": "remaining",  # info: kinds
     "morning_report": "morning", "midday_report": "midday", "late_report": "late",  # info: kinds
@@ -60,11 +60,11 @@ def persona_name(key: str) -> str:  # info: def persona_name
 
 # ====================================================
 # SECTION: function page_link
-# What it does: Placeholder page for this report until the public site publishes it.
+# What it does: Public page on www.rootrecord.cloud for this report.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def page_link(slug: str) -> str:  # info: def page_link
-    """Placeholder page for this report until the public site publishes it."""  # info: docstring
+    """Public page on www.rootrecord.cloud for this report."""  # info: docstring
     return f"{SITE}/{slug}"  # info: return link
 
 
@@ -107,11 +107,11 @@ def spoken_text(md: str, read: str = "") -> str:  # info: def spoken_text
 
 # ====================================================
 # SECTION: function public_message
-# What it does: Persona header, spoken report, and the placeholder page link.
+# What it does: Persona header, spoken report, and the public page link.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def public_message(key: str, slug: str, md: str, read: str = "") -> str:  # info: def public_message
-    """Persona header, spoken report, and the placeholder page link."""  # info: docstring
+    """Persona header, spoken report, and the public page link."""  # info: docstring
     body = spoken_text(md, read)  # info: set body
     if not body:  # info: if not body
         return ""  # info: return empty
