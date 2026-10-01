@@ -200,13 +200,17 @@ class GlobalUpdaterTests(unittest.TestCase):  # info: class GlobalUpdaterTests
         self.assertFalse(global_updater.invokes(named, {**SCOPE, "guild_ids": []}))  # info: self . assertFalse
         self.assertFalse(global_updater.invokes(message("Global Updater", guild="minecraft"), SCOPE))  # info: self . assertFalse
         app_mention = message("<@1500289560343740566> status?")  # info: set app_mention
-        app_mention["mentions"] = [{"id": "1500289560343740566", "username": "SomeBot"}]  # info: set mentions
-        self.assertFalse(global_updater.invokes(app_mention, SCOPE))  # info: self . assertFalse
+        app_mention["mentions"] = [{"id": "1500289560343740566", "username": "Root Record Global Updater"}]  # info: set mentions
+        self.assertTrue(global_updater.invokes(app_mention, {**SCOPE, "bot_user_id": "1500289560343740566"}))  # info: self . assertTrue
+        other = message("<@999> status?")  # info: set other
+        other["mentions"] = [{"id": "999", "username": "SomeBot"}]  # info: set mentions
+        self.assertFalse(global_updater.invokes(other, {**SCOPE, "bot_user_id": "1500289560343740566"}))  # info: self . assertFalse
 
     def test_configured_guild_is_the_professional_server(self):  # info: def test_configured_guild_is_the_professional_server
         scope = global_updater.load_scope()  # info: set scope
         self.assertEqual(scope["guild_ids"], ["1497039564345442406"])  # info: self . assertEqual
         self.assertEqual(scope["application_id"], "1500289560343740566")  # info: self . assertEqual
+        self.assertEqual(scope["bot_user_id"], "1500289560343740566")  # info: self . assertEqual
         self.assertEqual(scope["application_name"], "Root Record Global Updater")  # info: self . assertEqual
         self.assertEqual(scope["voice"], "global-updater")  # info: self . assertEqual
         self.assertTrue(global_updater.invokes(message("Global Updater, hello", guild="1497039564345442406"), scope))  # info: self . assertTrue

@@ -1,6 +1,7 @@
 {
   "application_name": "Root Record Global Updater",
   "application_id": "1500289560343740566",
+  "bot_user_id": "1500289560343740566",
   "voice": "global-updater",
   "mention_names": ["Root Record Global Updater", "Global Updater"]
 }

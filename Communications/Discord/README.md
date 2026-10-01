@@ -33,7 +33,8 @@ Draft: `5 - RootRecord-Library/Documentation/06-development/Work-Orders/drafts/D
 | Channels | `Communications/Discord/config/channels.json` |
 | Persona loader | `Communications/CouncilPersona/scripts/personas.py` reads Library `Agent Context/` |
 | Global Updater | `Communications/Discord/scripts/global_updater.py` (gate `RR_GLOBAL_UPDATER`) |
-| Guild allowlist | `Communications/Discord/config/guilds.json` (empty until a professional guild id is accepted) |
+| Guild allowlist | `Communications/Discord/config/guilds.json` (`1497039564345442406`, RootRecord Software Solutions) |
+| Channel map | `Communications/Discord/config/channel-map.json` (snapshot only; not the reply allowlist) |
 | Application label | `Communications/Discord/config/global-updater.json` (name and application id; not a token, not a bot user id) |
 | Inference | `System/scripts/plumbing/run-infer.sh` |
 | Database | `2 - RootRecord-Database/Communications/Discord/` |
@@ -107,7 +108,7 @@ The gate is `RR_GLOBAL_UPDATER=1`. Unset means the poller does not run this path
 - the message names Root Record Global Updater, or a mention username matches that name
 - the author is not a bot
 
-An empty guild list answers nothing. Direct messages have no guild id, so they are ignored. The application id is not a bot user id and does not by itself trigger a reply. Other channel traffic is left alone.
+The professional guild is `1497039564345442406`. Direct messages have no guild id, so they are ignored. The bot user id is `1500289560343740566`. A mention of that id, or of the name Root Record Global Updater, is the trigger. Other channel traffic is left alone. `config/channels.json` is still empty, so the poller does not fetch or reply until a channel is accepted. `config/channel-map.json` is the observed channel list, not the allowlist.
 
 The reply is one `run-infer.sh` call for the voice `global-updater`, on the existing NPU single-flight path (`RR_NPU_ONLY=1`, `llama3.2:3b`). It does not call Ava, Bruce, or Carly. Host figures come from the recorded file `2 - RootRecord-Database/System/last/host-last.json`. Discord does not sample the host. A missing or old sample is unavailable. A sample older than 15 minutes and no older than 6 hours is reported as stale. A host sample is not a service-status claim.
 

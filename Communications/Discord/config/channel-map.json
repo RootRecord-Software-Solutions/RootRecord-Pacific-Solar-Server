@@ -1,0 +1,71 @@
+{
+  "guild_id": "1497039564345442406",
+  "guild_name": "RootRecord Software Solutions",
+  "bot_username": "Root Record Global Updater",
+  "observed_at": "2026-09-30T19:44:00-10:00",
+  "note": "Snapshot of channels the bot can see. Not the reply allowlist. config/channels.json stays empty until a channel is accepted.",
+  "categories": [
+    {
+      "id": "1504063647943495710",
+      "name": "Public",
+      "channels": [
+        {"id": "1497160346358644767", "name": "verification", "type": "text"},
+        {"id": "1507198579687559269", "name": "links", "type": "text"},
+        {"id": "1512245745166581821", "name": "global-updates-bot", "type": "announcement"}
+      ]
+    },
+    {
+      "id": "1504063663051374643",
+      "name": "04 · Support",
+      "channels": [
+        {"id": "1497042843674349658", "name": "suggestions", "type": "text"},
+        {"id": "1504070258976096399", "name": "unverified-help", "type": "text"},
+        {"id": "1504063674438910012", "name": "verified-support", "type": "text"},
+        {"id": "1506459571139383326", "name": "kilauea-app-support", "type": "text"},
+        {"id": "1506459515560919112", "name": "weather-app-support", "type": "text"},
+        {"id": "1506459456685342780", "name": "business-app-support", "type": "text"},
+        {"id": "1509829430128672809", "name": "promote-your-content", "type": "text"}
+      ]
+    },
+    {
+      "id": "1504063654285283339",
+      "name": "Verified Chats",
+      "channels": [
+        {"id": "1497039565461000214", "name": "general", "type": "text"},
+        {"id": "1545283785803960393", "name": "kilauea-alerts", "type": "text"},
+        {"id": "1497039787356590201", "name": "weather-manager", "type": "text"},
+        {"id": "1497039751482707970", "name": "business-manager", "type": "text"},
+        {"id": "1497039887524696084", "name": "homestead-manager", "type": "text"}
+      ]
+    },
+    {
+      "id": "1504063650673987628",
+      "name": "01 · Ops & feed",
+      "channels": [
+        {"id": "1499515809767096443", "name": "in-app-feedback", "type": "text"},
+        {"id": "1499495951373697125", "name": "transactions", "type": "text"},
+        {"id": "1545278495750361171", "name": "sessions", "type": "text"},
+        {"id": "1545283818146242642", "name": "raw-ai", "type": "text"},
+        {"id": "1498944021689536542", "name": "testers-lounge", "type": "text"},
+        {"id": "1500286864119038103", "name": "global-updates", "type": "text"},
+        {"id": "1497044129140707479", "name": "office-operations", "type": "text"},
+        {"id": "1497042889128022086", "name": "general-feedback", "type": "text"},
+        {"id": "1499489364147835090", "name": "partnership-requests", "type": "text"},
+        {"id": "1508977018971230308", "name": "product-ideas", "type": "text"},
+        {"id": "1509812977069592676", "name": "ios-waitlist", "type": "text"},
+        {"id": "1511922772983545947", "name": "blocknotes-ai", "type": "text"},
+        {"id": "1511923750776606780", "name": "rootgoal-ai-reports", "type": "text"}
+      ]
+    },
+    {
+      "id": "1504063666637635614",
+      "name": "05 · Voice",
+      "channels": [
+        {"id": "1497039565461000215", "name": "General", "type": "voice"}
+      ]
+    }
+  ],
+  "uncategorized": [
+    {"id": "1509026945331892285", "name": "rules", "type": "text"}
+  ]
+}

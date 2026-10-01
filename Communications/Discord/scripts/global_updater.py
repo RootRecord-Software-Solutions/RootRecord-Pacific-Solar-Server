@@ -86,6 +86,7 @@ def load_scope(guild_file: Path | None = None, app_file: Path | None = None) -> 
         "mention_names": [str(item).strip() for item in names if str(item).strip()],  # info: mention_names
         "application_name": str(app.get("application_name") or ""),  # info: application_name
         "application_id": str(app.get("application_id") or ""),  # info: application_id
+        "bot_user_id": str(app.get("bot_user_id") or ""),  # info: bot_user_id
         "voice": VOICE,  # info: voice
     }  # info: }
 
@@ -105,13 +106,18 @@ def invokes(message: dict, scope: dict) -> bool:  # info: def invokes
     if str(message.get("guild_id") or "") not in allowed:  # info: if str ( message . get ( "guild_id" ) or "" ) not in allowed
         return False  # info: return False
     names = [name.lower() for name in (scope.get("mention_names") or []) if name]  # info: set names
+    bot_id = str(scope.get("bot_user_id") or "")  # info: set bot_id
     content = str(message.get("content") or "")  # info: set content
     low = content.lower()  # info: set low
+    if bot_id and (f"<@{bot_id}>" in content or f"<@!{bot_id}>" in content):  # info: if bot_id and mention markup
+        return True  # info: return True
     if any(name in low for name in names):  # info: if any ( name in low for name in names )
         return True  # info: return True
     for mention in message.get("mentions") or []:  # info: for mention in message . get ( "mentions" ) or [ ]
         if not isinstance(mention, dict):  # info: if not isinstance ( mention , dict )
             continue  # info: continue
+        if bot_id and str(mention.get("id") or "") == bot_id:  # info: if bot_id and mention id matches
+            return True  # info: return True
         label = f"{mention.get('username') or ''} {mention.get('global_name') or ''}".lower()  # info: set label
         if any(name in label for name in names):  # info: if any
             return True  # info: return True
