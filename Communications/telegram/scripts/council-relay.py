@@ -376,6 +376,23 @@ def inbox_hold(upd, msg, text, target, inbox_dir=None):  # info: def inbox_hold
     return cur  # info: return cur
 
 # ====================================================
+# SECTION: function note_mod
+# What it does: Load voice_deliver once so a reply to a report can be stored. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def note_mod():  # info: def note_mod
+    cached = getattr(note_mod, "mod", None)  # info: set cached
+    if cached is not None:  # info: if cached is not None
+        return cached  # info: return cached
+    import importlib.util  # info: import importlib . util
+    path = ROOT.parents[1] / "Media" / "Voice" / "scripts" / "voice_deliver.py"  # info: set path
+    spec = importlib.util.spec_from_file_location("voice_deliver", path)  # info: set spec
+    mod = importlib.util.module_from_spec(spec)  # info: set mod
+    spec.loader.exec_module(mod)  # info: spec . loader . exec_module
+    note_mod.mod = mod  # info: note_mod . mod = mod
+    return mod  # info: return mod
+
+# ====================================================
 # SECTION: function seed_interaction
 # What it does: Record a sandbox message as an interaction request. Does not infer, send, or touch the live council chat.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
