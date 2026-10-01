@@ -4,7 +4,17 @@ Energy monitoring, EcoFlow device reads, and power subsystem ownership for the P
 
 ---
 
-## Status (2026-09-29 22:26 HST) — reads LIVE
+## Current (2026-09-30)
+
+Pack readings come from EcoFlow BLE into Database `Energy/soc` and `Energy/watts`. The energy voice note is Carly at :15 and :45. A reading older than 30 minutes is "out of range." Delta 2 AC in above 550 W is generator. River 2 Pro AC in above 300 W is generator, unless that input matches the Delta's AC output, which is a transfer. The same rules are in `Energy/lib/read_runner.py` and `Energy/scripts/load_categories.py`.
+
+Channel 1 is looked at once per hour from that energy note. Left side up is morning, flat is day, right side up is evening. The note asks for a person when the tilt is wrong. It does not move the panels. Full record: [voice desk](../../../5%20-%20RootRecord-Library/Documentation/01-operations/2026-09-30-voice-desk.md). The actuator plan is in [Desired upgrades](#desired-upgrades).
+
+Host and weather speech units are not in this folder. Host temperature is Celsius. Weather degrees stay Fahrenheit.
+
+The 2026-09-29 22:26 snapshot below is that moment only.
+
+## Status snapshot (2026-09-29 22:26 HST) — reads were live then
 
 API reads are live. At 22:26 HST the poller logged Delta 2 at 7% (57 W AC out, 9 W USB-C) and River 2 Pro at 100%. The laptop was 43% and discharging at 22:21. The BLE owner is Pacific `Energy/scripts/ble/ble-owner.py`. There is no lowercase `energy` symlink, and no Pacific Energy file still says `import energy`.
 

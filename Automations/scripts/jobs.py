@@ -650,7 +650,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         # is in the poller's environment at poller start. Text _current.md + stitched WAV; NO delivery.
         "id": "voice_system_perf",  # info: "id" : "voice_system_perf" ,
         "enabled": os.environ.get("RR_VOICE_SYSTEM_PERF", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "Bruce system_perf voice report at :06 (CPU/RAM/disk/battery template) → Database System/Reports + Media/Audio/Voice. No delivery.",  # info: "description" : "Bruce system_perf voice report at :06 (CPU/RAM/disk/battery template) → Database System/Repor
+        "description": "Bruce system report at :06. Host temperature is degrees Celsius. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Bruce system report at :06. Host temperature is degrees Celsius. Voice note when RR_VOICE_DELIVER=1." ,
         "only_at_minutes": [6],  # info: "only_at_minutes" : [ 6 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/system_perf.py"',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/system_perf.py"
@@ -675,7 +675,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
     {  # info: {
         "id": "voice_nws_weather",  # info: "id" : "voice_nws_weather" ,
         "enabled": os.environ.get("RR_VOICE_NWS", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "Ava NWS Hawaii report from Database Weather/ (HI alerts API sample + HFO SFP). No delivery.",  # info: "description" : "Ava NWS Hawaii report from Database Weather/ (HI alerts API sample + HFO SFP). No delivery." 
+        "description": "Ava NWS Hawaii report from Database Weather/. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Ava NWS Hawaii report from Database Weather/. Voice note when RR_VOICE_DELIVER=1." ,
         "only_at_minutes": [7, 22, 37, 52],  # info: "only_at_minutes" : [ 7 , 22 , 37
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" nws_weather',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" nws_weather
@@ -697,7 +697,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
     {  # info: {
         "id": "voice_remaining_tasks",  # info: "id" : "voice_remaining_tasks" ,
         "enabled": os.environ.get("RR_VOICE_REMAINING", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "Bruce remaining tasks from Library Work-Orders unchecked boxes. No delivery.",  # info: "description" : "Bruce remaining tasks from Library Work-Orders unchecked boxes. No delivery." ,
+        "description": "Bruce remaining tasks from the report board. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Bruce remaining tasks from the report board. Voice note when RR_VOICE_DELIVER=1." ,
         "only_at_minutes": [32],  # info: "only_at_minutes" : [ 32 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" remaining_tasks',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" remaining_tasks
@@ -710,7 +710,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         # RR_VOICE_QUAKE=1 at poller start. Reads Database Geology/Earthquakes/*-last.json (needs geology_collect). No delivery.
         "id": "voice_earthquake_report",  # info: "id" : "voice_earthquake_report" ,
         "enabled": os.environ.get("RR_VOICE_QUAKE", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "Carly USGS earthquake report at :08 (Hawaii first, then global) from Database Geology/. No delivery.",  # info: "description" : "Carly USGS earthquake report at :08 (Hawaii first, then global) from Database Geology/. No de
+        "description": "Carly USGS earthquake report at :08 from Database Geology/. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Carly USGS earthquake report at :08 from Database Geology/. Voice note when RR_VOICE_DELIVER=1." ,
         "only_at_minutes": [8],  # info: "only_at_minutes" : [ 8 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" earthquake_report',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" earthquake_report
@@ -724,7 +724,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         # OFF unless RR_VOICE_KILAUEA=1 at poller start. Reads Database Geology/Volcanoes (needs geology_collect). No delivery.
         "id": "voice_kilauea_report",  # info: "id" : "voice_kilauea_report" ,
         "enabled": os.environ.get("RR_VOICE_KILAUEA", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "Carly Kilauea report at :03 (HVO alert level, erupting state, latest notice excerpt). No delivery.",  # info: "description" : "Carly Kilauea report at :03 (HVO alert level, erupting state, latest notice excerpt). No deli
+        "description": "Carly Kilauea report at :03 from the HVO notice. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Carly Kilauea report at :03 from the HVO notice. Voice note when RR_VOICE_DELIVER=1." ,
         "only_at_minutes": [3],  # info: "only_at_minutes" : [ 3 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" kilauea_report',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" kilauea_report
