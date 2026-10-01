@@ -51,7 +51,7 @@
       else if (p.type !== "dest" && p.type !== "remote" && !mainland) mainland = pos;
     });
     if (hawaii) points.push({ lat: hawaii.lat, lng: hawaii.lng, type: "hawaii", label: "Hawaiʻi" });
-    if (mainland) points.push({ lat: mainland.lat, lng: mainland.lng, type: "mainland", label: "Mainland Server" });
+    if (mainland) points.push({ lat: mainland.lat, lng: mainland.lng, type: "mainland", label: "VPS Node" });
 
     var vercel = { lat: 37.7749, lng: -122.4194 };
     points.push({
