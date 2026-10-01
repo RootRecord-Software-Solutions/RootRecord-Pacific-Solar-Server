@@ -311,6 +311,38 @@ def _sub_clocks(text: str) -> str:  # info: def _sub_clocks
 
 
 # ====================================================
+# SECTION: _STATE_NAMES
+# What it does: Postal abbreviations spoken as full state names. A comma must come first, so ordinary words stay words.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+_STATE_NAMES = {  # info: set _STATE_NAMES
+    "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas", "CA": "California",  # info: postal codes
+    "CO": "Colorado", "CT": "Connecticut", "DE": "Delaware", "FL": "Florida", "GA": "Georgia",  # info: postal codes
+    "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois", "IN": "Indiana", "IA": "Iowa",  # info: postal codes
+    "KS": "Kansas", "KY": "Kentucky", "LA": "Louisiana", "ME": "Maine", "MD": "Maryland",  # info: postal codes
+    "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota", "MS": "Mississippi", "MO": "Missouri",  # info: postal codes
+    "MT": "Montana", "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire", "NJ": "New Jersey",  # info: postal codes
+    "NM": "New Mexico", "NY": "New York", "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio",  # info: postal codes
+    "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania", "RI": "Rhode Island", "SC": "South Carolina",  # info: postal codes
+    "SD": "South Dakota", "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont",  # info: postal codes
+    "VA": "Virginia", "WA": "Washington", "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming",  # info: postal codes
+    "DC": "District of Columbia",  # info: "DC" : "District of Columbia" ,
+}  # info: }
+
+
+# ====================================================
+# SECTION: function _expand_states
+# What it does: Turn a comma and a postal code into the state name. Does not expand a code with no comma.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _expand_states(text: str) -> str:  # info: def _expand_states
+    def _name(match: re.Match) -> str:  # info: def _name
+        full = _STATE_NAMES.get(match.group(1))  # info: set full
+        return f", {full}" if full else match.group(0)  # info: return f" , { full } " if full else match . group ( 0 )
+    return re.sub(r",\s*([A-Z]{2})\b", _name, text)  # info: return re . sub
+
+
+# ====================================================
 # SECTION: function _expand_units
 # What it does:  expand units.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -357,6 +389,7 @@ def _expand_units(text: str) -> str:  # info: def _expand_units
     out = re.sub(r"\bnmi\b", "nautical miles", out)  # info: set out
     out = re.sub(r"(?<=\d)\s*nm\b", " nautical miles", out)  # info: set out
     out = re.sub(r"\bNWS\b", "National Weather Service", out)  # info: set out
+    out = _expand_states(out)  # info: set out
     out = re.sub(r"\bUSGS\b", "U. S. Geological Survey", out)  # info: set out
     out = re.sub(r"\bHST\b", "Hawaiian Standard Time", out)  # info: set out
     out = re.sub(r"\bHI alerts\b", "Hawaii alerts", out)  # info: set out

@@ -144,7 +144,7 @@ PLACE_IPA: dict[str, str] = {  # info: set PLACE_IPA
 SPEAK_ENGLISH: dict[str, str] = {  # info: set SPEAK_ENGLISH
     # One word. Spaced "hah wye ee" made Kokoro stress "wye" as its own word.
     "Hawaiʻi": "hahwye-ee",  # info: "Hawaiʻi" : "hahwye-ee" ,
-    "Hawaiian": "hah wye uhn",  # info: "Hawaiian" : "hah wye uhn" ,
+    "Hawaiian": "hahwye-uhn",  # info: "Hawaiian" : "hahwye-uhn" ,
     "Oʻahu": "oh ah hoo",  # info: "Oʻahu" : "oh ah hoo" ,
     "Maui": "mow ee",  # info: "Maui" : "mow ee" ,
     # "kah wah ee" — "cow ah ee" came out livestock + why + ee.
@@ -153,8 +153,8 @@ SPEAK_ENGLISH: dict[str, str] = {  # info: set SPEAK_ENGLISH
     "Lānaʻi": "lah nah ee",  # info: "Lānaʻi" : "lah nah ee" ,
     "Niʻihau": "nee ee how",  # info: "Niʻihau" : "nee ee how" ,
     "Kahoʻolawe": "kah hoh oh lah vay",  # info: "Kahoʻolawe" : "kah hoh oh lah vay" ,
-    "Kīlauea": "Kill ah way uh",  # info: "Kīlauea" : "Kill ah way uh" ,
-    "Mauna Loa": "mow nah low ah",  # info: "Mauna Loa" : "mow nah low ah" ,
+    "Kīlauea": "keelah-wayuh",  # info: "Kīlauea" : "keelah-wayuh" ,
+    "Mauna Loa": "mownah-lowah",  # info: "Mauna Loa" : "mownah-lowah" ,
     "Mauna Kea": "mow nah kay ah",  # info: "Mauna Kea" : "mow nah kay ah" ,
     "Haleakalā": "hah leh ah kah lah",  # info: "Haleakalā" : "hah leh ah kah lah" ,
     "Hualālai": "hoo ah lah lye",  # info: "Hualālai" : "hoo ah lah lye" ,

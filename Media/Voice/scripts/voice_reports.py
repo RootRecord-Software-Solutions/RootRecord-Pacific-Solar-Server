@@ -425,16 +425,16 @@ def b_earthquake_report(t: datetime):  # info: def b_earthquake_report
     hi_ev, gl_ev = list((hi or {}).get("events") or []), list((gl or {}).get("events") or [])  # info: hi_ev , gl_ev = list ( ( hi
     fresh_hi = [e for e in hi_ev if e.get("id") and e["id"] not in seen]  # info: set fresh_hi
     fresh_gl = [e for e in gl_ev if e.get("id") and e["id"] not in seen]  # info: set fresh_gl
-    sp = [f"USGS earthquake report at {clock(t)} Hawaiian Standard Time.".replace("..", ".")]  # info: set sp
+    sp = [f"Earthquake report at {clock(t)}.".replace("..", ".")]  # info: set sp
     if hi is None:  # info: if hi is None :
-        sp.append("Hawaii earthquake data is not on file.")  # info: sp . append ( "Hawaii earthquake data is not on file." )
+        sp.append("Local earthquake data is not on file.")  # info: sp . append ( "Local earthquake data is not on file." )
     elif fresh_hi:  # info: elif fresh_hi :
-        sp.append(f"{len(fresh_hi)} new Hawaii earthquake{'s' if len(fresh_hi) != 1 else ''}.")  # info: sp . append ( f" { len (
+        sp.append(f"{len(fresh_hi)} new local earthquake{'s' if len(fresh_hi) != 1 else ''}.")  # info: sp . append ( f" { len (
         sp += [f"Magnitude {e.get('mag')} {e.get('place')}." for e in fresh_hi[:_MAX_HI]]  # info: set sp
     else:  # info: else :
-        sp.append("No new Hawaii earthquakes since the last report.")  # info: sp . append ( "No new Hawaii earthquakes since the last report." )
+        sp.append("No new local earthquakes since the last report.")  # info: sp . append ( "No new local earthquakes since the last report." )
     if hi is not None:  # info: if hi is not None :
-        sp.append(f"Hawaii last twenty four hours: {len(_m25(hi_ev))} magnitude 2.5 or greater.")  # info: sp . append ( f" Hawaii last twenty four hours: { len
+        sp.append(f"Local last twenty four hours: {len(_m25(hi_ev))} magnitude 2.5 or greater.")  # info: sp . append ( f" Local last twenty four hours: { len
     if gl is None:  # info: if gl is None :
         sp.append("Global earthquake data is not on file.")  # info: sp . append ( "Global earthquake data is not on file." )
     elif fresh_gl:  # info: elif fresh_gl :
@@ -446,7 +446,7 @@ def b_earthquake_report(t: datetime):  # info: def b_earthquake_report
         sp.append(f"Global last twenty four hours: {len(_m25(gl_ev))} magnitude 2.5 or greater.")  # info: sp . append ( f" Global last twenty four hours: { len
     for label, d in (("Hawaii", hi), ("global", gl)):  # info: for label , d in ( ( "Hawaii"
         if d and d.get("age_min") is not None and d["age_min"] > QUAKE_STALE_MIN:  # info: if d and d . get ( "age_min"
-            sp.append(f"The {label} USGS data is {d['age_min']} minutes old.")  # info: sp . append ( f" The { label
+            sp.append(f"The {'local' if label == 'Hawaii' else label} U.S. Geological Survey data is {d['age_min']} minutes old.")  # info: sp . append ( f" The { 'local' if label == 'Hawaii' else label } U.S. Geological Survey data is { d [ 'age_min' ] } minutes old. " )
     for label, d, fresh in (("Hawaii", hi, fresh_hi), ("Global", gl, fresh_gl)):  # info: for label , d , fresh in (
         md += [f"## {label} Changes Since Last Report"]
         md += [f"- M{e.get('mag')} {e.get('place')} ({e.get('time_hst')})" for e in fresh[:12]] or ["- No new earthquakes."]  # info: set md
@@ -651,23 +651,23 @@ def b_kilauea_report(t: datetime):  # info: def b_kilauea_report
     if erupting:  # info: if erupting :
         state = "is erupting"  # info: set state
     elif level in {"advisory", "watch", "warning", "normal"} and erupting is False:  # info: elif level in { "advisory" , "watch" ,
-        state = "not erupting"  # info: set state
+        state = "is not erupting"  # info: set state
     else:  # info: else :
         state = "eruption state unknown"  # info: set state
     color = str(k.get("color_code") or "").lower()  # info: set color
-    sp = ["Kilauea Report.", f"It's {clock(t)} Hawaiian Standard Time.".replace("..", "."),  # info: set sp
-          f"Kilauea volcano alert level: {level}" + (f", aviation color code {color}." if color else ".") +  # info: f" Kilauea volcano alert level: { level } " + (
-          f" Kilauea {state}."]  # info: f" Kilauea { state } . " ]
+    sp = [f"Kilauea report at {clock(t)}.".replace("..", "."),  # info: set sp
+          f"Alert level {level}" + (f", aviation color code {color}." if color else "."),  # info: f" Alert level { level } " + (
+          f"The volcano {state}."]  # info: f" The volcano { state } . " ]
     note = k.get("latest_activity_notice") if erupting and k.get("latest_activity_notice") else k.get("latest_notice")  # info: set note
     note = note if isinstance(note, dict) else {}  # info: set note
     excerpt = _first_sentences(note.get("synopsis") or "")  # info: set excerpt
     if excerpt:  # info: if excerpt :
-        sp += ["Here is the latest Hawaiian Volcano Observatory notice, unedited for honesty.", excerpt]  # info: set sp
+        sp += ["Here is the latest observatory notice.", excerpt]  # info: set sp
     else:  # info: else :
         sp.append("No HVO headline in this sample.")  # info: sp . append ( "No HVO headline in this sample." )
     if hi.get("kilauea_150km_count") is not None:  # info: if hi . get ( "kilauea_150km_count" ) is
         n = int(hi["kilauea_150km_count"])  # info: set n
-        sp.append(f"USGS: {n} earthquake{'s' if n != 1 else ''} magnitude 1 or greater within 150 kilometers of Kilauea in the last "  # info: sp . append ( f" USGS: { n
+        sp.append(f"U.S. Geological Survey: {n} earthquake{'s' if n != 1 else ''} magnitude 1 or greater within 150 kilometers in the last "  # info: sp . append ( f" U.S. Geological Survey: { n } earthquake
                   f"{hi.get('window_h', 24)} hours.")  # info: f" { hi . get ( 'window_h' ,
     if isinstance(ml, dict) and ml.get("alert_level"):  # info: if isinstance ( ml , dict ) and
         sp.append(f"Mauna Loa alert level: {str(ml['alert_level']).lower()}.")  # info: sp . append ( f" Mauna Loa alert level: { str
@@ -776,12 +776,12 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
 def b_security_desk(t: datetime):  # info: def b_security_desk
     """G1 host_metrics.security_spoken, unchanged wording, from host_desks.security_snapshot() (counts only)."""  # info: """G1 host_metrics.security_spoken, unchanged wording, from host_desks.security_snapshot() (counts only)."""
     row = _host_desks().security_snapshot()  # info: set row
-    bits = [f"Security desk at {clock(t)} Hawaiian Standard Time.".replace("..", ".")]  # info: set bits
+    bits = [f"Security desk at {clock(t)}.".replace("..", ".")]  # info: set bits
     ufw = row.get("ufw_boot")  # info: set ufw
     if ufw is True:  # info: if ufw is True :
-        bits.append("Uncomplicated Firewall is set to start on boot.")  # info: bits . append ( "Uncomplicated Firewall is set to start on boot." )
+        bits.append("The firewall is set to start on boot.")  # info: bits . append ( "The firewall is set to start on boot." )
     elif ufw is False:  # info: elif ufw is False :
-        bits.append("Uncomplicated Firewall is not set to start on boot.")  # info: bits . append ( "Uncomplicated Firewall is not set to start on boot." )
+        bits.append("The firewall is not set to start on boot.")  # info: bits . append ( "The firewall is not set to start on boot." )
     ssh = row.get("ssh_active")  # info: set ssh
     if ssh is True:  # info: if ssh is True :
         bits.append("OpenSSH service is active.")  # info: bits . append ( "OpenSSH service is active." )
@@ -797,7 +797,14 @@ def b_security_desk(t: datetime):  # info: def b_security_desk
         bits.append("The sign-in log is not readable.")  # info: bits . append ( "The sign-in log is not readable." )
     if row.get("fail2ban"):  # info: if row . get ( "fail2ban" ) :
         bits.append("Fail2ban is running.")  # info: bits . append ( "Fail2ban is running." )
-    md = [f"# Security desk — {t.isoformat()}", "", "```json", json.dumps(row, indent=2), "```", "", "## Spoken", "", " ".join(bits), "",
+    md = [f"# Security desk — {t.isoformat()}", "",
+          f"- Firewall starts on boot: {row.get('ufw_boot')}",  # info: f" - Firewall starts on boot: { row . get ( 'ufw_boot' ) } " ,
+          f"- SSH active: {row.get('ssh_active')}",  # info: f" - SSH active: { row . get ( 'ssh_active' ) } " ,
+          f"- TCP listeners: {row.get('listen_tcp')}",  # info: f" - TCP listeners: { row . get ( 'listen_tcp' ) } " ,
+          f"- Established connections: {row.get('established')}",  # info: f" - Established connections: { row . get ( 'established' ) } " ,
+          f"- Failed sign-ins, last hour: {row.get('failed_1h')}",  # info: f" - Failed sign-ins, last hour: { row . get ( 'failed_1h' ) } " ,
+          f"- Failed sign-ins, last 24 hours: {row.get('failed_24h')}",  # info: f" - Failed sign-ins, last 24 hours: { row . get ( 'failed_24h' ) } " ,
+          "", "## Spoken", "", " ".join(bits), "",
           "_Source: Pacific System/scripts/host_desks.py (ufw.conf, systemctl is-active, /proc/net/tcp, auth.log counts only)._", ""]  # info: "_Source: Pacific System/scripts/host_desks.py (ufw.conf, systemctl is-active, /proc/net/tcp, auth.log counts 
     return "\n".join(md), bits  # info: return "\n" . join ( md ) ,
 
@@ -820,7 +827,7 @@ def b_bandwidth_desk(t: datetime):  # info: def b_bandwidth_desk
         md += ["_Not enough samples yet (needs samples covering 45 min; run `host_desks.py net-sample` every 5 min)._", ""]  # info: set md
         return "\n".join(md), ["Bandwidth data is not on file yet."]  # info: return "\n" . join ( md ) ,
     sb = hd.spoken_bytes  # info: set sb
-    bits = [f"Bandwidth desk at {clock(t)} Hawaiian Standard Time.".replace("..", "."), f"This host is on {(net or {}).get('link') or 'network'}."]  # info: set bits
+    bits = [f"Bandwidth desk at {clock(t)}.".replace("..", "."), f"This host is on {(net or {}).get('link') or 'network'}."]  # info: set bits
     bits.append(f"Last hour: {sb(hour['rx'])} down, {sb(hour['tx'])} up, {sb(hour['total'])} total." if hour else "Last hour is not on file yet.")  # info: bits . append ( f" Last hour: { sb
     bits.append(f"Last twenty four hours: {sb(day['rx'])} down, {sb(day['tx'])} up, {sb(day['total'])} total." if day  # info: bits . append ( f" Last twenty four hours: { sb
                 else "Last twenty four hours is not on file yet.")  # info: else "Last twenty four hours is not on file yet." )

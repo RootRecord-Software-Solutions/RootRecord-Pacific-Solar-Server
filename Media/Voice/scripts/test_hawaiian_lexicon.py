@@ -24,7 +24,7 @@ from speakable import speakable  # info: from speakable import speakable
 # ====================================================
 def test_kilauea_is_kill_ah_way_uh():  # info: def test_kilauea_is_kill_ah_way_uh
     spoken = speakable("Kīlauea is not erupting.")  # info: set spoken
-    assert "Kill ah way uh" in spoken  # info: assert "Kill ah way uh" in spoken
+    assert "keelah-wayuh" in spoken  # info: assert "keelah-wayuh" in spoken
     assert "Kilauea" not in spoken  # info: assert "Kilauea" not in spoken
     assert "[Kīlauea]" not in spoken  # info: assert "[Kīlauea]" not in spoken
 
@@ -38,7 +38,7 @@ def test_sentence_uses_english_syllables():  # info: def test_sentence_uses_engl
     spoken = speakable(  # info: set spoken
         "Kīlauea is not erupting in Hilo, Pāhoa, or Pāhala on Hawaiʻi."  # info: "Kīlauea is not erupting in Hilo, Pāhoa, or Pāhala on Hawaiʻi."
     )  # info: )
-    assert "Kill ah way uh" in spoken  # info: assert "Kill ah way uh" in spoken
+    assert "keelah-wayuh" in spoken  # info: assert "keelah-wayuh" in spoken
     assert "hee loh" in spoken  # info: assert "hee loh" in spoken
     assert "pah hoh ah" in spoken  # info: assert "pah hoh ah" in spoken
     assert "pah hah lah" in spoken  # info: assert "pah hah lah" in spoken
@@ -56,7 +56,7 @@ def test_operator_ipa_tags_become_english():  # info: def test_operator_ipa_tags
         "[Hilo](/ˈhi.lo/) on [Hawaiʻi](/həˈwɐi.ʔi/)."  # info: "[Hilo](/ˈhi.lo/) on [Hawaiʻi](/həˈwɐi.ʔi/)."
     )  # info: )
     spoken = speakable(raw)  # info: set spoken
-    assert "Kill ah way uh" in spoken  # info: assert "Kill ah way uh" in spoken
+    assert "keelah-wayuh" in spoken  # info: assert "keelah-wayuh" in spoken
     assert "hee loh" in spoken  # info: assert "hee loh" in spoken
     assert "hahwye-ee" in spoken  # info: assert "hahwye-ee" in spoken
     assert "](/" not in spoken  # info: assert "](/" not in spoken
@@ -134,7 +134,7 @@ def test_pronounce_wraps_plain_names():  # info: def test_pronounce_wraps_plain_
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def test_speak_english_has_kilauea():  # info: def test_speak_english_has_kilauea
-    assert SPEAK_ENGLISH["Kīlauea"] == "Kill ah way uh"  # info: assert SPEAK_ENGLISH [ "Kīlauea" ] == "Kill ah way uh"
+    assert SPEAK_ENGLISH["Kīlauea"] == "keelah-wayuh"  # info: assert SPEAK_ENGLISH [ "Kīlauea" ] == "keelah-wayuh"
 
 
 # ====================================================
