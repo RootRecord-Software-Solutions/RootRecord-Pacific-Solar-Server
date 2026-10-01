@@ -42,7 +42,7 @@ def test_sentence_uses_english_syllables():  # info: def test_sentence_uses_engl
     assert "hee loh" in spoken  # info: assert "hee loh" in spoken
     assert "pah hoh ah" in spoken  # info: assert "pah hoh ah" in spoken
     assert "pah hah lah" in spoken  # info: assert "pah hah lah" in spoken
-    assert "hah wye ee" in spoken  # info: assert "hah wye ee" in spoken
+    assert "hahwye-ee" in spoken  # info: assert "hahwye-ee" in spoken
 
 
 # ====================================================
@@ -58,7 +58,7 @@ def test_operator_ipa_tags_become_english():  # info: def test_operator_ipa_tags
     spoken = speakable(raw)  # info: set spoken
     assert "Kill ah way uh" in spoken  # info: assert "Kill ah way uh" in spoken
     assert "hee loh" in spoken  # info: assert "hee loh" in spoken
-    assert "hah wye ee" in spoken  # info: assert "hah wye ee" in spoken
+    assert "hahwye-ee" in spoken  # info: assert "hahwye-ee" in spoken
     assert "](/" not in spoken  # info: assert "](/" not in spoken
 
 
@@ -171,4 +171,4 @@ def test_speakable_idempotent_on_hst():  # info: def test_speakable_idempotent_o
     twice = speakable(once)  # info: set twice
     assert once == twice  # info: assert once == twice
     assert "Hawaii Standard Time" in once  # info: assert "Hawaii Standard Time" in once
-    assert "hah wye ee" not in once.lower()  # info: assert "hah wye ee" not in once . lower (
+    assert "hah wye ee" not in once.lower() and "hahwye-ee" not in once.lower()  # info: assert the time phrase stays Hawaii Standard Time
