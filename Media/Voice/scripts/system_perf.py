@@ -127,7 +127,7 @@ def texts(s: dict, now: datetime) -> tuple[str, str]:  # info: def texts
         f"| Disk / | {s['disk_pct']}% used ({s['disk_used_gb']} / {s['disk_total_gb']} GB) |\n"  # info: f" | Disk / | { s [ 'disk_pct' ] }
         f"| Host battery | {batt} |\n"  # info: f" | Host battery | { batt } |\n "
         f"| Uptime | {up_h}h {up_m}m |\n\n"  # info: f" | Uptime | { up_h } h { up_m
-        f"_Template report (no LLM). Measured on the desk at {ts}. Delivery OFF._\n"  # info: f" _Template report (no LLM). Measured on the desk at { ts } . Delivery OFF._\n "
+        f"_Template report (no LLM). Measured on the desk at {ts}._\n"  # info: f" _Template report (no LLM). Measured on the desk at { ts } ._\n "
     )  # info: )
     spoken = [  # info: set spoken
         "System performance report.",  # info: "System performance report." ,
@@ -180,6 +180,10 @@ def main() -> int:  # info: def main
                 res["voice"] = json.loads(last)  # info: res [ "voice" ] = json . loads
             except ValueError:  # info: except ValueError :
                 res["voice"] = {"detail": "busy (single-flight)" if p.returncode == 75 else "no json"}  # info: res [ "voice" ] = { "detail" :
+            wav = (res.get("voice") or {}).get("wav")  # info: set wav
+            if wav:  # info: if wav
+                import voice_deliver  # info: import voice_deliver
+                res["deliver"] = voice_deliver.deliver(REPORT, wav, spoken, "system")  # info: res [ "deliver" ] = voice_deliver . deliver
         finally:  # info: finally :
             os.unlink(f.name)  # info: os . unlink ( f . name )
     print(json.dumps(res))  # info: call print

@@ -18,7 +18,7 @@
 Each run writes Database Media/Audio/Voice/Reports/<report>_current.md (old copy -> Reports/Archive/
 <report>_YYYYMMDDTHHMM.md) and a stitched WAV Media/Audio/Voice/<report>_current.wav via voice-render.sh
 (single-flight lock, nice 10, phrase-clip cache, non-resident). If the lock is busy the WAV is skipped
-(rc 75 recorded) and the text still lands. NO delivery (Telegram / radio / speakers).
+(rc 75 recorded) and the text still lands. A Telegram voice note posts only when RR_VOICE_DELIVER=1, to the sandbox unless RR_TELEGRAM_DEST=council. Radio and speakers stay off.
 Only G3 data that exists is read: Database Energy/{soc,watts}/*-last.json (EcoFlow BLE), Database
 Weather/Hawai'i (NWS alerts + SFP state forecast, Pacific weather poller), Library Work-Order checkboxes,
 /proc, and Database Geology/Earthquakes/{hawaii,global}-last.json (Pacific Geology/scripts/geology_collect.py,
@@ -992,7 +992,7 @@ def write_md(report: str, md: str) -> Path:  # info: def write_md
     if path.is_file():  # info: if path . is_file ( ) :
         retire_current(path)  # info: call retire_current
     tmp = path.with_suffix(".md.tmp")  # info: set tmp
-    tmp.write_text(md.rstrip() + "\n\n_Template report; measured values only. Delivery OFF._\n", encoding="utf-8")  # info: tmp . write_text ( md . rstrip (
+    tmp.write_text(md.rstrip() + "\n\n_Template report; measured values only._\n", encoding="utf-8")  # info: tmp . write_text ( md . rstrip (
     os.replace(tmp, path)  # info: os . replace ( tmp , path )
     return path  # info: return path
 
@@ -1037,6 +1037,10 @@ def main() -> int:  # info: def main
     res = {"ok": True, "report": report, "md": str(write_md(report, md)), "sentences": len(spoken)}  # info: set res
     if "--no-voice" not in sys.argv:  # info: if "--no-voice" not in sys . argv :
         res["voice"] = voice(report, spoken)  # info: res [ "voice" ] = voice ( report
+        wav = (res.get("voice") or {}).get("wav")  # info: set wav
+        if wav:  # info: if wav
+            import voice_deliver  # info: import voice_deliver
+            res["deliver"] = voice_deliver.deliver(report, wav, " ".join(spoken), KIND[report])  # info: res [ "deliver" ] = voice_deliver . deliver
     print(json.dumps(res, ensure_ascii=False))  # info: call print
     return 0  # info: return 0
 
