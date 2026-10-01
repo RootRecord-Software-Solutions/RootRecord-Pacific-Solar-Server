@@ -235,6 +235,15 @@
     pullTimer = window.setInterval(pull, 5000);
   }
 
+  function fitGlobe() {
+    if (!globe || !globeEl) return;
+    var w = globeEl.clientWidth || window.innerWidth;
+    var h = globeEl.clientHeight || window.innerHeight;
+    if (w < 2 || h < 2) return;
+    if (typeof globe.width === "function") globe.width(w);
+    if (typeof globe.height === "function") globe.height(h);
+  }
+
   function onVisibility() {
     hidden = document.hidden;
     if (!globe) return;
@@ -251,6 +260,8 @@
     disposed = true;
     if (pullTimer) window.clearInterval(pullTimer);
     document.removeEventListener("visibilitychange", onVisibility);
+    window.removeEventListener("resize", fitGlobe);
+    if (window.visualViewport) window.visualViewport.removeEventListener("resize", fitGlobe);
     window.removeEventListener("pagehide", dispose);
     if (globe && globe.pauseAnimation) globe.pauseAnimation();
     var renderer = globe && globe.renderer && globe.renderer();
@@ -261,5 +272,8 @@
   }
 
   document.addEventListener("visibilitychange", onVisibility);
+  window.addEventListener("resize", fitGlobe);
+  if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGlobe);
   window.addEventListener("pagehide", dispose);
+  fitGlobe();
 })();
