@@ -11,12 +11,13 @@ Cloudflare DNS for `rootrecord.cloud`, proxy off:
 | `@` | CNAME | `658fd2bfe7dcb292.vercel-dns-017.com` |
 | `www` | CNAME | `658fd2bfe7dcb292.vercel-dns-017.com` |
 | `ssh` | A | `18.118.30.226` |
+| `api` | A | `18.118.30.226` |
 
 The apex answers from Vercel with **308** to `https://www.rootrecord.cloud/`. That host returns **200**, title “Root Record — Software Solutions”.
 
 SSH is direct. `ssh.rootrecord.cloud` is that A record, not the globe tunnel. Desk aliases `rr-aws` and `rr-aws-ip` in `~/.ssh/config` both use `HostName 18.118.30.226` and have no `ProxyCommand`. A login on 2026-09-30 returned the same address and an uptime of about 4 days 16 hours.
 
-Alexander’s data path for the clean slate: SSH carries Hawaii database snapshots to AWS. The public API is served from AWS to the Vercel page. That API hostname is not in DNS yet. The page source requests `https://api.rootrecord.cloud/api/state` and `/api/operations`. A public lookup of `api.rootrecord.cloud` returned no address. Do not call port 8787. Do not treat `www` as `/api/state`.
+Alexander’s data path: SSH carries Hawaii database snapshots to AWS. The public API is served from AWS to the Vercel page. `api.rootrecord.cloud` is A `18.118.30.226`, proxy off. Caddy on that host proxies HTTPS to `127.0.0.1:8091`. The page source requests `https://api.rootrecord.cloud/api/state` and `/api/operations`. Do not call port 8787. Do not treat `www` as `/api/state`.
 
 `rootserver.rootrecord.cloud` was not retargeted. It remains the Hawaii poller tunnel (`127.0.0.1:8799`). `play.rootmc.net` stays the game. Do not recreate `3 - RootRecord-Website`. Do not bind port 3001.
 
@@ -87,8 +88,8 @@ Merged JSON the globe process built while `www` was still that process, `GET /ap
 
 ### Still open / unresolved
 
-- The Vercel page requests `https://api.rootrecord.cloud`. That name has no public DNS yet. Alexander’s rule: SSH brings Hawaii data to AWS, and the API on AWS serves the Vercel page. Do not point the API at port 8787 or at `www`.
-- Other Cloudflare zones were given redirect rules toward `https://rootrecord.online/` earlier this evening. That retarget to `www.rootrecord.cloud` was not applied. `rootrecord.online` is the old Vercel DNS name and was `DEPLOYMENT_NOT_FOUND`. Do not treat it as the production host.
+- Other public web hosts 301 to `https://www.rootrecord.cloud/`. Checked 2026-09-30 21:25 HST: `rootrecord.online`, `rootrecord.info`, `avaivy.cloud`, `kilauea.cloud`, `kilauea.online`, `rootmc.net`, `advancedcraft.net`, `alexrs94.site`, and their `www` names. `play.rootmc.net` stays the game at `15.204.13.9`.
+- `api.rootrecord.cloud` answers from AWS. Hawaii snapshots were arriving (`hawaii-current.ndjson` updated the same minute). `GET /api/state` returned `collector` `ss + hawaii snapshot`. Do not point the API at port 8787 or at `www`.
 - Cloudflare worker in `Website/Cloudflare-Workers/` is not deployed. Its origin default is still `https://root-record-cloud.vercel.app`.
 
 ### Explicitly historical (do not treat as current)
@@ -99,5 +100,4 @@ Merged JSON the globe process built while `www` was still that process, `GET /ap
 
 ### Next recommended action
 
-- Publish the AWS API on a hostname the Vercel page can call, using the two replaced snapshot files above. SSH is the Hawaii-to-AWS path (`rr-aws` / `rr-aws-ip` → `18.118.30.226`).
-- Leave `play.rootmc.net` and the `rootserver` poller tunnel alone unless Alexander asks.
+- Leave `play.rootmc.net` and the `rootserver` poller tunnel alone unless Alexander asks. SSH is the Hawaii-to-AWS path (`rr-aws` / `rr-aws-ip` → `18.118.30.226`). The public API is already `https://api.rootrecord.cloud`.

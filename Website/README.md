@@ -8,7 +8,7 @@ Desk runtime for Stripe snapshots, Vercel failed-build records, and last-known o
 | GitHub / Vercel | Org `RootRecord-Software-Solutions/RootRecord-Website` (row `website`, Vercel) and personal `rootrecordsoftwaresolutions/RootRecord-Website` (row `website-personal`). Both pull and push from `Github/scripts/repos.conf` |
 | Public page | `https://www.rootrecord.cloud/` on Vercel. Apex CNAME matches `www` and 308s there. Contract: [HANDOFF-vercel-homepage-2026-09-30.md](HANDOFF-vercel-homepage-2026-09-30.md) |
 | SSH | `ssh.rootrecord.cloud` A `18.118.30.226`, proxy off. `rr-aws` and `rr-aws-ip` use that address. Hawaii snapshots go to AWS over SSH |
-| API | The page requests `https://api.rootrecord.cloud`. That name has no public DNS yet. The API is to be served from AWS to Vercel. Do not use port 8787 |
+| API | The page requests `https://api.rootrecord.cloud`. That name is A `18.118.30.226`, proxy off. Caddy on AWS proxies it to `127.0.0.1:8091`. Do not use port 8787 |
 | Last-known file | `2 - RootRecord-Database/Website/operations.json` and the Hawaii snapshot `Communications/network/local-data-globe/rebroadcast/status-current.json` |
 
 `3 - RootRecord-Website/` is not on this desk. Do not recreate it. Do not bind port 3001. `https://rootserver.rootrecord.cloud/` is the poller on `127.0.0.1:8799`, not this page.

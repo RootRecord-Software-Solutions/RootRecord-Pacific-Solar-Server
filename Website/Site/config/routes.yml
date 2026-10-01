@@ -1,8 +1,8 @@
 # Production is https://www.rootrecord.cloud/ (Vercel project rootrecord, team rrc-ore).
 # Apex redirects there. Other page hosts in this file are the desk target, also that URL.
-# Live Cloudflare rules for those other zones were last aimed at rootrecord.online and were not retargeted.
+# Other public web hosts 301 to https://www.rootrecord.cloud/.
 # ssh.rootrecord.cloud is A 18.118.30.226, proxy off. rootserver stays the poller. play.rootmc.net stays the game.
-# api.rootrecord.cloud is the intended AWS API for the Vercel page. It has no public DNS yet.
+# api.rootrecord.cloud is A 18.118.30.226, proxy off. Caddy on AWS proxies it to 127.0.0.1:8091.
 
 home_card: off
 vercel_site: one
