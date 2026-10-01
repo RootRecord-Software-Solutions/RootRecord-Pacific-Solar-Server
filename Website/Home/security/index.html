@@ -3,14 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Public security posture for Root Record: boundaries, verification, evidence, and continuity.">
 <title>Security — Root Record</title>
+<meta name="description" content="Public security posture for Root Record: access boundaries, verification, evidence, and the line between a public page and operator control.">
+<link rel="canonical" href="https://www.rootrecord.cloud/security">
+<meta property="og:title" content="Security — Root Record">
+<meta property="og:description" content="Boundaries, verification, and evidence. Public visibility is not public control.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.rootrecord.cloud/security">
+<meta property="og:site_name" content="Root Record">
+<meta name="theme-color" content="#000011">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
+<a class="skip" href="#content">Skip to content</a>
+<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
-  <nav aria-label="Primary">
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+  <nav id="site-nav" aria-label="Primary">
     <a href="/">Home</a>
     <a href="/ecosystem">Ecosystem</a>
     <a href="/operations">Systems</a>
@@ -21,54 +32,60 @@
   </nav>
   <a class="enter" href="/login">Login</a>
 </header>
-<main class="page">
+<main class="page" id="content">
   <p class="eyebrow">Posture</p>
   <h1>Security</h1>
-  <p class="prose">This page is the public shape of the security architecture. It describes boundaries and the standard of evidence. It does not publish addresses, host names, credentials, or private endpoints.</p>
-  <ul class="layers">
-    <li>
-      <h2>Access boundaries</h2>
-      <p class="prose">People, agents, and services reach systems through a boundary that matches the work. A public page is not an operator console. Crossing a boundary is a deliberate step.</p>
-    </li>
-    <li>
-      <h2>Verification</h2>
-      <p class="prose">State is accepted when there is evidence for it. A claim, a commit, or a command is not that evidence by itself.</p>
-    </li>
-    <li>
-      <h2>Evidence</h2>
-      <p class="prose">Execution should leave a record that can be checked later: what was asked, what ran, and what the system reported back.</p>
-    </li>
-    <li>
-      <h2>Deployment distinction</h2>
-      <p class="prose">Source and the running system are different facts. Shipping a change and proving the running system took that change are separate steps.</p>
-    </li>
-    <li>
-      <h2>Operational controls</h2>
-      <p class="prose">Important operations stay controllable by people. Agents can prepare work inside a bound. The control that performs it stays visible.</p>
-    </li>
-    <li>
-      <h2>Monitoring</h2>
-      <p class="prose">Public monitoring is the status feed. It shows a reading when the feed has one. It does not invent a healthy system to fill a gap. <a href="/status">Status</a></p>
-    </li>
-    <li>
-      <h2>Security documentation</h2>
-      <p class="prose">Security material belongs in the RootRecord Library, with the rest of the durable knowledge. Private material stays there. This page does not copy it out. <a href="/knowledge">Knowledge</a></p>
-    </li>
-    <li>
-      <h2>Change management</h2>
-      <p class="prose">A change should remain understandable after it lands: what it was for, where it applies, and how someone can tell whether it took effect.</p>
-    </li>
-    <li>
-      <h2>Continuity</h2>
-      <p class="prose">Security includes being able to operate and repair the system without starting from zero. History, context, and evidence are part of that. <a href="/about">About</a></p>
-    </li>
-  </ul>
+  <p class="prose">This page is the public shape of the security architecture. It describes boundaries and the standard of evidence. It does not publish addresses, host names, credentials, or private endpoints. There is no numeric security rating.</p>
+  <section class="panel diagram" aria-label="From a person to persisted state">
+    <ol class="flow">
+      <li>Person</li>
+      <li>Agent</li>
+      <li>Boundary</li>
+      <li>Control</li>
+      <li>Execution</li>
+      <li>Evidence</li>
+      <li>Persisted state</li>
+    </ol>
+  </section>
+  <p class="prose">Public visibility does not mean public control. A public page is not an operator console.</p>
+  <section class="sec" id="boundaries">
+    <h2>Access boundaries</h2>
+    <p class="prose">People, agents, and services reach systems through a boundary that matches the work. Crossing a boundary is a deliberate step.</p>
+  </section>
+  <section class="sec" id="verification">
+    <h2>Verification</h2>
+    <p class="prose">State is accepted when there is evidence for it. A claim, a commit, or a command is not that evidence by itself.</p>
+  </section>
+  <section class="sec" id="evidence">
+    <h2>Evidence</h2>
+    <p class="prose">Execution should leave a record that can be checked later: what was asked, what ran, and what the system reported back. The public form of that record is the status feed. It shows a reading when the feed has one.</p>
+  </section>
+  <section class="sec" id="deployment">
+    <h2>Deployment distinction</h2>
+    <p class="prose">Source and the running system are different facts. Shipping a change and proving the running system took that change are separate steps. A commit is not proof of deployment.</p>
+  </section>
+  <section class="sec" id="controls">
+    <h2>Operational controls</h2>
+    <p class="prose">Important operations stay controllable by people. Agents can prepare work inside a bound. The control that performs it stays visible. A change should remain understandable after it lands: what it was for, where it applies, and how someone can tell whether it took effect.</p>
+  </section>
+  <section class="sec" id="continuity">
+    <h2>Continuity</h2>
+    <p class="prose">Security includes being able to operate and repair the system without starting from zero. History, context, and evidence are part of that. Security material belongs in the RootRecord Library. Private material stays there. <a href="/knowledge">Knowledge</a> · <a href="/about">About</a></p>
+  </section>
+  <section class="sec" id="boundary">
+    <h2>Public / private boundary</h2>
+    <p class="prose">The public site may describe architecture, public telemetry, public status, and public documentation. It does not describe private addresses, private names, credentials, or internal paths. If a detail is not clearly public, it is left out. <a href="/status">Status</a></p>
+  </section>
 </main>
 <footer class="site-foot">
-  <a href="/knowledge">Knowledge</a>
+  <a href="/ecosystem">Ecosystem</a>
+  <a href="/operations">Systems</a>
   <a href="/intelligence">Intelligence</a>
+  <a href="/knowledge">Knowledge</a>
   <a href="/status">Status</a>
   <a href="/about">About</a>
 </footer>
+<script src="/assets/starfield.js"></script>
+<script src="/assets/shell.js"></script>
 </body>
 </html>

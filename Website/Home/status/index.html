@@ -3,14 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Public status for the Root Record network, field systems, and core services.">
 <title>Status — Root Record</title>
+<meta name="description" content="Public status for the Root Record network, field systems, and core services. Missing readings stay missing.">
+<link rel="canonical" href="https://www.rootrecord.cloud/status">
+<meta property="og:title" content="Status — Root Record">
+<meta property="og:description" content="Public feed for network, field systems, and core services.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.rootrecord.cloud/status">
+<meta property="og:site_name" content="Root Record">
+<meta name="theme-color" content="#000011">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
+<a class="skip" href="#content">Skip to content</a>
+<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
-  <nav aria-label="Primary">
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+  <nav id="site-nav" aria-label="Primary">
     <a href="/">Home</a>
     <a href="/ecosystem">Ecosystem</a>
     <a href="/operations">Systems</a>
@@ -21,38 +32,69 @@
   </nav>
   <a class="enter" href="/login">Login</a>
 </header>
-<main class="page">
+<main class="page page-wide" id="content">
   <p class="eyebrow">Public feed</p>
   <h1>Root Record status</h1>
-  <p class="prose" id="feed-line">Network feed connecting</p>
-  <section class="status-block" aria-label="Network">
+  <p class="prose" id="feed-line">Loading public telemetry...</p>
+
+  <section class="sec" aria-label="Network">
     <h2>Network</h2>
-    <div class="status-row"><i class="led" id="led-hi"></i><span>Hawaiʻi</span><b id="val-hi">—</b></div>
-    <div class="status-row"><i class="led" id="led-ms"></i><span>Mainland Server</span><b id="val-ms">—</b></div>
+    <div class="status-line" aria-live="polite"><i class="led" id="net-dot" aria-hidden="true"></i><span id="net-status">LOADING</span></div>
+    <div class="status-row"><span>Hawaiʻi</span><b id="val-hi">—</b></div>
+    <div class="status-row"><span>Mainland Server</span><b id="val-ms">—</b></div>
+    <div class="status-row"><span>Active flows</span><b id="active-flows">—</b></div>
+    <div class="status-row"><span>Endpoints</span><b id="endpoints">—</b></div>
+    <p class="meta" id="last-label">Last update</p>
+    <p class="reading" id="last-update">—</p>
+    <p class="fine" id="net-fresh">Loading public telemetry...</p>
   </section>
-  <section class="status-block" aria-label="Field systems">
+
+  <section class="sec" aria-label="Field systems">
     <h2>Field systems</h2>
-    <div class="status-row"><i class="led" id="led-energy"></i><span>Energy</span><b id="val-energy">—</b></div>
-    <div class="status-row"><i class="led" id="led-weather"></i><span>Weather</span><b id="val-weather">—</b></div>
-    <div class="status-row"><i class="led" id="led-geology"></i><span>Geology</span><b id="val-geology">—</b></div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <caption class="sr">Field systems with state, value, and last observation</caption>
+        <thead>
+          <tr><th>Name</th><th>State</th><th>Value</th><th>Last observed</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>River</td><td id="st-river">NO PUBLIC SIGNAL</td><td id="val-river">NO READING</td><td id="at-river">—</td></tr>
+          <tr><td>Delta</td><td id="st-delta">NO PUBLIC SIGNAL</td><td id="val-delta">NO READING</td><td id="at-delta">—</td></tr>
+          <tr><td>Weather</td><td id="st-weather">NO PUBLIC SIGNAL</td><td id="val-weather">NO PUBLIC SIGNAL</td><td id="at-weather">—</td></tr>
+          <tr><td>Kīlauea</td><td id="st-geology">NO PUBLIC SIGNAL</td><td id="val-geology">NO PUBLIC SIGNAL</td><td id="at-geology">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fine" id="field-asof">Last known · checking</p>
   </section>
-  <section class="status-block" aria-label="Core services">
+
+  <section class="sec" aria-label="Core services">
     <h2>Core services</h2>
-    <div class="status-row"><i class="led" id="led-knowledge"></i><span>Knowledge</span><b id="val-knowledge">No public signal</b></div>
-    <div class="status-row"><i class="led" id="led-runtime"></i><span>Runtime</span><b id="val-runtime">No public signal</b></div>
-    <div class="status-row"><i class="led" id="led-data"></i><span>Data</span><b id="val-data">No public signal</b></div>
+    <p class="prose">Documented means the layer is described. Reporting means a public feed is answering. Neither word is inferred from a repository existing.</p>
+    <div class="status-row"><span>Knowledge</span><b id="val-knowledge">Documented</b></div>
+    <div class="status-row"><span>Runtime</span><b id="val-runtime">No public signal</b></div>
+    <div class="status-row"><span>Data</span><b id="val-data">No public signal</b></div>
   </section>
-  <p class="meta" id="last-label" style="margin-top:22px">Last known</p>
-  <p class="reading" id="last-update">—</p>
-  <p class="fine">A mark lights when a reading is present. Knowledge, runtime, and data have no public probe on this board, so they stay without a signal. <a href="/operations">Systems</a></p>
+
+  <section class="sec" id="history" aria-label="Live history">
+    <h2>Live history</h2>
+    <p class="empty-note">The public feed publishes current network, energy, weather, and geology readings. It does not include a historical series, so this page does not draw a history chart.</p>
+    <p class="fine"><a href="/operations">Systems</a></p>
+  </section>
 </main>
 <footer class="site-foot">
   <a href="/">Home</a>
-  <a href="/operations">Operations</a>
+  <a href="/ecosystem">Ecosystem</a>
+  <a href="/operations">Systems</a>
+  <a href="/intelligence">Intelligence</a>
+  <a href="/knowledge">Knowledge</a>
+  <a href="/security">Security</a>
   <a href="/infrastructure">Infrastructure</a>
   <a href="/data">Data</a>
 </footer>
 <script src="/assets/telemetry.js"></script>
 <script src="/assets/live.js"></script>
+<script src="/assets/starfield.js"></script>
+<script src="/assets/shell.js"></script>
 </body>
 </html>

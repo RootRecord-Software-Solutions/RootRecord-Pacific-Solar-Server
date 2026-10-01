@@ -3,14 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="The RootRecord Library is the durable knowledge layer for architecture, operations, security, and system context.">
 <title>Knowledge — Root Record</title>
+<meta name="description" content="The RootRecord Library is the knowledge layer: architecture, agent context, operations, security, work orders, guides, and system documentation.">
+<link rel="canonical" href="https://www.rootrecord.cloud/knowledge">
+<meta property="og:title" content="Knowledge — Root Record">
+<meta property="og:description" content="The RootRecord Library is the knowledge layer for Root Record.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.rootrecord.cloud/knowledge">
+<meta property="og:site_name" content="Root Record">
+<meta name="theme-color" content="#000011">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
+<a class="skip" href="#content">Skip to content</a>
+<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
-  <nav aria-label="Primary">
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+  <nav id="site-nav" aria-label="Primary">
     <a href="/">Home</a>
     <a href="/ecosystem">Ecosystem</a>
     <a href="/operations">Systems</a>
@@ -21,27 +32,39 @@
   </nav>
   <a class="enter" href="/login">Login</a>
 </header>
-<main class="page">
+<main class="page" id="content">
   <p class="eyebrow">RootRecord Library</p>
   <h1>Durable knowledge</h1>
   <p class="prose">The RootRecord Library is the knowledge layer. It holds the record of how the system is built and run, so people and agents are not starting from a blank session.</p>
-  <ul class="words">
-    <li>Architecture</li>
-    <li>Agent context</li>
-    <li>Operations</li>
-    <li>Security</li>
-    <li>Work orders</li>
-    <li>Guides</li>
-    <li>System documentation</li>
-  </ul>
+  <section class="panel diagram" aria-label="Knowledge layer">
+    <div class="know-grid">
+      <article><h2>Architecture</h2></article>
+      <article><h2>Agent context</h2></article>
+      <article><h2>Operations</h2></article>
+      <article><h2>Security</h2></article>
+      <article><h2>Work orders</h2></article>
+      <article><h2>Guides</h2></article>
+      <article><h2>System documentation</h2></article>
+    </div>
+  </section>
   <p class="sig">Code should have a home. Data should have a home. Knowledge should have a home.</p>
-  <p class="prose">Code is the runtime. Data is the RootRecord Database. Knowledge is the RootRecord Library. The public site explains that split. It does not dump private library material. <a href="/ecosystem">Ecosystem</a> · <a href="/intelligence">Intelligence</a> · <a href="/security">Security</a></p>
+  <section class="sec" id="continuity">
+    <h2>Continuity</h2>
+    <p class="prose">The knowledge layer lets the system keep its understanding across interactions and operational changes. A new session can start from the record instead of from memory. That is the point of separating knowledge from the runtime and from the database.</p>
+  </section>
+  <p class="prose">Code is the runtime. Data is the RootRecord Database. Knowledge is the RootRecord Library. This page explains that split. It does not publish private library material. <a href="/ecosystem">Ecosystem</a> · <a href="/intelligence">Intelligence</a> · <a href="/security">Security</a></p>
+  <p class="prose"><a href="https://github.com/RootRecord-Software-Solutions/RootRecord-Library" rel="noreferrer">Public library repository</a></p>
 </main>
 <footer class="site-foot">
   <a href="/ecosystem">Ecosystem</a>
+  <a href="/operations">Systems</a>
   <a href="/intelligence">Intelligence</a>
   <a href="/security">Security</a>
+  <a href="/status">Status</a>
   <a href="/about">About</a>
+  <a href="https://github.com/RootRecord-Software-Solutions/RootRecord-Library" rel="noreferrer">RootRecord Library</a>
 </footer>
+<script src="/assets/starfield.js"></script>
+<script src="/assets/shell.js"></script>
 </body>
 </html>

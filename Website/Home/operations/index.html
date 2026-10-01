@@ -3,14 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Root Record operations: energy, environment, network, automation, monitoring, reporting, and verification.">
 <title>Systems — Root Record</title>
+<meta name="description" content="Public field systems for Root Record: energy, environment, geology, and network, plus the operating model for automation, monitoring, reporting, and verification.">
+<link rel="canonical" href="https://www.rootrecord.cloud/operations">
+<meta property="og:title" content="Systems — Root Record">
+<meta property="og:description" content="Energy, environment, network, and the operating model. Readings appear only when the public feed has them.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.rootrecord.cloud/operations">
+<meta property="og:site_name" content="Root Record">
+<meta name="theme-color" content="#000011">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
+<a class="skip" href="#content">Skip to content</a>
+<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
-  <nav aria-label="Primary">
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+  <nav id="site-nav" aria-label="Primary">
     <a href="/">Home</a>
     <a href="/ecosystem">Ecosystem</a>
     <a href="/operations" aria-current="page">Systems</a>
@@ -21,46 +32,132 @@
   </nav>
   <a class="enter" href="/login">Login</a>
 </header>
-<main class="page">
+<main class="page page-wide" id="content">
   <p class="eyebrow">Field systems</p>
   <h1>Systems</h1>
-  <p class="prose">Operations are one system. Energy, environment, and the network are field systems. Automation, monitoring, reporting, and verification are how that system is run. A reading is shown only when the public feed has it.</p>
-  <section class="tree" aria-label="Operations">
-    <h2 id="energy">Energy</h2>
-    <ul>
-      <li>River <b id="river">—</b></li>
-      <li>Delta <b id="delta">—</b></li>
-    </ul>
-    <h2 id="environment">Environment</h2>
-    <ul>
-      <li>Weather <b id="weather">—</b></li>
-      <li>Kīlauea <b id="kilauea">—</b></li>
-    </ul>
-    <h2 id="network">Network</h2>
-    <ul>
-      <li>Hawaiʻi <b id="field-hi">—</b></li>
-      <li>Mainland Server <b id="field-ms">—</b></li>
-    </ul>
-    <h2>Systems</h2>
-    <ul>
-      <li>Automation</li>
-      <li>Monitoring</li>
-      <li>Reporting</li>
-      <li>Verification</li>
-    </ul>
-  </section>
+  <p class="prose">Operations are one system. Energy, environment, geology, and the network are field systems. Automation, monitoring, reporting, and verification are how that system is run. A reading is shown only when the public feed has it.</p>
+  <p class="fine" id="ops-fresh">Loading public telemetry...</p>
   <p class="fine" id="field-asof">Last known · checking</p>
-  <p class="prose">Automation, monitoring, reporting, and verification do not carry a public status word on this page. They are part of the operating model. Live network and field readings are on <a href="/status">status</a>.</p>
-  <p class="prose"><a href="/infrastructure">Infrastructure</a> · <a href="/data">Data</a> · <a href="/security">Security</a></p>
+
+  <section class="sec" id="energy">
+    <h2>Energy</h2>
+    <p class="prose">River and Delta are the public energy systems. State of charge, solar input, and AC output are shown from the latest public reading. Daily totals, rolling averages, and a power history are not in that feed.</p>
+    <div class="split">
+      <article class="panel">
+        <h2>River</h2>
+        <div class="metric-block"><p class="meta">Current</p><p class="reading" id="river-soc">—</p></div>
+        <div class="metric-block"><p class="meta">Solar</p><p class="reading" id="river-solar">—</p></div>
+        <div class="metric-block"><p class="meta">AC output</p><p class="reading" id="river-ac">—</p></div>
+        <div class="metric-block"><p class="meta">USB-C</p><p class="reading" id="river-usb">—</p></div>
+        <p class="fine" id="river-at">—</p>
+      </article>
+      <article class="panel">
+        <h2>Delta</h2>
+        <div class="metric-block"><p class="meta">Current</p><p class="reading" id="delta-soc">—</p></div>
+        <div class="metric-block"><p class="meta">Solar</p><p class="reading" id="delta-solar">—</p></div>
+        <div class="metric-block"><p class="meta">AC output</p><p class="reading" id="delta-ac">—</p></div>
+        <div class="metric-block"><p class="meta">USB-C</p><p class="reading" id="delta-usb">—</p></div>
+        <p class="fine" id="delta-at">—</p>
+      </article>
+    </div>
+    <div class="stack">
+      <section class="panel" aria-label="State of charge comparison">
+        <h2>State of charge</h2>
+        <p class="fine">How does stored energy compare between River and Delta right now?</p>
+        <div id="chart-soc"><p class="empty-note">Loading public telemetry...</p></div>
+      </section>
+      <section class="panel" aria-label="Solar input comparison">
+        <h2>Solar input</h2>
+        <p class="fine">What solar input is each system reporting right now?</p>
+        <div id="chart-solar"><p class="empty-note">Loading public telemetry...</p></div>
+      </section>
+      <section class="panel" aria-label="AC output comparison">
+        <h2>AC output</h2>
+        <p class="fine">What AC output is each system reporting right now?</p>
+        <div id="chart-output"><p class="empty-note">Loading public telemetry...</p></div>
+      </section>
+    </div>
+    <p class="empty-note">Power over time, daily production, and rolling averages are not in the public feed. Ranges such as 1H, 6H, 24H, 7D, and 30D are omitted because the feed has no series to filter.</p>
+  </section>
+
+  <section class="sec" id="environment">
+    <h2>Environment</h2>
+    <p class="prose">The public weather record is an observation time. Temperature, humidity, pressure, wind, and precipitation are not in the public feed, so they are omitted.</p>
+    <div class="panel">
+      <h2>Weather</h2>
+      <div class="metric-block"><p class="meta">Last observation</p><p class="reading" id="weather-at">—</p></div>
+      <p class="fine" id="st-weather">NO PUBLIC SIGNAL</p>
+    </div>
+  </section>
+
+  <section class="sec" id="geology">
+    <h2>Geology</h2>
+    <p class="prose">Kīlauea status is shown from the public geological reading. Alert level is not a site health score.</p>
+    <div class="panel">
+      <h2>Kīlauea</h2>
+      <div class="metrics">
+        <div><span>Status</span><strong id="kilauea-line">—</strong></div>
+        <div><span>Alert level</span><strong id="kilauea-level">—</strong></div>
+        <div><span>Color code</span><strong id="kilauea-code">—</strong></div>
+        <div><span>Eruption</span><strong id="kilauea-erupt">—</strong></div>
+      </div>
+      <p class="fine" id="kilauea-at">—</p>
+      <p class="fine" id="st-geology">NO PUBLIC SIGNAL</p>
+    </div>
+  </section>
+
+  <section class="sec" id="network">
+    <h2>Network</h2>
+    <p class="prose">Hawaiʻi and the Mainland Server are the two public sides of the network. Active flows and endpoints come from the public feed. A historical flow series is not in that feed.</p>
+    <div class="panel" aria-label="Network">
+      <div class="status-line" aria-live="polite"><i class="led" id="net-dot" aria-hidden="true"></i><span id="net-status">LOADING</span></div>
+      <div class="metrics">
+        <div><span>Hawaiʻi</span><strong id="hi-flows">—</strong></div>
+        <div><span>Mainland Server</span><strong id="ms-flows">—</strong></div>
+        <div><span>Active flows</span><strong id="active-flows">—</strong></div>
+        <div><span>Endpoints</span><strong id="endpoints">—</strong></div>
+      </div>
+      <p class="meta" id="last-label">Last update</p>
+      <p class="reading" id="last-update">—</p>
+      <p class="fine" id="net-fresh">Loading public telemetry...</p>
+    </div>
+    <p class="empty-note">Network activity, active-flow history, and endpoint history are not in the public feed. Current counts are the whole public series.</p>
+  </section>
+
+  <section class="sec" id="automation">
+    <h2>Automation</h2>
+    <p class="prose">Automation is the part of the runtime that repeats bounded work: collection, scheduling, and handoff between field systems and the record. This page does not publish a task queue or a job count. No public signal is available for that queue.</p>
+  </section>
+
+  <section class="sec" id="monitoring">
+    <h2>Monitoring</h2>
+    <p class="prose">Public monitoring is the status feed. A reading is present or it is not. The absence of a reading is not filled with a healthy state. <a href="/status">Status</a></p>
+  </section>
+
+  <section class="sec" id="reporting">
+    <h2>Reporting</h2>
+    <p class="prose">Public observations are the current energy, weather, geology, and network readings above. They are last-known values from the public feed. There is no public history table to expand.</p>
+  </section>
+
+  <section class="sec" id="verification">
+    <h2>Verification</h2>
+    <p class="prose">A configured collector is not the same fact as a current reading. Verification is the check that the feed actually reported a value, with a time. <a href="/security">Security</a> · <a href="/data">Data</a></p>
+  </section>
 </main>
 <footer class="site-foot">
   <a href="/ecosystem">Ecosystem</a>
+  <a href="/intelligence">Intelligence</a>
+  <a href="/knowledge">Knowledge</a>
+  <a href="/security">Security</a>
+  <a href="/status">Status</a>
   <a href="/infrastructure">Infrastructure</a>
   <a href="/data">Data</a>
-  <a href="/status">Status</a>
   <a href="/about">About</a>
 </footer>
 <script src="/assets/telemetry.js"></script>
+<script src="/assets/charts.js"></script>
 <script src="/assets/live.js"></script>
+<script src="/assets/starfield.js"></script>
+<script src="/assets/shell.js"></script>
 </body>
 </html>

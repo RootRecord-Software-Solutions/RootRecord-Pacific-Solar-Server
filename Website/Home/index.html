@@ -3,16 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Root Record is software, infrastructure, intelligent systems, and durable knowledge, built as one ecosystem from Hawaiʻi.">
 <title>Root Record</title>
+<meta name="description" content="Root Record is software, infrastructure, intelligent systems, and durable knowledge, built as one ecosystem from Hawaiʻi.">
+<link rel="canonical" href="https://www.rootrecord.cloud/">
+<meta property="og:title" content="Root Record">
+<meta property="og:description" content="Software, infrastructure, intelligent systems, and durable knowledge, built as one ecosystem.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.rootrecord.cloud/">
+<meta property="og:site_name" content="Root Record">
+<meta name="theme-color" content="#000011">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
+<a class="skip" href="#content">Skip to content</a>
 <canvas id="starfield" aria-hidden="true"></canvas>
 <div id="globe"></div>
 <header class="top top-clear">
   <a class="brand" href="/">Root Record</a>
-  <nav aria-label="Primary">
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+  <nav id="site-nav" aria-label="Primary">
     <a href="/" aria-current="page">Home</a>
     <a href="/ecosystem">Ecosystem</a>
     <a href="/operations">Systems</a>
@@ -23,47 +33,41 @@
   </nav>
   <a class="enter" href="/login">Login</a>
 </header>
-<div class="stage">
+<div class="stage" id="content">
   <section class="hero" id="hero">
     <h1>Root Record</h1>
     <p class="kicker">Software · Infrastructure · Intelligence</p>
     <p class="lede">Software, infrastructure, intelligent systems, and durable knowledge — built as one ecosystem.</p>
-    <div class="rel" aria-label="Hawaiʻi and the Root Record Network">
+    <div class="rel" aria-label="Hawaiʻi, the Root Record Network, and the Mainland Server">
       <div class="rel-node">Hawaiʻi</div>
       <div class="rel-spine"><i></i><span>Root Record Network</span></div>
+      <div class="rel-node">Mainland Server</div>
     </div>
     <p class="help">drag to rotate</p>
-    <button class="spin" id="spin" type="button">Stop spin</button>
+    <p class="fine" id="globe-fallback" hidden>Planetary view is unavailable in this browser. Public telemetry on this page still updates.</p>
+    <button class="spin" id="spin" type="button" aria-pressed="true">Stop spin</button>
   </section>
   <div class="hud-row">
     <section class="panel" id="network" aria-label="Live network">
       <h2>Live network</h2>
-      <div class="status-line"><i class="led" id="net-dot"></i><span id="net-status">CONNECTING</span></div>
+      <div class="status-line" aria-live="polite"><i class="led" id="net-dot" aria-hidden="true"></i><span id="net-status">LOADING</span></div>
       <div class="metrics">
         <div><span>Hawaiʻi</span><strong id="hi-flows">—</strong></div>
+        <div><span>Mainland Server</span><strong id="ms-flows">—</strong></div>
         <div><span>Active flows</span><strong id="active-flows">—</strong></div>
         <div><span>Endpoints</span><strong id="endpoints">—</strong></div>
       </div>
-      <p class="fine">System status follows the public feed. Counts appear only when that feed reports them. <a href="/status">Open status</a></p>
+      <p class="meta" id="last-label">Last update</p>
+      <p class="reading" id="last-update">—</p>
+      <p class="fine" id="net-fresh">Loading public telemetry...</p>
+      <p class="fine">Counts appear only when the public feed reports them. That feed does not include a historical series. <a href="/status">Open status</a></p>
     </section>
     <section class="panel" id="ecosystem" aria-label="Ecosystem">
       <h2>Ecosystem</h2>
       <div class="nodes">
-        <button class="node-btn" type="button" aria-expanded="false" aria-controls="know-panel">Knowledge<small>RootRecord Library</small></button>
-        <button class="node-btn" type="button" aria-expanded="false" aria-controls="run-panel">Runtime<small>Pacific Solar Server</small></button>
-        <button class="node-btn" type="button" aria-expanded="false" aria-controls="data-panel">Data<small>RootRecord Database</small></button>
-      </div>
-      <div class="expand" id="know-panel" hidden>
-        <p>Persistent documentation, architecture, procedures, context, security material, work orders, and operational knowledge.</p>
-        <a href="/knowledge">Knowledge layer</a>
-      </div>
-      <div class="expand" id="run-panel" hidden>
-        <p>The systems that execute work. Pacific Solar Server is the runtime in Hawaiʻi.</p>
-        <a href="/infrastructure">Infrastructure</a>
-      </div>
-      <div class="expand" id="data-panel" hidden>
-        <p>Persistent system information, telemetry, environmental information, logs, and state.</p>
-        <a href="/data">Data layer</a>
+        <a class="node-btn" href="/knowledge"><span class="layer-k">Knowledge</span><small>RootRecord Library</small><em>What the system knows</em></a>
+        <a class="node-btn" href="/infrastructure"><span class="layer-k">Runtime</span><small>Pacific Solar Server</small><em>What the system executes</em></a>
+        <a class="node-btn" href="/data"><span class="layer-k">Data</span><small>RootRecord Database</small><em>What the system records</em></a>
       </div>
     </section>
   </div>
@@ -73,7 +77,7 @@
     <div class="split">
       <div class="panel">
         <h2>Field systems</h2>
-        <div class="quad quad-pair">
+        <div class="quad quad-four">
           <div>
             <h3>Energy</h3>
             <ul>
@@ -85,21 +89,19 @@
             <h3>Environment</h3>
             <ul>
               <li><span>Weather</span><b id="weather">—</b></li>
-              <li><span>Kīlauea</span><b id="kilauea">—</b></li>
             </ul>
           </div>
           <div>
             <h3>Network</h3>
             <ul>
               <li><span>Hawaiʻi</span><b id="field-hi">—</b></li>
+              <li><span>Mainland Server</span><b id="field-ms">—</b></li>
             </ul>
           </div>
           <div>
-            <h3>Operations</h3>
+            <h3>Geology</h3>
             <ul>
-              <li><span>Automation</span></li>
-              <li><span>Monitoring</span></li>
-              <li><span>Verification</span></li>
+              <li><span>Kīlauea</span><b id="kilauea">—</b></li>
             </ul>
           </div>
         </div>
@@ -109,12 +111,12 @@
       <div class="panel" id="intelligence">
         <h2>Intelligent systems</h2>
         <div class="pairs">
-          <div><span>Agents</span><strong>Active</strong></div>
           <div><span>Context</span><strong>Persistent</strong></div>
+          <div><span>Agents</span><strong class="signal-miss">No public signal</strong></div>
           <div><span>Execution</span><strong>Controlled</strong></div>
           <div><span>Verification</span><strong>Required</strong></div>
         </div>
-        <p class="intro">Root Record treats intelligence as part of the system architecture rather than a standalone interface. Agents operate with persistent context, controlled execution, and verifiable results.</p>
+        <p class="intro">Root Record treats intelligence as part of the system architecture rather than a standalone interface. Agents are described here as architecture. This page has no public agent count.</p>
         <p class="fine"><a href="/intelligence">Intelligence</a></p>
       </div>
     </div>
@@ -124,22 +126,22 @@
     <div class="taxonomy">
       <article class="card"><h3>Software</h3><p class="tax-items">Applications · APIs · Services · Tools</p></article>
       <a class="card" href="/infrastructure"><h3>Infrastructure</h3><p class="tax-items">Servers · Networks · Physical systems</p></a>
-      <a class="card" href="/operations"><h3>Automation</h3><p class="tax-items">Schedulers · Brokers · Monitoring · Workflows</p></a>
-      <a class="card" href="/intelligence"><h3>Intelligence</h3><p class="tax-items">Agents · Context · Reasoning · Execution</p></a>
+      <a class="card" href="/operations"><h3>Automation</h3><p class="tax-items">Schedulers · Monitoring · Workflows</p></a>
+      <a class="card" href="/intelligence"><h3>Intelligence</h3><p class="tax-items">Agents · Context · Execution</p></a>
       <a class="card" href="/data"><h3>Data</h3><p class="tax-items">Telemetry · State · Logs · Environmental data</p></a>
-      <a class="card" href="/security"><h3>Security</h3><p class="tax-items">Boundaries · Evidence · Verification · Monitoring</p></a>
-      <a class="card" href="/operations#energy"><h3>Energy</h3><p class="tax-items">Generation · Telemetry · Physical infrastructure</p></a>
+      <a class="card" href="/security"><h3>Security</h3><p class="tax-items">Boundaries · Evidence · Verification</p></a>
+      <a class="card" href="/operations#energy"><h3>Energy</h3><p class="tax-items">Generation · Storage · Physical plant</p></a>
     </div>
   </section>
   <section class="section" id="hawaii">
     <div class="panel">
       <h2>Built from Hawaiʻi</h2>
-      <p class="intro">Root Record is built from Hawaiʻi, where geography, connectivity, energy, weather, distance, and physical infrastructure are tangible engineering constraints.</p>
+      <p class="intro">Root Record is built from Hawaiʻi. Field systems and the Pacific Solar Server operate there. The Mainland Server is the other public side of the runtime. The Root Record Network is the link between those two sides. Distance, power, weather, and connectivity are engineering constraints in the system, not a backdrop.</p>
       <ol class="flow">
         <li>Hawaiʻi</li>
         <li>Field systems</li>
-        <li>Network</li>
-        <li>Continuity</li>
+        <li>Root Record Network</li>
+        <li>Mainland Server</li>
       </ol>
       <p class="fine"><a href="/about">Why Root Record exists</a> · <a href="/infrastructure">Infrastructure</a></p>
     </div>
@@ -163,20 +165,26 @@
   </section>
   <footer class="site-foot">
     <a href="/ecosystem">Ecosystem</a>
-    <a href="/infrastructure">Infrastructure</a>
-    <a href="/operations">Operations</a>
-    <a href="/data">Data</a>
+    <a href="/operations">Systems</a>
     <a href="/intelligence">Intelligence</a>
     <a href="/knowledge">Knowledge</a>
     <a href="/security">Security</a>
     <a href="/status">Status</a>
+    <a href="/infrastructure">Infrastructure</a>
+    <a href="/data">Data</a>
     <a href="/about">About</a>
+    <a href="https://github.com/RootRecord-Software-Solutions/RootRecord-Library" rel="noreferrer">RootRecord Library</a>
+    <a href="https://github.com/RootRecord-Software-Solutions/RootRecord-Pacific-Solar-Server" rel="noreferrer">Pacific Solar Server</a>
+    <a href="https://github.com/RootRecord-Software-Solutions/RootRecord-Database" rel="noreferrer">RootRecord Database</a>
+    <a href="https://github.com/rootrecordsoftwaresolutions/RootRecord-Website" rel="noreferrer">Website</a>
   </footer>
 </div>
+<noscript><p class="fine" style="position:relative;z-index:1;padding:0 22px 24px">Public readings need the page script. They are not embedded in the page.</p></noscript>
 <script src="https://unpkg.com/globe.gl@2.46.2"></script>
 <script src="/assets/telemetry.js"></script>
 <script src="/assets/live.js"></script>
 <script src="/assets/starfield.js"></script>
 <script src="/assets/home.js"></script>
+<script src="/assets/shell.js"></script>
 </body>
 </html>

@@ -3,14 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="How Root Record uses agents, persistent context, controlled execution, verification, and human oversight.">
 <title>Intelligence — Root Record</title>
+<meta name="description" content="How Root Record places agents, persistent context, controlled execution, and verification inside the system architecture.">
+<link rel="canonical" href="https://www.rootrecord.cloud/intelligence">
+<meta property="og:title" content="Intelligence — Root Record">
+<meta property="og:description" content="Intelligence is part of the system architecture: context, agent, control, execution, evidence, and persisted state.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.rootrecord.cloud/intelligence">
+<meta property="og:site_name" content="Root Record">
+<meta name="theme-color" content="#000011">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
+<a class="skip" href="#content">Skip to content</a>
+<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
-  <nav aria-label="Primary">
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+  <nav id="site-nav" aria-label="Primary">
     <a href="/">Home</a>
     <a href="/ecosystem">Ecosystem</a>
     <a href="/operations">Systems</a>
@@ -21,10 +32,10 @@
   </nav>
   <a class="enter" href="/login">Login</a>
 </header>
-<main class="page">
+<main class="page" id="content">
   <p class="eyebrow">Intelligent systems</p>
   <h1>Intelligence</h1>
-  <p class="prose">Root Record treats intelligence as part of the system architecture rather than a standalone interface. Agents operate with persistent context, controlled execution, and verifiable results.</p>
+  <p class="prose">Root Record treats intelligence as part of the system architecture rather than a standalone interface.</p>
   <section class="panel diagram" aria-label="From context to persisted state">
     <ol class="flow">
       <li>Context</li>
@@ -36,34 +47,50 @@
       <li>Persisted state</li>
     </ol>
   </section>
-  <ul class="layers">
-    <li>
-      <h2>Agents</h2>
-      <p class="prose">Agents take responsibility for bounded work: reading context, proposing a next step, and carrying that step through the controls that apply to it. An agent is an operator inside the system, not a separate product surface.</p>
-    </li>
-    <li>
-      <h2>Persistent context</h2>
-      <p class="prose">Knowledge has to survive a single interaction. Architecture, procedures, and prior decisions stay in the knowledge layer so the next person or agent can see what the system already learned. <a href="/knowledge">Knowledge</a></p>
-    </li>
-    <li>
-      <h2>Controlled execution</h2>
-      <p class="prose">Actions pass through the boundary that fits the operation. Control is the point where a decision becomes an allowed action. Unrestricted execution is not the model.</p>
-    </li>
-    <li>
-      <h2>Verification</h2>
-      <p class="prose">Execution should produce evidence. A statement that something ran is not the same record as the result. Verification is how the system accepts state. <a href="/security">Security</a></p>
-    </li>
-    <li>
-      <h2>Human oversight</h2>
-      <p class="prose">Important operations stay understandable and controllable by people. Agents can prepare and perform bounded work. People remain able to see the context, the control, and the evidence.</p>
-    </li>
-  </ul>
+  <section class="sec" id="agents">
+    <h2>Agents</h2>
+    <p class="prose">An agent reads context, determines bounded work, and carries that work through the controls that apply to it. An agent is an operator inside the system. This page has no public agent count.</p>
+    <div class="panel">
+      <h2>Agent model</h2>
+      <p class="fine">Architecture, not a live roster.</p>
+      <ol class="flow">
+        <li>Read context</li>
+        <li>Determine bounded work</li>
+        <li>Prepare action</li>
+        <li>Pass through control</li>
+        <li>Execute</li>
+        <li>Record evidence</li>
+        <li>Persist result</li>
+      </ol>
+    </div>
+  </section>
+  <section class="sec" id="context">
+    <h2>Persistent context</h2>
+    <p class="prose">Durable context is how the next person or agent can see what the system already learned. Architecture, procedures, and prior decisions stay in the knowledge layer. Without that layer, each session starts blank. <a href="/knowledge">Knowledge</a></p>
+  </section>
+  <section class="sec" id="execution">
+    <h2>Controlled execution</h2>
+    <p class="prose">Actions pass through the boundary that fits the operation. Control is the point where a decision becomes an allowed action. Unrestricted execution is not the model.</p>
+  </section>
+  <section class="sec" id="verification">
+    <h2>Verification</h2>
+    <p class="prose">A proposed action is not evidence. A command is not evidence. A commit is not proof of deployment. A successful request is not necessarily proof of system state. Evidence is what the system can actually report and what can be checked later. <a href="/security">Security</a></p>
+  </section>
+  <section class="sec" id="state">
+    <h2>Persisted state</h2>
+    <p class="prose">The result of accepted work belongs in the data layer, where a later check can read it. A sentence that something ran is not that record. <a href="/data">Data</a></p>
+  </section>
 </main>
 <footer class="site-foot">
+  <a href="/ecosystem">Ecosystem</a>
+  <a href="/operations">Systems</a>
   <a href="/knowledge">Knowledge</a>
   <a href="/security">Security</a>
-  <a href="/ecosystem">Ecosystem</a>
+  <a href="/status">Status</a>
+  <a href="/data">Data</a>
   <a href="/about">About</a>
 </footer>
+<script src="/assets/starfield.js"></script>
+<script src="/assets/shell.js"></script>
 </body>
 </html>
