@@ -155,7 +155,7 @@ def texts(s: dict, now: datetime) -> tuple[str, str]:  # info: def texts
     )  # info: )
     spoken = [  # info: set spoken
         "System performance report.",  # info: "System performance report." ,
-        f"Host desk at {spoken_clock(now.hour, now.minute)} Hawaiian Standard Time.",  # info: f" Host desk at { spoken_clock ( now . hour
+        f"Report generated at {spoken_clock(now.hour, now.minute)}.",  # info: f" Report generated at { spoken_clock ( now . hour , now . minute ) } . " ,
         f"CPU {round(s['cpu_pct'])}%.",  # info: f" CPU { round ( s [ 'cpu_pct'
         f"Memory {round(s['mem_pct'])}% used, {s['mem_used_gb']} of {s['mem_total_gb']} gigabytes.",  # info: f" Memory { round ( s [ 'mem_pct'
         f"Disk {round(s['disk_pct'])}% used.",  # info: f" Disk { round ( s [ 'disk_pct'

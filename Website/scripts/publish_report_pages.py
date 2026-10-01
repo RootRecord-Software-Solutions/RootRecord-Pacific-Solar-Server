@@ -30,10 +30,12 @@ from lib.public_report import TITLES  # noqa: E402
 
 SITE = "https://www.rootrecord.cloud/reports"  # info: set SITE
 VOICE = Path("/home/rootrecord/RootRecord-Ecosystem/test-reports/Voice")  # info: set VOICE
+CURRENT_MD = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Reports/current_report_current.md")  # info: set CURRENT_MD
 AREAS = (  # info: set AREAS
+    ("Current", ("current_report",)),  # info: current
     ("Field", ("nws_weather", "official_weather", "hurricane_desk", "kilauea_report", "earthquake_report")),  # info: field
     ("Energy", ("energy_report", "solar_desk")),  # info: energy
-    ("Operations", ("current_report", "system_perf", "security_desk", "bandwidth_desk", "remaining_tasks", "boot_brief", "morning_report", "midday_report", "late_report")),  # info: operations
+    ("Operations", ("system_perf", "security_desk", "bandwidth_desk", "remaining_tasks", "boot_brief", "morning_report", "midday_report", "late_report")),  # info: operations
 )  # info: )
 
 
@@ -66,7 +68,7 @@ def area_for(key: str) -> str:  # info: def area_for
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def report_markdown(key: str) -> str:  # info: def report_markdown
-    path = VOICE / f"{key}_current.md"  # info: set path
+    path = CURRENT_MD if key == "current_report" else (VOICE / f"{key}_current.md")  # info: set path
     if not path.is_file():  # info: if not path . is_file
         return ""  # info: return empty
     return path.read_text(encoding="utf-8", errors="replace")  # info: return markdown
@@ -403,7 +405,7 @@ def report_page(row: dict) -> str:  # info: def report_page
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def publish() -> list[str]:  # info: def publish
-    rows = load_routes()  # info: set rows
+    rows = load_routes() + [{"key": "current_report", "name": "current"}]  # info: set rows
     written = []  # info: set written
     if write_if_changed(HOME / "reports" / "index.html", index_page(rows)):  # info: if write_if_changed index
         written.append("/reports")  # info: append index

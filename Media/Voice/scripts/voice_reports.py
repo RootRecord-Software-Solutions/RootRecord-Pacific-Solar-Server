@@ -130,6 +130,10 @@ def clock(t: datetime) -> str:  # info: def clock
     return spoken_clock(t.hour, t.minute)  # info: return spoken_clock ( t . hour , t
 
 
+def generated_at(t: datetime) -> str:  # info: def generated_at
+    return f"Report generated at {clock(t)}.".replace("..", ".")  # info: return f" Report generated at { clock ( t ) } . " . replace ( ".." , "." )
+
+
 # ====================================================
 # SECTION: function jload
 # What it does: jload.
@@ -474,7 +478,7 @@ def b_nws_weather(t: datetime):  # info: def b_nws_weather
     if groups and groups[0]["periods"]:  # info: if groups and groups [ 0 ] [ "periods" ]
         label, body = groups[0]["periods"][0]  # info: label , body = first period
         today = f"{label}: {body}"  # info: set today
-    sp = ["NWS Hawaii Report."]  # info: set sp
+    sp = ["NWS Hawaii Report.", generated_at(t)]  # info: set sp
     md = [f"# NWS Hawaii — {t.isoformat()}", "", f"- Alerts source: `api.weather.gov/alerts/active?area=HI` (updated {upd or 'n/a'})",
           f"- Forecast source: NWS HFO State Forecast (SFP), issued {issued or 'n/a'}",
           "- Temperatures: NWS HFO Zone Forecast (ZFP), today high and tonight low", "", "## Active alerts", ""]
@@ -633,7 +637,7 @@ def speak_board(t: datetime, payload: dict | None):  # info: def speak_board
     rows.sort()  # info: rows . sort ( )
     hour = [row for row in rows if t < row[0] <= t + timedelta(hours=1) and row[2] not in closed]  # info: set hour
     stamp = on_the_dot(t, t.hour, 0)  # info: set stamp
-    sp = [f"Remaining tasks at {clock(stamp)} Hawaiian Standard Time.".replace("..", "."), DEV_NOTE + "."]  # info: set sp
+    sp = ["Remaining tasks.", generated_at(stamp), DEV_NOTE + "."]  # info: set sp
     if payload is None:  # info: if payload is None :
         sp.append("The report board is not on file.")  # info: sp . append ( "The report board is not on file." )
     else:  # info: else :
@@ -659,7 +663,7 @@ def speak_board(t: datetime, payload: dict | None):  # info: def speak_board
 # ====================================================
 def b_energy_report(t: datetime):  # info: def b_energy_report
     facts = energy_facts(t)  # info: set facts
-    sp = ["Energy desk report."]  # info: set sp
+    sp = ["Energy desk report.", generated_at(t)]  # info: set sp
     md = [f"# Energy desk — {t.isoformat()}", "", "| Device | SOC | Solar in | AC out | USB-C out | Reading at | Age |", "|---|---|---|---|---|---|---|"]
     if not any(f["ok"] for f in facts):  # info: if not any ( f [ "ok" ]
         sp.append("EcoFlow is offline.")  # info: sp . append ( "EcoFlow is offline." )
@@ -728,7 +732,7 @@ def b_earthquake_report(t: datetime):  # info: def b_earthquake_report
     hi_ev, gl_ev = list((hi or {}).get("events") or []), list((gl or {}).get("events") or [])  # info: hi_ev , gl_ev = list ( ( hi
     fresh_hi = [e for e in hi_ev if e.get("id") and e["id"] not in seen]  # info: set fresh_hi
     fresh_gl = [e for e in gl_ev if e.get("id") and e["id"] not in seen]  # info: set fresh_gl
-    sp = [f"Earthquake report at {clock(t)}.".replace("..", ".")]  # info: set sp
+    sp = ["Earthquake report.", generated_at(t)]  # info: set sp
     if hi is None:  # info: if hi is None :
         sp.append("Local earthquake data is not on file.")  # info: sp . append ( "Local earthquake data is not on file." )
     elif fresh_hi:  # info: elif fresh_hi :
@@ -749,7 +753,7 @@ def b_earthquake_report(t: datetime):  # info: def b_earthquake_report
         sp.append(f"Global last twenty four hours: {len(_m25(gl_ev))} magnitude 2.5 or greater.")  # info: sp . append ( f" Global last twenty four hours: { len
     for label, d in (("Hawaii", hi), ("global", gl)):  # info: for label , d in ( ( "Hawaii"
         if d and d.get("age_min") is not None and d["age_min"] > QUAKE_STALE_MIN:  # info: if d and d . get ( "age_min"
-            sp.append(f"The {'local' if label == 'Hawaii' else label} U.S. Geological Survey data is {d['age_min']} minutes old.")  # info: sp . append ( f" The { 'local' if label == 'Hawaii' else label } U.S. Geological Survey data is { d [ 'age_min' ] } minutes old. " )
+            sp.append(f"The {'local' if label == 'Hawaii' else label} United States Geological Survey data is {d['age_min']} minutes old.")  # info: sp . append ( f" The { 'local' if label == 'Hawaii' else label } United States Geological Survey data is { d [ 'age_min' ] } minutes old. " )
     for label, d, fresh in (("Hawaii", hi, fresh_hi), ("Global", gl, fresh_gl)):  # info: for label , d , fresh in (
         md += [f"## {label} Changes Since Last Report"]
         md += [f"- M{e.get('mag')} {_about_km(e.get('place'))} ({e.get('time_hst')})" for e in fresh[:12]] or ["- No new earthquakes."]  # info: set md
@@ -875,7 +879,7 @@ def b_hurricane_desk(t: datetime):  # info: def b_hurricane_desk
     active = [s for s in storms if s["active"]]  # info: set active
     rows, updated = alerts()  # info: rows , updated = alerts ( )
     trop = [r for r in rows if any(k in str(r["event"]).lower() for k in TROPICAL_EVENTS)]  # info: set trop
-    sp = ["Hurricane global desk, Pacific Root Server."]  # info: set sp
+    sp = ["Hurricane global desk, Pacific Root Server.", generated_at(t)]  # info: set sp
     if trop:  # info: if trop :
         watch = " NWS Honolulu: " + "; ".join(f"{r['event']} for {r['area'] or 'Hawaii'}" for r in trop) + "."  # info: set watch
     elif updated is None:  # info: elif updated is None :
@@ -958,7 +962,7 @@ def b_kilauea_report(t: datetime):  # info: def b_kilauea_report
     else:  # info: else :
         state = "eruption state unknown"  # info: set state
     color = str(k.get("color_code") or "").lower()  # info: set color
-    sp = [f"Kilauea report at {clock(t)}.".replace("..", "."),  # info: set sp
+    sp = ["Kilauea report.", generated_at(t),  # info: set sp
           f"Alert level {level}" + (f", aviation color code {color}." if color else "."),  # info: f" Alert level { level } " + (
           f"The volcano {state}."]  # info: f" The volcano { state } . " ]
     note = k.get("latest_activity_notice") if erupting and k.get("latest_activity_notice") else k.get("latest_notice")  # info: set note
@@ -970,7 +974,7 @@ def b_kilauea_report(t: datetime):  # info: def b_kilauea_report
         sp.append("No HVO headline in this sample.")  # info: sp . append ( "No HVO headline in this sample." )
     if hi.get("kilauea_150km_count") is not None:  # info: if hi . get ( "kilauea_150km_count" ) is
         n = int(hi["kilauea_150km_count"])  # info: set n
-        sp.append(f"U.S. Geological Survey: {n} earthquake{'s' if n != 1 else ''} magnitude 1 or greater within 150 kilometers in the last "  # info: sp . append ( f" U.S. Geological Survey: { n } earthquake
+        sp.append(f"United States Geological Survey: {n} earthquake{'s' if n != 1 else ''} magnitude 1 or greater within 150 kilometers in the last "  # info: sp . append ( f" United States Geological Survey: { n } earthquake
                   f"{hi.get('window_h', 24)} hours.")  # info: f" { hi . get ( 'window_h' ,
     if isinstance(ml, dict) and ml.get("alert_level"):  # info: if isinstance ( ml , dict ) and
         sp.append(f"Mauna Loa alert level: {str(ml['alert_level']).lower()}.")  # info: sp . append ( f" Mauna Loa alert level: { str
@@ -1033,7 +1037,7 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
     """Hourly packs, sun times, the newest channel-1 still, and the last stored camera look."""  # info: """Hourly packs, sun times, the newest channel-1 still, and the last stored camera look."""
     facts = energy_facts(t)  # info: set facts
     sun = jload(ENERGY / "sun" / "sun-times-last.json") or {}  # info: set sun
-    sp = [f"Solar desk at {clock(t)} Hawaiian Standard Time.".replace("..", ".")]  # info: set sp
+    sp = ["Solar desk.", generated_at(t)]  # info: set sp
     lines, spoken_lines = [], []  # info: lines , spoken_lines = [ ] , [
     for f in facts:  # info: for f in facts :
         if not f["ok"]:  # info: if not f [ "ok" ] :
@@ -1112,7 +1116,7 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
 def b_security_desk(t: datetime):  # info: def b_security_desk
     """G1 host_metrics.security_spoken, unchanged wording, from host_desks.security_snapshot() (counts only)."""  # info: """G1 host_metrics.security_spoken, unchanged wording, from host_desks.security_snapshot() (counts only)."""
     row = _host_desks().security_snapshot()  # info: set row
-    bits = [f"Security desk at {clock(t)}.".replace("..", ".")]  # info: set bits
+    bits = ["Security desk.", generated_at(t)]  # info: set bits
     ufw = row.get("ufw_boot")  # info: set ufw
     if ufw is True:  # info: if ufw is True :
         bits.append("The firewall is set to start on boot.")  # info: bits . append ( "The firewall is set to start on boot." )
@@ -1163,7 +1167,7 @@ def b_bandwidth_desk(t: datetime):  # info: def b_bandwidth_desk
         md += ["_Not enough samples yet (needs samples covering 45 min; run `host_desks.py net-sample` every 5 min)._", ""]  # info: set md
         return "\n".join(md), ["Bandwidth data is not on file yet."]  # info: return "\n" . join ( md ) ,
     sb = hd.spoken_bytes  # info: set sb
-    bits = [f"Bandwidth desk at {clock(t)}.".replace("..", "."), f"This host is on {(net or {}).get('link') or 'network'}."]  # info: set bits
+    bits = ["Bandwidth desk.", generated_at(t), f"This host is on {(net or {}).get('link') or 'network'}."]  # info: set bits
     bits.append(f"Last hour: {sb(hour['rx'])} down, {sb(hour['tx'])} up, {sb(hour['total'])} total." if hour else "Last hour is not on file yet.")  # info: bits . append ( f" Last hour: { sb
     bits.append(f"Last twenty four hours: {sb(day['rx'])} down, {sb(day['tx'])} up, {sb(day['total'])} total." if day  # info: bits . append ( f" Last twenty four hours: { sb
                 else "Last twenty four hours is not on file yet.")  # info: else "Last twenty four hours is not on file yet." )
@@ -1203,7 +1207,7 @@ def _rollup(t: datetime, slot: str):  # info: def _rollup
     title = {"morning": "Morning report.", "midday": "Midday report.", "late": "Late report."}[slot]  # info: set title
     when = on_the_dot(t, *ROLLUP_AT[slot])  # info: set when
     facts, (rows, _), (today, _), h, (tasks, per) = energy_facts(t), alerts(), sfp_today(), host(), open_tasks()  # info: call facts
-    sp = [title, f"It's {clock(when)} Hawaiian Standard Time.".replace("..", "."), DEV_NOTE + "."]  # info: set sp
+    sp = [title, generated_at(when), DEV_NOTE + "."]  # info: set sp
     lines = []  # info: set lines
     ok = [f for f in facts if f["ok"]]  # info: set ok
     if ok:  # info: if ok :
@@ -1328,7 +1332,7 @@ def b_official_weather(t: datetime):  # info: def b_official_weather
         spoken = _speech_product(pick["text"])  # info: set spoken
         if len(spoken) > 4500:  # info: if len ( spoken ) > 4500 :
             spoken = spoken[:4500].rsplit(" ", 1)[0] + "."  # info: set spoken
-    sp = [f"Official NWS Honolulu statement. {spoken}"]  # info: set sp
+    sp = [generated_at(t), f"Official NWS Honolulu statement. {spoken}"]  # info: set sp
     md += ["", "## Spoken", "", sp[0], "",
            "_Sources: Database `Weather/Hawai'i/official/HLS_current.txt` (official_statement.py) + "  # info: "_Sources: Database `Weather/Hawai'i/official/HLS_current.txt` (official_statement.py) + "
            "`Weather/Hawai'i/hfo/api.weather.gov/products/types/{HWO,AFD}/locations/HFO/HFO_current.txt` (weather poller)._", ""]  # info: "`Weather/Hawai'i/hfo/api.weather.gov/products/types/{HWO,AFD}/locations/HFO/HFO_current.txt` (weather poller)
@@ -1359,7 +1363,7 @@ def b_boot_brief(t: datetime):  # info: def b_boot_brief
     k = jload(VOLCANOES / "kilauea-last.json") or {}  # info: set k
     storms = [x for x in hurricane_facts(t) if x.get("active")]  # info: set storms
     b = datetime.fromisoformat(boot_at)  # info: set b
-    sp = [f"Boot report, {kind} edition.", f"It's {clock(t)} Hawaiian Standard Time.".replace("..", "."),  # info: set sp
+    sp = [f"Boot report, {kind} edition.", generated_at(t),  # info: set sp
           (f"The Pacific desk came up at {spoken_clock(b.hour, b.minute)}, {up_min} minutes ago." if up_min < 120 else  # info: call (
            f"The Pacific desk came up at {spoken_clock(b.hour, b.minute)}, about {round(up_min / 60)} hours ago.")  # info: f" The Pacific desk came up at { spoken_clock ( b . hour
           if up_min < 1440 else f"The Pacific desk has been up {up_min // 1440} days."]  # info: if up_min < 1440 else f" The Pacific desk has been up {
@@ -1417,7 +1421,7 @@ def b_current_report(t: datetime):  # info: def b_current_report
     board = board_status()  # info: set board
     fresh = [p for p in official_products(t) if p.get("age_h") is not None and p["age_h"] <= OFFICIAL_MAX_H]  # info: set fresh
     md = [f"# Current report — {stamp.isoformat()}", "", DEV_NOTE, ""]  # info: set md
-    sp = [f"Current report at {clock(stamp)} Hawaiian Standard Time.".replace("..", "."), DEV_NOTE + "."]  # info: set sp
+    sp = ["Current report.", generated_at(stamp), DEV_NOTE + "."]  # info: set sp
     md += ["## Energy", ""]  # info: md += energy heading
     ok = [f for f in facts if f.get("ok")]  # info: set ok
     if ok:  # info: if ok :
@@ -1598,7 +1602,7 @@ BUILD = {"hourly_chime": b_hourly_chime, "nws_weather": b_nws_weather, "energy_r
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def write_md(report: str, md: str) -> Path:  # info: def write_md
-    path = REPORTS / f"{report}_current.md"  # info: set path
+    path = (DB / "Reports" / "current_report_current.md") if report == "current_report" else (REPORTS / f"{report}_current.md")  # info: set path
     path.parent.mkdir(parents=True, exist_ok=True)  # info: path . parent . mkdir ( parents =
     if path.is_file():  # info: if path . is_file ( ) :
         retire_current(path)  # info: call retire_current
@@ -1606,6 +1610,25 @@ def write_md(report: str, md: str) -> Path:  # info: def write_md
     tmp.write_text(md.rstrip() + "\n\n_Template report; measured values only._\n", encoding="utf-8")  # info: tmp . write_text ( md . rstrip (
     os.replace(tmp, path)  # info: os . replace ( tmp , path )
     return path  # info: return path
+
+
+# ====================================================
+# SECTION: function keep_voice_text
+# What it does: Move the read and speak transcripts next to the voice WAV.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def keep_voice_text(report: str) -> None:  # info: def keep_voice_text
+    """Move the read and speak transcripts next to the voice WAV. They do not stay in test-reports."""  # info: docstring
+    audio = DB / "Media" / "Audio" / "Voice"  # info: set audio
+    audio.mkdir(parents=True, exist_ok=True)  # info: audio . mkdir ( parents = True , exist_ok = True )
+    for suffix in (".read.txt", ".speak.txt"):  # info: for suffix in ( ".read.txt" , ".speak.txt" ) :
+        src = REPORTS / f"{report}_current{suffix}"  # info: set src
+        if not src.is_file():  # info: if not src . is_file ( ) :
+            continue  # info: continue
+        dest = audio / src.name  # info: set dest
+        if dest.is_file():  # info: if dest . is_file ( ) :
+            retire_current(dest)  # info: call retire_current
+        os.replace(src, dest)  # info: os . replace ( src , dest )
 
 
 # ====================================================
@@ -1620,7 +1643,7 @@ def voice(report: str, spoken: list[str]) -> dict:  # info: def voice
     if report == "hourly_chime":  # info: if report == "hourly_chime" :
         cmd.append("--no-gate")  # G1 chimes bypassed the live-facts gate (spelled-out times carry no digits)
     try:  # info: try :
-        p = subprocess.run(cmd, capture_output=True, text=True, timeout=300)  # info: set p
+        p = subprocess.run(cmd, capture_output=True, text=True, timeout=600 if report == "current_report" else 300)  # info: set p
         last = (p.stdout.strip().splitlines() or ["{}"])[-1]  # info: set last
         try:  # info: try :
             res = json.loads(last)  # info: set res
@@ -1659,12 +1682,14 @@ def main() -> int:  # info: def main
             res["voice"] = {"ok": True, "mode": "prebuilt", "wav": str(path), "agent": who}  # info: res [ "voice" ] = { "ok" : True , "mode" : "prebuilt"
             import voice_deliver  # info: import voice_deliver
             res["deliver"] = voice_deliver.deliver(report, path, " ".join(spoken), KIND[report], report_text=md, who=who, remember_as=t.strftime("%Y-%m-%dT%H:%M"))  # info: res [ "deliver" ] = voice_deliver . deliver
-    elif "--no-voice" not in sys.argv and report == "energy_report":  # info: elif "--no-voice" not in sys . argv and report == "energy_report" :
-        res["voice"] = {"ok": True, "skipped": True, "detail": "blended into the hourly solar desk; this run refreshes the camera look"}  # info: res [ "voice" ] = { "ok" : True , "skipped" : True , "detail" : "blended into the hourly solar desk; this run refreshes the camera look" }
     elif "--no-voice" not in sys.argv:  # info: elif "--no-voice" not in sys . argv :
         res["voice"] = voice(report, spoken)  # info: res [ "voice" ] = voice ( report
+        if report == "current_report":  # info: if report == "current_report" :
+            keep_voice_text(report)  # info: call keep_voice_text
         wav = (res.get("voice") or {}).get("wav")  # info: set wav
-        if wav:  # info: if wav
+        if report == "energy_report":  # info: if report == "energy_report" :
+            res["deliver"] = {"ok": True, "skipped": True, "detail": "blended into the hourly solar desk; the radio file is refreshed"}  # info: res [ "deliver" ] = { "ok" : True , "skipped" : True , "detail" : "blended into the hourly solar desk; the radio file is refreshed" }
+        elif wav:  # info: elif wav
             import voice_deliver  # info: import voice_deliver
             photo = newest_ch1(t) if report == "solar_desk" else None  # info: set photo
             look = str(last_camera_look(t).get("sentence") or "") if report == "solar_desk" else ""  # info: set look

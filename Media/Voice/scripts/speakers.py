@@ -56,6 +56,7 @@ KIND_AGENT = {  # info: set KIND_AGENT
     "chime": "ava",  # info: "chime" : "ava" ,
     "official": "ava",  # info: "official" : "ava" ,
     "boot": "ava",  # info: "boot" : "ava" ,
+    "current": "ava",  # info: "current" : "ava" ,
     "solar": "bruce",  # info: "solar" : "bruce" ,
     "energy": "carly",  # info: "energy" : "carly" ,
     "system": "bruce",  # info: "system" : "bruce" ,
@@ -237,7 +238,7 @@ def is_live(kind: str, text: str) -> bool:  # info: def is_live
         )  # info: )
     if key in {"remaining"}:  # info: if key in { "remaining" } :
         return bool(re.search(r"\d", raw))  # info: return bool ( re . search ( r"\d"
-    if key in {"morning", "midday", "evening", "late", "summary", "boot"}:  # info: if key in { "morning" , "midday" ,
+    if key in {"morning", "midday", "evening", "late", "summary", "boot", "current"}:  # info: if key in { "morning" , "midday" ,
         return bool(re.search(r"\d", raw))  # info: return bool ( re . search ( r"\d"
     return bool(re.search(r"\d", raw))  # info: return bool ( re . search ( r"\d"
 
