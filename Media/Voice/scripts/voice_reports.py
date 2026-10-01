@@ -566,7 +566,7 @@ def b_earthquake_report(t: datetime):  # info: def b_earthquake_report
             sp.append(f"The {'local' if label == 'Hawaii' else label} U.S. Geological Survey data is {d['age_min']} minutes old.")  # info: sp . append ( f" The { 'local' if label == 'Hawaii' else label } U.S. Geological Survey data is { d [ 'age_min' ] } minutes old. " )
     for label, d, fresh in (("Hawaii", hi, fresh_hi), ("Global", gl, fresh_gl)):  # info: for label , d , fresh in (
         md += [f"## {label} Changes Since Last Report"]
-        md += [f"- M{e.get('mag')} {e.get('place')} ({e.get('time_hst')})" for e in fresh[:12]] or ["- No new earthquakes."]  # info: set md
+        md += [f"- M{e.get('mag')} {_about_km(e.get('place'))} ({e.get('time_hst')})" for e in fresh[:12]] or ["- No new earthquakes."]  # info: set md
         if len(fresh) > 12:  # info: if len ( fresh ) > 12 :
             md.append(f"- ...and {len(fresh) - 12} more new earthquakes.")  # info: md . append ( f" - ...and { len
         ev = list((d or {}).get("events") or [])  # info: set ev
