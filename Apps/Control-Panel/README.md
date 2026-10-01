@@ -117,7 +117,7 @@ The values come from `Conky/conky_readout.py` (the same read-only readers, every
 
 Settings saves back up to `2 - RootRecord-Database/Github/control-panel-settings-backups/` (0600 for secret files). Secrets are never displayed, logged or screenshotted (the `--screenshot` mode checks every PNG first).
 
-Docs: Library `Documentation/00-architecture/Control-Panel-GTK.md` · test records `Documentation/07-testing/2026-09-29-control-panel-gtk.md`, `Documentation/07-testing/2026-09-29-root-monitor-settings-running-network-ssh.md`.
+Docs: Library `Documentation/02-Runtime-Jobs-and-Control/Control-Panel-GTK.md` · test records `Documentation/07-testing/2026-09-29-control-panel-gtk.md`, `Documentation/07-testing/2026-09-29-root-monitor-settings-running-network-ssh.md`.
 
 
 **AWS Fallback page, 2026-09-29 16:05 HST:** `settings.json` has `aws_fallback_mode: "write"` (the Phase 2 runtime is deployed on AWS). The catalog `Lib/rr_aws_fallback.json` holds the trimmed-micro profile (RAM floor 485 MB) and the `relay_send` row (sign-off). Every toggle takes a dated backup on AWS (`~/rootrecord/bin.bak-fallback-flags-<ts>/`), then writes one flag. Service flags are applied by the root `rr-fallback-apply` on AWS. Record: Library `07-testing/2026-09-29-aws-fallback-phase2-runtime-deploy.md`.

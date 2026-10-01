@@ -1,6 +1,6 @@
 # Media/Voice — G3 Kokoro-82M voice (non-resident)
 
-Current behavior: Library [2026-09-30 voice desk](../../../../5%20-%20RootRecord-Library/Documentation/01-operations/2026-09-30-voice-desk.md). The 2026-09-29 port record is [Voice-Reports-G3](../../../../5%20-%20RootRecord-Library/Documentation/00-architecture/Voice-Reports-G3.md).
+Current behavior: Library [2026-09-30 voice desk](../../../../5%20-%20RootRecord-Library/Documentation/01-operations/2026-09-30-voice-desk.md). The 2026-09-29 port record is [Voice-Reports-G3](../../../../5%20-%20RootRecord-Library/Documentation/01-AI-and-Agent-Runtime/Voice-Reports-G3.md).
 
 - `scripts/voice-render.sh render|stitch|clips|asr …` runs `voice_generate.py` in `.venv` through the single-flight inference lock at nice 10. The model loads per process and is gone when it exits.
 - Voices: Ava `af_heart` 1.0 · Bruce `am_echo` 1.0 · Carly `af_nova` 1.0. Output: 24 kHz 16-bit mono WAV.
