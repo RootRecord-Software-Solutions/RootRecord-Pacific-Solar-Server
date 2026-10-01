@@ -2,7 +2,7 @@
 
 Public home page for Root Record Software Solutions. Vercel builds this repository.
 
-The globe is the page background. Services and operations are glass panels on top of it. Close a panel to use the globe. **+ Services** and **+ Operations** bring a closed panel back.
+The globe is the page background. A compact activity readout sits on the left. Sign up, a short about card, and operations sit on the right. The glass is light so the globe stays visible. Arc width from the feed (about 1.2–1.5) is drawn near 0.14–0.18. Close a box to use the globe. **+ Activity**, **+ Sign up**, **+ About**, and **+ Operations** bring a closed box back. Sign up opens `https://rootrecord.info/login`.
 
 | File | Role |
 | --- | --- |

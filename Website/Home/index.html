@@ -8,67 +8,98 @@
   *{box-sizing:border-box}
   html,body{margin:0;height:100%;overflow:hidden;background:#000011;color:#e8e8ef;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
   #globe{position:fixed;inset:0;z-index:0}
-  #ui{position:fixed;inset:0;z-index:2;pointer-events:none}
+  #ui{position:fixed;inset:0;z-index:2;pointer-events:none;--edge:18px;--gap:12px}
   #ui *{box-sizing:border-box}
-  .glass{background:rgba(8,10,28,.46);border:1px solid rgba(255,255,255,.14);border-radius:16px;backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140)}
-  .panel{pointer-events:auto;position:absolute;top:18px;bottom:18px;overflow:auto;padding:16px 16px 18px}
-  .panel[hidden]{display:none}
-  #services{left:18px;width:min(420px,calc(100vw - 36px))}
-  #operations{right:18px;width:min(300px,calc(100vw - 36px));bottom:auto;max-height:calc(100vh - 36px)}
-  .kicker{margin:0 0 8px;font-size:12px;letter-spacing:1.5px;font-weight:700;text-transform:uppercase;color:#9a9aa8}
-  h1{margin:0 0 12px;font-size:22px;font-weight:600;letter-spacing:-.02em;line-height:1.3}
-  h2{margin:0 26px 12px 0;font-size:12px;letter-spacing:1.5px;font-weight:700;text-transform:uppercase}
-  p{margin:0 0 12px;font-size:13px;line-height:1.5;color:#b9b9c6}
-  .x{position:absolute;top:8px;right:8px;width:26px;height:26px;border:0;border-radius:8px;background:transparent;color:#9a9aa8;font-size:16px;line-height:26px;cursor:pointer}
-  .x:hover,.x:focus-visible{background:rgba(255,255,255,.1);color:#fff;outline:none}
-  dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 12px;font-size:12px}
-  dt{color:#c9c9d4}
-  dd{margin:0;text-align:right;color:#9d9dab;font-variant-numeric:tabular-nums}
-  .svc{margin:14px 0 0;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
-  .svc strong{display:block;margin-bottom:4px;font-size:13px;font-weight:600;color:#e8e8ef}
-  .svc p{margin:0}
-  .foot{margin-top:12px;font-size:10px;color:#7c7c8a}
-  .dock{position:absolute;right:18px;bottom:18px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;pointer-events:none}
-  .dock button{pointer-events:auto;height:30px;padding:0 11px;border-radius:999px;font-size:11px;color:#dbeafe;cursor:pointer;border:1px solid rgba(255,255,255,.16);background:rgba(8,10,28,.55);backdrop-filter:blur(10px)}
-  .dock button:hover{background:rgba(56,189,248,.25)}
-  .dock button[aria-pressed="true"]{background:rgba(250,204,21,.16);border-color:rgba(250,204,21,.4);color:#fde68a}
-  a:focus-visible,button:focus-visible{outline:2px solid rgba(125,211,252,.55);outline-offset:2px}
+  .glass{background:rgba(8,12,32,.22);border:1px solid rgba(255,255,255,.2);border-radius:16px;backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);box-shadow:0 10px 36px rgba(0,0,0,.22)}
+  .hud,.card{pointer-events:auto;position:relative}
+  .hud[hidden],.card[hidden]{display:none}
+  .hud{position:absolute;top:var(--edge);left:var(--edge);width:min(320px,calc(100vw - 36px));padding:14px 16px 12px}
+  .title{font-size:12px;letter-spacing:1.6px;font-weight:700}
+  .status{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:#d5d5e0}
+  .dot{width:8px;height:8px;border-radius:50%;background:#6b7280;flex:0 0 8px}
+  .dot.ok{background:#22c55e;box-shadow:0 0 8px #22c55e}
+  .dot.bad{background:#ef4444;box-shadow:0 0 8px #ef4444}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-top:12px}
+  .metric{display:flex;flex-direction:column;gap:2px}
+  .metric span{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#9a9aaa}
+  .metric strong{font-size:15px;font-variant-numeric:tabular-nums;font-weight:600}
+  .info{margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1);font-size:11px;color:#c4c4d0;line-height:1.4}
+  .aws{color:#7dd3fc}
+  .col{position:absolute;top:var(--edge);right:var(--edge);width:min(300px,calc(100vw - 36px));display:flex;flex-direction:column;gap:var(--gap);max-height:calc(100vh - 36px);pointer-events:none}
+  .card{pointer-events:auto;padding:14px 16px 14px;min-height:0;overflow:auto}
+  h2{margin:0 26px 6px 0;font-size:12px;letter-spacing:1.5px;font-weight:700;text-transform:uppercase}
+  p{margin:0 0 10px;font-size:12px;line-height:1.45;color:#d0d0dc}
+  .x{position:absolute;top:8px;right:8px;width:26px;height:26px;border:0;border-radius:8px;background:transparent;color:#c8c8d4;font-size:16px;line-height:26px;cursor:pointer}
+  .x:hover,.x:focus-visible{background:rgba(255,255,255,.12);color:#fff;outline:none}
+  .btn{height:34px;padding:0 14px;border-radius:10px;border:1px solid rgba(125,211,252,.55);background:rgba(56,189,248,.22);color:#f0f9ff;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+  .btn:hover{background:rgba(56,189,248,.38)}
+  .rows{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 10px;font-size:12px;align-items:center}
+  .rows dt{display:flex;align-items:center;gap:7px;margin:0;color:#e4e4ee}
+  .rows dd{margin:0;text-align:right;color:#c5c5d2;font-variant-numeric:tabular-nums}
+  .foot{margin-top:8px;font-size:10px;color:#b0b0be}
+  .label{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);color:#c6c6d2;font-size:11px;letter-spacing:1.4px;display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .label .dot{background:#22c55e;box-shadow:0 0 8px #22c55e}
+  .help{position:absolute;left:var(--edge);bottom:16px;color:#9a9aaa;font-size:10px}
+  .dock{position:absolute;right:var(--edge);bottom:var(--edge);display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:min(420px,calc(100vw - 36px))}
+  .dock button{pointer-events:auto;height:30px;padding:0 11px;border-radius:999px;font-size:11px;color:#f0f9ff;cursor:pointer;border:1px solid rgba(255,255,255,.22);background:rgba(8,12,32,.28);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .dock button:hover{background:rgba(56,189,248,.28)}
+  .dock button[aria-pressed="true"]{background:rgba(250,204,21,.18);border-color:rgba(250,204,21,.45);color:#fde68a}
+  a:focus-visible,button:focus-visible{outline:2px solid rgba(125,211,252,.7);outline-offset:2px}
   @media (max-width:720px){
-    #services{top:auto;bottom:52px;max-height:46vh;width:auto;right:10px;left:10px}
-    #operations{left:10px;right:10px;top:10px;width:auto;max-height:34vh}
-    .dock{left:10px;right:10px;bottom:10px}
+    #ui{--edge:10px;--gap:8px}
+    .hud{width:auto;right:10px;max-width:none;padding:10px 12px}
+    .col{top:auto;left:10px;right:10px;bottom:48px;width:auto;max-height:46vh;justify-content:flex-end}
+    .label,.help{display:none}
+    .grid{gap:6px 12px}
+    .dock{left:10px;right:10px;bottom:10px;max-width:none}
   }
 </style>
 </head>
 <body>
 <div id="globe"></div>
 <div id="ui">
-  <section class="panel glass" id="services" aria-label="Purpose and services">
-    <button class="x" type="button" data-close="services" aria-label="Close services">×</button>
-    <p class="kicker">Root Record · Software Solutions</p>
-    <h1>We build software and run the systems it depends on.</h1>
-    <p>Root Record Software Solutions is a Hawaiʻi practice. This view is the public door: a live network globe, with the work named beside it. Close either panel to use the globe.</p>
-    <div class="svc"><strong>Operated systems</strong><p>A solar-powered desk in Hawaiʻi records energy, weather, and geology. A figure is shown when it was measured.</p></div>
-    <div class="svc"><strong>Mainland</strong><p>AWS Ohio is a measured point on this globe. This page is the site. The arcs are the current Hawaiʻi and Ohio connection snapshots.</p></div>
-    <div class="svc"><strong>Software</strong><p>We write the software for that operation. Client work is software work. Client sites are not hosted here.</p></div>
+  <section class="hud glass" id="activity" aria-label="Live network activity">
+    <button class="x" type="button" data-close="activity" aria-label="Close activity">×</button>
+    <div class="title">LIVE NETWORK ACTIVITY</div>
+    <div class="status"><div class="dot" id="dot"></div><span id="status">CONNECTING</span></div>
+    <div class="grid">
+      <div class="metric"><span>Active flows</span><strong id="flows">—</strong></div>
+      <div class="metric"><span>Endpoints</span><strong id="endpoints">—</strong></div>
+      <div class="metric"><span>Hawaiʻi</span><strong id="hawaii">—</strong></div>
+      <div class="metric"><span>Mainland</span><strong id="mainland">—</strong></div>
+    </div>
+    <div class="info" id="origin">Origin: discovering…</div>
+    <div class="info" id="awsline">Mainland: checking…</div>
   </section>
-  <section class="panel glass" id="operations" aria-label="Last known operations">
-    <button class="x" type="button" data-close="operations" aria-label="Close operations">×</button>
-    <h2>Operations</h2>
-    <dl id="ops"></dl>
-    <p class="foot" id="ops-asof">Last known · checking</p>
-  </section>
-  <div class="dock" aria-label="Closed panels and globe spin">
-    <button type="button" id="spin" aria-pressed="true">Stop spin</button>
+  <div class="col" id="col">
+    <section class="card glass" id="signup" aria-label="Sign up">
+      <button class="x" type="button" data-close="signup" aria-label="Close sign up">×</button>
+      <h2>Join Root Record</h2>
+      <p>Solar-powered software, run from Hawaiʻi. Create an account or sign in on the public account page.</p>
+      <a class="btn" href="https://rootrecord.info/login" rel="noopener">Sign up / Log in</a>
+    </section>
+    <section class="card glass" id="about" aria-label="What Root Record does">
+      <button class="x" type="button" data-close="about" aria-label="Close about">×</button>
+      <h2>Root Record</h2>
+      <p>We build software and run the systems it depends on. This globe is the live Hawaiʻi and Ohio network. Close any box to use the map.</p>
+    </section>
+    <section class="card glass" id="operations" aria-label="Last known operations">
+      <button class="x" type="button" data-close="operations" aria-label="Close operations">×</button>
+      <h2>Operations</h2>
+      <dl class="rows" id="ops"></dl>
+      <p class="foot" id="ops-asof">Last known · checking</p>
+    </section>
   </div>
+  <div class="label"><div class="dot"></div>REAL NETWORK OBSERVATIONS · AUTO-UPDATING</div>
+  <div class="help">drag to rotate · scroll to zoom</div>
+  <div class="dock" aria-label="Closed panels and globe spin"></div>
 </div>
 <script src="https://unpkg.com/globe.gl@2.46.2"></script>
 <script>
 (function () {
-  // www is the globe process only while DNS still points there. It is not a data hostname.
-  // When that host moves to this page, /api/state leaves with it. Contract: Website/HANDOFF-vercel-homepage-2026-09-30.md
   var RELAY = "https://www.rootrecord.cloud";
-  var KEY = "rr-home:v1:";
+  var KEY = "rr-home:v2:";
+  var NAMES = { activity: "Activity", signup: "Sign up", about: "About", operations: "Operations" };
   var globe = Globe()(document.getElementById("globe"))
     .globeImageUrl("https://unpkg.com/three-globe/example/img/earth-night.jpg")
     .backgroundColor("#000011")
@@ -77,42 +108,70 @@
     .atmosphereAltitude(0.18)
     .arcColor(function (d) { return d.color || "#22c55e"; })
     .arcAltitude(function (d) { return d.altitude || 0.16; })
-    .arcStroke(function (d) { return d.stroke || 0.6; })
-    .arcDashLength(0.36)
-    .arcDashGap(0.2)
-    .arcDashAnimateTime(1700)
+    .arcStroke(function (d) {
+      var s = Number(d && d.stroke);
+      if (!isFinite(s) || s <= 0) s = 1.2;
+      return Math.max(0.1, Math.min(0.22, s * 0.12));
+    })
+    .arcDashLength(0.4)
+    .arcDashGap(0.28)
+    .arcDashAnimateTime(2200)
     .arcLabel(function (d) {
       var place = [d.city, d.country].filter(Boolean).join(", ");
-      return place || "Connection";
+      return place || d.org || "Connection";
     })
     .pointColor(function (d) { return d.type === "origin" ? "#fff" : d.type === "aws" ? "#38bdf8" : "#ff6b9d"; })
-    .pointAltitude(function (d) { return d.type === "origin" ? 0.025 : 0.012; })
-    .pointRadius(function (d) { return d.type === "origin" ? 0.55 : 0.3; })
+    .pointAltitude(function (d) { return d.type === "origin" ? 0.02 : 0.01; })
+    .pointRadius(function (d) { return d.type === "origin" ? 0.35 : 0.18; })
     .pointsMerge(false);
   var controls = globe.controls();
   controls.enableZoom = true;
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var spinOn = localStorage.getItem(KEY + "spin") === "off" ? false : !reduce;
+  var dock = document.querySelector(".dock");
+  var spinBtn = document.createElement("button");
+  spinBtn.type = "button";
+  spinBtn.id = "spin";
   function applySpin() {
     controls.autoRotate = spinOn;
     controls.autoRotateSpeed = 0.35;
-    var b = document.getElementById("spin");
-    b.textContent = spinOn ? "Stop spin" : "Resume spin";
-    b.setAttribute("aria-pressed", spinOn ? "true" : "false");
+    spinBtn.textContent = spinOn ? "Stop spin" : "Resume spin";
+    spinBtn.setAttribute("aria-pressed", spinOn ? "true" : "false");
   }
-  applySpin();
-  document.getElementById("spin").addEventListener("click", function () {
+  spinBtn.addEventListener("click", function () {
     spinOn = !spinOn;
     localStorage.setItem(KEY + "spin", spinOn ? "on" : "off");
     applySpin();
   });
+  dock.appendChild(spinBtn);
+  applySpin();
 
-  function row(label, value) {
-    var dt = document.createElement("dt");
-    var dd = document.createElement("dd");
-    dt.textContent = label;
-    dd.textContent = value;
-    return [dt, dd];
+  function $(id) { return document.getElementById(id); }
+  function fmt(n) {
+    var v = Number(n);
+    return Number.isFinite(v) ? v.toLocaleString() : "—";
+  }
+  function paintHud(d) {
+    var s = (d && d.stats) || {};
+    var live = !!(d && (s.activeFlows != null || (d.arcs && d.arcs.length)));
+    $("flows").textContent = live ? fmt(s.activeFlows) : "—";
+    $("endpoints").textContent = live ? fmt(s.endpoints) : "—";
+    $("hawaii").textContent = live ? fmt(s.hawaiiActiveFlows) : "—";
+    $("mainland").textContent = live ? fmt(s.localActiveFlows) : "—";
+    $("origin").textContent = live
+      ? "Hawaiʻi " + fmt(s.hawaiiActiveFlows) + " flows · Mainland " + fmt(s.localActiveFlows) + " flows"
+      : "Origin: no data";
+    var a = (d && d.aws) || {};
+    $("awsline").textContent = a.ok ? "" : (a.reason ? "Mainland: " + a.reason : "Mainland: no telemetry");
+    if (a.ok) {
+      $("awsline").textContent = "";
+      var span = document.createElement("span");
+      span.className = "aws";
+      span.textContent = "Mainland measuring · " + (a.region || "us-east-2");
+      $("awsline").appendChild(span);
+    }
+    $("status").textContent = live ? "LIVE" : "OFFLINE";
+    $("dot").className = "dot " + (live ? "ok" : "bad");
   }
   function num(v, suffix) {
     if (v === undefined || v === null || v === "") return null;
@@ -129,8 +188,7 @@
     return [soc, solar].filter(Boolean).join(" · ");
   }
   function paintOps(data) {
-    var dl = document.getElementById("ops");
-    var foot = document.getElementById("ops-asof");
+    var dl = $("ops");
     while (dl.firstChild) dl.removeChild(dl.firstChild);
     var power = data && data.power && data.power.devices;
     var weather = data && data.weather;
@@ -141,16 +199,16 @@
       ["Weather", weather && weather.report && weather.report.generated ? String(weather.report.generated) : "No data"],
       ["Kīlauea", volcano && (volcano.headline || volcano.alert_level) ? String(volcano.headline || volcano.alert_level) : "No data"]
     ].forEach(function (pair) {
-      row(pair[0], pair[1]).forEach(function (el) { dl.appendChild(el); });
+      var dt = document.createElement("dt");
+      var dd = document.createElement("dd");
+      dt.textContent = pair[0];
+      dd.textContent = pair[1];
+      dl.appendChild(dt);
+      dl.appendChild(dd);
     });
-    foot.textContent = data && data.as_of ? "Last known · " + data.as_of : "Last known · No data";
+    $("ops-asof").textContent = data && data.as_of ? "Last known · " + data.as_of : "Last known · No data";
   }
-  function loadOps() {
-    fetch(RELAY + "/api/operations", { cache: "no-store", credentials: "omit" })
-      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-      .then(function (data) { if (!data || data.ok !== true) throw new Error("no_data"); paintOps(data); })
-      .catch(function () { paintOps(null); });
-  }
+
   var busy = false;
   function loadGlobe() {
     if (busy) return;
@@ -158,20 +216,31 @@
     fetch(RELAY + "/api/state", { cache: "no-store", credentials: "omit" })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (d) {
-        globe.arcsData(d.arcs || []);
+        var arcs = (d.arcs || []).map(function (a) {
+          var copy = {};
+          Object.keys(a).forEach(function (k) { copy[k] = a[k]; });
+          return copy;
+        });
+        globe.arcsData(arcs);
         globe.pointsData(d.points || []);
+        paintHud(d);
       })
-      .catch(function () {})
+      .catch(function () { paintHud(null); })
       .finally(function () { busy = false; });
+  }
+  function loadOps() {
+    fetch(RELAY + "/api/operations", { cache: "no-store", credentials: "omit" })
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (data) { if (!data || data.ok !== true) throw new Error("no_data"); paintOps(data); })
+      .catch(function () { paintOps(null); });
   }
   loadGlobe();
   loadOps();
   setInterval(loadGlobe, 5000);
   setInterval(loadOps, 60000);
 
-  var dock = document.querySelector(".dock");
   function setOpen(id, open) {
-    var panel = document.getElementById(id);
+    var panel = $(id);
     panel.hidden = !open;
     if (open) localStorage.removeItem(KEY + "closed:" + id);
     else localStorage.setItem(KEY + "closed:" + id, "1");
@@ -181,7 +250,7 @@
       var b = document.createElement("button");
       b.type = "button";
       b.dataset.open = id;
-      b.textContent = "+ " + (id === "services" ? "Services" : "Operations");
+      b.textContent = "+ " + NAMES[id];
       b.addEventListener("click", function () { setOpen(id, true); });
       dock.appendChild(b);
     }
@@ -189,7 +258,7 @@
   document.querySelectorAll("[data-close]").forEach(function (btn) {
     btn.addEventListener("click", function () { setOpen(btn.getAttribute("data-close"), false); });
   });
-  ["services", "operations"].forEach(function (id) {
+  Object.keys(NAMES).forEach(function (id) {
     if (localStorage.getItem(KEY + "closed:" + id) === "1") setOpen(id, false);
   });
 })();
