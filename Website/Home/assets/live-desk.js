@@ -49,6 +49,11 @@
     return count ? total / count : null;
   }
 
+  function solarCaption(id) {
+    var raw = text(id);
+    return numberFrom(raw, "W") === null ? raw : raw + " solar";
+  }
+
   function paintFlow() {
     var solar = sum(["river-solar", "delta-solar"], "W");
     var bank = mean(["river-soc", "delta-soc"], "%");
@@ -61,8 +66,8 @@
     if (flowOut) flowOut.textContent = ac === null || !T ? "—" : T.watts(ac);
     var riverSub = document.getElementById("ring-river-sub");
     var deltaSub = document.getElementById("ring-delta-sub");
-    if (riverSub) riverSub.textContent = text("river-solar");
-    if (deltaSub) deltaSub.textContent = text("delta-solar");
+    if (riverSub) riverSub.textContent = solarCaption("river-solar");
+    if (deltaSub) deltaSub.textContent = solarCaption("delta-solar");
     setGauge("gauge-river", text("river-soc"));
     setGauge("gauge-delta", text("delta-soc"));
   }
