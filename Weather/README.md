@@ -39,7 +39,7 @@ Weather subsystem ownership: collection, ensure scripts, and related desk weathe
 | `hurricanes/scripts/global_board.py` | G1 `hurricane-tracker` worldwide board: NHC + RAMMB + JTWC ABPW / ABIO merge + enrich (verbatim logic) | `Weather/Hawai'i/hurricanes/global/storms-last.json` | PROPOSED `weather_hurricane_global`, 05:40 / 09:40 / 12:40 / 16:40 / 20:40, `RR_HURRICANE_GLOBAL=1` |
 | `CountryLocations/scripts/poll_locations.py` | WO-MIG-13. One script replaces 306 identical `operations/locations/**/poller.py` copies. Current Open-Meteo only, and only for ids in `config/allowlist.json` | `Weather/CountryLocations/status-last.json` | In `jobs.py` as `country_location_pollers`, **`enabled: False`**. `RR_COUNTRY_LOCATIONS` unset |
 
-Smoke PASS 2026-09-29 14:27 / 14:34 HST — Library `07-testing/2026-09-29-old-repo-ports-breadth-batch5.md`. Blocks: Library `00-architecture/Pending-Job-Registrations-2026-09-29.md`. OBS overlays / storm radio stay BLOCKED.
+Smoke PASS 2026-09-29 14:27 / 14:34 HST — Library `07-testing/2026-09-29-old-repo-ports-breadth-batch5.md`. Blocks: Library `02-Runtime-Jobs-and-Control/Pending-Job-Registrations-2026-09-29.md`. OBS overlays / storm radio stay BLOCKED.
 
 ---
 

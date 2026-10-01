@@ -13,4 +13,4 @@ python3 scripts/mp4_converter.py --audio "<file.wav|mp3>" --thumb "<still.jpg>" 
 - Default still: `--thumb` or env `RR_BROADCAST_THUMB` (G1 used the Ava-Core daily broadcast thumbnail; no G3 equivalent yet).
 - No upload, broadcast or playback. G1 source: `Solar-Pacific-RootRecord-Server-Old/mp4-converter/` (KEPT, not retired).
 
-*Added 2026-09-29 (migration pass, Library `Documentation/00-architecture/Old-Repo-Migration-Matrix.md`).*
+*Added 2026-09-29 (migration pass, Library `Documentation/04-Migration-and-Legacy-Recovery/Old-Repo-Migration-Matrix.md`).*

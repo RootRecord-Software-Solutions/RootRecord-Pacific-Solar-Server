@@ -4,7 +4,7 @@ Local (LAN) control foundation for Wi-Fi smart devices that sit on the Energy si
 **WiZ bulbs** (UDP 38899 JSON) and **Unbranded Smart Plug BSD01** (Tuya / Smart Life, ESP8266).
 Future feature — **collector gated OFF** (`RR_SMART_DEVICES=1`); drivers never run from the poller unless gated on.
 
-Architecture + runbook: Library `Documentation/00-architecture/Smart-Devices-Energy.md`.
+Architecture + runbook: Library `Documentation/06-Domains-and-External-Systems/Smart-Devices-Energy.md`.
 
 ## Status (2026-09-29 13:30 HST)
 
