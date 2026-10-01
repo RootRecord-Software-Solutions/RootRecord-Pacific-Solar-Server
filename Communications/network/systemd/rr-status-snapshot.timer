@@ -1,0 +1,11 @@
+[Unit]
+Description=Publish the Pacific status snapshot every 30 s, outside the poller queue
+
+[Timer]
+OnBootSec=15
+OnUnitActiveSec=30
+AccuracySec=2
+Persistent=true
+
+[Install]
+WantedBy=timers.target

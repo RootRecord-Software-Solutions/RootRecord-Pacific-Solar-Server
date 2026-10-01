@@ -528,10 +528,11 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
     {  # info: {
-        # Public last-known status. Local files only. AWS pulls status-current.json.
+        # Backup copy of the public snapshot. rr-status-snapshot.timer owns the 30 s cadence
+        # so a long poller job cannot leave AWS on an old EcoFlow reading.
         "id": "status_snapshot",  # info: "id" : "status_snapshot" ,
         "enabled": True,  # info: "enabled" : True ,
-        "description": "Write the public last-known status snapshot Hawaii sends to AWS.",  # info: "description" : "Write the public last-known status snapshot Hawaii sends to AWS." ,
+        "description": "Backup write of the public status snapshot. The user timer publishes it every 30 s.",  # info: "description" : "Backup write of the public status snapshot. The user timer publishes it every 30 s." ,
         "interval_sec": 60,  # info: "interval_sec" : 60 ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Website/scripts/live_data_pages.py"',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Website/scripts/live_data_pages.py"

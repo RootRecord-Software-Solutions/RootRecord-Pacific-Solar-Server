@@ -1,0 +1,8 @@
+[Unit]
+Description=Publish the Pacific status snapshot AWS pulls for EcoFlow and the public feed
+After=default.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Website/scripts/live_data_pages.py"
+Nice=10
