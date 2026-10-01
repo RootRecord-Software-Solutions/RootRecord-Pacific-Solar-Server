@@ -62,6 +62,7 @@ REPORTS = Path(os.environ.get("RR_VOICE_REPORT_OUT", str(DB.parent / "test-repor
 WX = DB / "Weather" / "Hawai'i"  # info: set WX
 ALERTS = WX / "hfo" / "api.weather.gov" / "alerts" / "active" / "area=HI" / "area=HI_current.json"  # info: set ALERTS
 SFP = WX / "reports" / "0 Level Processing" / "sfp_state_forecast_current.md"  # info: set SFP
+ZFP = WX / "hfo" / "api.weather.gov" / "products" / "types" / "ZFP" / "locations" / "HFO" / "HFO_current.txt"  # info: set ZFP
 ENERGY = DB / "Energy"  # info: set ENERGY
 QUAKES = DB / "Geology" / "Earthquakes"  # info: set QUAKES
 QUAKE_STATE = REPORTS / "earthquake_report_seen.json"  # G1 earthquake-hourly.json seen_ids (new since last report)
@@ -242,22 +243,101 @@ def alerts() -> tuple[list[dict], str | None]:  # info: def alerts
 
 
 # ====================================================
+# SECTION: function _flat
+# What it does: Collapse a forecast paragraph to one line. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _flat(text: str) -> str:  # info: def _flat
+    return " ".join((text or "").split())  # info: return " " . join ( ( text or "" ) . split ( ) )
+
+
+# ====================================================
+# SECTION: function _shore
+# What it does: Keep the shore temperature when a zone also lists an elevation. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _shore(phrase: str) -> str:  # info: def _shore
+    cut = re.split(r" near the shore| near \d| at \d{3,}| to around \d+", phrase or "", maxsplit=1)[0]  # info: set cut
+    return cut.strip(" ,")  # info: return cut . strip ( " ," )
+
+
+# ====================================================
+# SECTION: function sfp_read
+# What it does: Issued stamp and island groups from the HFO state forecast. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def sfp_read() -> tuple[str | None, list[dict]]:  # info: def sfp_read
+    """Issued stamp and island groups [{name, periods:[(label, body)]}] from the HFO state forecast. Does not send."""  # info: """Issued stamp and island groups from the HFO state forecast. Does not send."""
+    try:  # info: try :
+        txt = SFP.read_text(encoding="utf-8")  # info: set txt
+    except OSError:  # info: except OSError :
+        return None, []  # info: return None , [ ]
+    issued = re.search(r"^\d{3,4} [AP]M HST .+ \d{4}$", txt, re.M)  # info: set issued
+    fence = re.search(r"```text\n(.+?)\n```", txt, re.S)  # info: set fence
+    body = fence.group(1) if fence else txt  # info: set body
+    period = re.compile(r"^\.([A-Z][A-Z ]+)\.\.\.(.+?)(?=^\.[A-Z]|^HIZ|```|\Z)", re.M | re.S)  # info: set period
+    parts = re.split(r"(?m)^([A-Za-z][A-Za-z ,'ʻ.-]*[A-Za-z])-\s*$", body)  # info: set parts
+    groups = []  # info: set groups
+    i = 1  # info: set i
+    while i + 1 < len(parts):  # info: while i + 1 < len ( parts )
+        name = parts[i].replace("-", ", ")  # info: set name
+        periods = [(m.group(1).title(), _flat(m.group(2))) for m in period.finditer(parts[i + 1])]  # info: set periods
+        if periods:  # info: if periods :
+            groups.append({"name": name, "periods": periods})  # info: groups . append ( { "name" : name , "periods" : periods } )
+        i += 2  # info: set i
+    if not groups:  # info: if not groups :
+        periods = [(m.group(1).title(), _flat(m.group(2))) for m in period.finditer(body)]  # info: set periods
+        if periods:  # info: if periods :
+            groups.append({"name": "State", "periods": periods})  # info: groups . append ( { "name" : "State" , "periods" : periods } )
+    return (issued.group(0) if issued else None), groups  # info: return issued line , groups
+
+
+# ====================================================
 # SECTION: function sfp_today
 # What it does: First forecast period of the NWS HFO State Forecast (SFP) for Kauai–Oahu–Maui–Molokai–Lanai.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def sfp_today() -> tuple[str | None, str | None]:  # info: def sfp_today
     """First forecast period of the NWS HFO State Forecast (SFP) for Kauai–Oahu–Maui–Molokai–Lanai."""  # info: """First forecast period of the NWS HFO State Forecast (SFP) for Kauai–Oahu–Maui–Molokai–Lanai."""
+    issued, groups = sfp_read()  # info: issued , groups = sfp_read ( )
+    if not groups or not groups[0]["periods"]:  # info: if not groups or not groups [ 0 ] [ "periods" ]
+        return None, issued  # info: return None , issued
+    label, body = groups[0]["periods"][0]  # info: label , body = groups [ 0 ] [ "periods" ] [ 0 ]
+    return f"{label}: {body}", issued  # info: return first period , issued
+
+
+# ====================================================
+# SECTION: function zfp_temps
+# What it does: Today high and tonight low for Honolulu, Lihue, Kahului, Hilo, and Kailua-Kona. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def zfp_temps() -> list[dict]:  # info: def zfp_temps
+    """Today high and tonight low from the HFO zone forecast. Shore number when a zone also lists elevation. Does not send."""  # info: """Today high and tonight low from the HFO zone forecast. Does not send."""
+    places = (("Honolulu Metro", "Honolulu"), ("Kauai East", "Lihue"), ("Maui Central Valley North", "Kahului"),  # info: set places
+              ("Big Island East", "Hilo"), ("Kona", "Kailua-Kona"))  # info: ( "Big Island East" , "Hilo" ) , ( "Kona" , "Kailua-Kona" )
     try:  # info: try :
-        txt = SFP.read_text(encoding="utf-8")  # info: set txt
+        txt = ZFP.read_text(encoding="utf-8")  # info: set txt
     except OSError:  # info: except OSError :
-        return None, None  # info: return None , None
-    issued = re.search(r"^\d{3,4} [AP]M HST .+ \d{4}$", txt, re.M)  # info: set issued
-    m = re.search(r"^\.([A-Z][A-Z ]+)\.\.\.(.+?)(?=^\.[A-Z]|```|\Z)", txt, re.M | re.S)  # info: set m
-    if not m:  # info: if not m :
-        return None, issued.group(0) if issued else None  # info: return None , issued . group ( 0
-    body = " ".join(m.group(2).split())  # info: set body
-    return f"{m.group(1).title()}: {body}", issued.group(0) if issued else None  # info: return f" { m . group ( 1
+        return []  # info: return [ ]
+    found = {}  # info: set found
+    for block in re.split(r"(?m)^HIZ\d+", txt):  # info: for block in re . split
+        name_m = re.search(r"(?m)^([A-Za-z][A-Za-z ]+)-\s*$", block)  # info: set name_m
+        if not name_m:  # info: if not name_m :
+            continue  # info: continue
+        key = name_m.group(1).strip()  # info: set key
+        if key in found or key not in {zone for zone, _ in places}:  # info: if key in found or key not in zones
+            continue  # info: continue
+        row = {"place": dict(places)[key], "high": None, "low": None}  # info: set row
+        for label, word, field in (("TODAY", "Highs", "high"), ("TONIGHT", "Lows", "low")):  # info: for label , word , field
+            hit = re.search(rf"(?ms)^\.{label}\.\.\.(.+?)(?=^\.[A-Z]|\Z)", block)  # info: set hit
+            if not hit:  # info: if not hit :
+                continue  # info: continue
+            deg = re.search(rf"\b{word}\s+(.+?)(?:\.|$)", _flat(hit.group(1)))  # info: set deg
+            if deg:  # info: if deg :
+                row[field] = _shore(deg.group(1))  # info: row [ field ] = _shore
+        if row["high"] or row["low"]:  # info: if row [ "high" ] or row [ "low" ]
+            found[key] = row  # info: found [ key ] = row
+    return [found[zone] for zone, _ in places if zone in found]  # info: return rows in place order
 
 
 # ====================================================
