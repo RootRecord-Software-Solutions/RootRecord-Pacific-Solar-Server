@@ -806,6 +806,17 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd" : f" { PACIFIC } /Media/Voice/scripts "
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
+    {  # info: {
+        "id": "voice_current_report",  # info: "id" : "voice_current_report" ,
+        "enabled": os.environ.get("RR_VOICE_CURRENT", "0") == "1",  # info: "enabled" : os . environ . get (
+        "description": "Full current report at :00 and :30. Summarizes every measured desk. Heading is the slot time. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Full current report at :00 and :30. Summarizes every measured desk. Heading is the slot time. Voice note when RR_VOICE_DELIVER=1." ,
+        "only_at_minutes": [0, 30],  # info: "only_at_minutes" : [ 0 , 30 ] ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" current_report',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" current_report
+        "timeout_sec": 600,  # info: "timeout_sec" : 600 ,
+        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd" : f" { PACIFIC } /Media/Voice/scripts "
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
     # --- TEMPLATE (EVERY_MINUTE) — copy from the next line through the closing brace, paste ABOVE this template, remove the leading # ---
     # {
     #     "id": "example_every_minute",

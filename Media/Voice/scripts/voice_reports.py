@@ -13,7 +13,7 @@
   python3 voice_reports.py <report> [--no-voice]
   reports: hourly_chime · nws_weather · energy_report · remaining_tasks · morning_report · midday_report · late_report
            · earthquake_report · hurricane_desk · kilauea_report · solar_desk · security_desk · bandwidth_desk
-           · official_weather · boot_brief
+           · official_weather · boot_brief · current_report
 
 Each run writes Database Media/Audio/Voice/Reports/<report>_current.md (old copy -> Reports/Archive/
 <report>_YYYYMMDDTHHMM.md) and a stitched WAV Media/Audio/Voice/<report>_current.wav via voice-render.sh
@@ -37,6 +37,8 @@ Database Weather/Hawai'i/official/) or HWO / AFD (weather poller text products).
 (file-only, no Grok) as a template brief (Ava). Both PROPOSED (RR_VOICE_OFFICIAL / RR_VOICE_BOOT), not in jobs.py.
 Roll-ups append an LLM summary via run-infer.sh only when RR_VOICE_ROLLUP_LLM=1 (off by default). The off state is not written into the report.
 Scheduling: jobs.py, one env gate per report (read at poller start). Added 2026-09-29 (g3-voice-reports2).
+current_report runs at :00 and :30 and summarizes the same measured desks. Headings use the scheduled slot, not the finish time.
+Morning, midday, and late stay at 09:00, 12:00, and 21:00.
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
@@ -93,7 +95,9 @@ KIND = {"hourly_chime": "chime", "nws_weather": "nws", "energy_report": "energy"
         "morning_report": "morning", "midday_report": "midday", "late_report": "late", "earthquake_report": "earthquake",  # info: "morning_report" : "morning" , "midday_report" : "midday" ,
         "hurricane_desk": "hurricane", "kilauea_report": "kilauea",  # info: "hurricane_desk" : "hurricane" , "kilauea_report" : "kilauea" ,
         "solar_desk": "solar", "security_desk": "security", "bandwidth_desk": "bandwidth",  # info: "solar_desk" : "solar" , "security_desk" : "security" ,
-        "official_weather": "official", "boot_brief": "boot"}  # info: "official_weather" : "official" , "boot_brief" : "boot" }
+        "official_weather": "official", "boot_brief": "boot", "current_report": "current"}  # info: "official_weather" : "official" , "boot_brief" : "boot" , "current_report" : "current"
+DEV_NOTE = "Automated Reports are in active development and is expected to change"  # info: set DEV_NOTE
+ROLLUP_AT = {"morning": (9, 0), "midday": (12, 0), "late": (21, 0)}  # info: set ROLLUP_AT }
 
 
 # ====================================================
@@ -103,6 +107,18 @@ KIND = {"hourly_chime": "chime", "nws_weather": "nws", "energy_report": "energy"
 # ====================================================
 def now() -> datetime:  # info: def now
     return datetime.now().astimezone().replace(microsecond=0)  # info: return datetime . now ( ) . astimezone
+
+
+# ====================================================
+# SECTION: function on_the_dot
+# What it does: Scheduled clock with seconds cleared. Half hours snap to :00 or :30. A named hour and minute stay put.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def on_the_dot(t: datetime, hour: int | None = None, minute: int | None = None) -> datetime:  # info: def on_the_dot
+    if hour is None:  # info: if hour is None :
+        hour = t.hour  # info: set hour
+        minute = 0 if t.minute < 30 else 30  # info: set minute
+    return t.replace(hour=hour, minute=0 if minute is None else minute, second=0, microsecond=0)  # info: return t . replace (
 
 
 # ====================================================
@@ -575,7 +591,7 @@ def last_camera_look(t: datetime) -> dict:  # info: def last_camera_look
 
 # ====================================================
 # SECTION: function board_status
-# What it does: Read report_board.py status. Morning 09:02, midday 12:02, late 21:02.
+# What it does: Read report_board.py status. Morning 09:00, midday 12:00, late 21:00.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def board_status() -> dict | None:  # info: def board_status
@@ -616,7 +632,8 @@ def speak_board(t: datetime, payload: dict | None):  # info: def speak_board
         rows.append((when, str(key), str(row.get("status") or "unknown")))  # info: rows . append ( ( when , str ( key ) , str ( row . get ( "status" ) or "unknown" ) ) )
     rows.sort()  # info: rows . sort ( )
     hour = [row for row in rows if t < row[0] <= t + timedelta(hours=1) and row[2] not in closed]  # info: set hour
-    sp = [f"Remaining tasks at {clock(t)} Hawaiian Standard Time.".replace("..", ".")]  # info: set sp
+    stamp = on_the_dot(t, t.hour, 0)  # info: set stamp
+    sp = [f"Remaining tasks at {clock(stamp)} Hawaiian Standard Time.".replace("..", "."), DEV_NOTE + "."]  # info: set sp
     if payload is None:  # info: if payload is None :
         sp.append("The report board is not on file.")  # info: sp . append ( "The report board is not on file." )
     else:  # info: else :
@@ -629,7 +646,7 @@ def speak_board(t: datetime, payload: dict | None):  # info: def speak_board
                 sp.append(f"Next is {clock(later[0][0])} {labels.get(later[0][1], later[0][1])}.")  # info: sp . append ( f" Next is { clock ( later [ 0 ] [ 0 ] ) } { labels . get ( later [ 0 ] [ 1 ] , later [ 0 ] [ 1 ] ) } . " )
             else:  # info: else :
                 sp.append("No later report slots are open.")  # info: sp . append ( "No later report slots are open." )
-    md = [f"# Remaining tasks — {t.isoformat()}", "", "Source: report_board.py status (morning 09:02, midday 12:02, late 21:02).", ""]  # info: set md
+    md = [f"# Remaining tasks — {stamp.isoformat()}", "", DEV_NOTE, "", "Source: report_board.py status (morning 09:00, midday 12:00, late 21:00).", ""]  # info: set md
     md += [f"- {labels.get(key, key)} {when.isoformat()} {status}" for when, key, status in rows]  # info: set md
     md += ["", "## Spoken", "", " ".join(sp), ""]  # info: set md
     return "\n".join(md), sp  # info: return "\n" . join ( md ) , sp
@@ -1184,8 +1201,9 @@ def b_remaining_tasks(t: datetime):  # info: def b_remaining_tasks
 # ====================================================
 def _rollup(t: datetime, slot: str):  # info: def _rollup
     title = {"morning": "Morning report.", "midday": "Midday report.", "late": "Late report."}[slot]  # info: set title
+    when = on_the_dot(t, *ROLLUP_AT[slot])  # info: set when
     facts, (rows, _), (today, _), h, (tasks, per) = energy_facts(t), alerts(), sfp_today(), host(), open_tasks()  # info: call facts
-    sp = [title, f"It's {clock(t)} Hawaiian Standard Time.".replace("..", ".")]  # info: set sp
+    sp = [title, f"It's {clock(when)} Hawaiian Standard Time.".replace("..", "."), DEV_NOTE + "."]  # info: set sp
     lines = []  # info: set lines
     ok = [f for f in facts if f["ok"]]  # info: set ok
     if ok:  # info: if ok :
@@ -1214,7 +1232,7 @@ def _rollup(t: datetime, slot: str):  # info: def _rollup
     if summary:  # info: if summary :
         sp.append(summary)  # info: sp . append ( summary )
     sp.append("End of report.")  # info: sp . append ( "End of report." )
-    md = [f"# {title[:-1]} — {t.isoformat()}", "", "## Measured", ""] + [f"- {x}" for x in lines]
+    md = [f"# {title[:-1]} — {when.isoformat()}", "", DEV_NOTE, "", "## Measured", ""] + [f"- {x}" for x in lines]
     if summary:  # info: if summary
         md += ["", "## LLM summary", "", summary, ""]  # info: md += the summary only
     return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
@@ -1371,6 +1389,196 @@ def b_boot_brief(t: datetime):  # info: def b_boot_brief
 
 
 # ====================================================
+# SECTION: function b_current_report
+# What it does: Full current summary of every measured desk, stamped on the half hour.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def b_current_report(t: datetime):  # info: def b_current_report
+    """Full current summary of every measured desk. The heading is the :00 or :30 slot, not the finish time."""  # info: docstring
+    stamp = on_the_dot(t)  # info: set stamp
+    facts = energy_facts(t)  # info: set facts
+    sun = jload(ENERGY / "sun" / "sun-times-last.json") or {}  # info: set sun
+    moon = jload(ENERGY / "moon" / "moon-last.json") or {}  # info: set moon
+    rows, upd = alerts()  # info: rows , upd = alerts ( )
+    issued, groups = sfp_read()  # info: issued , groups = sfp_read ( )
+    places = zfp_temps()  # info: set places
+    quakes = quake_facts(t)  # info: set quakes
+    kilauea = jload(VOLCANOES / "kilauea-last.json") or {}  # info: set kilauea
+    mauna = jload(VOLCANOES / "mauna-loa-last.json") or {}  # info: set mauna
+    storms = [s for s in hurricane_facts(t) if s.get("active")]  # info: set storms
+    import system_perf  # info: import system_perf
+    perf = system_perf.sample()  # info: set perf
+    desks = _host_desks()  # info: set desks
+    sec = desks.security_snapshot()  # info: set sec
+    net = desks.net_counters()  # info: set net
+    bw_hour, bw_day = desks.net_usage_window(3600, now=net), desks.net_usage_window(86400, now=net)  # info: bw_hour , bw_day = desks . net_usage_window
+    still, look = newest_ch1(t), last_camera_look(t)  # info: still , look = newest_ch1 ( t ) , last_camera_look ( t )
+    tasks, _per = open_tasks()  # info: tasks , _per = open_tasks ( )
+    board = board_status()  # info: set board
+    fresh = [p for p in official_products(t) if p.get("age_h") is not None and p["age_h"] <= OFFICIAL_MAX_H]  # info: set fresh
+    md = [f"# Current report — {stamp.isoformat()}", "", DEV_NOTE, ""]  # info: set md
+    sp = [f"Current report at {clock(stamp)} Hawaiian Standard Time.".replace("..", "."), DEV_NOTE + "."]  # info: set sp
+    md += ["## Energy", ""]  # info: md += energy heading
+    ok = [f for f in facts if f.get("ok")]  # info: set ok
+    if ok:  # info: if ok :
+        solar = sum(f.get("solar_w") or 0 for f in ok)  # info: set solar
+        sp.append("Battery levels: " + ", ".join(f"{f['name']} at {f['soc']}%" for f in ok) + f". Solar input {spoken_watts(solar)}.")  # info: sp . append battery line
+    else:  # info: else :
+        sp.append("EcoFlow is offline.")  # info: sp . append ( "EcoFlow is offline." )
+    for f in facts:  # info: for f in facts :
+        if not f.get("ok"):  # info: if not f . get ( "ok" ) :
+            md.append(f"- {f['name']}: no reading")  # info: md . append ( f" - { f [ 'name' ] } : no reading " )
+            continue  # info: continue
+        bits = [f"SOC {f['soc']}%", f"solar {f.get('solar_w')} W", f"AC out {f.get('ac_out_w')} W", f"USB-C out {f.get('usbc_out_w')} W"]  # info: set bits
+        age = f"age {f.get('age_min')} min" if f.get("age_min") is not None else "age n/a"  # info: set age
+        md.append(f"- {f['name']}: " + ", ".join(bits) + supply_clause(f) + f", {age}")  # info: md . append energy line
+        note = range_clause(f)  # info: set note
+        if note:  # info: if note :
+            sp.append(note)  # info: sp . append ( note )
+    md += ["", "## Sun and moon", ""]  # info: md += sun heading
+    md.append(f"- Sun: {sun.get('sunrise', 'n/a')} / {sun.get('sunset', 'n/a')} ({sun.get('date', 'n/a')})")  # info: md . append sun line
+    md.append(f"- Moon: {moon.get('phase_name', 'n/a')}, {moon.get('illumination', 'n/a')}% lit, rise {moon.get('moonrise', 'n/a')}, set {moon.get('moonset', 'n/a')}")  # info: md . append moon line
+    if sun.get("date") == stamp.date().isoformat() and sun.get("sunrise") and sun.get("sunset"):  # info: if sun . get ( "date" ) == stamp . date
+        sp.append(f"Sunrise {spoken_hhmm(sun['sunrise'])}, sunset {spoken_hhmm(sun['sunset'])}.".replace("..", "."))  # info: sp . append sun sentence
+    else:  # info: else :
+        sp.append("Sun times for today are not on file.")  # info: sp . append ( "Sun times for today are not on file." )
+    if moon.get("phase_name"):  # info: if moon . get ( "phase_name" ) :
+        sp.append(f"Moon is {moon['phase_name']}, {moon.get('illumination', 'n/a')} percent lit.")  # info: sp . append moon sentence
+    else:  # info: else :
+        sp.append("Moon phase is not on file.")  # info: sp . append ( "Moon phase is not on file." )
+    md += ["", "## Weather", ""]  # info: md += weather heading
+    if rows:  # info: if rows :
+        md += [f"- {r['event']} — {r['area']}" for r in rows]  # info: md += alert lines
+        sp.append(f"{len(rows)} active weather alert{'s' if len(rows) != 1 else ''}, including {rows[0]['event']}.")  # info: sp . append alert sentence
+    else:  # info: else :
+        md.append("- No active Hawaii alerts")  # info: md . append ( "- No active Hawaii alerts" )
+        sp.append("No active Hawaii alerts.")  # info: sp . append ( "No active Hawaii alerts." )
+    today = None  # info: set today
+    if groups and groups[0]["periods"]:  # info: if groups and groups [ 0 ] [ "periods" ] :
+        label, body = groups[0]["periods"][0]  # info: label , body = groups [ 0 ] [ "periods" ] [ 0 ]
+        today = f"{label}: {body}"  # info: set today
+    md.append(f"- State forecast ({issued or 'n/a'}): {today or 'not on file'}")  # info: md . append forecast line
+    if today:  # info: if today :
+        sp.append(f"Forecast for {today.split(':', 1)[0].lower()}: {re.split(r'(?<=[.]) ', today.split(':', 1)[1].strip())[0]}")  # info: sp . append forecast sentence
+    if places:  # info: if places :
+        for p in places:  # info: for p in places :
+            bits = []  # info: set bits
+            if p.get("high"):  # info: if p . get ( "high" ) :
+                bits.append(f"high {p['high']}")  # info: bits . append ( f" high { p [ 'high' ] } " )
+            if p.get("low"):  # info: if p . get ( "low" ) :
+                bits.append(f"low {p['low']}")  # info: bits . append ( f" low { p [ 'low' ] } " )
+            md.append(f"- {p['place']}: " + ", ".join(bits))  # info: md . append place line
+        sp.append("Temperatures. " + ". ".join(f"{p['place']} high {p['high'] or 'n/a'}, low {p['low'] or 'n/a'}" for p in places) + ".")  # info: sp . append temperature sentence
+    md.append(f"- Alerts updated: {upd or 'n/a'}")  # info: md . append ( f" - Alerts updated: { upd or 'n/a' } " )
+    md += ["", "## Geology", ""]  # info: md += geology heading
+    for label, key in (("Hawaii", "hawaii"), ("Global", "global")):  # info: for label , key in
+        pack = quakes.get(key)  # info: set pack
+        if not pack:  # info: if not pack :
+            md.append(f"- {label} earthquakes: not on file")  # info: md . append ( f" - { label } earthquakes: not on file " )
+            continue  # info: continue
+        ev = list(pack.get("events") or [])  # info: set ev
+        bigs = []  # info: set bigs
+        for e in _m25(ev):  # info: for e in _m25 ( ev ) :
+            try:  # info: try :
+                bigs.append(float(e.get("mag")))  # info: bigs . append ( float ( e . get ( "mag" ) ) )
+            except (TypeError, ValueError):  # info: except ( TypeError , ValueError ) :
+                continue  # info: continue
+        big = max(bigs) if bigs else None  # info: set big
+        largest = f", largest M{big:g}" if big is not None else ""  # info: set largest
+        md.append(f"- {label}: {len(_m25(ev))} magnitude 2.5 or greater in 24 h{largest}, sample age {pack.get('age_min')} min")  # info: md . append quake line
+    hi_pack = quakes.get("hawaii") or {}  # info: set hi_pack
+    if hi_pack:  # info: if hi_pack :
+        sp.append(f"Local earthquakes, last twenty four hours: {len(_m25(list(hi_pack.get('events') or [])))} magnitude 2.5 or greater.")  # info: sp . append quake sentence
+    else:  # info: else :
+        sp.append("Local earthquake data is not on file.")  # info: sp . append ( "Local earthquake data is not on file." )
+    if isinstance(kilauea, dict) and kilauea.get("alert_level"):  # info: if isinstance ( kilauea , dict ) and kilauea . get ( "alert_level" ) :
+        md.append(f"- Kilauea: {kilauea.get('alert_level')} / {kilauea.get('color_code')}, erupting {kilauea.get('erupting')}")  # info: md . append kilauea line
+        sp.append(f"Kilauea alert level {str(kilauea.get('alert_level')).lower()}" + (", erupting." if kilauea.get("erupting") else "."))  # info: sp . append kilauea sentence
+    else:  # info: else :
+        md.append("- Kilauea: not on file")  # info: md . append ( "- Kilauea: not on file" )
+        sp.append("Kilauea status is not on file.")  # info: sp . append ( "Kilauea status is not on file." )
+    if isinstance(mauna, dict) and mauna.get("alert_level"):  # info: if isinstance ( mauna , dict ) and mauna . get ( "alert_level" ) :
+        md.append(f"- Mauna Loa: {mauna.get('alert_level')} / {mauna.get('color_code')}")  # info: md . append mauna line
+        sp.append(f"Mauna Loa alert level {str(mauna.get('alert_level')).lower()}.")  # info: sp . append mauna sentence
+    md += ["", "## Hurricanes", ""]  # info: md += hurricane heading
+    if storms:  # info: if storms :
+        s0 = storms[0]  # info: set s0
+        md.append(f"- {s0['label']} {s0['name']}: {s0['nm']} nm from {s0['island']}, bearing {s0['bearing']}")  # info: md . append storm line
+        sp.append(f"{s0['label']} {s0['name']} is about {s0['nm']} nautical miles from {s0['island']}.")  # info: sp . append storm sentence
+        for s in storms[1:4]:  # info: for s in storms [ 1 : 4 ] :
+            md.append(f"- {s['label']} {s['name']}: {s['nm']} nm from {s['island']}")  # info: md . append other storm
+    else:  # info: else :
+        md.append("- No tropical system on the board")  # info: md . append ( "- No tropical system on the board" )
+        sp.append("No tropical system with a mapped position is on the board.")  # info: sp . append ( "No tropical system with a mapped position is on the board." )
+    md += ["", "## Host", ""]  # info: md += host heading
+    up_h, up_m = perf["uptime_s"] // 3600, (perf["uptime_s"] % 3600) // 60  # info: up_h , up_m = perf [ "uptime_s" ] // 3600 , ( perf [ "uptime_s" ] % 3600 ) // 60
+    md.append(f"- CPU {perf['cpu_pct']}%, load {' / '.join(perf['load'])}")  # info: md . append cpu line
+    md.append(f"- Memory {perf['mem_pct']}% used ({perf['mem_used_gb']} / {perf['mem_total_gb']} GB)")  # info: md . append memory line
+    md.append(f"- Disk {perf['disk_pct']}% used ({perf['disk_used_gb']} / {perf['disk_total_gb']} GB)")  # info: md . append disk line
+    md.append(f"- Uptime {up_h}h {up_m}m")  # info: md . append uptime line
+    host_say = f"Host CPU {round(perf['cpu_pct'])}%, memory {round(perf['mem_pct'])}% used, disk {round(perf['disk_pct'])}% used."  # info: set host_say
+    if perf.get("temp_c") is not None:  # info: if perf . get ( "temp_c" ) is not None :
+        md.append(f"- Temperature {perf['temp_c']} C")  # info: md . append temp line
+        host_say = host_say[:-1] + f", temperature {perf['temp_c']} degrees Celsius."  # info: set host_say
+    sp.append(host_say)  # info: sp . append ( host_say )
+    md += ["", "## Security", ""]  # info: md += security heading
+    md.append(f"- Firewall starts on boot: {sec.get('ufw_boot')}")  # info: md . append firewall line
+    md.append(f"- SSH active: {sec.get('ssh_active')}")  # info: md . append ssh line
+    md.append(f"- TCP listeners: {sec.get('listen_tcp')}")  # info: md . append listeners line
+    md.append(f"- Established connections: {sec.get('established')}")  # info: md . append connections line
+    md.append(f"- Failed sign-ins, last hour / 24 h: {sec.get('failed_1h')} / {sec.get('failed_24h')}")  # info: md . append failed sign-ins
+    if sec.get("failed_1h") is not None:  # info: if sec . get ( "failed_1h" ) is not None :
+        sp.append(f"Security. Failed sign-ins {sec.get('failed_1h')} in the last hour, {sec.get('failed_24h')} in the last twenty four hours.")  # info: sp . append security sentence
+    else:  # info: else :
+        sp.append("The sign-in log is not readable.")  # info: sp . append ( "The sign-in log is not readable." )
+    md += ["", "## Bandwidth", ""]  # info: md += bandwidth heading
+    if bw_hour or bw_day:  # info: if bw_hour or bw_day :
+        if bw_hour:  # info: if bw_hour :
+            md.append(f"- Last hour: {bw_hour['rx']} bytes down, {bw_hour['tx']} bytes up")  # info: md . append hour bytes
+            sp.append(f"Last hour bandwidth: {desks.spoken_bytes(bw_hour['rx'])} down, {desks.spoken_bytes(bw_hour['tx'])} up.")  # info: sp . append hour bandwidth
+        if bw_day:  # info: if bw_day :
+            md.append(f"- Last 24 h: {bw_day['rx']} bytes down, {bw_day['tx']} bytes up")  # info: md . append day bytes
+    else:  # info: else :
+        md.append("- Not enough samples yet")  # info: md . append ( "- Not enough samples yet" )
+        sp.append("Bandwidth data is not on file yet.")  # info: sp . append ( "Bandwidth data is not on file yet." )
+    md += ["", "## Camera", ""]  # info: md += camera heading
+    if still:  # info: if still :
+        md.append(f"- Solar panel still age: {still['age_min']} min")  # info: md . append still age
+        sp.append(f"Solar panel still is {still['age_min']} minutes old." if still["age_min"] else "Solar panel still is current.")  # info: sp . append still sentence
+    else:  # info: else :
+        md.append("- Solar panel still: not on file")  # info: md . append ( "- Solar panel still: not on file" )
+        sp.append("No solar panel still on file.")  # info: sp . append ( "No solar panel still on file." )
+    if look.get("sentence"):  # info: if look . get ( "sentence" ) :
+        md.append(f"- {look['sentence']}")  # info: md . append ( f" - { look [ 'sentence' ] } " )
+        sp.append(look["sentence"])  # info: sp . append ( look [ "sentence" ] )
+    md += ["", "## Report board", ""]  # info: md += board heading
+    labels = {"morning": "Morning report", "midday": "Midday report", "late": "Late report"}  # info: set labels
+    slot_rows = []  # info: set slot_rows
+    for key, row in ((board or {}).get("slots") or {}).items():  # info: for key , row in board slots
+        if isinstance(row, dict):  # info: if isinstance ( row , dict ) :
+            slot_rows.append((str(row.get("scheduled_at") or ""), labels.get(key, key), str(row.get("status") or "unknown")))  # info: slot_rows . append
+    slot_rows.sort()  # info: slot_rows . sort ( )
+    if slot_rows:  # info: if slot_rows :
+        md += [f"- {name} {at} {status}" for at, name, status in slot_rows]  # info: md += slot lines
+        sp.append("Report board: " + ", ".join(f"{name} {status}" for _at, name, status in slot_rows) + ".")  # info: sp . append board sentence
+    else:  # info: else :
+        md.append("- Report board is not on file")  # info: md . append ( "- Report board is not on file" )
+        sp.append("The report board is not on file.")  # info: sp . append ( "The report board is not on file." )
+    md += ["", "## Official weather", ""]  # info: md += official heading
+    if fresh:  # info: if fresh :
+        pick = fresh[0]  # info: set pick
+        md.append(f"- {pick['type']}, age {pick['age_h']} h")  # info: md . append official line
+        sp.append(f"Official weather product {pick['type']} is on file.")  # info: sp . append official sentence
+    else:  # info: else :
+        md.append("- No fresh Honolulu statement")  # info: md . append ( "- No fresh Honolulu statement" )
+        sp.append("No fresh Honolulu weather statement is on file.")  # info: sp . append ( "No fresh Honolulu weather statement is on file." )
+    md += ["", "## Work orders", "", f"- Open items: {tasks}", ""]  # info: md += work orders
+    sp.append(f"{tasks} open work order items. End of current report.")  # info: sp . append ( f" { tasks } open work order items. End of current report. " )
+    md += ["## Spoken", "", " ".join(sp), ""]  # info: md += spoken
+    return "\n".join(md), sp  # info: return "\n" . join ( md ) , sp
+
+
+# ====================================================
 # SECTION: BUILD
 # What it does: Set BUILD.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -1380,7 +1588,8 @@ BUILD = {"hourly_chime": b_hourly_chime, "nws_weather": b_nws_weather, "energy_r
          "midday_report": lambda t: _rollup(t, "midday"), "late_report": lambda t: _rollup(t, "late"),  # info: "midday_report" : lambda t : _rollup ( t
          "earthquake_report": b_earthquake_report, "hurricane_desk": b_hurricane_desk,  # info: "earthquake_report" : b_earthquake_report , "hurricane_desk" : b_hurricane_desk ,
          "kilauea_report": b_kilauea_report, "solar_desk": b_solar_desk, "security_desk": b_security_desk,  # info: "kilauea_report" : b_kilauea_report , "solar_desk" : b_solar_desk ,
-         "bandwidth_desk": b_bandwidth_desk, "official_weather": b_official_weather, "boot_brief": b_boot_brief}  # info: "bandwidth_desk" : b_bandwidth_desk , "official_weather" : b_official_weather ,
+         "bandwidth_desk": b_bandwidth_desk, "official_weather": b_official_weather, "boot_brief": b_boot_brief,  # info: "bandwidth_desk" : b_bandwidth_desk , "official_weather" : b_official_weather ,
+         "current_report": b_current_report}  # info: "current_report" : b_current_report
 
 
 # ====================================================

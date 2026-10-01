@@ -154,6 +154,11 @@ def ensure_today(t: datetime) -> dict:  # info: def ensure_today
     for kind in SLOTS:  # info: for kind in SLOTS :
         if not isinstance(slots.get(kind), dict):  # info: if not isinstance ( slots . get (
             slots[kind] = _seed(kind, day)  # info: slots [ kind ] = _seed ( kind
+            continue  # info: continue
+        row, m = slots[kind], META[kind]  # info: row , m = slots [ kind ] , META [ kind ]
+        if row.get("hour") != m["hour"] or row.get("minute") != m["minute"]:  # info: if the stored clock is not the set time
+            row["hour"], row["minute"] = m["hour"], m["minute"]  # info: row [ "hour" ] , row [ "minute" ] = m [ "hour" ] , m [ "minute" ]
+            row["scheduled_at"] = f"{day}T{m['hour']:02d}:{m['minute']:02d}:00"  # info: row [ "scheduled_at" ] = the set clock
     return d  # info: return d
 
 

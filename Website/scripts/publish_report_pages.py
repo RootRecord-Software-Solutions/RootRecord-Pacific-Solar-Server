@@ -33,7 +33,7 @@ VOICE = Path("/home/rootrecord/RootRecord-Ecosystem/test-reports/Voice")  # info
 AREAS = (  # info: set AREAS
     ("Field", ("nws_weather", "official_weather", "hurricane_desk", "kilauea_report", "earthquake_report")),  # info: field
     ("Energy", ("energy_report", "solar_desk")),  # info: energy
-    ("Operations", ("system_perf", "security_desk", "bandwidth_desk", "remaining_tasks", "boot_brief", "morning_report", "midday_report", "late_report")),  # info: operations
+    ("Operations", ("current_report", "system_perf", "security_desk", "bandwidth_desk", "remaining_tasks", "boot_brief", "morning_report", "midday_report", "late_report")),  # info: operations
 )  # info: )
 
 

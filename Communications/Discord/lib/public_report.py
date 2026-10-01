@@ -26,10 +26,10 @@ KIND = {  # info: set KIND
     "morning_report": "morning", "midday_report": "midday", "late_report": "late",  # info: kinds
     "earthquake_report": "earthquake", "hurricane_desk": "hurricane", "kilauea_report": "kilauea",  # info: kinds
     "solar_desk": "solar", "security_desk": "security", "bandwidth_desk": "bandwidth",  # info: kinds
-    "official_weather": "official", "boot_brief": "boot", "system_perf": "system",  # info: kinds
+    "official_weather": "official", "boot_brief": "boot", "system_perf": "system", "current_report": "current",  # info: kinds
 }  # info: }
 AGENT = {  # info: set AGENT
-    "morning": "ava", "midday": "ava", "late": "ava", "nws": "ava", "official": "ava", "boot": "ava",  # info: ava
+    "morning": "ava", "midday": "ava", "late": "ava", "nws": "ava", "official": "ava", "boot": "ava", "current": "ava",  # info: ava
     "solar": "bruce", "system": "bruce", "remaining": "bruce",  # info: bruce
     "energy": "carly", "earthquake": "carly", "kilauea": "carly", "hurricane": "carly",  # info: carly
     "security": "carly", "bandwidth": "carly",  # info: carly
@@ -41,6 +41,7 @@ TITLES = {  # info: set TITLES
     "system_perf": "System performance", "solar_desk": "Solar", "earthquake_report": "Earthquake",  # info: titles
     "hurricane_desk": "Hurricane", "morning_report": "Morning report", "midday_report": "Midday report",  # info: titles
     "late_report": "Late report", "official_weather": "Official weather", "boot_brief": "Boot brief",  # info: titles
+    "current_report": "Current report",  # info: titles
 }  # info: }
 STAMP = re.compile(r"_(\d{8}T\d{4})")  # info: set STAMP
 ROW = re.compile(r"^\|\s*([^|]+?)\s*\|\s*(\d+(?:\.\d+)?)%\s*\|\s*(\d+(?:\.\d+)?)\s*W\s*\|\s*(\d+(?:\.\d+)?)\s*W\s*\|")  # info: set ROW

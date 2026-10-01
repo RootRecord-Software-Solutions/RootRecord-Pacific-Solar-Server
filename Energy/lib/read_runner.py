@@ -32,7 +32,8 @@ from Energy.db.condense import condense_closed_periods  # noqa: E402
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 CLOUD_FALLBACK_SEC = 120  # info: set CLOUD_FALLBACK_SEC
-# Inverter watts live in one heartbeat. River 2 stops sending it while the AC outlet is off.
+# Inverter watts live in one heartbeat. These packs withhold that heartbeat while the AC outlet is off.
+# Quota is used only when BLE already measured the outlet as on and the watt field itself is empty.
 POWER_FROM_CLOUD = ("ac_output_power", "ac_input_power")  # info: set POWER_FROM_CLOUD
 
 
@@ -169,6 +170,42 @@ def _fill_inverter_watts(fields: dict, cloud: dict) -> bool:  # info: def _fill_
             fields[key] = cloud[key]  # info: fields [ key ] = cloud [ key ]
             filled = True  # info: set filled
     return filled  # info: return filled
+
+
+# ====================================================
+# SECTION: function _ac_outlet_on
+# What it does: True only when BLE measured the AC outlet switch as on.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _ac_outlet_on(fields: dict) -> bool:  # info: def _ac_outlet_on
+    return fields.get("ac_ports") is True  # info: return fields . get ( "ac_ports" ) is True
+
+
+# ====================================================
+# SECTION: function _zero_missing_inverter_watts
+# What it does: A withheld inverter heartbeat means the outlet is off, so empty AC watts are 0.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _zero_missing_inverter_watts(fields: dict) -> None:  # info: def _zero_missing_inverter_watts
+    for key in POWER_FROM_CLOUD:  # info: for key in POWER_FROM_CLOUD :
+        if fields.get(key) is None:  # info: if fields . get ( key ) is None :
+            fields[key] = 0  # info: fields [ key ] = 0
+
+
+# ====================================================
+# SECTION: function _stamp_device_watts
+# What it does: Copy filled AC watts onto the live device so SQLite matches the JSON sample.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _stamp_device_watts(device, fields: dict) -> None:  # info: def _stamp_device_watts
+    if device is None:  # info: if device is None :
+        return  # info: return
+    for key in POWER_FROM_CLOUD:  # info: for key in POWER_FROM_CLOUD :
+        if getattr(device, key, None) is None and fields.get(key) is not None:  # info: if getattr ( device , key , None ) is None and fields . get ( key ) is not None :
+            try:  # info: try :
+                setattr(device, key, fields[key])  # info: call setattr
+            except Exception:  # info: except Exception :
+                pass  # info: pass
 
 
 # ====================================================
@@ -388,27 +425,25 @@ def main() -> int:  # info: def main
         else:  # info: else :
             ble_err = reason  # info: set ble_err
 
-    # 1b) In range, but the inverter heartbeat never came. Fill only those watts from quota.
+    # 1b) Inverter heartbeat missing. Outlet on → fill those watts from quota. Otherwise the outlet is off: write 0.
     if source == "ble" and _missing_inverter_watts(fields):  # info: if source == "ble" and _missing_inverter_watts ( fields ) :
-        cloud_fields = None  # info: set cloud_fields
-        cached = _fresh_cloud_cache(alias)  # info: set cached
-        if cached:  # info: if cached :
-            cloud_fields = cached["fields"]  # info: set cloud_fields
-        elif not _cloud_throttled(alias):  # info: elif not _cloud_throttled ( alias ) :
-            try:  # info: try :
-                cloud_fields = _read_api(alias)  # info: set cloud_fields
-                _save_cloud_cache(alias, cloud_fields, datetime.now(HST).isoformat(timespec="seconds"))  # info: call _save_cloud_cache
-            except Exception:  # info: except Exception :
-                _save_cloud_cache(alias, None, None)  # info: call _save_cloud_cache
-        if cloud_fields and _fill_inverter_watts(fields, cloud_fields):  # info: if cloud_fields and _fill_inverter_watts ( fields , cloud_fields ) :
-            source = "ble+cloud"  # info: set source
-            if device is not None:  # info: if device is not None :
-                for key in POWER_FROM_CLOUD:  # info: for key in POWER_FROM_CLOUD :
-                    if getattr(device, key, None) is None and fields.get(key) is not None:  # info: if getattr ( device , key , None ) is None and fields . get ( key ) is not None :
-                        try:  # info: try :
-                            setattr(device, key, fields[key])  # info: call setattr
-                        except Exception:  # info: except Exception :
-                            pass  # info: pass
+        if _ac_outlet_on(fields):  # info: if _ac_outlet_on ( fields ) :
+            cloud_fields = None  # info: set cloud_fields
+            cached = _fresh_cloud_cache(alias)  # info: set cached
+            if cached:  # info: if cached :
+                cloud_fields = cached["fields"]  # info: set cloud_fields
+            elif not _cloud_throttled(alias):  # info: elif not _cloud_throttled ( alias ) :
+                try:  # info: try :
+                    cloud_fields = _read_api(alias)  # info: set cloud_fields
+                    _save_cloud_cache(alias, cloud_fields, datetime.now(HST).isoformat(timespec="seconds"))  # info: call _save_cloud_cache
+                except Exception:  # info: except Exception :
+                    _save_cloud_cache(alias, None, None)  # info: call _save_cloud_cache
+            if cloud_fields and _fill_inverter_watts(fields, cloud_fields):  # info: if cloud_fields and _fill_inverter_watts ( fields , cloud_fields ) :
+                source = "ble+cloud"  # info: set source
+                _stamp_device_watts(device, fields)  # info: call _stamp_device_watts
+        else:  # info: else :
+            _zero_missing_inverter_watts(fields)  # info: call _zero_missing_inverter_watts
+            _stamp_device_watts(device, fields)  # info: call _stamp_device_watts
 
     # 2) Cloud fallback when BLE missed or prefer_api. A ble+cloud fill is already a reading.
     if source == "none":  # info: if source == "none" :
