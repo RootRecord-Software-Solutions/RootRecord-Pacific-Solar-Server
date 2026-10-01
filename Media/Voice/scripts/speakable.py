@@ -365,10 +365,13 @@ def _expand_units(text: str) -> str:  # info: def _expand_units
     out = re.sub(r"(?i)\bWeather\s*\([^)]*\)\s*:?", "Weather.", out)  # info: set out
     out = re.sub(r"(?i)\bEcoFlow\s*\([^)]*\)\s*:?", "EcoFlow.", out)  # info: set out
     out = re.sub(r"(?i)\bHost:\s*last [^,]+,\s*", "Host: ", out)  # info: set out
+    out = re.sub(r"(?i)(?<=\d)\s*°\s*C\b", " degrees Celsius", out)  # info: set out
+    out = re.sub(r"(?i)(?<=\d)°C\b", " degrees Celsius", out)  # info: set out
+    out = re.sub(r"(?i)(?<=\d)\s*degrees\s+C\b(?!elsius)", " degrees Celsius", out)  # info: set out
     out = re.sub(r"(?i)(?<=\d)\s*°?\s*F\b", " degrees Fahrenheit", out)  # info: set out
     out = re.sub(r"(?i)(?<=\d)°?F\b", " degrees Fahrenheit", out)  # info: set out
     out = re.sub(r"(?i)(?<=\d)\s*deg(?:rees?)?\s*F\b", " degrees Fahrenheit", out)  # info: set out
-    out = re.sub(r"(?<=\d)\s*degrees\b(?!\s+Fahrenheit)", " degrees Fahrenheit", out)  # info: set out
+    out = re.sub(r"(?<=\d)\s*degrees\b(?!\s+(?:Fahrenheit|Celsius))", " degrees Fahrenheit", out)  # info: set out
     out = re.sub(r"(?i)(\d+(?:\.\d+)?)\s*h(?:ours?|rs?)?\s*old", r"about \1 hours old", out)  # info: set out
     out = re.sub(r"(?<=\d)\s*hrs?\b", " hours", out)  # info: set out
     out = re.sub(r"(?<=\d)\s*h(?!ours|\d)\b", " hours", out)  # info: set out

@@ -166,7 +166,7 @@ def texts(s: dict, now: datetime) -> tuple[str, str]:  # info: def texts
     if s.get("temp_c") is not None:  # info: if s . get ( "temp_c" ) is not None
         src = f" ({s['temp_source']})" if s.get("temp_source") else ""  # info: set src
         md += f"| Temp | {s['temp_c']}°C{src} |\n"  # info: set md
-        spoken.append(f"Temperature {s['temp_c']} degrees.")  # info: spoken . append
+        spoken.append(f"Temperature {s['temp_c']} degrees Celsius.")  # info: spoken . append ( f" Temperature { s [ 'temp_c' ] } degrees Celsius. " )
     if s.get("gpu_pct") is not None:  # info: if s . get ( "gpu_pct" ) is not None
         name = s.get("gpu_name") or "iGPU"  # info: set name
         md += f"| iGPU | {name} — {s['gpu_pct']}% |\n"  # info: set md
