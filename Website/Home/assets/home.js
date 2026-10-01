@@ -288,7 +288,19 @@
       out.push([lng, lat]);
     });
     if (out.length < 4) return null;
-    out.reverse();
+    // Keep the ring's own winding. Reversing it fills the rest of the planet
+    // and the forecast cone paints over the earth.
+    var minLng = 180;
+    var maxLng = -180;
+    var minLat = 90;
+    var maxLat = -90;
+    out.forEach(function (p) {
+      if (p[0] < minLng) minLng = p[0];
+      if (p[0] > maxLng) maxLng = p[0];
+      if (p[1] < minLat) minLat = p[1];
+      if (p[1] > maxLat) maxLat = p[1];
+    });
+    if (maxLng - minLng > 100 || maxLat - minLat > 70) return null;
     var first = out[0];
     var last = out[out.length - 1];
     if (first[0] !== last[0] || first[1] !== last[1]) out.push([first[0], first[1]]);
@@ -384,7 +396,7 @@
       .pathLabel(trackLabel)
       .pathTransitionDuration(0)
       .polygonGeoJsonGeometry(function (d) { return d.geometry; })
-      .polygonCapCurvatureResolution(3)
+      .polygonCapCurvatureResolution(8)
       .polygonAltitude(0.001)
       .polygonCapColor(zoneFill)
       .polygonSideColor(function () { return "rgba(0,0,0,0)"; })
