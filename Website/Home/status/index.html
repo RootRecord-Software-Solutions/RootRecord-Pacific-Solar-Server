@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Public status for the Root Record network, field systems, and core services.">
+<title>Status — Root Record</title>
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="/">Root Record</a>
+  <nav aria-label="Primary">
+    <a href="/">Home</a>
+    <a href="/ecosystem">Ecosystem</a>
+    <a href="/operations">Systems</a>
+    <a href="/intelligence">Intelligence</a>
+    <a href="/knowledge">Knowledge</a>
+    <a href="/security">Security</a>
+    <a href="/status" aria-current="page">Status</a>
+  </nav>
+  <a class="enter" href="/login">Login</a>
+</header>
+<main class="page">
+  <p class="eyebrow">Public feed</p>
+  <h1>Root Record status</h1>
+  <p class="prose" id="feed-line">Network feed connecting</p>
+  <section class="status-block" aria-label="Network">
+    <h2>Network</h2>
+    <div class="status-row"><i class="led" id="led-hi"></i><span>Hawaiʻi</span><b id="val-hi">—</b></div>
+    <div class="status-row"><i class="led" id="led-ms"></i><span>Mainland Server</span><b id="val-ms">—</b></div>
+  </section>
+  <section class="status-block" aria-label="Field systems">
+    <h2>Field systems</h2>
+    <div class="status-row"><i class="led" id="led-energy"></i><span>Energy</span><b id="val-energy">—</b></div>
+    <div class="status-row"><i class="led" id="led-weather"></i><span>Weather</span><b id="val-weather">—</b></div>
+    <div class="status-row"><i class="led" id="led-geology"></i><span>Geology</span><b id="val-geology">—</b></div>
+  </section>
+  <section class="status-block" aria-label="Core services">
+    <h2>Core services</h2>
+    <div class="status-row"><i class="led" id="led-knowledge"></i><span>Knowledge</span><b id="val-knowledge">No public signal</b></div>
+    <div class="status-row"><i class="led" id="led-runtime"></i><span>Runtime</span><b id="val-runtime">No public signal</b></div>
+    <div class="status-row"><i class="led" id="led-data"></i><span>Data</span><b id="val-data">No public signal</b></div>
+  </section>
+  <p class="meta" style="margin-top:22px">Last update</p>
+  <p class="reading" id="last-update">—</p>
+  <p class="fine">A mark lights when a reading is present. Knowledge, runtime, and data have no public probe on this board, so they stay without a signal. <a href="/operations">Systems</a></p>
+</main>
+<footer class="site-foot">
+  <a href="/">Home</a>
+  <a href="/operations">Operations</a>
+  <a href="/infrastructure">Infrastructure</a>
+  <a href="/data">Data</a>
+</footer>
+<script src="/assets/telemetry.js"></script>
+<script src="/assets/live.js"></script>
+</body>
+</html>

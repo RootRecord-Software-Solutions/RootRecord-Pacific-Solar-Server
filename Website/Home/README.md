@@ -1,20 +1,34 @@
 # Root Record
 
-Public home page for Root Record Software Solutions. Vercel builds this repository.
+Public presentation layer for the Root Record ecosystem.
 
-The globe is the page background. A compact activity readout sits on the left. Sign up, a short about card, and operations sit on the right. The glass is light so the globe stays visible. Arc width from the feed (about 1.2–1.5) is drawn near 0.14–0.18. Close a box to use the globe. **+ Activity**, **+ Sign up**, **+ About**, and **+ Operations** bring a closed box back. Sign up opens `/login` on this site.
+This repository is the site. It explains the architecture and opens controlled paths into the systems underneath. It is not a copy of the runtime, the library, or the database, and it does not hold measurements or private infrastructure detail.
 
-| File | Role |
+Production is [https://www.rootrecord.cloud/](https://www.rootrecord.cloud/).
+
+## Pages
+
+| Path | Purpose |
 | --- | --- |
-| [index.html](index.html) | The page |
-| [vercel.json](vercel.json) | Static hosting headers |
+| `/` | Live public overview |
+| `/ecosystem` | How knowledge, runtime, and data fit together |
+| `/infrastructure` | Hawaiʻi, the Root Record Network, and the Mainland Server |
+| `/operations` | Field systems and operations |
+| `/intelligence` | Agents, context, execution, and verification |
+| `/data` | Telemetry and persistent state |
+| `/knowledge` | RootRecord Library |
+| `/security` | Public security posture |
+| `/status` | Public system status |
+| `/about` | Why Root Record exists |
 
-This repository does not hold measurements. The homepage is this Vercel app. AWS is not the site.
+Navigation stays short: Home, Ecosystem, Systems, Intelligence, Knowledge, Security, Status, and Login. Deeper pages cross-link.
 
-Public page hosts in the desk manifest point at `https://www.rootrecord.cloud/`. The page source requests `https://api.rootrecord.cloud`, and that name has no public DNS yet. SSH carries Hawaii snapshots to AWS at `18.118.30.226`. Do not call port 8787. Do not treat `www` as the API.
+## Vocabulary
 
-The globe state file and the Hawaii status snapshot live on AWS. The contract is [HANDOFF-vercel-homepage-2026-09-30.md](../HANDOFF-vercel-homepage-2026-09-30.md). That file stays on the Pacific desk. It is not part of this Vercel repository.
+Hawaiʻi. Mainland Server. Root Record Network. Pacific Solar Server. RootRecord Library. RootRecord Database. Field systems. Intelligent systems. Runtime. Knowledge layer. Data layer. Verification. Continuity.
 
-On the desk, edit `1 - Servers/1 - RootRecord-Pacific-Solar-Server/Website/Home/`. The `website` row in `Github/scripts/repos.conf` mirror-publishes that folder here. Do not put a `.git` directory in the umbrella tree. Do not bind port 3001.
+The public relationship is Hawaiʻi and the Mainland Server. The site does not name a cloud provider, a finer server location, or private infrastructure.
 
-Desk scripts, Stripe, and Cloudflare worker source stay in `Website/` outside this folder. They publish with the Pacific repository, not with this one.
+## Status feed
+
+The homepage, systems page, and status page request `https://api.rootrecord.cloud` for public readings. A missing reading stays missing. Counts and field values are shown only when that feed reports them.

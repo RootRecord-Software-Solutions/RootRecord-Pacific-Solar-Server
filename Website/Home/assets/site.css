@@ -339,6 +339,8 @@ a:hover { color: #e0f2fe; }
   margin-top: 14px;
 }
 
+.quad-pair { grid-template-columns: 1fr 1fr; }
+
 .quad h3,
 .card h3 {
   margin: 0 0 8px;

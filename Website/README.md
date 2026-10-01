@@ -1,6 +1,6 @@
 # Website
 
-Desk runtime for Stripe snapshots, Vercel failed-build records, and last-known operation JSON. The public page is `Website/Home/`.
+Desk runtime for Stripe snapshots, Vercel failed-build records, and last-known operation JSON. The public site is `Website/Home/`. That folder is the RootRecord-Website presentation layer: the pages Vercel publishes. It is not a second copy of the runtime. Public vocabulary in that folder is Hawaiʻi and Mainland Server. Do not put a provider name, a finer server location, or private infrastructure there.
 
 | Item | Where |
 | --- | --- |

@@ -194,17 +194,14 @@ def addresses_group(text, voices):  # info: def addresses_group
 
 # ====================================================
 # SECTION: function clean_reply
-# What it does: clean reply.
+# What it does: Drop leaked instruction lines and keep the rest of the reply. Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def clean_reply(text: str) -> str | None:  # info: def clean_reply
     if not text or not text.strip():  # info: if not text or not text . strip
         return None  # info: return None
-    if LEAK_RE.search(text):  # info: if LEAK_RE . search ( text ) :
-        # refuse to post instruction leaks
-        return None  # info: return None
-    # strip single-flight noise
-    lines = [ln for ln in text.splitlines() if not ln.startswith("[ok]")]  # info: set lines
+    # strip single-flight noise and drop only the lines that leak instructions
+    lines = [ln for ln in text.splitlines() if not ln.startswith("[ok]") and not LEAK_RE.search(ln)]  # info: set lines
     out = "\n".join(lines).strip()  # info: set out
     return out or None  # info: return out or None
 
@@ -566,6 +563,7 @@ def continue_prompt(transcript, quoted, text, voice) -> str:  # info: def contin
     if quoted:  # info: if quoted
         parts.append("They are asking about this earlier line:\n" + quoted)  # info: parts . append
         parts.append("Explain that earlier line in plain words. Do not repeat it unchanged.")  # info: parts . append
+    parts.append("Reply to the person who just spoke. Do not address anyone else by name.")  # info: parts . append
     parts.append("One or two short sentences.")  # info: parts . append
     parts.append("User: " + text)  # info: parts . append
     return "\n\n".join(parts)  # info: return "\n\n" . join ( parts )
