@@ -1593,6 +1593,10 @@ p .enter { display: inline-block; }
 .radio-go { margin: 16px 0 0; }
 
 #radio-listen[hidden] { display: none; }
+#radio-listen[aria-pressed="false"] {
+  border-color: var(--line);
+  color: #e8e8ef;
+}
 
 #radio-blurb { margin-top: 4px; max-width: 42rem; }
 #radio-blurb:empty { display: none; }
