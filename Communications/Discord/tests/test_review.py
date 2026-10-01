@@ -223,10 +223,11 @@ class ReviewPipelineTests(unittest.TestCase):  # info: class ReviewPipelineTests
     def test_default_infer_uses_run_infer_and_library_persona(self):  # info: def test_default_infer_uses_run_infer_and_library_persona
         self.assertTrue(review.RUN_INFER.is_file())  # info: self . assertTrue ( review . RUN_INFER . is_file ( ) )
         self.assertTrue(str(review.RUN_INFER).endswith("run-infer.sh"))  # info: self . assertTrue ( str ( review . RUN_INFER ) . endswith ( "run-infer.sh" ) )
-        with patch.object(review, "persona_system", return_value="CANONICAL-PERSONA") as loaded:  # info: with patch . object ( review , "persona_system" , return_value = "CANONICAL-PERSONA" ) as loaded
-            with patch("review.subprocess.run") as run:  # info: with patch ( "review.subprocess.run" ) as run
-                run.return_value = subprocess.CompletedProcess(args=[], returncode=0, stdout="hello\n", stderr="")  # info: run . return_value = subprocess . CompletedProcess ( args = [ ] , returncode = 0 , stdout = "hello\n" , stderr = "" )
-                out = review.default_infer("bruce", "review this draft")  # info: set out
+        with patch.dict(os.environ, {"FLM_MODEL": "llama3.2:1b"}, clear=False):  # info: with patch . dict ( os . environ , { "FLM_MODEL" : "llama3.2:1b" } , clear = False )
+            with patch.object(review, "persona_system", return_value="CANONICAL-PERSONA") as loaded:  # info: with patch . object ( review , "persona_system" , return_value = "CANONICAL-PERSONA" ) as loaded
+                with patch("review.subprocess.run") as run:  # info: with patch ( "review.subprocess.run" ) as run
+                    run.return_value = subprocess.CompletedProcess(args=[], returncode=0, stdout="hello\n", stderr="")  # info: run . return_value = subprocess . CompletedProcess ( args = [ ] , returncode = 0 , stdout = "hello\n" , stderr = "" )
+                    out = review.default_infer("bruce", "review this draft")  # info: set out
         self.assertEqual(out, "hello")  # info: self . assertEqual ( out , "hello" )
         loaded.assert_called_once_with("bruce")  # info: loaded . assert_called_once_with ( "bruce" )
         argv = run.call_args.args[0]  # info: set argv

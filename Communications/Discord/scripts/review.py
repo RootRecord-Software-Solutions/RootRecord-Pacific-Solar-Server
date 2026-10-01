@@ -264,7 +264,7 @@ def default_infer(voice: str, prompt: str) -> str:  # info: def default_infer
     env["RR_PERSONA_SYSTEM"] = persona_system(voice)  # info: env [ "RR_PERSONA_SYSTEM" ] = persona_system ( voice )
     env["RR_NPU_ONLY"] = "1"  # info: env [ "RR_NPU_ONLY" ] = "1"
     env["RR_NPU_PERSONA"] = "1"  # info: env [ "RR_NPU_PERSONA" ] = "1"
-    env["FLM_MODEL"] = os.environ.get("FLM_MODEL", "llama3.2:3b")  # info: env [ "FLM_MODEL" ] = os . environ . get ( "FLM_MODEL" , "llama3.2:3b" )
+    env["FLM_MODEL"] = "llama3.2:3b"  # info: env [ "FLM_MODEL" ] = "llama3.2:3b"
     env["RR_CALLER"] = "discord-review"  # info: env [ "RR_CALLER" ] = "discord-review"
     proc = subprocess.run(  # info: set proc
         [str(RUN_INFER), voice, prompt],  # info: [ str ( RUN_INFER ) , voice , prompt ]
