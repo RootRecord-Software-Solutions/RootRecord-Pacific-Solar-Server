@@ -127,12 +127,15 @@ class Device(DeviceBase, RawDataProps):
 
             case 0x05, 0x20, 0x02:
                 self.update_from_bytes(Mr330MpptHeart, packet.payload)
-                self.car_input_power = (
-                    self.dc_port_input_power if self.dc_mode == DCMode.CAR else 0
-                )
-                self.solar_input_power = (
-                    self.dc_port_input_power if self.dc_mode == DCMode.SOLAR else 0
-                )
+                # AUTO is the usual panel setting. Only CAR is the 12 V source.
+                # Treating AUTO as zero dropped a live charge (watts in, solar reported 0).
+                port_watts = self.dc_port_input_power or 0
+                if self.dc_mode == DCMode.CAR:
+                    self.car_input_power = port_watts
+                    self.solar_input_power = 0
+                else:
+                    self.car_input_power = 0
+                    self.solar_input_power = port_watts
 
                 processed = True
 

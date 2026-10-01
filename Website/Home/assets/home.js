@@ -188,7 +188,7 @@
       var spinBtn = document.getElementById("spin");
       function applySpin() {
         controls.autoRotate = !!(spinOn && !reduced() && !hidden);
-        controls.autoRotateSpeed = 0.35;
+        controls.autoRotateSpeed = document.body.classList.contains("broadcast") ? 0.7 : 0.35;
         if (!spinBtn) return;
         spinBtn.textContent = spinOn ? "Stop spin" : "Resume spin";
         spinBtn.setAttribute("aria-pressed", spinOn ? "true" : "false");
@@ -216,7 +216,7 @@
         var fallbackControls = globe.controls();
         fallbackControls.enableZoom = false;
         fallbackControls.autoRotate = !reduced();
-        fallbackControls.autoRotateSpeed = 0.35;
+        fallbackControls.autoRotateSpeed = document.body.classList.contains("broadcast") ? 0.7 : 0.35;
         globe.pointOfView({ lat: 16, lng: -156, altitude: 2.15 });
       } catch (err2) {
         globe = null;

@@ -181,6 +181,32 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do  # info:
   git remote set-url "$remote_name" "$(remote_url "$slug")" 2>/dev/null \
     || git remote set-url origin "$(remote_url "$slug")"  # info: command
 
+  # Mainland README carries an AWS-written status block. Keep the GitHub copy
+  # of that block so a desk publish does not replace live numbers.
+  if [[ "$id" == "mainland" && -f "$root/README.md" ]]; then  # info: if
+    if git fetch "$remote_name" "$branch" >/dev/null 2>&1; then  # info: if
+      python3 - "$root" << 'PY'  # info: python3
+import pathlib, re, subprocess, sys
+root = sys.argv[1]
+try:
+    remote = subprocess.check_output(["git", "show", "FETCH_HEAD:README.md"], cwd=root, text=True)
+except subprocess.CalledProcessError:
+    raise SystemExit(0)
+local_path = pathlib.Path(root) / "README.md"
+local = local_path.read_text()
+pat = re.compile(r"<!-- aws-status:start -->.*?<!-- aws-status:end -->", re.S)
+remote_block = pat.search(remote)
+local_block = pat.search(local)
+if not remote_block or not local_block or remote_block.group(0) == local_block.group(0):
+    raise SystemExit(0)
+local_path.write_text(local[: local_block.start()] + remote_block.group(0) + local[local_block.end() :])
+print("kept AWS status block from GitHub")
+PY
+    else  # info: else
+      echo "— [$id] status block left as the desk copy; fetch failed" >&2  # info: echo
+    fi  # info: fi
+  fi  # info: fi
+
   oversized=0  # info: set oversized
   while IFS= read -r -d '' f; do  # info: while
     sz=$(stat -c%s "$f" 2>/dev/null || echo 0)  # info: set sz

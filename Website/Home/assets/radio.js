@@ -64,8 +64,6 @@
   var chimeTimer = 0;
   var chimeTry = 0;
   var STORE = "rr-radio-local";
-  // Area forecast discussion plays when the file is new. It is not in the repeating cycle.
-  var FRESH = { official_weather: true };
 
   function localWanted() {
     try { return localStorage.getItem(STORE) !== "0"; }
@@ -210,7 +208,7 @@
     if (!started || chimeOn || slot === lastChime) return;
     lastChime = slot;
     chimeOn = true;
-    reportHeld = !!(playing && !report.ended);
+    reportHeld = !!(playing && !report.paused);
     if (reportHeld) report.pause();
     reportEl.textContent = "Time";
     ramp(DUCK);
@@ -309,7 +307,7 @@
     playing = null;
     reportEl.textContent = "";
     if (!chimeOn) ramp(FULL);
-    if (!FRESH[done.id] && replay && replay.id === done.id && replay.mtime > done.mtime) {
+    if (replay && replay.id === done.id && replay.mtime > done.mtime) {
       var again = replay;
       replay = null;
       beginReport(again);
@@ -357,7 +355,7 @@
 
   function enqueueUpdate(item) {
     if (playing && playing.id === item.id) {
-      if (!FRESH[item.id] && item.mtime > playing.mtime) replay = item;
+      if (item.mtime > playing.mtime) replay = item;
       return;
     }
     var at = queued(updates, item.id);
@@ -372,17 +370,15 @@
 
   function enqueueRotation() {
     if (!reports.length) return;
-    var guard = 0;
-    while (guard < reports.length) {
-      var item = reports[rotAt % reports.length];
+    var item = reports[rotAt % reports.length];
+    rotAt += 1;
+    if (playing && playing.id === item.id) {
+      if (reports.length < 2) return;
+      item = reports[rotAt % reports.length];
       rotAt += 1;
-      guard += 1;
-      if (!item || FRESH[item.id]) continue;
-      if (playing && playing.id === item.id) continue;
-      if (queued(updates, item.id) >= 0 || queued(rotation, item.id) >= 0) return;
-      rotation.push(item);
-      return;
     }
+    if (queued(updates, item.id) >= 0 || queued(rotation, item.id) >= 0) return;
+    rotation.push(item);
   }
 
   function applyCatalog(data) {
@@ -397,7 +393,7 @@
     var live = {};
     reports.forEach(function (row) { live[row.id] = true; });
     updates = updates.filter(function (row) { return live[row.id]; });
-    rotation = rotation.filter(function (row) { return live[row.id] && !FRESH[row.id]; });
+    rotation = rotation.filter(function (row) { return live[row.id]; });
     Object.keys(seen).forEach(function (id) {
       if (!live[id]) delete seen[id];
     });

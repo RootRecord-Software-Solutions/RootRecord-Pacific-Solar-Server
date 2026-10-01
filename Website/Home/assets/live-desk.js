@@ -1,6 +1,19 @@
 (function () {
   var T = window.RRTelemetry;
 
+  function fitDesk() {
+    var hud = document.querySelector(".broadcast-hud");
+    if (!hud) return;
+    var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    if (!isFinite(scale) || scale <= 0) scale = 1;
+    var x = Math.max(0, (window.innerWidth - 1920 * scale) / 2);
+    var y = Math.max(0, (window.innerHeight - 1080 * scale) / 2);
+    hud.style.transform = "translate(" + x + "px," + y + "px) scale(" + scale + ")";
+  }
+
+  fitDesk();
+  window.addEventListener("resize", fitDesk);
+
   function text(id) {
     var node = document.getElementById(id);
     return node ? node.textContent : "";
