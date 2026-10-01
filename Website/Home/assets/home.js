@@ -449,19 +449,63 @@
     globe.arcsData(scene.arcs);
   }
 
+  var NIGHT_EARTH = "/assets/earth/night.jpg?v=20261001y";
+
+  function storedSpin() {
+    try {
+      return localStorage.getItem("rr-home:spin") !== "off";
+    } catch (err) {
+      return true;
+    }
+  }
+
+  function repairNightEarth() {
+    if (!globe || typeof globe.globeMaterial !== "function") return;
+    var mat = globe.globeMaterial();
+    if (!mat) return;
+    var source = mat.map && mat.map.image;
+    function apply(img) {
+      var w = img.naturalWidth || img.width;
+      var h = img.naturalHeight || img.height;
+      if (!w || !h || !mat.map) return;
+      var copy = document.createElement("canvas");
+      copy.width = w;
+      copy.height = h;
+      var ctx = copy.getContext("2d");
+      if (!ctx) return;
+      ctx.drawImage(img, 0, 0, w, h);
+      mat.map.image = copy;
+      mat.map.needsUpdate = true;
+      if (!mat.color || !mat.color.isColor) {
+        if (mat.specular && mat.specular.clone) mat.color = mat.specular.clone();
+      }
+      if (mat.color && mat.color.setHex) mat.color.setHex(0xffffff);
+      mat.needsUpdate = true;
+    }
+    if (source && (source.naturalWidth || source.width)) {
+      apply(source);
+      return;
+    }
+    var img = new Image();
+    img.onload = function () { apply(img); };
+    img.src = NIGHT_EARTH;
+  }
+
   function plainEarth() {
     return Globe()(globeEl)
-      .globeImageUrl("https://unpkg.com/three-globe/example/img/earth-night.jpg")
+      .globeImageUrl(NIGHT_EARTH)
       .backgroundColor("rgba(0,0,0,0)")
       .showAtmosphere(true)
-      .atmosphereColor("#3a1c71")
-      .atmosphereAltitude(0.18);
+      .atmosphereColor("#8eb6ff")
+      .atmosphereAltitude(0.13)
+      .onGlobeReady(repairNightEarth);
   }
 
   if (globeEl && typeof Globe === "function") {
     try {
       globe = Globe()(globeEl)
-        .globeImageUrl("/assets/earth/night.jpg")
+        .globeImageUrl(NIGHT_EARTH)
+        .onGlobeReady(repairNightEarth)
         .backgroundColor("rgba(0,0,0,0)")
         .showAtmosphere(true)
         .atmosphereColor("#8eb6ff")
@@ -501,7 +545,7 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
       }
 
-      spinOn = reduced() ? false : localStorage.getItem("rr-home:spin") !== "off";
+      spinOn = reduced() ? false : storedSpin();
       var spinBtn = document.getElementById("spin");
       function applySpin() {
         controls.autoRotate = !!(spinOn && !reduced() && !hidden);
@@ -513,7 +557,9 @@
       if (spinBtn) {
         spinBtn.addEventListener("click", function () {
           spinOn = !spinOn;
-          localStorage.setItem("rr-home:spin", spinOn ? "on" : "off");
+          try {
+            localStorage.setItem("rr-home:spin", spinOn ? "on" : "off");
+          } catch (err) {}
           applySpin();
         });
       }
@@ -531,12 +577,19 @@
       }
     } catch (err) {
       try {
-        globe = plainEarth();
-        var fallbackControls = globe.controls();
-        fallbackControls.enableZoom = false;
-        fallbackControls.autoRotate = !reduced();
-        fallbackControls.autoRotateSpeed = document.body.classList.contains("broadcast") ? 1.05 : 0.35;
-        globe.pointOfView({ lat: 16, lng: -156, altitude: 2.15 });
+        if (globe) {
+          repairNightEarth();
+          var kept = globe.controls();
+          kept.autoRotate = !reduced();
+          kept.autoRotateSpeed = document.body.classList.contains("broadcast") ? 1.05 : 0.35;
+        } else {
+          globe = plainEarth();
+          var fallbackControls = globe.controls();
+          fallbackControls.enableZoom = false;
+          fallbackControls.autoRotate = !reduced();
+          fallbackControls.autoRotateSpeed = document.body.classList.contains("broadcast") ? 1.05 : 0.35;
+          globe.pointOfView({ lat: 16, lng: -156, altitude: 2.15 });
+        }
         startQuakes();
         startStorms();
       } catch (err2) {
