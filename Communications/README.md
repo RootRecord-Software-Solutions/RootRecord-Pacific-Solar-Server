@@ -13,7 +13,7 @@ Messaging, the live Cloudflare tunnel, the Hawaii network-globe collector, and c
 | `network/cloudflare/` | Live `cloudflared` for `rootserver.rootrecord.cloud` → `127.0.0.1:8799`. Binary is untracked. Token file `~/.cloudflared/rootserver.token`. | **Live.** Job `cloudflare_tunnel`. |
 | `network/local-data-globe/` | Hawaii SSH collector. Live records go to AWS, or to Telegram when SSH is down. Not a chart library. | **Live.** Job `network_globe_hawaii`. |
 | `telegram/` | One `getUpdates` owner (`council-relay.py` via `ensure-relay.sh`). Contract: `telegram/CONTRACT.md`. | **Live.** Sandbox replies on. Live council and private DMs stay off (`RR_RELAY_REPLIES` default 0). Inference is NPU `llama3.2:3b` on demand, in `System/scripts/plumbing/`, not here. |
-| `Discord/` | Poller. Token `DISCORD_BOT_TOKEN` only, local. | **Off.** Job `discord_poller` enabled false. No post. |
+| `Discord/` | Poller. Token `DISCORD_BOT_TOKEN` only, local. Ava review pipeline off unless `RR_DISCORD_REVIEW_PIPELINE=1`. | **Off.** Job `discord_poller` enabled false. No post. |
 | `Slack/` | Poller. Token `SLACK_BOT_TOKEN` only, local. | **Off** unless `RR_SLACK=1`. No post. |
 | `email/` | Empty shell. | **Unused.** |
 | `github/` | Empty shells for API, messaging, notifications, webhooks. | **Unused.** Git catalog sync is `Github/`, not here. |

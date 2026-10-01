@@ -12,7 +12,7 @@ Communication adapter. It does not own agent identity.
     WORKFLOW.md
 ```
 
-`council-relay.py` passes that text as `RR_PERSONA_SYSTEM`. There is no prompt copy in this folder.
+`council-relay.py` passes that text as `RR_PERSONA_SYSTEM`. Discord `scripts/review.py` uses the same loader when `RR_DISCORD_REVIEW_PIPELINE=1`. There is no prompt copy in this folder.
 
 `CONTEXT/`, `README.md`, `CHANGELOG.md`, and `HANDOFF-TEMPLATE.md` stay in the Library. They are not pasted into each Telegram turn. Council chat context is 4096 tokens (`0002`).
 

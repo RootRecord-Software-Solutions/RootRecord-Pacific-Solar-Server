@@ -7,4 +7,4 @@
 # banner from 5 - RootRecord-Library/prompts/How-To-Read-And-Edit-Code.md.
 # Kind: python
 # ==============================================================================
-"""Discord — poll only. Posts stay off unless RR_DISCORD_POST=1."""  # info: """Discord — poll only. Posts stay off unless RR_DISCORD_POST=1."""
+"""Discord poller. Posts stay off unless RR_DISCORD_POST=1. Ava review stays off unless RR_DISCORD_REVIEW_PIPELINE=1."""  # info: """Discord poller. Posts stay off unless RR_DISCORD_POST=1. Ava review stays off unless RR_DISCORD_REVIEW_PIPELINE=1."""
