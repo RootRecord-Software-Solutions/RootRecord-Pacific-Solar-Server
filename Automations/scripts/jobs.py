@@ -623,6 +623,20 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
         "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd" : f" { PACIFIC } /Media/Voice/scripts " ,
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
+    {  # info: {
+        # Automated report relay (2026-09-30). Alexander asked to start posting.
+        # RR_DISCORD_POST is set only in this job's env. The chat poller stays off.
+        "id": "discord_report_relay",  # info: "id" : "discord_report_relay" ,
+        "enabled": True,  # info: "enabled" : True ,
+        "description": "Post each changed automated report to its Reports channel. Chat poller stays off.",  # info: "description" : "Post each changed automated report to its Reports channel. Chat poller stays off." ,
+        "interval_sec": 300,  # info: "interval_sec" : 300 ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Communications/Discord/scripts/report_relay.py"',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Communications/Discord/scripts/report_relay.py" ' ,
+        "timeout_sec": 120,  # info: "timeout_sec" : 120 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{PACIFIC}/Communications/Discord",  # info: "cwd" : f" { PACIFIC } /Communications/Discord " ,
+        "env": {"RR_DISCORD_POST": "1"},  # info: "env" : { "RR_DISCORD_POST" : "1" } ,
+    },  # info: } ,
     # --- TEMPLATE (EVERY_SECONDS) — copy from the next line through the closing brace, paste ABOVE this template, remove the leading # ---
     # {
     #     "id": "example_every_seconds",

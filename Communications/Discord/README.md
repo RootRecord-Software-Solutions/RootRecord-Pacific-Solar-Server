@@ -2,7 +2,7 @@
 
 Discord poller under Pacific Communications. Package name `Discord`. One folder. No lowercase twin.
 
-**Status:** poller landed, not LIVE. Job `discord_poller` is `enabled: False`. `RR_DISCORD_POLLER`, `RR_DISCORD_POST`, `RR_DISCORD_REVIEW_PIPELINE`, and `RR_GLOBAL_UPDATER` stay unset. No token means no Discord HTTP.
+**Status:** chat poller is not LIVE. Job `discord_poller` is `enabled: False`. `RR_DISCORD_POLLER`, `RR_DISCORD_REVIEW_PIPELINE`, and `RR_GLOBAL_UPDATER` stay unset. Job `discord_report_relay` is on. It sets `RR_DISCORD_POST=1` only for that process and posts a changed report file to its own channel.
 
 ---
 
@@ -14,7 +14,7 @@ Before any Discord bot is brought online on Pacific:
 2. Store it as `DISCORD_BOT_TOKEN` in `/home/rootrecord/master/master-key.env` only. Never commit the value.
 3. Do not copy tokens from archive, mirror, or inventory history. Do not fall through `AVA_DISCORD_BOT_TOKEN`, `SEXI_DISCORD_BOT_TOKEN`, or `DISCORD_ROOTMC_BOT_TOKEN`.
 4. `config/channels.json` lists only `#help-desk` (`1555097963049521192`). The poller does not fetch other channels.
-5. Posts stay off unless `RR_DISCORD_POST=1`. That gate is unset. Mark LIVE only after a smoke test Alexander signs off.
+5. Chat replies stay off unless `RR_DISCORD_POST=1` is set for that process. The report relay job sets the gate for itself. Mark the chat poller LIVE only after a smoke test Alexander signs off.
 
 Canonical process: [WO-COM-002 — Discord Bot Credential Rotation](https://github.com/RootRecord-Software-Solutions/RootRecord-Library/blob/main/Documentation/06-development/Work-Orders/WO-COM-002-Discord-Bot-Credential-Rotation.md)
 
@@ -34,7 +34,9 @@ Draft: `5 - RootRecord-Library/Documentation/06-development/Work-Orders/drafts/D
 | Persona loader | `Communications/CouncilPersona/scripts/personas.py` reads Library `Agent Context/` |
 | Global Updater | `Communications/Discord/scripts/global_updater.py` (gate `RR_GLOBAL_UPDATER`) |
 | Guild allowlist | `Communications/Discord/config/guilds.json` (`1497039564345442406`, RootRecord Software Solutions) |
-| Channel map | `Communications/Discord/config/channel-map.json` (snapshot only; not the reply allowlist) |
+| Channel map | `Communications/Discord/config/channel-map.json` (full layout, including Reports) |
+| Report routes | `Communications/Discord/config/report-channels.json` (one channel id per automated report) |
+| Report relay | `Communications/Discord/scripts/report_relay.py` (job `discord_report_relay`) |
 | Application label | `Communications/Discord/config/global-updater.json` (name and application id; not a token, not a bot user id) |
 | Inference | `System/scripts/plumbing/run-infer.sh` |
 | Database | `2 - RootRecord-Database/Communications/Discord/` |
@@ -108,11 +110,11 @@ The gate is `RR_GLOBAL_UPDATER=1`. Unset means the poller does not run this path
 - the message names Root Record Global Updater, or a mention username matches that name
 - the author is not a bot
 
-The professional guild is `1497039564345442406`. Direct messages have no guild id, so they are ignored. The bot user id is `1500289560343740566`. A mention of that id, or of the name Root Record Global Updater, is the trigger, and only in `#help-desk`. `config/channel-map.json` is the full professional layout. `RR_GLOBAL_UPDATER` and `RR_DISCORD_POST` stay unset, so the poller does not reply until those gates are turned on.
+The professional guild is `1497039564345442406`. Direct messages have no guild id, so they are ignored. The bot user id is `1500289560343740566`. A mention of that id, or of the name Root Record Global Updater, is the trigger, and only in `#help-desk`. `config/channel-map.json` is the full professional layout. `RR_GLOBAL_UPDATER` stays unset, so the poller does not reply in chat. Report posts use `config/report-channels.json` and do not use this mention path.
 
 The reply is one `run-infer.sh` call for the voice `global-updater`, on the existing NPU single-flight path (`RR_NPU_ONLY=1`, `llama3.2:3b`). It does not call Ava, Bruce, or Carly. Host figures come from the recorded file `2 - RootRecord-Database/System/last/host-last.json`. Discord does not sample the host. A missing or old sample is unavailable. A sample older than 15 minutes and no older than 6 hours is reported as stale. A host sample is not a service-status claim.
 
-Posting still requires `RR_DISCORD_POST=1`. Do not set either gate, and do not enable `discord_poller`, until a manual test is signed off. Do not send a live Discord message from this work without that sign-off.
+A chat reply still requires `RR_DISCORD_POST=1` on the poller. Do not set `RR_GLOBAL_UPDATER`, and do not enable `discord_poller`, until a manual chat test is signed off.
 
 ```text
 Ava Ivy
