@@ -453,6 +453,7 @@
     music.volume = FULL;
     rememberLocal(true);
     paintToggle(true);
+    if (!chime.src) unlock(chime);
     playMusic();
     armGap();
     armChime();
