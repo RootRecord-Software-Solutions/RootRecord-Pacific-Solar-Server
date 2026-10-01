@@ -1355,7 +1355,7 @@ body.desk .top { background: #000011; }
 
 .product {
   display: grid;
-  grid-template-columns: 92px 1fr;
+  grid-template-columns: 1fr;
   gap: 18px;
   align-items: start;
   padding: 18px;
@@ -1363,6 +1363,10 @@ body.desk .top { background: #000011; }
   border-radius: 16px;
   background: rgba(8, 12, 32, 0.72);
   box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.04), 0 16px 40px rgba(0, 0, 0, 0.28);
+}
+
+.product:has(.product-mark) {
+  grid-template-columns: 92px 1fr;
 }
 
 .product-mark {

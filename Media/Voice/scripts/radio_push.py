@@ -99,7 +99,7 @@ def push_music() -> dict:
         ["rsync", "-a", "-e", "ssh -o BatchMode=yes -o ConnectTimeout=20", str(MUSIC) + "/", f"{HOST}:{remote_dir}/"],
         capture_output=True,
         text=True,
-        timeout=600,
+        timeout=3600,
     )
     if sent.returncode != 0:
         return {"ok": False, "detail": "send_failed"}

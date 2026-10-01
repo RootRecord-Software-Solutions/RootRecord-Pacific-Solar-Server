@@ -12,10 +12,10 @@
 
   python3 moon_phase.py [--force]
 
-Same Open-Meteo host and Volcano / Puna point as sun_times.py. Daily moon_phase
-for 16 days is saved under Database Energy/moon/moon-last.json. The current
-phase is the day's value moved forward by the fraction of the HST day toward
-tomorrow. A failed fetch keeps the stored file. One HTTP call, 10 s timeout.
+Same Open-Meteo host and Volcano / Puna point as sun_times.py. Moonrise and
+moonset are saved from that pull. The phase and illumination are the sky at
+the fetch instant, not the daily phase number walked forward through the day.
+A failed fetch keeps the stored file. One HTTP call, 10 s timeout.
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
@@ -233,8 +233,8 @@ def refresh_if_stale(*, force: bool = False) -> dict:  # info: def refresh_if_st
             "phase": round(phase, 4),  # info: "phase" : round ( phase , 4 ) ,
             "phase_name": phase_name(phase),  # info: "phase_name" : phase_name ( phase ) ,
             "illumination": int(round(lit * 100)),  # info: "illumination" : int ( round ( lit * 100 ) ) ,
-            "moonrise": _hhmm_from_iso(rises[index] if index < len(rises) else None),  # info: "moonrise" : _hhmm_from_iso ( rises [ index ] if
-            "moonset": _hhmm_from_iso(sets[index] if index < len(sets) else None),  # info: "moonset" : _hhmm_from_iso ( sets [ index ] if
+            "moonrise": _hhmm_from_iso(rises[index] if 0 <= index < len(rises) else None),  # info: "moonrise" : _hhmm_from_iso ( rises [ index ] if 0 <= index
+            "moonset": _hhmm_from_iso(sets[index] if 0 <= index < len(sets) else None),  # info: "moonset" : _hhmm_from_iso ( sets [ index ] if 0 <= index
             "next_phase": next_name,  # info: "next_phase" : next_name ,
             "next_phase_date": next_date,  # info: "next_phase_date" : next_date ,
             "source": "calculated",  # info: "source" : "calculated" ,
@@ -242,7 +242,7 @@ def refresh_if_stale(*, force: bool = False) -> dict:  # info: def refresh_if_st
             "lon": LON,  # info: "lon" : LON ,
             "fetched_at": now.isoformat(),  # info: "fetched_at" : now . isoformat ( ) ,
         }  # info: }
-        if index + 1 < len(dates):  # info: if index + 1 < len ( dates ) :
+        if index >= 0 and index + 1 < len(dates):  # info: if index >= 0 and index + 1 < len ( dates ) :
             payload["next_date"] = dates[index + 1]  # info: payload [ "next_date" ] = dates [ index + 1
         return dict(write(payload), ok=True, refreshed=True)  # info: return dict ( write ( payload ) , ok = True , refreshed = True
     except Exception as exc:  # noqa: BLE001

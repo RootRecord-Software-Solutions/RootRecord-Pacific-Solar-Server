@@ -13,6 +13,9 @@ INFO — MUST HAVE (future agents), added 2026-09-29:
 - Risky actions (poller restart, Telegram/voice sends, gated RR_* flags) are disabled unless
   risky_actions_enabled=true AND the action is signed_off AND it has an argv; each needs a confirm dialog.
   Agents must never click them. Enabling them is a sign-off item.
+- Controls → "Restart everything" is the operator button (2026-10-01). Confirm, then
+  Packaging/restart-everything.sh restarts the poller stack, BLE, the AWS fetch tunnel, and this window.
+  Agents must never click it. Ollama and the desktop session are left running.
 - --check builds every widget and loads each data source once, prints a report and exits; no window shown.
 - --screenshot DIR opens the window, captures each page to PNG (renders the window itself), then quits.
   Before each PNG is saved, every string in the window is checked against the known secret values; a match
@@ -32,6 +35,7 @@ from __future__ import annotations  # info: from __future__ import annotations
 import argparse  # info: import argparse
 import os  # info: import os
 import resource  # info: import resource
+import subprocess  # info: import subprocess
 import sys  # info: import sys
 import threading  # info: import threading
 import time  # info: import time
@@ -90,6 +94,7 @@ levelbar.rr-usage block.low { background-color: #859900; }
 levelbar.rr-usage block.high { background-color: #b58900; }
 levelbar.rr-usage block.full { background-color: #dc322f; }
 button.rr-island:checked { background-color: #859900; color: #fdf6e3; }
+button.rr-restart { min-width: 240px; min-height: 148px; font-size: 16pt; font-weight: bold; padding: 18px 22px; }
 """
 
 
@@ -689,13 +694,23 @@ class Panel(ExtraPages, AwsFallbackPage, AutomationsPage, TelemetryPage):  # inf
     # ----------------------------------------------------------- controls
     def b_controls(self, box):  # info: def b_controls
         o, i = section("Safe, read-only actions")  # info: o , i = section ( "Safe, read-only actions" )
+        row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=16)  # info: set row
+        left = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4, hexpand=True)  # info: set left
         for text, fn in (("Open Logs folder", lambda *_: self.open_path(self.paths.logs_dir)),  # info: for text , fn in ( ( "Open Logs folder"
                          ("Open Database folder", lambda *_: self.open_path(self.paths.db)),  # info: call (
                          ("Run npu-status.sh (NPU page)", lambda *_: (self.stack.set_visible_child_name("npu"), self.run_npu_status())),  # info: call (
                          ("Open poller dashboard (read-only terminal)", self.open_dashboard)):  # info: call (
             b = Gtk.Button(label=text, halign=Gtk.Align.START)  # info: set b
             b.connect("clicked", fn)  # info: b . connect ( "clicked" , fn )
-            i.append(b)  # info: i . append ( b )
+            left.append(b)  # info: left . append ( b )
+        row.append(left)  # info: row . append ( left )
+        restart = Gtk.Button(label="Restart everything", halign=Gtk.Align.END, valign=Gtk.Align.CENTER)  # info: set restart
+        restart.add_css_class("destructive-action")  # info: restart . add_css_class ( "destructive-action" )
+        restart.add_css_class("rr-restart")  # info: restart . add_css_class ( "rr-restart" )
+        restart.set_tooltip_text("Stops the poller stack, BLE, and the AWS fetch tunnel, starts them again, then restarts this window. Confirm first.")  # info: restart . set_tooltip_text
+        restart.connect("clicked", self.confirm_restart_everything)  # info: restart . connect ( "clicked" , self .
+        row.append(restart)  # info: row . append ( restart )
+        i.append(row)  # info: i . append ( row )
         box.append(o)  # info: box . append ( o )
         o, i = section("Risky actions — NEED SIGN-OFF (disabled by default; confirm dialog; never run by agents)")  # info: o , i = section ( "Risky actions — NEED SIGN-OFF (disabled by default; confirm dialog; never run by agents)" )
         self.risky_note = lbl("", "rr-warn", wrap=True)  # info: self . risky_note = lbl ( "" ,
@@ -735,6 +750,30 @@ class Panel(ExtraPages, AwsFallbackPage, AutomationsPage, TelemetryPage):  # inf
         self.confirm(f"Run risky action?", f"{action.get('label')}\n\nCommand: {' '.join(action['argv'])}\n\n"  # info: self . confirm ( f" Run risky action? " ,
                      "This needs Alexander's sign-off. Continue only if it was approved.",  # info: "This needs Alexander's sign-off. Continue only if it was approved." ,
                      "Run", lambda: spawn(list(action["argv"])))  # info: "Run" , lambda : spawn ( list (
+
+    def confirm_restart_everything(self, *_btn):  # info: def confirm_restart_everything
+        """Confirm, then hand the restart to a detached script. Does nothing when there is no window."""  # info: """Confirm, then hand the restart to a detached script. Does nothing when there is no window."""
+        if self.win is None:  # info: if self . win is None :
+            return  # info: return
+        script = HERE / "Packaging" / "restart-everything.sh"  # info: set script
+
+        def go():  # info: def go
+            subprocess.Popen(  # info: call subprocess . Popen
+                ["/bin/bash", str(script)],  # info: [ "/bin/bash" , str ( script ) ] ,
+                start_new_session=True,  # info: set start_new_session
+                stdin=subprocess.DEVNULL,  # info: set stdin
+                stdout=subprocess.DEVNULL,  # info: set stdout
+                stderr=subprocess.DEVNULL,  # info: set stderr
+                close_fds=True,  # info: set close_fds
+            )  # info: )
+            self.toast("Restarting the stack and this window…")  # info: self . toast
+
+        self.confirm(  # info: call self . confirm
+            "Restart everything?",  # info: "Restart everything?" ,
+            "Stops the poller stack and starts it again: poller, tunnel, cameras, weather, relay, and the Hawaii globe. "  # info: "Stops the poller stack and starts it again: poller, tunnel, cameras, weather, relay, and the Hawaii globe. "
+            "Restarts the EcoFlow BLE owner and the AWS fetch tunnel. Then closes Root Monitor and opens it again.\n\n"  # info: "Restarts the EcoFlow BLE owner and the AWS fetch tunnel. Then closes Root Monitor and opens it again.\n\n"
+            "Ollama stays up. The laptop is not rebooted.",  # info: "Ollama stays up. The laptop is not rebooted." ,
+            "Restart", go)  # info: "Restart" , go )
 
     # ----------------------------------------------------------- settings
     def b_panel_settings(self, box):  # info: def b_panel_settings
@@ -933,7 +972,7 @@ class Panel(ExtraPages, AwsFallbackPage, AutomationsPage, TelemetryPage):  # inf
             d = Adw.AlertDialog(heading=heading, body=body)  # info: set d
             d.add_response("cancel", "Cancel")  # info: d . add_response ( "cancel" , "Cancel" )
             d.add_response("ok", ok_label)  # info: d . add_response ( "ok" , ok_label )
-            d.set_response_appearance("ok", Adw.ResponseAppearance.DESTRUCTIVE if ok_label in ("Run", "Allow", "Remove", "Turn off", "Delete", "Schedule", "Publish") else Adw.ResponseAppearance.SUGGESTED)  # info: d . set_response_appearance ( "ok" , Adw .
+            d.set_response_appearance("ok", Adw.ResponseAppearance.DESTRUCTIVE if ok_label in ("Run", "Allow", "Remove", "Turn off", "Delete", "Schedule", "Publish", "Restart") else Adw.ResponseAppearance.SUGGESTED)  # info: d . set_response_appearance ( "ok" , Adw .
             d.set_default_response("cancel")  # info: d . set_default_response ( "cancel" )
             d.set_close_response("cancel")  # info: d . set_close_response ( "cancel" )
             if extra is not None:  # info: if extra is not None :

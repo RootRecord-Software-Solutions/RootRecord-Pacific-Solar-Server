@@ -76,6 +76,7 @@ Camera toggles only change what the **panel** shows. They never touch collectors
 ## Controls and safety
 
 - **Safe:** Open Logs folder, Open Database folder, Run `npu-status.sh`, Open the poller dashboard. The dashboard button opens `poller-dashboard.py` in a new ptyxis window (read-only; it refuses if one is already open). It does **not** call `open-poller-window.sh`, because that script also runs `systemctl --user start`.
+- **Restart everything** (right side of that same card, 2026-10-01): confirm, then `Packaging/restart-everything.sh` runs in its own session. It stops the poller stack, restarts the EcoFlow BLE owner and the AWS fetch tunnel, starts the poller and the Hawaii globe again, then closes Root Monitor and opens it. Ollama and the desktop stay up. The laptop is not rebooted. Agents must not click it. The log is `Logs/Automations/restart_everything_current.log`.
 - **Risky — NEEDS SIGN-OFF:** poller restart, Telegram send, voice playback/send, enabling gated `RR_*` flags.
   - Each button is disabled unless `risky_actions_enabled` is true **and** the action has `"signed_off": true` **and** it has an `argv`.
   - Each needs a confirm dialog.
