@@ -219,6 +219,7 @@ def clean_reply(text: str) -> str | None:  # info: def clean_reply
     # strip single-flight noise and drop only the lines that leak instructions
     lines = [ln for ln in text.splitlines() if not ln.startswith("[ok]") and not LEAK_RE.search(ln)]  # info: set lines
     out = "\n".join(lines).strip()  # info: set out
+    out = re.sub(r"^(?:ava|bruce|carly)\s*[:—-]\s*", "", out, count=1, flags=re.I).strip()  # info: set out
     return out or None  # info: return out or None
 
 # ====================================================
@@ -540,7 +541,8 @@ def chat_transcript(state_dir, chat_id) -> str:  # info: def chat_transcript
     prev = ""  # info: set prev
     for row in rows:  # info: for row in rows
         if isinstance(row, dict) and row.get("text"):  # info: if isinstance ( row , dict ) and row . get ( "text" )
-            line = f"{row.get('who') or 'user'}: {row['text']}"  # info: set line
+            body = re.sub(r"^(?:ava|bruce|carly)\s*:\s*", "", row["text"], count=1, flags=re.I)  # info: set body
+            line = f"{row.get('who') or 'user'} — {body}"  # info: set line
             if line == prev or LEAK_RE.search(row["text"]):  # info: if line == prev or LEAK_RE . search
                 continue  # info: continue
             prev = line  # info: set prev
