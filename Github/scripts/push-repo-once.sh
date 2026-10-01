@@ -38,7 +38,7 @@ RELOAD_SCRIPT="/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-
 is_runtime_code_tree() {  # info: is_runtime_code_tree
   local id="$1" local_path="$2"  # info: local
   # The public page lives under Pacific but is not poller code. A website merge must not reload the stack.
-  [[ "$id" == "website" ]] && return 1  # info: command
+  [[ "$id" == website || "$id" == website-* ]] && return 1  # info: command
   # G2 (~/.ollama/skills) pulls are NOT runtime code: syncs must not restart the poller (2026-09-29).
   [[ "$id" == "pacific" ]] && return 0  # info: command
   [[ "$local_path" == *"RootRecord-Pacific-Solar-Server"* ]] && return 0  # info: command

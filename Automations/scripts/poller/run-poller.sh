@@ -37,6 +37,9 @@ export RR_VOICE_ENERGY="${RR_VOICE_ENERGY:-1}"  # info: export
 export RR_VOICE_REMAINING="${RR_VOICE_REMAINING:-1}"  # info: export
 export RR_VOICE_QUAKE="${RR_VOICE_QUAKE:-1}"  # info: export
 export RR_VOICE_SOLAR="${RR_VOICE_SOLAR:-1}"  # info: export
+export RR_VOICE_ROLLUPS="${RR_VOICE_ROLLUPS:-1}"  # info: export
+export RR_VOICE_LATE_FINAL="${RR_VOICE_LATE_FINAL:-1}"  # info: export
+export RR_VOICE_HURRICANE="${RR_VOICE_HURRICANE:-1}"  # info: export
 export RR_GEOLOGY="${RR_GEOLOGY:-1}"  # info: export
 export RR_NET_SAMPLES="${RR_NET_SAMPLES:-1}"  # info: export
 
