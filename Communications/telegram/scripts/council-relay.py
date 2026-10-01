@@ -25,6 +25,10 @@ SILENCE_RE = re.compile(  # info: set SILENCE_RE
 )  # info: )
 LEAK_RE = re.compile(r"DESK_LIVE:|HARD RULES FOR THIS TURN|Do NOT state watts|standing envelopes|\[desk:", re.I)  # info: set LEAK_RE
 GROUP_HELLO_RE = re.compile(r"^(hi|hey|hello|yo)( guys| all| everyone| team)?[.!?]*$", re.I)  # info: set GROUP_HELLO_RE
+HUMAN_AT_RE = re.compile(r"@[A-Za-z][A-Za-z0-9_]{3,}")  # info: set HUMAN_AT_RE
+READING_RE = re.compile(r"\b(weather|forecast|temperature|temp|rain|showers|wind|watts|soc|battery|power)\b", re.I)  # info: set READING_RE
+WEATHER_RE = re.compile(r"\b(weather|forecast|temperature|temp|rain|showers)\b", re.I)  # info: set WEATHER_RE
+SFP = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Weather/Hawai'i/reports/0 Level Processing/sfp_state_forecast_current.md")  # info: set SFP
 
 # Replies are OPT-IN (Alexander 2026-09-29): RR_RELAY_REPLIES=1 enables infer+post.
 # Default 0 = quiet: login + getUpdates polling only, messages consumed, nothing posted.
@@ -504,6 +508,30 @@ def chat_transcript(state_dir, chat_id) -> str:  # info: def chat_transcript
     return "\n".join(lines)  # info: return "\n" . join ( lines )
 
 # ====================================================
+# SECTION: function only_for_a_person
+# What it does: True when the message @names a person and does not name Ava, Bruce, or Carly. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def only_for_a_person(text, voices) -> bool:  # info: def only_for_a_person
+    if mentioned_voice(text, voices) or addresses_group(text, voices):  # info: if mentioned_voice ( text , voices ) or addresses_group
+        return False  # info: return False
+    return bool(HUMAN_AT_RE.search(text or ""))  # info: return bool ( HUMAN_AT_RE . search ( text or "" ) )
+
+# ====================================================
+# SECTION: function forecast_excerpt
+# What it does: Tonight and Thursday from the NWS state forecast on file. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def forecast_excerpt() -> str:  # info: def forecast_excerpt
+    try:  # info: try
+        txt = SFP.read_text(encoding="utf-8")  # info: set txt
+    except OSError:  # info: except OSError
+        return ""  # info: return ""
+    found = re.findall(r"^\.(TONIGHT|THURSDAY)\.\.\.(.+?)(?=^\.[A-Z]|```|\Z)", txt, re.M | re.S)  # info: set found
+    lines = [f"{name.title()}: {' '.join(body.split())[:280]}" for name, body in found[:2]]  # info: set lines
+    return "\n".join(lines)  # info: return "\n" . join ( lines )
+
+# ====================================================
 # SECTION: function quoted_line
 # What it does: The message this update replies to. Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -522,9 +550,17 @@ def quoted_line(msg) -> str:  # info: def quoted_line
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def continue_prompt(transcript, quoted, text, voice) -> str:  # info: def continue_prompt
-    parts = [f"Continue the chat as {voice}."]  # info: set parts
-    parts.append("This is conversation. Do not mention a desk, live data, watts, or SOC unless they asked for a reading.")  # info: parts . append
-    parts.append("Do not say you do not have something live. Do not ask what the question is when the lines below already show it.")  # info: parts . append
+    reading = bool(READING_RE.search(text or ""))  # info: set reading
+    if reading:  # info: if reading
+        parts = [f"Answer as {voice}. They asked for a current reading. Use only the lines below. Do not say you lack access when those lines are present."]  # info: set parts
+        if WEATHER_RE.search(text or ""):  # info: if WEATHER_RE . search
+            forecast = forecast_excerpt()  # info: set forecast
+            if forecast:  # info: if forecast
+                parts.append("Forecast on file:\n" + forecast)  # info: parts . append
+    else:  # info: else
+        parts = [f"Continue the chat as {voice}."]  # info: set parts
+        parts.append("This is conversation. Do not mention a desk, live data, watts, or SOC unless they asked for a reading.")  # info: parts . append
+        parts.append("Do not say you do not have something live. Do not ask what the question is when the lines below already show it.")  # info: parts . append
     if transcript:  # info: if transcript
         parts.append("Recent chat:\n" + transcript)  # info: parts . append
     if quoted:  # info: if quoted
@@ -549,10 +585,10 @@ def continue_reply(cfg, state_dir, voices, voice, msg, text, max_text):  # info:
     sender = ((msg.get("from") or {}).get("first_name") or "user")  # info: set sender
     remember_turn(state_dir, ch, sender, text, mid)  # info: call remember_turn
     mark_seen(voice, voices, ch, mid)  # info: call mark_seen
+    mark_typing(voice, voices, ch)  # info: call mark_typing
     reply = run_infer(cfg, voice, continue_prompt(prior, quote, text, voice))  # info: set reply
     if not reply:  # info: if not reply
         return False  # info: return False
-    mark_typing(voice, voices, ch)  # info: call mark_typing
     posted = post_as(voice, voices, ch, reply, max_text, allow=True, reply_to=mid, thread_id=thread_id)  # info: set posted
     if posted:  # info: if posted
         remember_turn(state_dir, ch, voice, reply, None)  # info: call remember_turn
@@ -654,6 +690,13 @@ def main():  # info: def main
 
             mid = msg.get("message_id")  # info: set mid
             thread_id = msg.get("message_thread_id")  # info: set thread_id
+            if not is_private and only_for_a_person(text, voices):  # info: if not is_private and only_for_a_person
+                print("[ok] named a person, not a council voice — no reply")  # info: call print
+                continue  # info: continue
+            named = None if is_private else mentioned_voice(text, voices)  # info: set named
+            if named:  # info: if named
+                mark_seen(named, voices, ch, mid)  # info: call mark_seen
+                mark_typing(named, voices, ch)  # info: call mark_typing
             refresh_desk(cfg)  # info: call refresh_desk
             if is_private:  # info: if is_private :
                 continue_reply(cfg, state_dir, voices, poll_voice, msg, text, max_text)  # info: call continue_reply
