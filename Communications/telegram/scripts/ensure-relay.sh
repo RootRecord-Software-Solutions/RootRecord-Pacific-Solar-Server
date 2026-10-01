@@ -46,10 +46,11 @@ export RR_RELAY_REPLIES="${RR_RELAY_REPLIES:-0}"  # info: export
 export RR_NPU_ONLY=1  # info: export
 export RR_NPU_PERSONA=1  # info: export
 # Process default for Bruce, Carly, and any voice with a blank flm_model column.
-# Ava's Telegram lane overrides this from voices.conf (gemma3:4b). The 1B default stays for other callers.
+# Ava's Telegram lane overrides this from voices.conf (gemma3:1b). The 1B default stays for other callers.
 # performance is FLM's own default; balanced is the plumbing default for other jobs.
-# Context stays 4096: a 3B serve at 8192 is the size that OOM'd this desk on 2026-09-29.
+# Context is forced to 4096: a 3B serve at 8192 is the size that OOM'd this desk on 2026-09-29.
 export FLM_MODEL="${FLM_MODEL:-llama3.2:3b}"  # info: export
+export FLM_CTX_LEN=4096  # info: export
 export FLM_PMODE="${FLM_PMODE:-performance}"  # info: export
 # PYTHONUNBUFFERED: log lines appear immediately (2026-09-29; argv unchanged so the pgrep matches still work).
 PYTHONUNBUFFERED=1 nohup python3 "$HERE/council-relay.py" >>"$LOG" 2>&1 &  # info: set PYTHONUNBUFFERED

@@ -11,7 +11,7 @@ description: >-
 # What: one council-relay (getUpdates) + per-voice post; mediate = Bruce
 # Config: config/voices.conf, config/relay.conf
 # Council default: llama3.2:3b on the NPU via ensure-relay.sh. RR_NPU_ONLY=1. Context 4096.
-# Ava's Telegram lane: gemma3:4b (voices.conf flm_model). Bruce and Carly stay on the default.
+# Ava's Telegram lane: gemma3:1b (voices.conf flm_model). Larger FLM tags are refused. Bruce and Carly stay on the default.
 # Inference binary: System/scripts/plumbing/run-infer.sh
 # Persona packs are Library Agent Context, not this folder.
 # ==============================================================================
