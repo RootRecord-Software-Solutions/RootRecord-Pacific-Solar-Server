@@ -844,6 +844,20 @@ EVERY_HOUR = [  # info: set EVERY_HOUR
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
     {  # info: {
+        # Moon phase (2026-10-01). Same Open-Meteo point as sun times. ON unless RR_MOON=0 at poller start.
+        # One fetch when the saved file is older than 50 minutes. A failed fetch keeps the file.
+        "id": "energy_moon_phase",  # info: "id" : "energy_moon_phase" ,
+        "enabled": os.environ.get("RR_MOON", "1") == "1",  # info: "enabled" : os . environ . get (
+        "description": "Moon phase HST (Volcano/Puna) -> Database Energy/moon/moon-last.json. No send.",  # info: "description" : "Moon phase HST (Volcano/Puna) -> Database Energy/moon/moon-last.json. No send." ,
+        "only_at_hours": [],  # info: "only_at_hours" : [ ] ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'python3 "{PACIFIC}/Energy/scripts/moon_phase.py"',  # info: "command" : f' python3 " { PACIFIC } /Energy/scripts/moon_phase.py"
+        "timeout_sec": 30,  # info: "timeout_sec" : 30 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{PACIFIC}/Energy",  # info: "cwd" : f" { PACIFIC } /Energy "
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
+    {  # info: {
         # US all-states weather (2026-09-29, WO-MIG-11). OFF unless RR_US_STATES=1 at poller start.
         # Does not replace the Hawaiʻi weather poller. NWS runs only when NWS_USER_AGENT is set. No delivery.
         "id": "weather_us_states",  # info: "id" : "weather_us_states" ,

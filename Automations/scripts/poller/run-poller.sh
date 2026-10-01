@@ -41,6 +41,7 @@ export RR_VOICE_ROLLUPS="${RR_VOICE_ROLLUPS:-1}"  # info: export
 export RR_VOICE_LATE_FINAL="${RR_VOICE_LATE_FINAL:-1}"  # info: export
 export RR_VOICE_HURRICANE="${RR_VOICE_HURRICANE:-1}"  # info: export
 export RR_GEOLOGY="${RR_GEOLOGY:-1}"  # info: export
+export RR_MOON="${RR_MOON:-1}"  # info: export
 export RR_NET_SAMPLES="${RR_NET_SAMPLES:-1}"  # info: export
 
 # ====================================================

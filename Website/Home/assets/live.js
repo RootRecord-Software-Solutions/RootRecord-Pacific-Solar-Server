@@ -12,6 +12,16 @@
     if (node) node.textContent = value;
   }
 
+  function paintStatusWord() {
+    var node = document.getElementById("net-status");
+    if (!node) return;
+    var shown = stateWord;
+    if (stateWord === "LIVE" && node.getAttribute("data-live-label")) {
+      shown = node.getAttribute("data-live-label");
+    }
+    node.textContent = shown;
+  }
+
   function led(id, mode) {
     var node = document.getElementById(id);
     if (!node) return;
@@ -72,7 +82,7 @@
     stateAt = Date.now();
     stateLive = true;
     stateWord = wordFrom(has, true);
-    text("net-status", stateWord);
+    paintStatusWord();
     led("net-dot", stateWord === "LIVE" ? "live" : stateWord === "STALE" ? "stale" : "off");
     text("hi-flows", hi === null ? "NO READING" : T.fmt(hi));
     text("ms-flows", main === null ? "NO READING" : T.fmt(main));
@@ -100,7 +110,7 @@
     if (!navigator.onLine) stateWord = "OFFLINE";
     else if (stateSeen) stateWord = "STALE";
     else stateWord = "NO PUBLIC SIGNAL";
-    text("net-status", stateWord);
+    paintStatusWord();
     led("net-dot", stateWord === "STALE" ? "stale" : "off");
     if (!stateSeen) {
       ["hi-flows", "ms-flows", "active-flows", "endpoints"].forEach(function (id) {
@@ -185,6 +195,79 @@
     });
   }
 
+  var MOON_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  function moonDateLabel(iso) {
+    var match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || "");
+    if (!match) return "";
+    var month = MOON_MONTHS[Number(match[2]) - 1];
+    if (!month) return "";
+    return month + " " + Number(match[3]);
+  }
+
+  function moonLitPath(phase) {
+    if (phase === null || phase === undefined || !Number.isFinite(phase)) return "";
+    var p = ((phase % 1) + 1) % 1;
+    var radius = 46;
+    var cx = 50;
+    var cy = 50;
+    if (p < 0.005 || p > 0.995) return "";
+    if (Math.abs(p - 0.5) < 0.008) {
+      return "M " + cx + " " + (cy - radius) + " a " + radius + " " + radius + " 0 1 1 0 " + (2 * radius) + " a " + radius + " " + radius + " 0 1 1 0 " + (-2 * radius) + " Z";
+    }
+    var waxing = p < 0.5;
+    var curve = Math.cos(2 * Math.PI * p);
+    var rx = Math.max(0.4, Math.abs(curve) * radius);
+    var outer = waxing ? 1 : 0;
+    var term = curve >= 0 ? outer : (outer ? 0 : 1);
+    return "M " + cx + " " + (cy - radius)
+      + " A " + radius + " " + radius + " 0 0 " + outer + " " + cx + " " + (cy + radius)
+      + " A " + rx.toFixed(2) + " " + radius + " 0 0 " + term + " " + cx + " " + (cy - radius)
+      + " Z";
+  }
+
+  function drawMoon(phase) {
+    var path = document.getElementById("moon-lit");
+    if (path) path.setAttribute("d", moonLitPath(phase));
+  }
+
+  function paintMoonClock() {
+    var node = document.getElementById("moon-when");
+    if (!node) return;
+    var parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Pacific/Honolulu",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23"
+    }).formatToParts(new Date());
+    var map = {};
+    parts.forEach(function (part) {
+      if (part.type !== "literal") map[part.type] = part.value;
+    });
+    if (!map.month || !map.day || map.hour === undefined || !map.minute) return;
+    node.textContent = map.month.toUpperCase() + " " + Number(map.day) + " · " + map.hour + ":" + map.minute + " HST";
+  }
+
+  function paintMoon(moon) {
+    if (!document.getElementById("moon-phase-name")) return;
+    paintMoonClock();
+    if (!moon) {
+      text("moon-phase-name", "Unavailable");
+      text("moon-illum", "Saved reading is not on the feed");
+      text("moon-next", "Next phase unavailable");
+      drawMoon(null);
+      return;
+    }
+    text("moon-phase-name", moon.name || "Moon");
+    text("moon-illum", moon.illumination === null ? "Illumination unavailable" : Math.round(moon.illumination) + "% illuminated");
+    var next = moon.nextName ? "Next · " + moon.nextName : "Next phase unavailable";
+    var when = moon.nextName ? moonDateLabel(moon.nextDate) : "";
+    text("moon-next", when ? next + " · " + when : next);
+    drawMoon(moon.phase);
+  }
+
   function paintOps(ops) {
     var r = T.fieldReadings(ops);
     lastReadings = r;
@@ -234,11 +317,13 @@
     if (asof) asof.textContent = r.asOf ? "Last known · " + r.asOf : "Last known · No public signal";
     text("ops-fresh", "Updated just now");
     paintCharts(r);
+    paintMoon(r.moon);
   }
 
   function paintOpsMiss() {
     text("ops-fresh", opsSeen ? "Last known observation" : "Public feed unavailable");
     if (opsSeen) return;
+    paintMoon(null);
     ["river", "delta", "weather", "kilauea"].forEach(function (id) { text(id, "NO READING"); });
     var asof = document.getElementById("field-asof");
     if (asof) asof.textContent = "Last known · No public signal";
@@ -293,7 +378,7 @@
     var knownAt = T.formatHst(known.at, true);
     if (chosen.phase === "down") {
       stateWord = "PLANNED DOWN";
-      text("net-status", stateWord);
+      paintStatusWord();
       led("net-dot", "stale");
       var hi = countText(known.hawaii);
       var main = countText(known.mainland);
@@ -330,7 +415,7 @@
   function tickState() {
     if (stateAt && Date.now() - stateAt > STATE_STALE_MS && stateWord === "LIVE") {
       stateWord = navigator.onLine ? "STALE" : "OFFLINE";
-      text("net-status", stateWord);
+      paintStatusWord();
       led("net-dot", stateWord === "STALE" ? "stale" : "off");
       var feed = document.getElementById("feed-line");
       if (feed) feed.textContent = "Last known observation";
@@ -360,9 +445,11 @@
   tickNotice();
   tickState();
   tickOps();
+  paintMoonClock();
   var stateTimer = setInterval(tickState, 5000);
   var opsTimer = setInterval(tickOps, 60000);
   var noticeTimer = setInterval(tickNotice, 60000);
+  var moonTimer = setInterval(paintMoonClock, 30000);
   window.addEventListener("offline", function () {
     paintStateMiss();
     applyNotice();
@@ -372,5 +459,6 @@
     clearInterval(stateTimer);
     clearInterval(opsTimer);
     clearInterval(noticeTimer);
+    clearInterval(moonTimer);
   });
 })();

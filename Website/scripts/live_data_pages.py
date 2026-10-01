@@ -13,7 +13,8 @@
   python3 live_data_pages.py
 
 Power reads Energy watts and soc last files. Weather reads the Hawaiʻi state
-report header. Kīlauea reads Geology Volcanoes/kilauea-last.json.
+report header. Kīlauea reads Geology Volcanoes/kilauea-last.json. The moon
+reads Energy/moon/moon-last.json.
 Missing numbers are omitted. Chat, packs, day board, Minecraft, and context
 are not built here.
 """
@@ -32,6 +33,7 @@ STATUS_FILE = Path("/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRe
 ENERGY = DATABASE / "Energy"  # info: set ENERGY
 WEATHER_REPORT = DATABASE / "Weather" / "Hawai'i" / "reports" / "0 Level Processing" / "Hawaii_State_Weather_Report_current.md"  # info: set WEATHER_REPORT
 KILAUEA = DATABASE / "Geology" / "Volcanoes" / "kilauea-last.json"  # info: set KILAUEA
+MOON = DATABASE / "Energy" / "moon" / "moon-last.json"  # info: set MOON
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 # ====================================================
 # SECTION: POWER_FIELDS
@@ -160,6 +162,26 @@ def build_kilauea() -> dict[str, Any]:  # info: def build_kilauea
 
 
 # ====================================================
+# SECTION: function build_moon
+# What it does: Public moon reading from the saved Energy moon file.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def build_moon() -> dict[str, Any]:  # info: def build_moon
+    raw = _read_json(MOON)  # info: set raw
+    page: dict[str, Any] = {  # info: set page
+        "resource": "moon",  # info: "resource" : "moon" ,
+        "title": "Current moon",  # info: "title" : "Current moon" ,
+        "as_of": _now_line(),  # info: "as_of" : _now_line ( ) ,
+    }  # info: }
+    if not raw:  # info: if not raw :
+        return page  # info: return page
+    kept = _pick(raw, ("phase", "phase_name", "illumination", "next_phase", "next_phase_date", "fetched_at", "date"))  # info: set kept
+    if kept:  # info: if kept :
+        page["status"] = kept  # info: page [ "status" ] = kept
+    return page  # info: return page
+
+
+# ====================================================
 # SECTION: function build_all
 # What it does: build all.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -169,6 +191,7 @@ def build_all() -> dict[str, Any]:  # info: def build_all
         "power": build_power(),  # info: "power" : build_power ( ) ,
         "weather": build_weather(),  # info: "weather" : build_weather ( ) ,
         "kilauea": build_kilauea(),  # info: "kilauea" : build_kilauea ( ) ,
+        "moon": build_moon(),  # info: "moon" : build_moon ( ) ,
     }  # info: }
 
 
@@ -199,6 +222,7 @@ def write_all() -> list[Path]:  # info: def write_all
         "power": pages["power"],  # info: "power" : pages [ "power" ] ,
         "weather": weather,  # info: "weather" : weather ,
         "kilauea": pages["kilauea"],  # info: "kilauea" : pages [ "kilauea" ] ,
+        "moon": pages["moon"],  # info: "moon" : pages [ "moon" ] ,
     }  # info: }
     tmp = relay.with_suffix(".json.tmp")  # info: set tmp
     tmp.write_text(json.dumps(bundle, indent=2), encoding="utf-8")  # info: tmp . write_text ( json . dumps (

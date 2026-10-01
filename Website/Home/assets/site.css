@@ -315,13 +315,83 @@ a.rel-login:hover { color: #fff; }
   margin: 6px 0 0;
 }
 
+.stage #network .net-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
 .stage #network .status-line {
-  margin-top: 8px;
+  margin-top: 4px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+}
+
+.stage #network .led {
+  width: 9px;
+  height: 9px;
+  flex-basis: 9px;
 }
 
 .stage #network .metrics {
   margin-top: 10px;
   gap: 8px 16px;
+}
+
+.stage #network .metrics div,
+.stage #moon .moon-copy {
+  min-width: 0;
+}
+
+.metric-short { display: none; }
+
+.moon-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.moon-visual {
+  width: 96px;
+  height: 96px;
+  flex: 0 0 96px;
+}
+
+.moon-visual svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 10px rgba(232, 232, 239, 0.16));
+}
+
+.moon-phase {
+  margin: 0;
+  color: #f4f4f8;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.moon-illum,
+.moon-when {
+  margin: 4px 0 0;
+  color: #d5d5e0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.stage #moon .fine {
+  margin-top: 8px;
 }
 
 @media (min-width: 861px) {
@@ -1050,6 +1120,66 @@ body { overflow-x: clip; }
   .arch-split { grid-template-columns: 1fr; }
 
   .hero h1 { letter-spacing: 0.12em; }
+
+  .stage { padding-inline: 14px; }
+
+  .stage .hud-row > .panel {
+    padding: 12px 12px;
+  }
+
+  .stage #network .net-head {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .stage #network .net-head h2,
+  .stage #network .status-line {
+    white-space: nowrap;
+  }
+
+  .stage #network .status-line {
+    margin-top: 0;
+    flex: 0 0 auto;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+  }
+
+  .stage #network .metric-long { display: none; }
+
+  .stage #network .metric-short { display: inline; }
+
+  .stage #network .metrics {
+    gap: 10px 12px;
+  }
+
+  .stage #network .metrics strong,
+  .stage #network .reading {
+    font-size: 16px;
+  }
+
+  .moon-body {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+    margin-top: 10px;
+    text-align: left;
+  }
+
+  .moon-visual {
+    width: 72px;
+    height: 72px;
+    flex-basis: 72px;
+  }
+
+  .moon-phase { font-size: 14px; letter-spacing: 0.08em; }
+
+  .moon-illum,
+  .moon-when { font-size: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

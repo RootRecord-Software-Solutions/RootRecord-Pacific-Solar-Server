@@ -94,6 +94,22 @@
     return reading;
   }
 
+  function moonReading(status) {
+    if (!status || typeof status !== "object") return null;
+    var phase = finite(status.phase);
+    var illumination = finite(status.illumination);
+    var name = status.phase_name ? String(status.phase_name) : null;
+    if (phase === null && illumination === null && !name) return null;
+    return {
+      phase: phase,
+      name: name,
+      illumination: illumination,
+      nextName: status.next_phase ? String(status.next_phase) : null,
+      nextDate: status.next_phase_date ? String(status.next_phase_date) : null,
+      at: parseTime(status.fetched_at)
+    };
+  }
+
   function fieldReadings(ops) {
     var power = ops && ops.power && ops.power.devices;
     var weather = ops && ops.weather && ops.weather.report;
@@ -111,6 +127,7 @@
         headline: volcano.headline ? String(volcano.headline) : null,
         erupting: typeof volcano.erupting === "boolean" ? volcano.erupting : null
       } : null,
+      moon: moonReading(ops && ops.moon && ops.moon.status),
       asOf: ops && ops.as_of ? String(ops.as_of) : null
     };
   }
