@@ -66,17 +66,17 @@ def main() -> int:  # info: def main
     os.environ["RR_PRINCIPAL_REGISTRY"] = str(tmp / "principals.json")  # info: os . environ [ "RR_PRINCIPAL_REGISTRY" ] = str ( tmp / "principals.json" )
     os.environ["RR_EXECUTION_AUDIT"] = str(tmp / "audit.jsonl")  # info: os . environ [ "RR_EXECUTION_AUDIT" ] = str ( tmp / "audit.jsonl" )
     os.environ["RR_SUPERVISOR_STATE"] = str(tmp / "supervisor")  # info: os . environ [ "RR_SUPERVISOR_STATE" ] = str ( tmp / "supervisor" )
-    people = {"schema_version": 1, "match_key": "telegram_user_id", "authorized_build_operators": [{"principal_id": "rootrecordadmin", "username": "rootrecordadmin", "telegram_user_id": 42}, {"principal_id": "WildEcho94", "username": "WildEcho94", "telegram_user_id": null}, {"principal_id": "Crazychickenlady12", "username": "Crazychickenlady12", "telegram_user_id": null}], "agents": {"ava": {"can_build": False}, "bruce": {"can_build": False}, "carly": {"can_build": False}}}  # info: set people
+    people = {"schema_version": 1, "match_key": "telegram_user_id", "authorized_build_operators": [{"principal_id": "rootrecordadmin", "username": "rootrecordadmin", "telegram_user_id": 42}, {"principal_id": "WildEcho94", "username": "WildEcho94", "telegram_user_id": None}, {"principal_id": "Crazychickenlady12", "username": "Crazychickenlady12", "telegram_user_id": None}], "agents": {"ava": {"can_build": False}, "bruce": {"can_build": False}, "carly": {"can_build": False}}}  # info: set people
     (tmp / "principals.json").write_text(json.dumps(people), encoding="utf-8")  # info: ( tmp / "principals.json" ) . write_text ( json . dumps ( people ) , encoding = "utf-8" )
     sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 , str ( HERE ) )
     import gates  # info: import gates
     import interaction  # info: import interaction
-    check("enable without confirm fails", False)  # info: call check
+    raised = False  # info: set raised
     try:  # info: try :
         gates.set_gate("modes.build", True, confirmed=False)  # info: call gates . set_gate
     except PermissionError:  # info: except PermissionError
-        FAILS.pop()  # info: call FAILS . pop
-        check("enable without confirm fails", True)  # info: call check
+        raised = True  # info: set raised
+    check("enable without confirm fails", raised)  # info: call check
     gates.set_gate("modes.build", True, confirmed=True)  # info: call gates . set_gate
     gates.set_gate("steps.build.handoff", True, confirmed=True)  # info: call gates . set_gate
     live = interaction.seed({"chat_id": "-1004367256267", "sandbox_chat_id": SANDBOX, "text": "build this", "message_id": 1, "from_id": 42, "username": "rootrecordadmin"})  # info: set live
