@@ -241,7 +241,13 @@ def speak_desk(text: str) -> str:  # info: def speak_desk
 def main() -> int:  # info: def main
     ap = argparse.ArgumentParser()  # info: set ap
     ap.add_argument("--out", default=str(DEFAULT_OUT))  # info: ap . add_argument ( "--out" , default =
+    ap.add_argument("--speak", metavar="FILE")  # info: ap . add_argument ( "--speak" , metavar = "FILE" )
     args = ap.parse_args()  # info: set args
+    if args.speak:  # info: if args . speak
+        spoken = speak_desk(Path(args.speak).read_text(encoding="utf-8"))  # info: set spoken
+        if spoken:  # info: if spoken
+            print(spoken)  # info: call print
+        return 0 if spoken else 1  # info: return 0 if spoken else 1
     text = render()  # info: set text
     write_out(Path(args.out), text)  # info: call write_out
     print(f"[ok] desk lines={text.count(chr(10))}")  # info: call print

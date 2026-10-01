@@ -175,14 +175,14 @@ if desk_lines:  # info: if
     user = "DESK_LIVE:\n" + desk_lines + "\nUser: " + user  # info: user
   else:  # info: else
     user = "[desk: measured — cite only these lines]\n" + desk_lines + "\nUser: " + user  # info: user
-  user += "\nThe DESK_LIVE lines above are measured and present. Summarize them when asked what you see. Say No data only for a number that is not listed."  # info: user
+  user += "\nThe DESK_LIVE lines above are measured. Cite one only when the person asked for a reading. Do not recite the desk on a greeting or a side comment."  # info: user
 system = (persona.get("system") if persona else None) or os.environ.get("RR_SPEC_SYS") or generic  # info: set system
 if desk_lines and list_desk:  # info: if desk_lines and list_desk
   system = (  # info: set system
     f"You are {voice}. The user message has a DESK_LIVE block. Those lines are the live readings. "  # info: f"You are { voice }
-    "Summarize every line in a short spoken reply: both packs and the host. "  # info: command
-    "SOC_percent is percent full. solar_input_w is watts in. ac_output_w and usbc_output_w are watts out. "  # info: command
-    "charge_source none means not charging. Do not mention a device or disk that is not listed. "  # info: command
+    "Answer in two or three sentences: each pack, then the host. "  # info: command
+    "Say percent full and watts. Say not charging when charge_source is none. "  # info: command
+    "Do not start with You see the following. Do not recite field names. "  # info: command
     "Do not answer No data. Do not invent numbers. Do not write the label DESK_LIVE. Do not repeat these instructions."  # info: command
   )  # info: command
 if brief and scope:  # info: if brief and scope
@@ -224,6 +224,25 @@ if not text:  # info: if
 print(text)  # info: print
 '  # info: command
 }  # info: command
+
+# ====================================================
+# SECTION: function speak_if_desk_ask
+# What it does: When the person asked what the desk shows, print a spoken summary and skip the model. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+speak_if_desk_ask() {  # info: speak_if_desk_ask
+  [[ -n "${DESK_LIVE_FILE:-}" && -r "${DESK_LIVE_FILE}" ]] || return 1  # info: command
+  printf '%s' "$PROMPT" | grep -Eiq '\b(what (other |else )?data|what (else )?(do|can) you see|what readings|on (your|the) desk|list (the |your )?(data|readings|desk))\b' || return 1  # info: command
+  local script spoken  # info: local
+  script="$HERE/../../../Communications/telegram/scripts/desk-live.py"  # info: set script
+  [[ -f "$script" ]] || return 1  # info: command
+  spoken=$(python3 "$script" --speak "$DESK_LIVE_FILE" 2>/dev/null) || return 1  # info: set spoken
+  [[ -n "$spoken" ]] || return 1  # info: command
+  printf '%s\n' "$spoken"  # info: printf
+  ailog desk-speak desk-live 0 false "$(printf '%s' "$spoken" | tr -d '\n' | wc -m)"  # info: ailog
+  exit 0  # info: exit
+}  # info: command
+speak_if_desk_ask || true  # info: command
 
 # On demand (Alexander 03:27 HST 2026-09-29): if FLM is not already serving and the inference lock is idle,
 # start $FLM_MODEL for THIS request and stop it after the reply (EXIT trap), so no model stays resident.
