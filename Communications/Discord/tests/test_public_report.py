@@ -32,12 +32,12 @@ class PublicReportTests(unittest.TestCase):  # info: class
         self.assertEqual(persona_name("energy_report"), "Carly")  # info: assert energy
         self.assertEqual(persona_name("kilauea_report"), "Carly")  # info: assert kilauea
 
-    def test_public_text_is_spoken_and_has_a_placeholder_link(self):  # info: def test_public
+    def test_public_text_is_spoken_and_links_the_live_page(self):  # info: def test_public
         md = "# Energy\n\n| Delta 2 | 64% | 0 W | 92 W | 0 W | at | 1 min |\n\n_Source: Database Energy/soc._\n"  # info: set md
         text = public_message("energy_report", "energy-report", md, "Delta 2 battery 64 percent.")  # info: set text
         self.assertTrue(text.startswith("Carly — Energy desk"))  # info: assert header
         self.assertIn("Delta 2 battery 64 percent.", text)  # info: assert spoken
-        self.assertIn("https://rootrecord.info/reports/energy-report", text)  # info: assert link
+        self.assertIn("https://www.rootrecord.cloud/reports/energy-report", text)  # info: assert link
         self.assertNotIn("Database", text)  # info: assert no source path
 
     def test_average_needs_two_readings(self):  # info: def test_average
