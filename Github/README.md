@@ -24,16 +24,16 @@ GitHub repository catalog and automated push/pull for the Pacific desk.
 | pacific | 1 | mirror | Live folder inside the ecosystem tree. Published to `RootRecord-Pacific-Solar-Server` from `Github-worktrees/pacific`. |
 | database | 1 | mirror | Live folder inside the ecosystem tree. Published to `RootRecord-Database` from `Github-worktrees/database`. |
 | library | 1 | mirror | Live folder inside the ecosystem tree. Published to `RootRecord-Library` from `Github-worktrees/library`. |
-| skills | 1 | inplace | `~/.ollama/skills` → legacy Solar-Pacific remote. Still enabled, inplace. Desk sync has moved past restore commit `1dcee66` (HEAD `87ec9ac`, 2026-09-30 01:50 HST) |
-| website | 0 | mirror | Disabled. Still points at `~/.ollama/skills/website/site`. Leave it off |
-| mainland | 0 | inplace | Disabled. Still points at `~/.ollama/skills/us-mainland-server`. Leave it off |
+| skills | 0 | inplace | Retired 2026-09-30. Checkout moved to `Old repos deleted and merged/ollama-skills-g2-2026-09-30`. `~/.ollama/skills` is Ollama's. Leave this row off |
+| website | 0 | mirror | Disabled. Path is the archived checkout's `website/site`. Leave it off. Do not start a local site |
+| mainland | 0 | inplace | Disabled. Path is the archived empty `us-mainland-server` folder. Live desk is `1 - Servers/2 - RootRecord-US-Mainland-Server`. Leave it off |
 
 ### Policy
 
 Same automation as G2; home is **`Github/`**. No parallel `github/` folder. Quote paths with spaces in jobs.
 
-**Automatic authority (WO-GH-001 Option B, Alexander, 2026-09-29):** poller job `github_sync_all` every 5 seconds. Enabled catalog rows are `ecosystem`, `pacific`, `database`, `library`, and `skills`. Pacific, Database, and Library are mirror publishes of the live subfolders. There is no Core-Processor pull timer on this desk. Root `Pull.sh` and `Push.sh` are manual scripts, not a second timer. Do not add one.
+**Automatic authority (WO-GH-001 Option B, Alexander, 2026-09-29):** poller job `github_sync_all` every 5 seconds. Enabled catalog rows are `ecosystem`, `pacific`, `database`, and `library`. Pacific, Database, and Library are mirror publishes of the live subfolders. There is no Core-Processor pull timer on this desk. Root `Pull.sh` and `Push.sh` are manual scripts, not a second timer. Do not add one. Do not re-enable `skills`.
 
 ---
 
-*Updated 2026-09-30 02:00 HST — skills stays enabled and inplace; sync is past `1dcee66`. Website and mainland stay disabled at `~/.ollama/skills/website/site` and `~/.ollama/skills/us-mainland-server`.*
+*Updated 2026-09-30 17:45 HST — skills, website, and mainland stay off. `~/.ollama/skills` is Ollama's skill directory. The G2 checkout is archived, not deleted from GitHub.*

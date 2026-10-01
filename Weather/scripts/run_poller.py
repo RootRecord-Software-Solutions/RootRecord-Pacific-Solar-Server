@@ -8,13 +8,11 @@
 # Kind: python
 # ==============================================================================
 #!/usr/bin/env python3
-"""Boot entry point for the `weather` skill's scheduler daemon.
+"""Start the weather scheduler from this Pacific Weather tree.
 
-Wires up the real deploy paths (per nextagent.md's stated code/data tree
-split -- code under .ollama/skills/weather/, data under Database/) and
-starts scheduler/run_cycle.py's run_forever() loop. This file is what
-automations/scripts/ensure-weather-poller.sh launches in the background;
-it is not meant to be imported.
+Data files live under Database Weather/. This file is what
+automations/scripts/ensure-weather-poller.sh launches in the background.
+It is not meant to be imported.
 
 Not run directly by automations/'s own job dispatcher (which runs each
 job's command to completion, blocking, with a timeout) -- this process is
