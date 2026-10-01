@@ -15,9 +15,8 @@
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
-<body>
+<body class="desk">
 <a class="skip" href="#content">Skip to content</a>
-<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
@@ -35,7 +34,23 @@
 <main class="page" id="content">
   <p class="eyebrow">Carly</p>
   <h1>Security</h1>
-  <p class="prose">Security desk at twelve oh four a.m. The firewall is not set to start on boot. OpenSSH service is active. 41 TCP listeners. 28 established connections. Failed sign-ins: 0 in the last hour, 0 in the last twenty four hours.</p>
+  <p class="meta">1 Oct 2026 · 00:04 HST</p>
+  <p class="prose">Security desk</p>
+  <section class="sec" aria-label="Spoken">
+    <h2>Spoken</h2>
+    <p class="prose">Security desk at twelve oh four a.m. The firewall is not set to start on boot. OpenSSH service is active. 41 TCP listeners. 28 established connections. Failed sign-ins: 0 in the last hour, 0 in the last twenty four hours.</p>
+  </section>
+  <section class="sec" aria-label="Measured">
+    <h2>Measured</h2>
+    <ul class="facts">
+    <li>Firewall starts on boot: False</li>
+    <li>SSH active: True</li>
+    <li>TCP listeners: 41</li>
+    <li>Established connections: 28</li>
+    <li>Failed sign-ins, last hour: 0</li>
+    <li>Failed sign-ins, last 24 hours: 0</li>
+    </ul>
+  </section>
   <p class="fine"><a href="/reports">All reports</a></p>
 </main>
 <footer class="site-foot">
@@ -46,7 +61,6 @@
   <a href="/status">Status</a>
   <a href="/about">About</a>
 </footer>
-<script src="/assets/starfield.js"></script>
 <script src="/assets/shell.js"></script>
 </body>
 </html>

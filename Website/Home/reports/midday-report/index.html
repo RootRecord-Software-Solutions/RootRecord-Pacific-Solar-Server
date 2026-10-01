@@ -15,9 +15,8 @@
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
-<body>
+<body class="desk">
 <a class="skip" href="#content">Skip to content</a>
-<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
@@ -35,7 +34,22 @@
 <main class="page" id="content">
   <p class="eyebrow">Ava</p>
   <h1>Midday report</h1>
-  <p class="prose">Batteries: Delta 2 90%, River 2 Pro 12%; solar input 0 W NWS alerts active: 0 Forecast Tonight: Mostly cloudy. Occasional showers on Kauai. scattered showers Oahu and Maui County. Lows 74 to 79. Southeast winds around 15 mph. Host CPU 32%, memory 46% used Open work-order items: 10</p>
+  <p class="meta">30 Sep 2026 · 17:45 HST</p>
+  <p class="prose">Midday roll-up</p>
+  <section class="sec" aria-label="Spoken">
+    <h2>Spoken</h2>
+    <p class="prose">Batteries: Delta 2 90%, River 2 Pro 12%; solar input 0 W NWS alerts active: 0 Forecast Tonight: Mostly cloudy. Occasional showers on Kauai. scattered showers Oahu and Maui County. Lows 74 to 79. Southeast winds around 15 mph. Host CPU 32%, memory 46% used Open work-order items: 10</p>
+  </section>
+  <section class="sec" aria-label="Measured">
+    <h2>Measured</h2>
+    <ul class="facts">
+    <li>Measured: Batteries: Delta 2 90%, River 2 Pro 12%; solar input 0 W</li>
+    <li>NWS alerts active: 0</li>
+    <li>Forecast Tonight: Mostly cloudy. Occasional showers on Kauai. scattered showers Oahu and Maui County. Lows 74 to 79. Southeast winds around 15 mph.</li>
+    <li>Host CPU 32%, memory 46% used</li>
+    <li>Open work-order items: 10</li>
+    </ul>
+  </section>
   <p class="fine"><a href="/reports">All reports</a></p>
 </main>
 <footer class="site-foot">
@@ -46,7 +60,6 @@
   <a href="/status">Status</a>
   <a href="/about">About</a>
 </footer>
-<script src="/assets/starfield.js"></script>
 <script src="/assets/shell.js"></script>
 </body>
 </html>

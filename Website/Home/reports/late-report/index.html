@@ -15,9 +15,8 @@
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
-<body>
+<body class="desk">
 <a class="skip" href="#content">Skip to content</a>
-<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
@@ -35,7 +34,22 @@
 <main class="page" id="content">
   <p class="eyebrow">Ava</p>
   <h1>Late report</h1>
-  <p class="prose">Late report. It&#x27;s nine oh seven p.m. Hawaiian Standard Time. Battery levels: Delta 2 at 47%, River 2 Pro at 84%. Solar input zero watts. No active HI alerts from the API sample. Forecast for tonight: Mostly cloudy. Host CPU 28%, memory 54% used. 10 open work order items. End of report.</p>
+  <p class="meta">30 Sep 2026 · 21:07 HST</p>
+  <p class="prose">Late roll-up</p>
+  <section class="sec" aria-label="Spoken">
+    <h2>Spoken</h2>
+    <p class="prose">Late report. It&#x27;s nine oh seven p.m. Hawaiian Standard Time. Battery levels: Delta 2 at 47%, River 2 Pro at 84%. Solar input zero watts. No active HI alerts from the API sample. Forecast for tonight: Mostly cloudy. Host CPU 28%, memory 54% used. 10 open work order items. End of report.</p>
+  </section>
+  <section class="sec" aria-label="Measured">
+    <h2>Measured</h2>
+    <ul class="facts">
+    <li>Measured: Batteries: Delta 2 47%, River 2 Pro 84%; solar input 0 W</li>
+    <li>NWS alerts active: 0</li>
+    <li>Forecast Tonight: Mostly cloudy. Occasional showers on Kauai. scattered showers Oahu and Maui County. Lows 74 to 79. Southeast winds around 15 mph.</li>
+    <li>Host CPU 28%, memory 54% used</li>
+    <li>Open work-order items: 10</li>
+    </ul>
+  </section>
   <p class="fine"><a href="/reports">All reports</a></p>
 </main>
 <footer class="site-foot">
@@ -46,7 +60,6 @@
   <a href="/status">Status</a>
   <a href="/about">About</a>
 </footer>
-<script src="/assets/starfield.js"></script>
 <script src="/assets/shell.js"></script>
 </body>
 </html>

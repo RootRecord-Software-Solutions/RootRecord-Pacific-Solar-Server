@@ -15,9 +15,8 @@
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
-<body>
+<body class="desk">
 <a class="skip" href="#content">Skip to content</a>
-<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
@@ -35,7 +34,25 @@
 <main class="page" id="content">
   <p class="eyebrow">Bruce</p>
   <h1>System performance</h1>
-  <p class="prose">System performance report. Host desk at twelve oh one a.m. Hawaiian Standard Time. CPU 10%. Memory 61% used, 8.6 of 14.2 gigabytes. Disk 30% used. Host battery 100%, on AC. Uptime 1 hour 13 minutes. Temperature 46.0 degrees Celsius. Integrated GPU 2.0 percent. NPU 0.0 percent, present. End of system report.</p>
+  <p class="meta">1 Oct 2026 · 00:01 HST</p>
+  <p class="prose">System performance</p>
+  <section class="sec" aria-label="Spoken">
+    <h2>Spoken</h2>
+    <p class="prose">System performance report. Host desk at twelve oh one a.m. Hawaiian Standard Time. CPU 10%. Memory 61% used, 8.6 of 14.2 gigabytes. Disk 30% used. Host battery 100%, on AC. Uptime 1 hour 13 minutes. Temperature 46.0 degrees Celsius. Integrated GPU 2.0 percent. NPU 0.0 percent, present. End of system report.</p>
+  </section>
+  <section class="sec" aria-label="Measured">
+    <h2>Measured</h2>
+    <ul class="facts">
+    <li>Host: HI Pacific Solar Root Server</li>
+    <li>CPU: 9.8% (load 1.80 / 1.35 / 1.21)</li>
+    <li>RAM: 60.8% used (8.6 / 14.2 GB); swap used 1.4 GB</li>
+    <li>Disk /: 30.5% used (153 / 502 GB)</li>
+    <li>Host battery: 100% (Full, on AC)</li>
+    <li>Uptime: 1h 13m</li>
+    <li>Temp: 46.0°C (acpitz)</li>
+    <li>iGPU: Advanced Micro Devices, Inc. [AMD/ATI] Krackan2 (rev c8) — 2.0%</li>
+    </ul>
+  </section>
   <p class="fine"><a href="/reports">All reports</a></p>
 </main>
 <footer class="site-foot">
@@ -46,7 +63,6 @@
   <a href="/status">Status</a>
   <a href="/about">About</a>
 </footer>
-<script src="/assets/starfield.js"></script>
 <script src="/assets/shell.js"></script>
 </body>
 </html>

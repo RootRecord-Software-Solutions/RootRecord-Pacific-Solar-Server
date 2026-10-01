@@ -15,9 +15,8 @@
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
-<body>
+<body class="desk">
 <a class="skip" href="#content">Skip to content</a>
-<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
@@ -35,7 +34,24 @@
 <main class="page" id="content">
   <p class="eyebrow">Ava</p>
   <h1>Boot brief</h1>
-  <p class="prose">Boot report, morning edition. It&#x27;s one oh one a.m. Hawaiian Standard Time. The Pacific desk came up at ten thirty two p.m., about 2 hours ago. Battery levels: Delta 2 at 1%, River 2 Pro at 40%. 0 active weather alerts. Kilauea alert level watch, erupting. Tropical Storm Nolo is about 292 nautical miles from Līhuʻe. CPU 45%, memory 91% used. End of boot report.</p>
+  <p class="meta">30 Sep 2026 · 01:01 HST</p>
+  <p class="prose">Boot brief</p>
+  <section class="sec" aria-label="Spoken">
+    <h2>Spoken</h2>
+    <p class="prose">Boot report, morning edition. It&#x27;s one oh one a.m. Hawaiian Standard Time. The Pacific desk came up at ten thirty two p.m., about 2 hours ago. Battery levels: Delta 2 at 1%, River 2 Pro at 40%. 0 active weather alerts. Kilauea alert level watch, erupting. Tropical Storm Nolo is about 292 nautical miles from Līhuʻe. CPU 45%, memory 91% used. End of boot report.</p>
+  </section>
+  <section class="sec" aria-label="Measured">
+    <h2>Measured</h2>
+    <ul class="facts">
+    <li>Kind: morning</li>
+    <li>Boot: 2026-09-29T22:32-10:00 (up 149 min)</li>
+    <li>Host CPU 45%, memory 91% used</li>
+    <li>Batteries: Delta 2 1%, River 2 Pro 40%</li>
+    <li>NWS alerts: 0</li>
+    <li>Kilauea: WATCH / ORANGE erupting=True</li>
+    <li>Nearest storm: Tropical Storm Nolo 292 nm from Līhuʻe</li>
+    </ul>
+  </section>
   <p class="fine"><a href="/reports">All reports</a></p>
 </main>
 <footer class="site-foot">
@@ -46,7 +62,6 @@
   <a href="/status">Status</a>
   <a href="/about">About</a>
 </footer>
-<script src="/assets/starfield.js"></script>
 <script src="/assets/shell.js"></script>
 </body>
 </html>

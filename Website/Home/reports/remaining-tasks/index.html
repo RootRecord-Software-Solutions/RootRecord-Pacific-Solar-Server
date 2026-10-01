@@ -15,9 +15,8 @@
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
-<body>
+<body class="desk">
 <a class="skip" href="#content">Skip to content</a>
-<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
@@ -35,7 +34,20 @@
 <main class="page" id="content">
   <p class="eyebrow">Bruce</p>
   <h1>Remaining tasks</h1>
-  <p class="prose">Remaining tasks at twelve oh two a.m. Hawaiian Standard Time. 0 items in the next hour. Next is nine oh two a.m. Morning report.</p>
+  <p class="meta">1 Oct 2026 · 00:02 HST</p>
+  <p class="prose">Remaining tasks from the report board</p>
+  <section class="sec" aria-label="Spoken">
+    <h2>Spoken</h2>
+    <p class="prose">Remaining tasks at twelve oh two a.m. Hawaiian Standard Time. 0 items in the next hour. Next is nine oh two a.m. Morning report.</p>
+  </section>
+  <section class="sec" aria-label="Measured">
+    <h2>Measured</h2>
+    <ul class="facts">
+    <li>Morning report 2026-10-01T09:02:00-10:00 pending</li>
+    <li>Midday report 2026-10-01T12:02:00-10:00 pending</li>
+    <li>Late report 2026-10-01T21:02:00-10:00 pending</li>
+    </ul>
+  </section>
   <p class="fine"><a href="/reports">All reports</a></p>
 </main>
 <footer class="site-foot">
@@ -46,7 +58,6 @@
   <a href="/status">Status</a>
   <a href="/about">About</a>
 </footer>
-<script src="/assets/starfield.js"></script>
 <script src="/assets/shell.js"></script>
 </body>
 </html>

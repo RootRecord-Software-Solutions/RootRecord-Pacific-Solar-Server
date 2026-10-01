@@ -15,9 +15,8 @@
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
-<body>
+<body class="desk">
 <a class="skip" href="#content">Skip to content</a>
-<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
@@ -35,7 +34,21 @@
 <main class="page" id="content">
   <p class="eyebrow">Carly</p>
   <h1>Energy desk</h1>
-  <p class="prose">Delta 2 battery 4%, solar 0 W, AC out 60 W. River 2 Pro battery 70%, solar 0 W, AC out 0.0 W. Security camera observations indicate dark conditions, with solar panels in the morning position, left side up.</p>
+  <p class="meta">1 Oct 2026 · 00:30 HST</p>
+  <p class="prose">Energy desk</p>
+  <section class="sec" aria-label="Spoken">
+    <h2>Spoken</h2>
+    <p class="prose">Delta 2 battery 4%, solar 0 W, AC out 60 W. River 2 Pro battery 70%, solar 0 W, AC out 0.0 W. Security camera observations indicate dark conditions, with solar panels in the morning position, left side up.</p>
+  </section>
+  <section class="sec" aria-label="Measured">
+    <h2>Measured</h2>
+    <ul class="facts">
+    <li>Delta 2: 4%</li>
+    <li>River 2 Pro: 70%</li>
+    <li>Solar panel still: current</li>
+    <li>Security camera observations indicate dark conditions, with solar panels in the morning position, left side up.</li>
+    </ul>
+  </section>
   <p class="fine"><a href="/reports">All reports</a></p>
 </main>
 <footer class="site-foot">
@@ -46,7 +59,6 @@
   <a href="/status">Status</a>
   <a href="/about">About</a>
 </footer>
-<script src="/assets/starfield.js"></script>
 <script src="/assets/shell.js"></script>
 </body>
 </html>

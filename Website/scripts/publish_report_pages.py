@@ -257,13 +257,22 @@ def report_page(row: dict) -> str:  # info: def report_page
     slug = str(row["name"])  # info: set slug
     title = TITLES.get(key, key.replace("_", " "))  # info: set title
     who = persona_name(key)  # info: set who
+    md = report_markdown(key)  # info: set md
     body = public_body(key)  # info: set body
     text = html.escape(body) if body else "No public report is on file."  # info: set text
     blurb = str(row.get("function") or title)  # info: set blurb
+    when = as_of(md)  # info: set when
+    stamp = f'  <p class="meta">{html.escape(when)}</p>\n' if when else ""  # info: set stamp
+    facts = "\n".join(f"    <li>{html.escape(item)}</li>" for item in measured(md))  # info: set facts
+    measured_block = f'  <section class="sec" aria-label="Measured">\n    <h2>Measured</h2>\n    <ul class="facts">\n{facts}\n    </ul>\n  </section>\n' if facts else ""  # info: set measured_block
     main = f"""  <p class="eyebrow">{html.escape(who)}</p>
   <h1>{html.escape(title)}</h1>
-  <p class="prose">{text}</p>
-  <p class="fine"><a href="/reports">All reports</a></p>"""  # info: set main
+{stamp}  <p class="prose">{html.escape(blurb)}</p>
+  <section class="sec" aria-label="Spoken">
+    <h2>Spoken</h2>
+    <p class="prose">{text}</p>
+  </section>
+{measured_block}  <p class="fine"><a href="/reports">All reports</a></p>"""  # info: set main
     return chrome(f"{title} — Root Record", blurb, f"{SITE}/{slug}", main)  # info: return chrome
 
 

@@ -396,6 +396,7 @@ a.rel-login:hover { color: #fff; }
 .section { width: min(1120px, 100%); margin: 0 auto 28px; }
 
 .section .intro,
+p.prose,
 .prose p {
   margin: 10px 0 0;
   max-width: 46rem;
@@ -1056,6 +1057,14 @@ body { overflow-x: clip; }
 }
 
 body.desk { background: #000011; }
+
+body.desk h2 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
 
 body.desk .top { background: #000011; }
 

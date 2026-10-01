@@ -15,9 +15,8 @@
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
-<body>
+<body class="desk">
 <a class="skip" href="#content">Skip to content</a>
-<canvas id="starfield" aria-hidden="true"></canvas>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
@@ -32,37 +31,115 @@
     <a href="/status">Status</a>
   </nav>
 </header>
-<main class="page" id="content">
+<main class="page page-wide" id="content">
   <p class="eyebrow">Public reports</p>
   <h1>Reports</h1>
-  <p class="prose">Ava, Bruce, and Carly. Each page is the latest public report. The same address is the link posted with that report.</p>
-  <section class="tree" aria-label="Reports">
-  <h2>Ava</h2>
-  <ul>
-    <li><a href="/reports/nws-weather">NWS Hawaiʻi</a></li>
-    <li><a href="/reports/morning-report">Morning report</a></li>
-    <li><a href="/reports/midday-report">Midday report</a></li>
-    <li><a href="/reports/late-report">Late report</a></li>
-    <li><a href="/reports/official-weather">Official weather</a></li>
-    <li><a href="/reports/boot-brief">Boot brief</a></li>
-  </ul>
-  <h2>Bruce</h2>
-  <ul>
-    <li><a href="/reports/remaining-tasks">Remaining tasks</a></li>
-    <li><a href="/reports/solar-desk">Hourly solar</a></li>
-    <li><a href="/reports/system-perf">System performance</a></li>
-  </ul>
-  <h2>Carly</h2>
-  <ul>
-    <li><a href="/reports/energy-report">Energy desk</a></li>
-    <li><a href="/reports/earthquake-report">Earthquake</a></li>
-    <li><a href="/reports/hurricane-desk">Hurricane desk</a></li>
-    <li><a href="/reports/kilauea-report">Kīlauea</a></li>
-    <li><a href="/reports/security-desk">Security</a></li>
-    <li><a href="/reports/bandwidth-desk">Bandwidth</a></li>
-  </ul>
+  <p class="prose">Ava, Bruce, and Carly. Each card is the latest public report. Open it for the spoken text and the measured lines.</p>
+  <section class="sec" aria-label="Ava">
+    <h2>Ava</h2>
+    <div class="report-board">
+    <a class="card report-card" href="/reports/nws-weather">
+      <h3>NWS Hawaiʻi</h3>
+      <p class="tax-items">NWS Hawaii weather report</p>
+      <p class="excerpt">NWS Hawaii Report. No active HI alerts from the API sample. State forecast for tonight. Mostly cloudy. Occasional showers on Kauai. scattered showers Oahu and Maui County. Lows 74 to 79. Southeast winds around 15 mph.</p>
+      <p class="fine">1 Oct 2026 · 00:45 HST</p>
+    </a>
+    <a class="card report-card" href="/reports/morning-report">
+      <h3>Morning report</h3>
+      <p class="tax-items">Morning roll-up</p>
+      <p class="excerpt">Batteries: Delta 2 90%, River 2 Pro 12%; solar input 0 W NWS alerts active: 0 Forecast Tonight: Mostly cloudy. Occasional showers on Kauai. scattered showers Oahu and Maui County. Lows 74 to 79. Southeast winds around…</p>
+      <p class="fine">30 Sep 2026 · 17:45 HST</p>
+    </a>
+    <a class="card report-card" href="/reports/midday-report">
+      <h3>Midday report</h3>
+      <p class="tax-items">Midday roll-up</p>
+      <p class="excerpt">Batteries: Delta 2 90%, River 2 Pro 12%; solar input 0 W NWS alerts active: 0 Forecast Tonight: Mostly cloudy. Occasional showers on Kauai. scattered showers Oahu and Maui County. Lows 74 to 79. Southeast winds around…</p>
+      <p class="fine">30 Sep 2026 · 17:45 HST</p>
+    </a>
+    <a class="card report-card" href="/reports/late-report">
+      <h3>Late report</h3>
+      <p class="tax-items">Late roll-up</p>
+      <p class="excerpt">Late report. It&#x27;s nine oh seven p.m. Hawaiian Standard Time. Battery levels: Delta 2 at 47%, River 2 Pro at 84%. Solar input zero watts. No active HI alerts from the API sample. Forecast for tonight: Mostly cloudy. Host…</p>
+      <p class="fine">30 Sep 2026 · 21:07 HST</p>
+    </a>
+    <a class="card report-card" href="/reports/official-weather">
+      <h3>Official weather</h3>
+      <p class="tax-items">Official weather report</p>
+      <p class="excerpt">No public report is on file.</p>
+      
+    </a>
+    <a class="card report-card" href="/reports/boot-brief">
+      <h3>Boot brief</h3>
+      <p class="tax-items">Boot brief</p>
+      <p class="excerpt">Boot report, morning edition. It&#x27;s one oh one a.m. Hawaiian Standard Time. The Pacific desk came up at ten thirty two p.m., about 2 hours ago. Battery levels: Delta 2 at 1%, River 2 Pro at 40%. 0 active weather alerts…</p>
+      <p class="fine">30 Sep 2026 · 01:01 HST</p>
+    </a>
+    </div>
   </section>
-  <p class="fine"><a href="/operations#reporting">Systems</a></p>
+  <section class="sec" aria-label="Bruce">
+    <h2>Bruce</h2>
+    <div class="report-board">
+    <a class="card report-card" href="/reports/remaining-tasks">
+      <h3>Remaining tasks</h3>
+      <p class="tax-items">Remaining tasks from the report board</p>
+      <p class="excerpt">Remaining tasks at twelve oh two a.m. Hawaiian Standard Time. 0 items in the next hour. Next is nine oh two a.m. Morning report.</p>
+      <p class="fine">1 Oct 2026 · 00:02 HST</p>
+    </a>
+    <a class="card report-card" href="/reports/solar-desk">
+      <h3>Hourly solar</h3>
+      <p class="tax-items">Solar desk</p>
+      <p class="excerpt">Solar desk at twelve oh four a.m. Hawaiian Standard Time. Delta 2: state of charge 8%, AC out 45 watts. River 2 Pro: state of charge 72%, USB-C out 20 watts. Sun times on file are not for today. Solar panel still is 4…</p>
+      <p class="fine">1 Oct 2026 · 00:04 HST</p>
+    </a>
+    <a class="card report-card" href="/reports/system-perf">
+      <h3>System performance</h3>
+      <p class="tax-items">System performance</p>
+      <p class="excerpt">System performance report. Host desk at twelve oh one a.m. Hawaiian Standard Time. CPU 10%. Memory 61% used, 8.6 of 14.2 gigabytes. Disk 30% used. Host battery 100%, on AC. Uptime 1 hour 13 minutes. Temperature 46.0…</p>
+      <p class="fine">1 Oct 2026 · 00:01 HST</p>
+    </a>
+    </div>
+  </section>
+  <section class="sec" aria-label="Carly">
+    <h2>Carly</h2>
+    <div class="report-board">
+    <a class="card report-card" href="/reports/energy-report">
+      <h3>Energy desk</h3>
+      <p class="tax-items">Energy desk</p>
+      <p class="excerpt">Delta 2 battery 4%, solar 0 W, AC out 60 W. River 2 Pro battery 70%, solar 0 W, AC out 0.0 W. Security camera observations indicate dark conditions, with solar panels in the morning position, left side up.</p>
+      <p class="fine">1 Oct 2026 · 00:30 HST</p>
+    </a>
+    <a class="card report-card" href="/reports/earthquake-report">
+      <h3>Earthquake</h3>
+      <p class="tax-items">USGS earthquake report</p>
+      <p class="excerpt">Earthquake report at twelve oh three a.m. 16 new local earthquakes. Magnitude 2.55, about 4 km SW of Volcano, Hawaii. Magnitude 2.2, about 5 km WSW of Volcano, Hawaii. Magnitude 2.14, about 5 km WSW of Volcano, Hawaii…</p>
+      <p class="fine">1 Oct 2026 · 00:03 HST</p>
+    </a>
+    <a class="card report-card" href="/reports/hurricane-desk">
+      <h3>Hurricane desk</h3>
+      <p class="tax-items">Hurricane desk</p>
+      <p class="excerpt">Hurricane global desk, Pacific Root Server. Nearest Hurricane from a Hawaiian island. Tropical Storm Nolo is about 314 nautical miles from Līhuʻe. Center 21.7 north, 165.0 west. It bears west of Līhuʻe. Moving northwest…</p>
+      <p class="fine">30 Sep 2026 · 21:08 HST</p>
+    </a>
+    <a class="card report-card" href="/reports/kilauea-report">
+      <h3>Kīlauea</h3>
+      <p class="tax-items">Kilauea report</p>
+      <p class="excerpt">Kilauea report at twelve oh three a.m. Alert level watch, aviation color code orange. The volcano is erupting. Here is the latest observatory notice. The Halemaʻumaʻu eruption of Kīlauea volcano is currently erupting…</p>
+      <p class="fine">1 Oct 2026 · 00:03 HST</p>
+    </a>
+    <a class="card report-card" href="/reports/security-desk">
+      <h3>Security</h3>
+      <p class="tax-items">Security desk</p>
+      <p class="excerpt">Security desk at twelve oh four a.m. The firewall is not set to start on boot. OpenSSH service is active. 41 TCP listeners. 28 established connections. Failed sign-ins: 0 in the last hour, 0 in the last twenty four…</p>
+      <p class="fine">1 Oct 2026 · 00:04 HST</p>
+    </a>
+    <a class="card report-card" href="/reports/bandwidth-desk">
+      <h3>Bandwidth</h3>
+      <p class="tax-items">Bandwidth desk</p>
+      <p class="excerpt">Bandwidth desk at twelve oh five a.m. This host is on wireless. Last hour: 1.81 gigabytes down, 88.9 megabytes up, 1.89 gigabytes total. Last twenty four hours is not on file yet.</p>
+      <p class="fine">1 Oct 2026 · 00:05 HST</p>
+    </a>
+    </div>
+  </section>
 </main>
 <footer class="site-foot">
   <a href="/ecosystem">Ecosystem</a>
@@ -72,7 +149,6 @@
   <a href="/status">Status</a>
   <a href="/about">About</a>
 </footer>
-<script src="/assets/starfield.js"></script>
 <script src="/assets/shell.js"></script>
 </body>
 </html>
