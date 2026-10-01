@@ -10,25 +10,23 @@ Production is [https://www.rootrecord.cloud/](https://www.rootrecord.cloud/).
 
 | Path | Purpose |
 | --- | --- |
-| `/` | Live public overview |
-| `/ecosystem` | How knowledge, runtime, and data fit together |
-| `/infrastructure` | Hawaiʻi, the Root Record Network, and the VPS Node |
-| `/operations` | Field systems and operations |
-| `/intelligence` | Agents, context, execution, and verification |
-| `/data` | Telemetry and persistent state |
-| `/knowledge` | RootRecord Library |
-| `/security` | Public security posture |
+| `/` | Cinematic entrance, products, and what Root Record builds |
+| `/products` | Business Manager by RootRecord, Weather Manager, and Kilauea Alerts |
+| `/services` | Web, app, AI workflow, personalized agents, and custom software |
+| `/solutions` | Customer problems those products and services address |
+| `/about` | Root Record as a software company |
+| `/security` | Security, privacy, operations, and the public boundary |
 | `/status` | Public system status |
 | `/reports` | Latest field and operations readings |
-| `/about` | Why Root Record exists |
+| `/infrastructure` | Hawaiʻi, the Root Record Network, and the Mainland Server |
 
-Navigation stays short: Home, Ecosystem, Systems, Intelligence, Knowledge, Security, Reports, Status, and Login. Deeper pages cross-link.
+Navigation is Home, Products, Services, Solutions, About, Security, and Status. Deeper pages stay available from status, reports, and the technology notes.
 
 ## Vocabulary
 
-Hawaiʻi. VPS Node. Root Record Network. Pacific Solar Server. RootRecord Library. RootRecord Database. Field systems. Intelligent systems. Runtime. Knowledge layer. Data layer. Verification. Continuity.
+Hawaiʻi. Mainland Server. Root Record Network. Pacific Solar Server. RootRecord Library. RootRecord Database. The public relationship is Hawaiʻi and the Mainland Server. The site does not name a cloud provider, a finer server location, or private infrastructure.
 
-The public relationship is Hawaiʻi and the VPS Node. The site does not name a cloud provider, a finer server location, or private infrastructure.
+Products on the public site are software Root Record ships: Business Manager by RootRecord, Weather Manager, and Kilauea Alerts. They are not presented as client case studies.
 
 ## Status feed
 

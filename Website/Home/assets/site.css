@@ -121,7 +121,43 @@ a:hover { color: #e0f2fe; }
 
 .stage a,
 .stage button,
-.stage .panel { pointer-events: auto; }
+.stage .panel,
+.stage .maint { pointer-events: auto; }
+
+.maint {
+  width: min(1120px, 100%);
+  margin: 0 auto 12px;
+  padding: 16px 20px;
+  text-align: center;
+  border: 1px solid rgba(125, 211, 252, 0.4);
+  border-radius: 16px;
+  background: rgba(8, 12, 32, 0.78);
+}
+
+.maint-kicker {
+  margin: 0;
+  color: var(--cyan);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.maint-copy {
+  margin: 8px 0 0;
+  color: #e8e8ef;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.maint-clock {
+  margin: 10px 0 0;
+  color: #f0f9ff;
+  font-size: clamp(18px, 3vw, 28px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
 
 .hero {
   flex: 1;
@@ -1255,12 +1291,15 @@ body.desk .top { background: #000011; }
   letter-spacing: 0.08em;
 }
 
+.product h2,
 .product h3 {
   margin: 0;
   font-size: clamp(16px, 2vw, 20px);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
+
+p .enter { display: inline-block; }
 
 .product .position {
   margin: 8px 0 0;
@@ -1322,6 +1361,11 @@ body.desk .top { background: #000011; }
   font-size: 13px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+.catalog .product h2 {
+  font-size: clamp(16px, 2vw, 20px);
+  letter-spacing: 0.06em;
 }
 
 .catalog .product { margin-top: 16px; }

@@ -46,6 +46,11 @@
     <p class="fine" id="globe-fallback" hidden>Planetary view is unavailable in this browser. Public telemetry on this page still updates.</p>
     <button class="spin" id="spin" type="button" aria-pressed="true">Stop spin</button>
   </section>
+  <aside class="maint" role="status">
+    <p class="maint-kicker">Under development</p>
+    <p class="maint-copy">This website is under development. Login and content are unavailable.</p>
+    <p class="maint-clock" id="maint-clock">Available 2 Oct 2026 · 00:00 HST</p>
+  </aside>
   <div class="hud-row">
     <section class="panel" id="network" aria-label="Live network">
       <h2>Live network</h2>
@@ -118,7 +123,7 @@
             <li>Extended outlook</li>
             <li>Weather alerts</li>
             <li>Location-based forecasts</li>
-            <li>Saved locations</li>
+            <li>Saved locations where supported</li>
           </ul>
           <div class="cta-row">
             <a class="enter" href="https://play.google.com/store/apps/details?id=com.rootrecord.weathermanager" rel="noreferrer">View on Google Play</a>
@@ -332,5 +337,27 @@
 <script src="/assets/starfield.js"></script>
 <script src="/assets/home.js"></script>
 <script src="/assets/shell.js"></script>
+<script>
+(function () {
+  var el = document.getElementById("maint-clock");
+  if (!el) return;
+  var due = Date.parse("2026-10-02T00:00:00-10:00");
+  function pad(n) { return String(n).padStart(2, "0"); }
+  function tick() {
+    var left = due - Date.now();
+    if (left <= 0) {
+      el.textContent = "Available";
+      return;
+    }
+    var s = Math.floor(left / 1000);
+    var h = Math.floor(s / 3600);
+    var m = Math.floor((s % 3600) / 60);
+    var sec = s % 60;
+    el.textContent = pad(h) + ":" + pad(m) + ":" + pad(sec) + " · 2 Oct 2026 · 00:00 HST";
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
 </body>
 </html>

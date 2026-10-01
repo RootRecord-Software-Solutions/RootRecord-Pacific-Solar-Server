@@ -20,20 +20,20 @@
 <header class="top">
   <a class="brand" href="/">Root Record</a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
-  <nav id="site-nav" aria-label="Primary">
+    <nav id="site-nav" aria-label="Primary">
     <a href="/">Home</a>
-    <a href="/ecosystem">Ecosystem</a>
-    <a href="/operations">Systems</a>
-    <a href="/intelligence">Intelligence</a>
-    <a href="/knowledge">Knowledge</a>
+    <a href="/products">Products</a>
+    <a href="/services">Services</a>
+    <a href="/solutions">Solutions</a>
+    <a href="/about">About</a>
     <a href="/security">Security</a>
-    <a href="/reports">Reports</a>
     <a href="/status" aria-current="page">Status</a>
   </nav>
 </header>
 <main class="page page-wide" id="content">
   <p class="eyebrow">Public feed</p>
-  <h1>Root Record status</h1>
+  <h1>Status</h1>
+  <p class="prose">See the current public operational state where live reporting is available.</p>
   <p class="prose" id="feed-line">Loading public telemetry...</p>
   <p class="prose">This page is the public feed, not a health score. A row is filled only when that feed returns a value. Core services use a smaller vocabulary: documented, reporting, or no public signal. A green mark is used only when the network poll is live.</p>
   <ul class="terms">
@@ -50,7 +50,7 @@
     <h2>Network</h2>
     <div class="status-line" aria-live="polite"><i class="led" id="net-dot" aria-hidden="true"></i><span id="net-status">LOADING</span></div>
     <div class="status-row"><span>Hawaiʻi</span><b id="val-hi">—</b></div>
-    <div class="status-row"><span>VPS Node</span><b id="val-ms">—</b></div>
+    <div class="status-row"><span>Mainland Server</span><b id="val-ms">—</b></div>
     <div class="status-row"><span>Active flows</span><b id="active-flows">—</b></div>
     <div class="status-row"><span>Endpoints</span><b id="endpoints">—</b></div>
     <p class="meta" id="last-label">Last update</p>
@@ -93,13 +93,12 @@
 </main>
 <footer class="site-foot">
   <a href="/">Home</a>
-  <a href="/ecosystem">Ecosystem</a>
-  <a href="/operations">Systems</a>
-  <a href="/intelligence">Intelligence</a>
-  <a href="/knowledge">Knowledge</a>
+  <a href="/products">Products</a>
+  <a href="/services">Services</a>
+  <a href="/solutions">Solutions</a>
+  <a href="/about">About</a>
   <a href="/security">Security</a>
-  <a href="/infrastructure">Infrastructure</a>
-  <a href="/data">Data</a>
+  <a href="/status">Status</a>
 </footer>
 <script src="/assets/telemetry.js"></script>
 <script src="/assets/live.js"></script>
