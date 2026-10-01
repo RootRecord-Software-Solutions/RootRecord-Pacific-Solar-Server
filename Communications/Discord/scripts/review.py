@@ -306,17 +306,17 @@ def review_stage(voice: str, prompt: str, infer, log) -> StageReview:  # info: d
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def choose_public(final: str, draft: str, bruce: StageReview, carly: StageReview) -> str:  # info: def choose_public
-    text = (final or "").strip()  # info: set text
-    if not text:  # info: if not text
-        text = (draft or "").strip()  # info: set text
+    draft_text = (draft or "").strip()  # info: set draft_text
+    text = (final or "").strip() or draft_text  # info: set text
     if not text:  # info: if not text
         return ""  # info: return ""
     head = text.splitlines()[0].upper().split()[0].strip(".:")  # info: set head
-    if head in {"APPROVE", "CHANGES"}:  # info: if head in { "APPROVE" , "CHANGES" }
-        text = (draft or "").strip()  # info: set text
-    if text and text in {bruce.notes.strip(), carly.notes.strip()}:  # info: if text and text in { bruce . notes . strip ( ) , carly . notes . strip ( ) }
-        text = (draft or "").strip()  # info: set text
+    notes = {bruce.notes.strip(), carly.notes.strip()} - {""}  # info: set notes
+    if head in {"APPROVE", "CHANGES"} or text in notes:  # info: if head in { "APPROVE" , "CHANGES" } or text in notes
+        text = draft_text  # info: set text
     if LEAK_RE.search(text or ""):  # info: if LEAK_RE . search ( text or "" )
+        if text != draft_text and draft_text and not LEAK_RE.search(draft_text):  # info: if text != draft_text and draft_text and not LEAK_RE . search ( draft_text )
+            return draft_text  # info: return draft_text
         return ""  # info: return ""
     return text  # info: return text
 

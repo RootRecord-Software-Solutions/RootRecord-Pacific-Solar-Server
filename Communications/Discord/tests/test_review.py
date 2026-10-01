@@ -179,6 +179,11 @@ class ReviewPipelineTests(unittest.TestCase):  # info: class ReviewPipelineTests
         self.assertNotIn(BRUCE, result.public_text)  # info: self . assertNotIn ( BRUCE , result . public_text )
         self.assertNotIn(CARLY, result.public_text)  # info: self . assertNotIn ( CARLY , result . public_text )
 
+    def test_leaky_final_falls_back_to_draft(self):  # info: def test_leaky_final_falls_back_to_draft
+        infer = ScriptedInfer(final="DESK_LIVE: watts 10")  # info: set infer
+        result = review.run_pipeline(USER, "", infer=infer, log=lambda line: None)  # info: set result
+        self.assertEqual(result.public_text, DRAFT)  # info: self . assertEqual ( result . public_text , DRAFT )
+
     def test_review_shaped_final_is_not_posted(self):  # info: def test_review_shaped_final_is_not_posted
         infer = ScriptedInfer(final="APPROVE\nlooks fine")  # info: set infer
         result = review.run_pipeline(USER, "", infer=infer, log=lambda line: None)  # info: set result
