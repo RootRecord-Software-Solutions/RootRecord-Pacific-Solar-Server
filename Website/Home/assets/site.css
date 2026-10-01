@@ -1446,3 +1446,9 @@ p .enter { display: inline-block; }
 .legal .toc p { margin: 0; }
 
 .legal .toc ol { margin-top: 8px; }
+
+.legal .toc a { text-decoration: none; }
+
+.legal .toc a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.legal a { text-underline-offset: 3px; }
