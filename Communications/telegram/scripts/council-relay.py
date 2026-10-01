@@ -448,8 +448,116 @@ def seed_interaction(msg, text, ch, sandbox_id):  # info: def seed_interaction
     subprocess.Popen([sys.executable, str(script), "council", seeded.get("request_id", "")], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)  # info: call subprocess . Popen
 
 # ====================================================
+# SECTION: function context_path
+# What it does: Path of the recent-chat file. Does not send or read the file.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def context_path(state_dir):  # info: def context_path
+    return Path(state_dir) / "chat-context.json"  # info: return Path ( state_dir ) / "chat-context.json"
+
+# ====================================================
+# SECTION: function load_context
+# What it does: Read recent chat lines already seen. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def load_context(state_dir):  # info: def load_context
+    path = context_path(state_dir)  # info: set path
+    if not path.is_file():  # info: if not path . is_file
+        return {}  # info: return { }
+    try:  # info: try
+        data = json.loads(path.read_text(encoding="utf-8"))  # info: set data
+    except (OSError, ValueError):  # info: except ( OSError , ValueError )
+        return {}  # info: return { }
+    return data if isinstance(data, dict) else {}  # info: return data if isinstance ( data , dict ) else { }
+
+# ====================================================
+# SECTION: function remember_turn
+# What it does: Keep the last eight lines for one chat. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def remember_turn(state_dir, chat_id, who, text, message_id):  # info: def remember_turn
+    clean = " ".join((text or "").split())[:500]  # info: set clean
+    if not clean:  # info: if not clean
+        return  # info: return
+    data = load_context(state_dir)  # info: set data
+    key = str(chat_id)  # info: set key
+    rows = data.get(key) if isinstance(data.get(key), list) else []  # info: set rows
+    rows.append({"who": who, "text": clean, "message_id": message_id})  # info: rows . append
+    data[key] = rows[-8:]  # info: data [ key ] = rows [ -8 : ]
+    path = context_path(state_dir)  # info: set path
+    path.parent.mkdir(parents=True, exist_ok=True)  # info: path . parent . mkdir
+    tmp = path.with_suffix(".json.tmp")  # info: set tmp
+    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")  # info: tmp . write_text
+    os.replace(tmp, path)  # info: os . replace
+
+# ====================================================
+# SECTION: function chat_transcript
+# What it does: Recent lines for one chat, oldest first. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def chat_transcript(state_dir, chat_id) -> str:  # info: def chat_transcript
+    rows = load_context(state_dir).get(str(chat_id)) or []  # info: set rows
+    lines = []  # info: set lines
+    for row in rows:  # info: for row in rows
+        if isinstance(row, dict) and row.get("text"):  # info: if isinstance ( row , dict ) and row . get ( "text" )
+            lines.append(f"{row.get('who') or 'user'}: {row['text']}")  # info: lines . append
+    return "\n".join(lines)  # info: return "\n" . join ( lines )
+
+# ====================================================
+# SECTION: function quoted_line
+# What it does: The message this update replies to. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def quoted_line(msg) -> str:  # info: def quoted_line
+    reply = msg.get("reply_to_message") or {}  # info: set reply
+    text = (reply.get("text") or reply.get("caption") or "").strip()  # info: set text
+    if not text:  # info: if not text
+        return ""  # info: return ""
+    who = ((reply.get("from") or {}).get("first_name") or "someone")  # info: set who
+    return f"{who}: {' '.join(text.split())[:500]}"  # info: return f" { who }
+
+# ====================================================
+# SECTION: function continue_prompt
+# What it does: Ask one voice to answer the latest line using the recent chat. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def continue_prompt(transcript, quoted, text, voice) -> str:  # info: def continue_prompt
+    parts = []  # info: set parts
+    if transcript:  # info: if transcript
+        parts.append("Recent chat:\n" + transcript)  # info: parts . append
+    if quoted:  # info: if quoted
+        parts.append("This message replies to:\n" + quoted)  # info: parts . append
+    parts.append(f"Continue the chat as {voice}. Answer only the latest line. Do not greet as a new conversation when recent lines are present.")  # info: parts . append
+    parts.append("User: " + text)  # info: parts . append
+    return "\n\n".join(parts)  # info: return "\n\n" . join ( parts )
+
+# ====================================================
+# SECTION: function continue_reply
+# What it does: Ava answers a follow-up unless the text names one AI. Posts as a reply to that message. Does not start a second poll.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def continue_reply(cfg, state_dir, voices, voice, msg, text, max_text):  # info: def continue_reply
+    chat = msg.get("chat") or {}  # info: set chat
+    ch = str(chat.get("id", ""))  # info: set ch
+    mid = msg.get("message_id")  # info: set mid
+    thread_id = msg.get("message_thread_id")  # info: set thread_id
+    prior = chat_transcript(state_dir, ch)  # info: set prior
+    quote = quoted_line(msg)  # info: set quote
+    sender = ((msg.get("from") or {}).get("first_name") or "user")  # info: set sender
+    remember_turn(state_dir, ch, sender, text, mid)  # info: call remember_turn
+    mark_seen(voice, voices, ch, mid)  # info: call mark_seen
+    reply = run_infer(cfg, voice, continue_prompt(prior, quote, text, voice))  # info: set reply
+    if not reply:  # info: if not reply
+        return False  # info: return False
+    mark_typing(voice, voices, ch)  # info: call mark_typing
+    posted = post_as(voice, voices, ch, reply, max_text, allow=True, reply_to=mid, thread_id=thread_id)  # info: set posted
+    if posted:  # info: if posted
+        remember_turn(state_dir, ch, voice, reply, None)  # info: call remember_turn
+    return posted  # info: return posted
+
+# ====================================================
 # SECTION: function main
-# What it does: Poll one getUpdates. Answer the original council when COUNCIL_REPLIES=1. Answer the sandbox only when SANDBOX_REPLIES=1. Private DMs stay quiet unless RR_RELAY_REPLIES=1.
+# What it does: Poll one getUpdates. Answer the original council when COUNCIL_REPLIES=1. A follow-up with no name is Ava, using recent chat. Answer the sandbox only when SANDBOX_REPLIES=1. Private DMs stay quiet unless RR_RELAY_REPLIES=1.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def main():  # info: def main
@@ -512,7 +620,7 @@ def main():  # info: def main
             offset_file.write_text(str(offset))  # info: offset_file . write_text ( str ( offset )
             msg = upd.get("message") or {}  # info: set msg
             text = (msg.get("text") or "").strip()  # info: set text
-            if not text:  # info: if not text :
+            if not text or (msg.get("from") or {}).get("is_bot"):  # info: if not text or ( msg . get ( "from" ) or { } ) . get ( "is_bot" )
                 continue  # info: continue
             chat = msg.get("chat") or {}  # info: set chat
             ch = str(chat.get("id", ""))  # info: set ch
@@ -542,17 +650,15 @@ def main():  # info: def main
                 continue  # info: continue
 
             mid = msg.get("message_id")  # info: set mid
+            thread_id = msg.get("message_thread_id")  # info: set thread_id
             refresh_desk(cfg)  # info: call refresh_desk
             if is_private:  # info: if is_private :
-                mark_seen(poll_voice, voices, ch, mid)  # info: call mark_seen
-                reply = run_infer(cfg, poll_voice, text)  # info: set reply
-                if reply:  # info: if reply :
-                    mark_typing(poll_voice, voices, ch)  # info: call mark_typing
-                    post_as(poll_voice, voices, ch, reply, max_text, allow=True)  # info: call post_as
+                continue_reply(cfg, state_dir, voices, poll_voice, msg, text, max_text)  # info: call continue_reply
                 continue  # info: continue
 
             if wants_pipeline(text, triggers):  # info: if wants_pipeline ( text , triggers ) :
-                prior = ""  # info: set prior
+                prior = chat_transcript(state_dir, ch)  # info: set prior
+                remember_turn(state_dir, ch, (msg.get("from") or {}).get("first_name") or "user", text, mid)  # info: call remember_turn
                 for hop in PIPELINE_ORDER:  # info: for hop in PIPELINE_ORDER :
                     if hop not in voices:  # info: if hop not in voices :
                         continue  # info: continue
@@ -560,33 +666,38 @@ def main():  # info: def main
                     reply = run_infer(cfg, hop, text, prior=prior)  # info: set reply
                     if reply:  # info: if reply :
                         mark_typing(hop, voices, ch)  # info: call mark_typing
-                        post_as(hop, voices, ch, reply, max_text, allow=True)  # info: call post_as
+                        post_as(hop, voices, ch, reply, max_text, allow=True, reply_to=mid, thread_id=thread_id)  # info: call post_as
                         prior += f"\n[{hop}]: {reply}\n"  # info: set prior
+                        remember_turn(state_dir, ch, hop, reply, None)  # info: call remember_turn
                     time.sleep(0.4)  # info: time . sleep ( 0.4 )
                 continue  # info: continue
 
             if addresses_group(text, voices):  # info: if addresses_group ( text , voices ) :
                 room = [hop for hop in ("ava", "bruce", "carly") if hop in voices]  # info: set room
+                prior_chat = chat_transcript(state_dir, ch)  # info: set prior_chat
+                quote = quoted_line(msg)  # info: set quote
+                remember_turn(state_dir, ch, (msg.get("from") or {}).get("first_name") or "user", text, mid)  # info: call remember_turn
                 if group_hello(text):  # info: if group_hello ( text ) :
                     ask = "Greet the room in one or two sentences. User said: " + text  # info: set ask
                 else:  # info: else :
                     ask = "Answer the person. This is not a power or desk reading. No data line unless they asked for watts, SOC, or host numbers.\nUser: " + text  # info: set ask
+                if prior_chat:  # info: if prior_chat
+                    ask = "Recent chat:\n" + prior_chat + "\n\n" + ask  # info: set ask
+                if quote:  # info: if quote
+                    ask = "This message replies to:\n" + quote + "\n\n" + ask  # info: set ask
                 for hop in room:  # info: for hop in room :
                     mark_seen(hop, voices, ch, mid)  # info: call mark_seen
                 for hop in room:  # info: for hop in room :
                     reply = run_infer(cfg, hop, ask)  # info: set reply
                     if reply:  # info: if reply :
                         mark_typing(hop, voices, ch)  # info: call mark_typing
-                        post_as(hop, voices, ch, reply, max_text, allow=True)  # info: call post_as
+                        if post_as(hop, voices, ch, reply, max_text, allow=True, reply_to=mid, thread_id=thread_id):  # info: if post_as
+                            remember_turn(state_dir, ch, hop, reply, None)  # info: call remember_turn
                     time.sleep(0.4)  # info: time . sleep ( 0.4 )
                 continue  # info: continue
 
             voice = mentioned_voice(text, voices) or default_voice  # info: set voice
-            mark_seen(voice, voices, ch, mid)  # info: call mark_seen
-            reply = run_infer(cfg, voice, text)  # info: set reply
-            if reply:  # info: if reply :
-                mark_typing(voice, voices, ch)  # info: call mark_typing
-                post_as(voice, voices, ch, reply, max_text, allow=True)  # info: call post_as
+            continue_reply(cfg, state_dir, voices, voice, msg, text, max_text)  # info: call continue_reply
         time.sleep(0.2)  # info: time . sleep ( 0.2 )
 
 if __name__ == "__main__":  # info: if __name__ == "__main__" :
