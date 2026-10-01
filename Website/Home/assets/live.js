@@ -2,22 +2,64 @@
   var T = window.RRTelemetry;
   if (!T) return;
 
+  var STATE_STALE_MS = 20000;
+  var ENERGY_STALE_MS = 20 * 60 * 1000;
+  var WEATHER_STALE_MS = 3 * 60 * 60 * 1000;
+  var GEO_STALE_MS = 6 * 60 * 60 * 1000;
+
   function text(id, value) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = value;
+    var node = document.getElementById(id);
+    if (node) node.textContent = value;
   }
 
-  function led(id, up) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    el.className = up ? "led up" : "led";
-  }
-
-  function showOrDash(id, value) {
-    text(id, value == null || value === "" ? "—" : value);
+  function led(id, mode) {
+    var node = document.getElementById(id);
+    if (!node) return;
+    node.className = mode === "live" ? "led up" : mode === "stale" ? "led stale" : "led";
   }
 
   var stateSeen = false;
+  var stateAt = null;
+  var stateLive = false;
+  var stateWord = "LOADING";
+  var opsSeen = false;
+  var opsAt = null;
+  var lastReadings = null;
+
+  function wordFrom(hasSignal, fresh) {
+    if (!navigator.onLine) return "OFFLINE";
+    if (!hasSignal) return "NO PUBLIC SIGNAL";
+    if (!fresh) return "STALE";
+    return "LIVE";
+  }
+
+  function paintAge() {
+    var node = document.getElementById("net-fresh");
+    if (!node) return;
+    if (stateWord === "LOADING") {
+      node.textContent = "Loading public telemetry...";
+      return;
+    }
+    if (stateWord === "LIVE" && stateAt) {
+      node.textContent = T.agePhrase(stateAt);
+      return;
+    }
+    if (stateWord === "STALE" && stateAt) {
+      node.textContent = "Last known observation · " + T.agePhrase(stateAt).replace("Updated ", "");
+      return;
+    }
+    if (stateWord === "OFFLINE") {
+      node.textContent = stateAt ? "Public feed unavailable · " + T.agePhrase(stateAt) : "Public feed unavailable";
+      return;
+    }
+    node.textContent = "No public signal";
+  }
+
+  function obsWord(at, limit) {
+    if (at === null || at === undefined) return "NO PUBLIC SIGNAL";
+    if (Date.now() - at > limit) return "STALE";
+    return "REPORTING";
+  }
 
   function paintState(d) {
     var s = (d && d.stats) || {};
@@ -25,93 +67,207 @@
     var main = T.finite(s.localActiveFlows);
     var flows = T.finite(s.activeFlows);
     var ends = T.finite(s.endpoints);
-    var live = hi !== null || main !== null || flows !== null || ends !== null;
-    text("net-status", live ? "LIVE" : "NO SIGNAL");
-    led("net-dot", live);
-    showOrDash("hi-flows", hi === null ? null : T.fmt(hi));
-    showOrDash("ms-flows", main === null ? null : T.fmt(main));
-    showOrDash("active-flows", flows === null ? null : T.fmt(flows));
-    showOrDash("endpoints", ends === null ? null : T.fmt(ends));
-    showOrDash("field-hi", hi === null ? null : T.fmt(hi) + " flows");
-    showOrDash("field-ms", main === null ? null : T.fmt(main) + " flows");
-
-    var hiLabel = hi === null ? "No signal" : T.fmt(hi) + " flows";
-    var msLabel = main === null ? "No signal" : T.fmt(main) + " flows";
-    text("val-hi", hiLabel);
-    text("val-ms", msLabel);
-    led("led-hi", hi !== null);
-    led("led-ms", main !== null);
-
-    var clock = T.utcClock(s.updated || (d && d.ts));
-    var last = document.getElementById("last-update");
-    if (clock && last) {
-      last.textContent = clock;
-      last.dataset.source = "state";
-      text("last-label", "Last update");
-    }
-    var feed = document.getElementById("feed-line");
-    if (feed) feed.textContent = live ? "Network feed live" : "Network feed has no counts";
+    var has = hi !== null || main !== null || flows !== null || ends !== null;
     stateSeen = true;
+    stateAt = Date.now();
+    stateLive = true;
+    stateWord = wordFrom(has, true);
+    text("net-status", stateWord);
+    led("net-dot", stateWord === "LIVE" ? "live" : stateWord === "STALE" ? "stale" : "off");
+    text("hi-flows", hi === null ? "NO READING" : T.fmt(hi));
+    text("ms-flows", main === null ? "NO READING" : T.fmt(main));
+    text("active-flows", flows === null ? "NO READING" : T.fmt(flows));
+    text("endpoints", ends === null ? "NO READING" : T.fmt(ends));
+    text("field-hi", hi === null ? "NO READING" : T.fmt(hi) + " flows");
+    text("field-ms", main === null ? "NO READING" : T.fmt(main) + " flows");
+    text("val-hi", hi === null ? "NO PUBLIC SIGNAL" : T.fmt(hi) + " flows");
+    text("val-ms", main === null ? "NO PUBLIC SIGNAL" : T.fmt(main) + " flows");
+    var clock = T.formatHst(stateAt, false);
+    text("last-update", clock || "—");
+    text("last-label", "Last update");
+    var feed = document.getElementById("feed-line");
+    if (feed) {
+      feed.textContent = stateWord === "LIVE" ? "Network feed live" : stateWord === "NO PUBLIC SIGNAL" ? "No public signal" : stateWord;
+    }
+    text("arch-runtime", has ? "Reporting" : "No public runtime signal");
+    text("val-runtime", has ? "Reporting" : "No public signal");
+    led("led-runtime", has ? "live" : "off");
+    paintAge();
   }
 
   function paintStateMiss() {
-    text("net-status", "UNREACHABLE");
-    led("net-dot", false);
+    stateLive = false;
+    if (!navigator.onLine) stateWord = "OFFLINE";
+    else if (stateSeen) stateWord = "STALE";
+    else stateWord = "NO PUBLIC SIGNAL";
+    text("net-status", stateWord);
+    led("net-dot", stateWord === "STALE" ? "stale" : "off");
     if (!stateSeen) {
-      ["hi-flows", "ms-flows", "active-flows", "endpoints", "field-hi", "field-ms"].forEach(function (id) {
-        text(id, "—");
+      ["hi-flows", "ms-flows", "active-flows", "endpoints"].forEach(function (id) {
+        text(id, "NO READING");
       });
-      text("val-hi", "No signal");
-      text("val-ms", "No signal");
-      led("led-hi", false);
-      led("led-ms", false);
+      ["field-hi", "field-ms", "val-hi", "val-ms"].forEach(function (id) {
+        text(id, "NO PUBLIC SIGNAL");
+      });
+      text("arch-runtime", "No public runtime signal");
+      text("val-runtime", "No public signal");
+      led("led-runtime", "off");
     }
     var feed = document.getElementById("feed-line");
-    if (feed && !stateSeen) feed.textContent = "Network feed unreachable";
-    if (feed && stateSeen) feed.textContent = "Network feed unreachable";
+    if (feed) feed.textContent = stateWord === "OFFLINE" ? "Public feed unavailable" : stateSeen ? "Last known observation" : "No public signal";
+    paintAge();
   }
 
-  var opsSeen = false;
+  function deviceLine(reading) {
+    if (!reading) return "NO READING";
+    var parts = [];
+    if (reading.soc !== null) parts.push(T.pct(reading.soc));
+    if (reading.solar !== null) parts.push(T.watts(reading.solar) + " solar");
+    return parts.length ? parts.join(" · ") : "NO READING";
+  }
+
+  function fillDevice(prefix, reading, staleMs) {
+    if (!reading) {
+      text(prefix + "-soc", "NO READING");
+      text(prefix + "-solar", "NO READING");
+      text(prefix + "-ac", "NO READING");
+      text(prefix + "-usb", "NO READING");
+      text(prefix + "-at", "—");
+      text("st-" + prefix, "NO PUBLIC SIGNAL");
+      text("val-" + prefix, "NO READING");
+      text("at-" + prefix, "—");
+      return;
+    }
+    text(prefix + "-soc", reading.soc === null ? "NO READING" : T.pct(reading.soc));
+    text(prefix + "-solar", reading.solar === null ? "NO READING" : T.watts(reading.solar));
+    text(prefix + "-ac", reading.acOut === null ? "NO READING" : T.watts(reading.acOut));
+    text(prefix + "-usb", reading.usbc === null ? "NO READING" : T.watts(reading.usbc));
+    text(prefix + "-at", reading.at ? T.formatHst(reading.at, true) : "—");
+    text("st-" + prefix, obsWord(reading.at, staleMs));
+    text("val-" + prefix, deviceLine(reading));
+    text("at-" + prefix, reading.at ? T.formatHst(reading.at, true) : "—");
+  }
+
+  function bar(name, value, textValue, at) {
+    if (value === null || value === undefined) return null;
+    return { name: name, value: value, text: textValue, at: at };
+  }
+
+  function paintCharts(r) {
+    if (!window.RRCharts) return;
+    window.RRCharts.bars(document.getElementById("chart-soc"), {
+      label: "Current state of charge",
+      question: "How does stored energy compare between River and Delta right now?",
+      max: 100,
+      empty: "No public signal",
+      bars: [
+        r.river ? bar("River", r.river.soc, T.pct(r.river.soc), r.river.at) : null,
+        r.delta ? bar("Delta", r.delta.soc, T.pct(r.delta.soc), r.delta.at) : null
+      ].filter(Boolean)
+    });
+    window.RRCharts.bars(document.getElementById("chart-solar"), {
+      label: "Current solar input",
+      question: "What solar input is each system reporting right now?",
+      empty: "No public signal",
+      bars: [
+        r.river ? bar("River", r.river.solar, T.watts(r.river.solar), r.river.at) : null,
+        r.delta ? bar("Delta", r.delta.solar, T.watts(r.delta.solar), r.delta.at) : null
+      ].filter(Boolean)
+    });
+    window.RRCharts.bars(document.getElementById("chart-output"), {
+      label: "Current AC output",
+      question: "What AC output is each system reporting right now?",
+      empty: "No public signal",
+      bars: [
+        r.river ? bar("River", r.river.acOut, T.watts(r.river.acOut), r.river.at) : null,
+        r.delta ? bar("Delta", r.delta.acOut, T.watts(r.delta.acOut), r.delta.at) : null
+      ].filter(Boolean)
+    });
+  }
 
   function paintOps(ops) {
     var r = T.fieldReadings(ops);
-    showOrDash("river", r.river);
-    showOrDash("delta", r.delta);
-    showOrDash("weather", r.weather);
-    showOrDash("kilauea", r.kilauea);
-    var asof = document.getElementById("field-asof");
-    if (asof) asof.textContent = r.asOf ? "Last known · " + r.asOf : "Last known · No data";
-
-    var energy = [r.river && ("River " + r.river), r.delta && ("Delta " + r.delta)].filter(Boolean).join(" · ");
-    text("val-energy", energy || "No signal");
-    text("val-weather", r.weather || "No signal");
-    text("val-geology", r.kilauea || "No signal");
-    led("led-energy", !!energy);
-    led("led-weather", !!r.weather);
-    led("led-geology", !!r.kilauea);
-    var last = document.getElementById("last-update");
-    if (r.asOf && last && last.dataset.source !== "state" && (last.textContent === "—" || last.dataset.source === "ops")) {
-      last.textContent = r.asOf;
-      last.dataset.source = "ops";
-      text("last-label", "Last known");
-    }
+    lastReadings = r;
     opsSeen = true;
+    opsAt = Date.now();
+    text("river", deviceLine(r.river));
+    text("delta", deviceLine(r.delta));
+    fillDevice("river", r.river, ENERGY_STALE_MS);
+    fillDevice("delta", r.delta, ENERGY_STALE_MS);
+
+    var weatherValue = r.weatherAt ? T.formatHst(r.weatherAt, true) : (r.weatherText || null);
+    text("weather", weatherValue || "NO READING");
+    text("weather-at", weatherValue || "—");
+    text("st-weather", r.weatherAt || r.weatherText ? obsWord(r.weatherAt, WEATHER_STALE_MS) : "NO PUBLIC SIGNAL");
+    text("val-weather", weatherValue || "NO PUBLIC SIGNAL");
+    text("at-weather", weatherValue || "—");
+    led("led-weather", weatherValue ? "live" : "off");
+
+    var geo = r.kilauea;
+    var geoValue = null;
+    if (geo) {
+      geoValue = [geo.headline, geo.alert, geo.code].filter(Boolean).join(" · ");
+      text("kilauea-level", geo.alert || "NO READING");
+      text("kilauea-code", geo.code || "NO READING");
+      text("kilauea-line", geo.headline || "NO READING");
+      text("kilauea-at", geo.at ? T.formatHst(geo.at, true) : "—");
+      if (geo.erupting === true) text("kilauea-erupt", "Eruption reported");
+      else if (geo.erupting === false) text("kilauea-erupt", "No eruption reported");
+      else text("kilauea-erupt", "NO READING");
+    } else {
+      ["kilauea-level", "kilauea-code", "kilauea-line", "kilauea-erupt"].forEach(function (id) {
+        text(id, "NO READING");
+      });
+      text("kilauea-at", "—");
+    }
+    text("kilauea", geoValue || "NO READING");
+    text("st-geology", geo ? obsWord(geo.at, GEO_STALE_MS) : "NO PUBLIC SIGNAL");
+    text("val-geology", geoValue || "NO PUBLIC SIGNAL");
+    text("at-geology", geo && geo.at ? T.formatHst(geo.at, true) : "—");
+    led("led-geology", geoValue ? "live" : "off");
+
+    var energyBits = [r.river && ("River " + deviceLine(r.river)), r.delta && ("Delta " + deviceLine(r.delta))].filter(Boolean);
+    text("val-energy", energyBits.length ? energyBits.join(" · ") : "NO PUBLIC SIGNAL");
+    led("led-energy", energyBits.length ? "live" : "off");
+
+    var asof = document.getElementById("field-asof");
+    if (asof) asof.textContent = r.asOf ? "Last known · " + r.asOf : "Last known · No public signal";
+    text("ops-fresh", "Updated just now");
+    paintCharts(r);
   }
 
   function paintOpsMiss() {
+    text("ops-fresh", opsSeen ? "Last known observation" : "Public feed unavailable");
     if (opsSeen) return;
-    ["river", "delta", "weather", "kilauea"].forEach(function (id) { text(id, "No data"); });
+    ["river", "delta", "weather", "kilauea"].forEach(function (id) { text(id, "NO READING"); });
     var asof = document.getElementById("field-asof");
-    if (asof) asof.textContent = "Last known · No data";
-    text("val-energy", "No signal");
-    text("val-weather", "No signal");
-    text("val-geology", "No signal");
-    led("led-energy", false);
-    led("led-weather", false);
-    led("led-geology", false);
+    if (asof) asof.textContent = "Last known · No public signal";
+    text("val-energy", "NO PUBLIC SIGNAL");
+    text("val-weather", "NO PUBLIC SIGNAL");
+    text("val-geology", "NO PUBLIC SIGNAL");
+    led("led-energy", "off");
+    led("led-weather", "off");
+    led("led-geology", "off");
+    fillDevice("river", null, ENERGY_STALE_MS);
+    fillDevice("delta", null, ENERGY_STALE_MS);
+    text("st-weather", "NO PUBLIC SIGNAL");
+    text("st-geology", "NO PUBLIC SIGNAL");
+    if (window.RRCharts) {
+      ["chart-soc", "chart-solar", "chart-output"].forEach(function (id) {
+        window.RRCharts.bars(document.getElementById(id), { bars: [], empty: "No public signal" });
+      });
+    }
   }
 
   function tickState() {
+    if (stateAt && Date.now() - stateAt > STATE_STALE_MS && stateWord === "LIVE") {
+      stateWord = navigator.onLine ? "STALE" : "OFFLINE";
+      text("net-status", stateWord);
+      led("net-dot", stateWord === "STALE" ? "stale" : "off");
+      var feed = document.getElementById("feed-line");
+      if (feed) feed.textContent = "Last known observation";
+    }
+    paintAge();
     T.readState().then(paintState).catch(paintStateMiss);
   }
 
@@ -121,6 +277,12 @@
 
   tickState();
   tickOps();
-  setInterval(tickState, 5000);
-  setInterval(tickOps, 60000);
+  var stateTimer = setInterval(tickState, 5000);
+  var opsTimer = setInterval(tickOps, 60000);
+  window.addEventListener("offline", paintStateMiss);
+  window.addEventListener("online", tickState);
+  window.addEventListener("pagehide", function () {
+    clearInterval(stateTimer);
+    clearInterval(opsTimer);
+  });
 })();
