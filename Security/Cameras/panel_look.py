@@ -115,18 +115,77 @@ def phase_of(t: datetime, rise_hm: str, set_hm: str) -> str:  # info: def phase_
 
 
 # ====================================================
+# SECTION: function solar_watts
+# What it does: Combined solar input from watts files newer than 30 minutes. None when no fresh reading exists.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def solar_watts(t: datetime) -> int | None:  # info: def solar_watts
+    if not WATTS.is_dir():  # info: if not WATTS . is_dir ( )
+        return None  # info: return None
+    total = 0.0  # info: set total
+    found = False  # info: set found
+    for path in sorted(WATTS.glob("*-last.json")):  # info: for path in sorted ( WATTS . glob ( "*-last.json" ) )
+        try:  # info: try
+            data = json.loads(path.read_text(encoding="utf-8"))  # info: set data
+        except (OSError, ValueError):  # info: except ( OSError , ValueError )
+            continue  # info: continue
+        raw = data.get("solar_input_power") if isinstance(data, dict) else None  # info: set raw
+        if isinstance(raw, bool) or not isinstance(raw, (int, float)):  # info: if isinstance ( raw , bool ) or not isinstance ( raw , ( int , float ) )
+            continue  # info: continue
+        try:  # info: try
+            at = datetime.fromisoformat(str(data.get("at") or ""))  # info: set at
+        except ValueError:  # info: except ValueError
+            continue  # info: continue
+        if at.tzinfo is None and t.tzinfo is not None:  # info: if at . tzinfo is None and t . tzinfo is not None
+            at = at.replace(tzinfo=t.tzinfo)  # info: set at
+        age_min = (t - at).total_seconds() / 60  # info: set age_min
+        if age_min > FRESH_MIN or age_min < -5:  # info: if age_min > FRESH_MIN or age_min < -5
+            continue  # info: continue
+        total += float(raw)  # info: set total
+        found = True  # info: set found
+    return int(total) if found else None  # info: return int ( total ) if found else None
+
+
+# ====================================================
+# SECTION: function late_day
+# What it does: True from the later half of the daytime window through the end of evening.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def late_day(t: datetime, rise_hm: str, set_hm: str) -> bool:  # info: def late_day
+    def at(hm: str) -> datetime:  # info: def at
+        hour, minute = (int(x) for x in hm.split(":"))  # info: hour , minute = ( int ( x ) for x in hm . split ( ":" ) )
+        return t.replace(hour=hour, minute=minute, second=0, microsecond=0)  # info: return t . replace
+    rise, sett = at(rise_hm), at(set_hm)  # info: rise , sett = at ( rise_hm ) , at ( set_hm )
+    start, day_end = rise + timedelta(hours=1), sett - timedelta(hours=1)  # info: start , day_end = rise + timedelta ( hours = 1 ) , sett - timedelta ( hours = 1 )
+    if day_end <= start:  # info: if day_end <= start
+        return False  # info: return False
+    return start + (day_end - start) / 2 <= t < sett + timedelta(minutes=45)  # info: return start + ( day_end - start ) / 2 <= t < sett + timedelta ( minutes = 45 )
+
+
+# ====================================================
+# SECTION: function note_for
+# What it does: Sunrise-staging line when late-day light is low and the left side is already up.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def note_for(phase: str, position: str, late: bool, low_light: bool) -> str:  # info: def note_for
+    if phase in {"day", "evening"} and position == "left_up" and late and low_light:  # info: if phase in { "day" , "evening" } and position == "left_up" and late and low_light
+        return "Solar staged for sunrise."  # info: return "Solar staged for sunrise."
+    return ""  # info: return ""
+
+
+# ====================================================
 # SECTION: function warning_for
 # What it does: Human-intervention line when the tilt does not match this part of the day.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def warning_for(phase: str, position: str) -> str:  # info: def warning_for
+def warning_for(phase: str, position: str, late: bool = False, low_light: bool = False) -> str:  # info: def warning_for
     if position not in POSITION:  # info: if position not in POSITION
         return ""  # info: return ""
     if phase == "morning" and position == "right_up":  # info: if phase == "morning" and position == "right_up"
         return "Human intervention is needed. Tilt the left side up for morning, ahead of sunrise. Flat is also acceptable."  # info: return "Human intervention is needed. Tilt the left side up for morning, ahead of sunrise. Flat is also acceptable."
-    if phase == "day" and position != "flat":  # info: if phase == "day" and position != "flat"
+    if phase == "day" and position != "flat" and not note_for(phase, position, late, low_light):  # info: if phase == "day" and position != "flat" and not note_for ( phase , position , late , low_light )
         return "Human intervention is needed. Daytime calls for the panels flat."  # info: return "Human intervention is needed. Daytime calls for the panels flat."
-    if phase == "evening" and position != "right_up":  # info: if phase == "evening" and position != "right_up"
+    if phase == "evening" and position != "right_up" and not note_for(phase, position, late, low_light):  # info: if phase == "evening" and position != "right_up" and not note_for ( phase , position , late , low_light )
         return "Human intervention is needed. Evening calls for the right side up."  # info: return "Human intervention is needed. Evening calls for the right side up."
     if phase == "overnight" and position == "right_up":  # info: if phase == "overnight" and position == "right_up"
         return "Human intervention is needed. Overnight calls for the left side up, ahead of sunrise. Flat is also acceptable."  # info: return "Human intervention is needed. Overnight calls for the left side up, ahead of sunrise. Flat is also acceptable."
@@ -135,15 +194,15 @@ def warning_for(phase: str, position: str) -> str:  # info: def warning_for
 
 # ====================================================
 # SECTION: function sentence_for
-# What it does: One spoken observation, plus a warning only when the tilt is wrong for the hour.
+# What it does: One spoken observation, plus a warning or the sunrise-staging note.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def sentence_for(weather: str, position: str, phase: str) -> str:  # info: def sentence_for
+def sentence_for(weather: str, position: str, phase: str, late: bool = False, low_light: bool = False) -> str:  # info: def sentence_for
     sky = WEATHER.get(weather, "conditions the camera could not settle")  # info: set sky
     tilt = POSITION.get(position, "a position the camera could not settle")  # info: set tilt
     line = f"Security camera observations indicate {sky}, with solar panels in {tilt}."  # info: set line
-    warn = warning_for(phase, position)  # info: set warn
-    return f"{line} {warn}".strip() if warn else line  # info: return f" { line } { warn } " . strip ( ) if warn else line
+    extra = warning_for(phase, position, late, low_light) or note_for(phase, position, late, low_light)  # info: set extra
+    return f"{line} {extra}".strip() if extra else line  # info: return f" { line } { extra } " . strip ( ) if extra else line
 
 
 # ====================================================
@@ -194,6 +253,54 @@ def load_cache() -> dict | None:  # info: def load_cache
 
 
 # ====================================================
+# SECTION: function apply_rules
+# What it does: Fill the warning and sentence from weather, tilt, the clock, and fresh solar watts.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def apply_rules(row: dict, t: datetime) -> dict:  # info: def apply_rules
+    weather, position = str(row.get("weather") or ""), str(row.get("position") or "")  # info: weather , position = str ( row . get ( "weather" ) or "" ) , str ( row . get ( "position" ) or "" )
+    rise, sett = str(row.get("sunrise") or ""), str(row.get("sunset") or "")  # info: rise , sett = str ( row . get ( "sunrise" ) or "" ) , str ( row . get ( "sunset" ) or "" )
+    if not rise or not sett:  # info: if not rise or not sett
+        rise, sett = sun_clocks()  # info: rise , sett = sun_clocks ( )
+    phase = phase_of(t, rise, sett) if rise and sett else str(row.get("phase") or "")  # info: set phase
+    late = late_day(t, rise, sett) if rise and sett else False  # info: set late
+    watts = solar_watts(t)  # info: set watts
+    low = watts is not None and watts <= LOW_SOLAR_W  # info: set low
+    if weather and position:  # info: if weather and position
+        sentence = sentence_for(weather, position, phase, late, low)  # info: set sentence
+    else:  # info: else
+        sentence = ""  # info: set sentence
+    out = dict(row)  # info: set out
+    out["phase"] = phase  # info: out [ "phase" ] = phase
+    out["sunrise"] = rise  # info: out [ "sunrise" ] = rise
+    out["sunset"] = sett  # info: out [ "sunset" ] = sett
+    out["solar_w"] = watts  # info: out [ "solar_w" ] = watts
+    out["late"] = late  # info: out [ "late" ] = late
+    out["low_light"] = low  # info: out [ "low_light" ] = low
+    out["warning"] = warning_for(phase, position, late, low) if sentence else ""  # info: out [ "warning" ] = warning_for ( phase , position , late , low ) if sentence else ""
+    out["note"] = note_for(phase, position, late, low) if sentence else ""  # info: out [ "note" ] = note_for ( phase , position , late , low ) if sentence else ""
+    out["sentence"] = sentence  # info: out [ "sentence" ] = sentence
+    return out  # info: return out
+
+
+# ====================================================
+# SECTION: function store
+# What it does: Write one look file when the sentence changed. Does not call the vision model.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def store(row: dict) -> None:  # info: def store
+    if not row.get("sentence"):  # info: if not row . get ( "sentence" )
+        return  # info: return
+    previous = load_cache()  # info: set previous
+    if previous == row:  # info: if previous == row
+        return  # info: return
+    OUT.parent.mkdir(parents=True, exist_ok=True)  # info: OUT . parent . mkdir ( parents = True , exist_ok = True )
+    tmp = OUT.with_suffix(".tmp")  # info: set tmp
+    tmp.write_text(json.dumps(row, indent=2) + "\n", encoding="utf-8")  # info: tmp . write_text
+    os.replace(tmp, OUT)  # info: os . replace ( tmp , OUT )
+
+
+# ====================================================
 # SECTION: function observe
 # What it does: Return this hour's reading. Calls the vision model only when the hour has no reading yet.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -201,14 +308,18 @@ def load_cache() -> dict | None:  # info: def load_cache
 def observe(t: datetime, force: bool = False) -> dict:  # info: def observe
     hour = t.strftime("%Y-%m-%dT%H")  # info: set hour
     cached = load_cache()  # info: set cached
-    if cached and cached.get("hour") == hour and cached.get("sentence") and not force:  # info: if cached and cached . get ( "hour" ) == hour and cached . get ( "sentence" ) and not force
-        return cached  # info: return cached
+    if cached and cached.get("hour") == hour and cached.get("weather") and cached.get("position") and not force:  # info: if cached and cached . get ( "hour" ) == hour and cached . get ( "weather" ) and cached . get ( "position" ) and not force
+        ruled = apply_rules(cached, t)  # info: set ruled
+        store(ruled)  # info: call store
+        return ruled  # info: return ruled
     LOCK.parent.mkdir(parents=True, exist_ok=True)  # info: LOCK . parent . mkdir
     with LOCK.open("a+") as handle:  # info: with LOCK . open ( "a+" ) as handle
         fcntl.flock(handle.fileno(), fcntl.LOCK_EX)  # info: fcntl . flock ( handle . fileno ( ) , fcntl . LOCK_EX )
         cached = load_cache()  # info: set cached
-        if cached and cached.get("hour") == hour and cached.get("sentence") and not force:  # info: if cached and cached . get ( "hour" ) == hour and cached . get ( "sentence" ) and not force
-            return cached  # info: return cached
+        if cached and cached.get("hour") == hour and cached.get("weather") and cached.get("position") and not force:  # info: if cached and cached . get ( "hour" ) == hour and cached . get ( "weather" ) and cached . get ( "position" ) and not force
+            ruled = apply_rules(cached, t)  # info: set ruled
+            store(ruled)  # info: call store
+            return ruled  # info: return ruled
         image = newest_ch1()  # info: set image
         rise, sett = sun_clocks()  # info: rise , sett = sun_clocks ( )
         phase = phase_of(t, rise, sett) if rise and sett else ""  # info: set phase
@@ -221,14 +332,8 @@ def observe(t: datetime, force: bool = False) -> dict:  # info: def observe
                 weather, position = ask(image)  # info: weather , position = ask ( image )
             except Exception as exc:  # info: except Exception as exc
                 error = type(exc).__name__  # info: set error
-        if weather and position and phase:  # info: if weather and position and phase
-            sentence = sentence_for(weather, position, phase)  # info: set sentence
-        elif weather and position:  # info: elif weather and position
-            sentence = sentence_for(weather, position, "")  # info: set sentence
-        else:  # info: else
-            sentence = ""  # info: set sentence
-        row = {  # info: set row
-            "hour": hour if sentence else "",  # info: "hour" : hour if sentence else ""
+        row = apply_rules({  # info: set row
+            "hour": hour,  # info: "hour" : hour
             "at": t.isoformat(timespec="seconds"),  # info: "at" : t . isoformat ( timespec = "seconds" )
             "image": image.name if image else "",  # info: "image" : image . name if image else ""
             "model": MODEL,  # info: "model" : MODEL
@@ -237,15 +342,11 @@ def observe(t: datetime, force: bool = False) -> dict:  # info: def observe
             "phase": phase,  # info: "phase" : phase
             "sunrise": rise,  # info: "sunrise" : rise
             "sunset": sett,  # info: "sunset" : sett
-            "warning": warning_for(phase, position) if sentence else "",  # info: "warning" : warning_for ( phase , position ) if sentence else ""
-            "sentence": sentence,  # info: "sentence" : sentence
             "error": error,  # info: "error" : error
-        }  # info: }
-        if sentence:  # info: if sentence
-            OUT.parent.mkdir(parents=True, exist_ok=True)  # info: OUT . parent . mkdir ( parents = True , exist_ok = True )
-            tmp = OUT.with_suffix(".tmp")  # info: set tmp
-            tmp.write_text(json.dumps(row, indent=2) + "\n", encoding="utf-8")  # info: tmp . write_text
-            os.replace(tmp, OUT)  # info: os . replace ( tmp , OUT )
+        }, t)  # info: } , t )
+        if not row.get("sentence"):  # info: if not row . get ( "sentence" )
+            row["hour"] = ""  # info: row [ "hour" ] = ""
+        store(row)  # info: call store
         return row  # info: return row
 
 
@@ -258,11 +359,13 @@ def main() -> int:  # info: def main
     if "--rules" in sys.argv:  # info: if "--rules" in sys . argv
         samples = [  # info: set samples
             ("morning", "left_up"), ("morning", "flat"), ("morning", "right_up"),  # info: ( "morning" , "left_up" ) , ( "morning" , "flat" ) , ( "morning" , "right_up" )
-            ("day", "flat"), ("day", "left_up"), ("evening", "right_up"), ("evening", "flat"),  # info: ( "day" , "flat" ) , ( "day" , "left_up" ) , ( "evening" , "right_up" ) , ( "evening" , "flat" )
+            ("day", "flat"), ("day", "left_up"), ("day", "right_up"), ("evening", "right_up"), ("evening", "flat"),  # info: ( "day" , "flat" ) , ( "day" , "left_up" ) , ( "day" , "right_up" ) , ( "evening" , "right_up" ) , ( "evening" , "flat" )
             ("overnight", "left_up"), ("overnight", "flat"), ("overnight", "right_up"),  # info: ( "overnight" , "left_up" ) , ( "overnight" , "flat" ) , ( "overnight" , "right_up" )
         ]  # info: ]
         for phase, position in samples:  # info: for phase , position in samples
             print(phase, position, sentence_for("rain", position, phase))  # info: call print
+        print("day", "left_up", "late-low", sentence_for("rain", "left_up", "day", True, True))  # info: call print
+        print("day", "right_up", "late-low", sentence_for("rain", "right_up", "day", True, True))  # info: call print
         return 0  # info: return 0
     now = datetime.now().astimezone().replace(microsecond=0)  # info: set now
     print(json.dumps(observe(now, force="--force" in sys.argv), ensure_ascii=False))  # info: call print
