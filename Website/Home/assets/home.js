@@ -5,12 +5,6 @@
   var disposed = false;
   var hidden = false;
   var spinOn = false;
-  var earthPivot = null;
-  var cloudsMesh = null;
-  var moon = null;
-  var sunMesh = null;
-  var planets = [];
-  var rafId = 0;
   var pullTimer = 0;
 
   function reduced() {
@@ -59,16 +53,6 @@
     if (hawaii) points.push({ lat: hawaii.lat, lng: hawaii.lng, type: "hawaii", label: "Hawaiʻi" });
     if (mainland) points.push({ lat: mainland.lat, lng: mainland.lng, type: "mainland", label: "Mainland Server" });
 
-    // Vercel is rendered as a public deployment/edge node, not a physical
-    // infrastructure location. These coordinates are a visual anchor only.
-    var vercel = { lat: 37.7749, lng: -122.4194 };
-    points.push({
-      lat: vercel.lat,
-      lng: vercel.lng,
-      type: "vercel",
-      label: "Vercel · Public Edge"
-    });
-
     (d.points || []).forEach(function (p) {
       if (!p || (p.type !== "dest" && p.type !== "remote")) return;
       var pos = finitePair(p.lat, p.lng);
@@ -105,141 +89,7 @@
       });
     });
 
-    // Architectural edges use the same globe arc renderer so Vercel feels
-    // native to the existing network. They are intentionally not telemetry
-    // and must never be counted as live traffic.
-    if (mainland) {
-      arcs.push({
-        startLat: mainland.lat,
-        startLng: mainland.lng,
-        endLat: vercel.lat,
-        endLng: vercel.lng,
-        color: "#7dd3fc",
-        altitude: 0.18,
-        stroke: 1.2,
-        label: "Vercel · Public Edge · Architecture",
-        kind: "architecture"
-      });
-    }
-    if (hawaii) {
-      arcs.push({
-        startLat: hawaii.lat,
-        startLng: hawaii.lng,
-        endLat: vercel.lat,
-        endLng: vercel.lng,
-        color: "#22c55e",
-        altitude: 0.2,
-        stroke: 1.1,
-        label: "Vercel · Public Edge · Architecture",
-        kind: "architecture"
-      });
-    }
-
     return { points: points, arcs: arcs };
-  }
-
-  function subsolar(date) {
-    var start = Date.UTC(date.getUTCFullYear(), 0, 0);
-    var day = (Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) - start) / 86400000;
-    var decl = 23.44 * Math.sin((Math.PI / 180) * (360 / 365) * (day - 81));
-    var hours = date.getUTCHours() + date.getUTCMinutes() / 60 + date.getUTCSeconds() / 3600;
-    var lng = 15 * (12 - hours);
-    while (lng > 180) lng -= 360;
-    while (lng < -180) lng += 360;
-    return { lat: decl, lng: lng };
-  }
-
-  function sunVector(date) {
-    var sub = subsolar(date || new Date());
-    var phi = (90 - sub.lat) * Math.PI / 180;
-    var theta = (90 - sub.lng) * Math.PI / 180;
-    return {
-      x: Math.sin(phi) * Math.cos(theta),
-      y: Math.cos(phi),
-      z: Math.sin(phi) * Math.sin(theta)
-    };
-  }
-
-  function findEarth() {
-    var mat = globe.globeMaterial && globe.globeMaterial();
-    var scene = globe.scene && globe.scene();
-    if (!mat || !scene) return;
-    scene.traverse(function (obj) {
-      if (obj.isMesh && obj.material === mat && !earthPivot) earthPivot = obj.parent || null;
-      if (obj.isMesh && obj.material && obj.material !== mat && obj.material.transparent && obj.material.map && !cloudsMesh) {
-        cloudsMesh = obj;
-      }
-    });
-  }
-
-  function addBodies(sun) {
-    if (moon || !earthPivot) return;
-    var scene = globe.scene();
-    var mesh = null;
-    scene.traverse(function (obj) {
-      if (!mesh && obj.isMesh && obj.parent === earthPivot && obj.geometry) mesh = obj;
-    });
-    if (!mesh || !mesh.geometry || !mesh.constructor || !mesh.material || !mesh.material.constructor) return;
-    var Mesh = mesh.constructor;
-    var Phong = mesh.material.constructor;
-    var moonMat = new Phong({ color: 0xb7b9c2, shininess: 4 });
-    moon = new Mesh(mesh.geometry, moonMat);
-    moon.scale.setScalar(0.22);
-    scene.add(moon);
-    var sunMat = new Phong({ color: 0xfff6df, emissive: 0xfff1c4, emissiveIntensity: 0.9 });
-    sunMesh = new Mesh(mesh.geometry, sunMat);
-    sunMesh.scale.setScalar(0.045);
-    sunMesh.position.set(sun.x * 520, sun.y * 520, sun.z * 520);
-    scene.add(sunMesh);
-    var tones = [0xb9aa96, 0x7e6d5e];
-    for (var i = 0; i < tones.length; i++) {
-      var body = new Mesh(mesh.geometry, new Phong({ color: tones[i], shininess: 1 }));
-      body.scale.setScalar(0.03 + i * 0.012);
-      body.userData.radius = 640 + i * 90;
-      body.userData.rate = 0.012 + i * 0.007;
-      body.userData.phase = i * 2.2;
-      body.userData.lift = 0.22 + i * 0.18;
-      scene.add(body);
-      planets.push(body);
-    }
-    placeBodies(0);
-  }
-
-  function placeBodies(seconds) {
-    if (moon) {
-      var ang = reduced() ? 0.7 : seconds * 0.04;
-      moon.position.set(Math.cos(ang) * 176, Math.sin(ang * 0.37) * 26, Math.sin(ang) * 176);
-    }
-    if (reduced()) return;
-    planets.forEach(function (body) {
-      var ang = seconds * body.userData.rate + body.userData.phase;
-      var radius = body.userData.radius;
-      body.position.set(Math.cos(ang) * radius, Math.sin(ang) * radius * body.userData.lift, Math.sin(ang) * radius * 0.72);
-    });
-  }
-
-  function spinStep() {
-    if (disposed || hidden || reduced() || !spinOn || !globe) return;
-    var scene = globe.scene && globe.scene();
-    if (earthPivot && scene && earthPivot !== scene) {
-      earthPivot.rotation.y += 0.00055;
-      if (cloudsMesh) cloudsMesh.rotation.y += 0.00004;
-      return;
-    }
-    var controls = globe.controls && globe.controls();
-    if (controls) {
-      controls.autoRotate = true;
-      controls.autoRotateSpeed = 0.35;
-    }
-  }
-
-  function frame(now) {
-    if (disposed) return;
-    rafId = window.requestAnimationFrame(frame);
-    if (hidden) return;
-    if (reduced() && cloudsMesh) cloudsMesh.rotation.y = 0;
-    spinStep();
-    placeBodies((now || 0) / 1000);
   }
 
   function draw(d) {
@@ -280,32 +130,28 @@
         .pointColor(function (d) {
           if (d.type === "hawaii") return "#ffffff";
           if (d.type === "mainland") return "#7dd3fc";
-          if (d.type === "vercel") return "#ffffff";
           return "#ff6b9d";
         })
         .pointAltitude(function (d) { return d.type === "endpoint" ? 0.012 : 0.02; })
-        .pointRadius(function (d) {
-          if (d.type === "vercel") return 0.48;
-          return d.type === "endpoint" ? 0.18 : 0.42;
-        })
+        .pointRadius(function (d) { return d.type === "endpoint" ? 0.18 : 0.42; })
         .pointLabel(function (d) { return d.label || ""; })
         .pointsMerge(false);
 
       var controls = globe.controls();
       controls.enableZoom = false;
       controls.enablePan = false;
-      controls.autoRotate = false;
       globe.pointOfView({ lat: 16, lng: -156, altitude: 2.15 });
       var renderer = globe.renderer && globe.renderer();
       if (renderer && renderer.setPixelRatio) {
         var cap = window.innerWidth < 800 ? 1.15 : 1.5;
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
       }
-      var sun = sunVector(new Date());
 
       spinOn = reduced() ? false : localStorage.getItem("rr-home:spin") !== "off";
       var spinBtn = document.getElementById("spin");
-      function applySpinLabel() {
+      function applySpin() {
+        controls.autoRotate = !!(spinOn && !reduced() && !hidden);
+        controls.autoRotateSpeed = 0.35;
         if (!spinBtn) return;
         spinBtn.textContent = spinOn ? "Stop spin" : "Resume spin";
         spinBtn.setAttribute("aria-pressed", spinOn ? "true" : "false");
@@ -314,30 +160,11 @@
         spinBtn.addEventListener("click", function () {
           spinOn = !spinOn;
           localStorage.setItem("rr-home:spin", spinOn ? "on" : "off");
-          applySpinLabel();
+          applySpin();
         });
       }
-      applySpinLabel();
-
-      var tries = 0;
-      function whenReady() {
-        if (disposed || !globe) return;
-        var mat = globe.globeMaterial && globe.globeMaterial();
-        if (mat && mat.map) {
-          if (mat.bumpScale !== undefined) mat.bumpScale = 2.5;
-          try {
-            findEarth();
-            addBodies(sun);
-          } catch (err) {
-            /* Earth still renders if the extra layers fail. */
-          }
-          return;
-        }
-        tries += 1;
-        if (tries < 30) window.setTimeout(whenReady, 200);
-      }
-      whenReady();
-      rafId = window.requestAnimationFrame(frame);
+      applySpin();
+      globe._rrApplySpin = applySpin;
 
       var canvas = globeEl.querySelector("canvas");
       if (canvas) {
@@ -379,12 +206,12 @@
     } else if (globe.resumeAnimation) {
       globe.resumeAnimation();
     }
+    if (globe._rrApplySpin) globe._rrApplySpin();
   }
 
   function dispose() {
     if (disposed) return;
     disposed = true;
-    if (rafId) window.cancelAnimationFrame(rafId);
     if (pullTimer) window.clearInterval(pullTimer);
     document.removeEventListener("visibilitychange", onVisibility);
     window.removeEventListener("pagehide", dispose);
