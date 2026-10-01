@@ -460,13 +460,14 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
     {  # info: {
         # Discord poller (WO-MIG-21). OFF. No token and no post.
         # Gate RR_DISCORD_POLLER stays unset. Empty channels.json does not call Discord.
+        # RR_DISCORD_REVIEW_PIPELINE stays unset. Timeout fits four sequential inferences when that gate is later turned on.
         "id": "discord_poller",  # info: "id" : "discord_poller" ,
         "enabled": False,  # info: "enabled" : False ,
-        "description": "Discord poller (WO-MIG-21). OFF. No token and no post. Gate RR_DISCORD_POLLER stays unset.",  # info: "description" : "Discord poller (WO-MIG-21). OFF. No token and no post. Gate RR_DISCORD_POLLER stays unset." ,
+        "description": "Discord poller (WO-MIG-21). OFF. No token and no post. Gates RR_DISCORD_POLLER and RR_DISCORD_REVIEW_PIPELINE stay unset.",  # info: "description" : "Discord poller (WO-MIG-21). OFF. No token and no post. Gates RR_DISCORD_POLLER and RR_DISCORD_REVIEW_PIPELINE stay unset." ,
         "interval_sec": 60,  # info: "interval_sec" : 60 ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Communications/Discord/scripts/poll.py"',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Communications/Discord/scripts/poll.py"
-        "timeout_sec": 30,  # info: "timeout_sec" : 30 ,
+        "timeout_sec": 900,  # info: "timeout_sec" : 900 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
         "cwd": f"{PACIFIC}/Communications/Discord",  # info: "cwd" : f" { PACIFIC } /Communications/Discord "
         "env": {},  # info: "env" : { } ,
