@@ -40,8 +40,9 @@ if [[ "${RR_SPECIALIST_ROUTING:-0}" == "1" && -x "$HERE/route-specialist.py" ]];
   fi  # info: fi
 fi  # info: fi
 # Council voices on the NPU (RR_NPU_PERSONA=1, set by ensure-relay.sh). FLM has no Modelfile format.
-# System text: RR_SPEC_SYS, else RR_PERSONA_SYSTEM (council-relay), else the JSON file under
-# Database/AI/FLM/Personas/, else the generic line. Temperature, max_tokens, and top_p still come from that JSON file.
+# System text: RR_SPEC_SYS, else RR_PERSONA_SYSTEM (Library Agent Context via council-relay),
+# else the old JSON system string under Database/AI/FLM/Personas/, else the generic line.
+# Temperature, max_tokens, and top_p still come from that JSON file. The JSON system string is not identity.
 NPU_PERSONA_FILE=""  # info: set NPU_PERSONA_FILE
 if [[ "${RR_NPU_PERSONA:-0}" == "1" && "$TARGET" =~ ^(ava|bruce|carly)$ ]]; then  # info: if
   NPU_PERSONA_FILE="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/AI/FLM/Personas/${TARGET}.json"  # info: set NPU_PERSONA_FILE

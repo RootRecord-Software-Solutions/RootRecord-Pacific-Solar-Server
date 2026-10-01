@@ -41,7 +41,8 @@ fi  # info: fi
 # Replies are opt-in: RR_RELAY_REPLIES=1 lets the relay infer+post; default 0 = quiet (poll/login only). 2026-09-29.
 export RR_RELAY_REPLIES="${RR_RELAY_REPLIES:-0}"  # info: export
 # Council chat stays on the NPU. RR_NPU_ONLY skips the Ollama fallback. RR_NPU_PERSONA loads
-# Database/AI/FLM/Personas/<voice>.json (full system text). Image and speech stay off this process.
+# sampling settings from Database/AI/FLM/Personas/<voice>.json. Identity text is
+# Library Agent Context, via CouncilPersona, as RR_PERSONA_SYSTEM. Image and speech stay off this process.
 export RR_NPU_ONLY=1  # info: export
 export RR_NPU_PERSONA=1  # info: export
 # Strongest weight already installed on the NPU. The 1B default stays for other callers.

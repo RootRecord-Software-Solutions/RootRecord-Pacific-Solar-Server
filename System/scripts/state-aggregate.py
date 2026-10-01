@@ -681,9 +681,9 @@ def build() -> dict:  # info: def build
         },  # info: } ,
         "models": {"installed": model_names(), "active": obs(flm_pids or None, "process_scan", "live", note="empty pids means no resident FLM"), "performance": obs({"model": "llama3.2:3b", "ctx": 4096, "pmode": "performance", "resident": False}, "ensure-relay.sh", "configured")},  # info: "models" : { "installed" : model_names ( ) , "active" : obs
         "agents": {  # info: "agents" : {
-            "ava": {"role": "default voice and the only getUpdates owner", "persona": "Database/AI/FLM/Personas/ava.json", "launch_programs": False},  # info: "ava" : { "role" : "default voice and the only getUpdates owner"
-            "bruce": {"role": "replies when addressed or in a room round", "persona": "Database/AI/FLM/Personas/bruce.json", "launch_programs": False},  # info: "bruce" : { "role" : "replies when addressed or in a room round"
-            "carly": {"role": "replies when addressed or in a room round", "persona": "Database/AI/FLM/Personas/carly.json", "launch_programs": False},  # info: "carly" : { "role" : "replies when addressed or in a room round"
+            "ava": {"role": "default voice and the only getUpdates owner", "persona": "5 - RootRecord-Library/Agent Context/Ava-Agent-Context", "launch_programs": False},  # info: "ava" : { "role" : "default voice and the only getUpdates owner"
+            "bruce": {"role": "replies when addressed or in a room round", "persona": "5 - RootRecord-Library/Agent Context/Bruce-Agent-Context", "launch_programs": False},  # info: "bruce" : { "role" : "replies when addressed or in a room round"
+            "carly": {"role": "replies when addressed or in a room round", "persona": "5 - RootRecord-Library/Agent Context/Carly-Agent-Context", "launch_programs": False},  # info: "carly" : { "role" : "replies when addressed or in a room round"
         },  # info: } ,
         "communication": {  # info: "communication" : {
             "telegram": {"credentials": "not_in_this_file", "source": "policy", "confidence": "configured"},  # info: "telegram" : { "credentials" : "not_in_this_file" , "source" : "policy" , "confidence" : "configured" } ,
