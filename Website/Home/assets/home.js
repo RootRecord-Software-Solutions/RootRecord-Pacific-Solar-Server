@@ -12,7 +12,6 @@
   var planets = [];
   var rafId = 0;
   var pullTimer = 0;
-  var nightApplied = false;
 
   function reduced() {
     return !!(reduceQuery && reduceQuery.matches);
@@ -161,56 +160,6 @@
     };
   }
 
-  function tuneLights(sun) {
-    var scene = globe.scene && globe.scene();
-    if (!scene) return;
-    scene.traverse(function (obj) {
-      if (obj.isAmbientLight) obj.intensity = 0.28;
-      if (obj.isDirectionalLight) {
-        obj.intensity = Math.PI * 1.15;
-        obj.position.set(sun.x * 400, sun.y * 400, sun.z * 400);
-      }
-    });
-  }
-
-  function applyNight(sun) {
-    if (nightApplied) return;
-    var mat = globe.globeMaterial && globe.globeMaterial();
-    if (!mat || !mat.map || !mat.map.constructor) return;
-    var img = new Image();
-    img.onload = function () {
-      if (disposed || !mat.map) return;
-      var night = new mat.map.constructor(img);
-      night.needsUpdate = true;
-      night.colorSpace = mat.map.colorSpace;
-      night.anisotropy = mat.map.anisotropy || 1;
-      night.wrapS = mat.map.wrapS;
-      night.wrapT = mat.map.wrapT;
-      night.flipY = mat.map.flipY;
-      var Vec = null;
-      globe.scene().traverse(function (obj) {
-        if (!Vec && obj.isDirectionalLight) Vec = obj.position.constructor;
-      });
-      if (!Vec) return;
-      var uniformSun = new Vec(sun.x, sun.y, sun.z);
-      mat.onBeforeCompile = function (shader) {
-        shader.uniforms.uNight = { value: night };
-        shader.uniforms.uSun = { value: uniformSun };
-        shader.vertexShader = shader.vertexShader
-          .replace("#include <common>", "#include <common>\nvarying vec3 vWorldNormal;")
-          .replace("#include <beginnormal_vertex>", "#include <beginnormal_vertex>\nvWorldNormal = normalize(mat3(modelMatrix) * objectNormal);");
-        shader.fragmentShader = shader.fragmentShader
-          .replace("#include <common>", "#include <common>\nuniform sampler2D uNight;\nuniform vec3 uSun;\nvarying vec3 vWorldNormal;")
-          .replace("#include <opaque_fragment>", "outgoingLight += texture2D(uNight, vMapUv).rgb * (1.0 - smoothstep(-0.08, 0.28, dot(normalize(vWorldNormal), normalize(uSun)))) * 1.25;\n#include <opaque_fragment>");
-      };
-      mat.customProgramCacheKey = function () { return "rr-earth-night"; };
-      mat.needsUpdate = true;
-      nightApplied = true;
-    };
-    img.onerror = function () {};
-    img.src = "/assets/earth/night.jpg";
-  }
-
   function findEarth() {
     var mat = globe.globeMaterial && globe.globeMaterial();
     var scene = globe.scene && globe.scene();
@@ -303,7 +252,7 @@
   if (globeEl && typeof Globe === "function") {
     try {
       globe = Globe()(globeEl)
-        .globeImageUrl("/assets/earth/day.jpg")
+        .globeImageUrl("/assets/earth/night.jpg")
         .bumpImageUrl("/assets/earth/topology.png")
         .cloudsImageUrl("/assets/earth/clouds.png")
         .cloudsAltitude(0.008)
@@ -347,7 +296,6 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
       }
       var sun = sunVector(new Date());
-      tuneLights(sun);
 
       spinOn = reduced() ? false : localStorage.getItem("rr-home:spin") !== "off";
       var spinBtn = document.getElementById("spin");
@@ -370,9 +318,8 @@
         if (disposed || !globe) return;
         var mat = globe.globeMaterial && globe.globeMaterial();
         if (mat && mat.map) {
-          if (mat.bumpScale !== undefined) mat.bumpScale = 8;
+          if (mat.bumpScale !== undefined) mat.bumpScale = 2.5;
           try {
-            applyNight(sun);
             findEarth();
             addBodies(sun);
           } catch (err) {
