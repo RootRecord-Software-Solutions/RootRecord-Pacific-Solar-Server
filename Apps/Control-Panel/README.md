@@ -32,9 +32,13 @@ State: **LANDED**. Headless `--check` PASS 2026-09-30 02:33 HST (0 secret leaks,
 | SSH | `rr-aws`, `rr-aws-ip` (alias, user@host:port, ProxyCommand/identity present — keys never read); Open terminal; Status = `timeout 5 ssh -o BatchMode=yes rr-aws uptime`; Mainland placeholder | `~/.ssh/config` | on click only |
 | AWS Fallback | one row per AWS fallback function (18, from `Lib/rr_aws_fallback.json`): RAM / disk / net estimates, fits, default; a switch per toggleable function; budget vs the 512 MB RAM / 1.5 GB disk floors (t3.micro now vs 2 GB). **Dry-run by default** (`aws_fallback_mode`): a toggle opens a confirm with the exact AWS change, then writes nothing. `write` mode (sign-off) = one SSH call: dated backup of AWS `flags/` → atomic write of `flags/<id>`. **Status** = one read-only SSH (`rr-aws-ip`) for flags, MemAvailable, disk free | catalog JSON; SSH only on button press | built on visit, **released on leave**; no timer |
 | Not migrated | 16 open placeholders (7 BLOCKED, 9 VERIFY PENDING) as of 2026-09-30 02:35 HST. Closed work orders are not listed. | `Lib/rr_migration.json` | no timer |
-| Settings | 10 sub-pages. Every row of a file is shown. On/off values are labelled toggles (confirm, then write). Secrets stay masked. | `Lib/rr_registry.py`, `Lib/rr_config_io.py`; Panel = `settings.json` | built on visit, released on leave |
+| Settings | 10 sub-pages. Every row of a file is shown. On/off values are labelled toggles (confirm, then write). Secrets stay masked. Panel also lists execution gates. | `Lib/rr_registry.py`, `Lib/rr_config_io.py`, `Lib/rr_gates.py`; Panel = `settings.json` plus `execution-gates.json` | built on visit, released on leave |
 
 Cameras are discovered from `Security/Cameras/grab_all.sh` (`for ch in 1 2 3 4`). The Cameras page never reads `Security/Cameras/store/CONNECTION.json` (strace-checked); only the Settings → Cameras registry parses it in code and shows every value masked. Missing or flapping stills (for example during camera hardware work) are shown as "no still on disk" and are expected. If a camera has no still at all, one local still is fetched from `http://127.0.0.1:8791/current_chN.jpg`, and only while the page is visible (`camera_live_fallback`).
+
+## Execution gates
+
+Settings → Panel writes `Database/System/control-panel/execution-gates.json` when a gate changes. The seed, committed with the app, is `Apps/Control-Panel/execution-gates.json`. `cursor_api` and `steps.recovery.raise_attempt_cap` are false in that seed. Enabling a gate requires confirm in `rr_gates.set_gate`. The execution broker reads the same file and refuses a closed gate. Root Monitor does not launch Cursor.
 
 ## Settings — one file: `settings.json`
 
