@@ -86,8 +86,8 @@
       "id": "public-site",
       "name": "Public site foundation + website repo sync",
       "wo": "WO-WEB-002 · WO-GH-2026-09-27",
-      "state": "BLOCKED",
-      "note": "Local folder 3 - RootRecord-Website was removed 2026-09-30. Do not recreate it or bind port 3001. The website sync row stays disabled. https://rootserver.rootrecord.cloud/ is the poller, not a site.",
+      "state": "VERIFY PENDING",
+      "note": "The public page is Pacific Website/Home, published by the website mirror row to RootRecord-Software-Solutions/RootRecord-Website. Do not recreate 3 - RootRecord-Website or bind port 3001. Vercel still needs that repository connected. AWS /api/operations is in the mainland server source and is not deployed. https://rootserver.rootrecord.cloud/ is the poller, not the page.",
       "settings": "services",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-WEB-002-Public-Site-Foundation.md"

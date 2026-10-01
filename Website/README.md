@@ -31,15 +31,15 @@ Desk runtime for Stripe snapshots, Vercel failed-build records, and last-known o
 | --- | --- | --- |
 | `scripts/stripe_poll.py` | Stripe balance snapshot. No key writes `not_configured` and does not call Stripe. A failed live poll keeps the last `ok` file | `Website/stripe-snapshot.json` |
 | `scripts/vercel_builds.py` | Redacted failed-build records. No token writes nothing and does not call Vercel. Does not delete records | `Logs/Website/*.json` |
-| `scripts/live_data_pages.py` | Power from Energy last files, weather from the Hawaiʻi state report header, Kīlauea from `Geology/Volcanoes/kilauea-last.json`. Missing numbers are omitted | `Website/pages/{power,weather,kilauea}.json` |
+| `scripts/live_data_pages.py` | Power from Energy last files, weather from the Hawaiʻi state report header, Kīlauea from `Geology/Volcanoes/kilauea-last.json`. Missing numbers are omitted. Also writes `Website/operations.json` for the AWS relay | `Website/pages/{power,weather,kilauea}.json` and `Website/operations.json` |
 
 Chat, voice packs, day board, Minecraft, and context are not built here.
 
-The public app is remote. `Website/.env.example` lists Vercel env names only. Do not clone `RootRecord-Cloud` into this tree. Do not run a local `next` server.
+`Website/Home/` is the public page and the Vercel repository. `Website/.env.example` lists Vercel env names only. Do not clone `RootRecord-Cloud` into this tree. Do not run a local `next` server. Do not bind port 3001.
 
-`Website/Site/` is the local route manifest and on-demand checker. `www.rootrecord.cloud` stays on the globe. `home_card` stays off. No job.
+`Website/Site/` is the local route manifest and on-demand checker. It does not publish the page. `www.rootrecord.cloud` is still the AWS globe until domains move to Vercel. No job.
 
-`Website/Cloudflare-Workers/` is the undeployed worker in front of `root-record-cloud.vercel.app`. No route is attached. It is not the live poller tunnel. That tunnel is `Communications/network/cloudflare/` (`rootserver.rootrecord.cloud` → `127.0.0.1:8799`).
+`Website/Cloudflare-Workers/` is an undeployed worker. Its origin variable still names the deleted `root-record-cloud.vercel.app` project. No route is attached. It is not the live poller tunnel. That tunnel is `Communications/network/cloudflare/` (`rootserver.rootrecord.cloud` → `127.0.0.1:8799`).
 
 Live Energy BLE, the poller, Hawaiʻi weather, the globe, cameras, Kokoro, and `geology_collect.py` are not replaced.
 
