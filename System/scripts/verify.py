@@ -10,7 +10,7 @@
 #!/usr/bin/env python3
 """Print PASS, WARN, or FAIL for the live desk. Does not send, launch, or restart."""
 from __future__ import annotations  # info: from __future__ import annotations
-import os, sys  # info: import os , sys
+import json, os, sys  # info: import json , os , sys
 from pathlib import Path  # info: from pathlib import Path
 
 ROOT = Path("/home/rootrecord/RootRecord-Ecosystem")  # info: set ROOT
@@ -108,6 +108,16 @@ def source_checks() -> None:  # info: def source_checks
         add("FAIL", "a program is marked agent_launchable")  # info: call add
     else:  # info: else :
         add("PASS", "no program is agent_launchable")  # info: call add
+    caps_path = ROOT / "5 - RootRecord-Library" / "Documentation" / "02-agents" / "capabilities" / "capability-registry.json"  # info: set caps_path
+    try:  # info: try :
+        caps = json.loads(caps_path.read_text(encoding="utf-8")).get("capabilities") or []  # info: set caps
+    except (OSError, ValueError):  # info: except ( OSError , ValueError )
+        caps = []  # info: set caps
+    restart = next((row for row in caps if row.get("id") == "restart_known_service"), None)  # info: set restart
+    if restart and restart.get("agent_may_invoke") is False and restart.get("agents", {}).get("bruce") == "denied":  # info: if restart and restart . get ( "agent_may_invoke" ) is False and restart . get ( "agents" , { } ) . get ( "bruce" ) == "denied"
+        add("PASS", "restart_known_service stays agent-locked")  # info: call add
+    else:  # info: else :
+        add("FAIL", "restart capability missing or unlocked")  # info: call add
     if "2 - RootRecord-Database/System/status" in skip:  # info: if "2 - RootRecord-Database/System/status" in skip
         add("PASS", "generated state is on the auto-commit skip list")  # info: call add
     else:  # info: else :

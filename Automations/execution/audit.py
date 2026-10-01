@@ -25,8 +25,6 @@ def append(record: dict) -> None:  # info: def append
     row = dict(record)  # info: set row
     row["at"] = datetime.now().astimezone().isoformat(timespec="seconds")  # info: row [ "at" ] = datetime . now ( ) . astimezone ( ) . isoformat
     text = json.dumps(row, separators=(",", ":"))  # info: set text
-    if ":" in text and any(ch.isdigit() for ch in text[:12]):  # info: if ":" in text and any ( ch . isdigit ( ) for ch in text [ : 12 ] )
-        text = text.replace("bot", "bot")  # info: set text
     LOG.parent.mkdir(parents=True, exist_ok=True)  # info: LOG . parent . mkdir ( parents = True , exist_ok = True )
     with LOG.open("a", encoding="utf-8") as handle:  # info: with LOG . open ( "a" , encoding = "utf-8" ) as handle
         handle.write(text + "\n")  # info: handle . write ( text + "\n" )
