@@ -1100,3 +1100,59 @@ body.desk .top { background: #000011; }
   font-size: 13px;
   line-height: 1.5;
 }
+
+.report-facts {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+}
+
+.report-facts div {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.report-facts dt {
+  margin: 0;
+  color: var(--muted, #9a9ab0);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.report-facts dd {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.report-table th,
+.report-table td {
+  padding: 8px 12px 8px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.45;
+}
+
+.report-table th {
+  color: var(--muted, #9a9ab0);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 640px) {
+  .report-facts div { grid-template-columns: 1fr; gap: 2px; }
+}

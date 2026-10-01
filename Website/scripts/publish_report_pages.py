@@ -112,16 +112,22 @@ def clean_line(raw: str) -> str:  # info: def clean_line
 # What it does: Measured sections as a heading plus lines. Spoken text is omitted.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def sections(md: str) -> list[tuple[str, list[str]]]:  # info: def sections
+def sections(md: str) -> list[dict]:  # info: def sections
     body = md.split("\n## Spoken", 1)[0]  # info: set body
     heading = "Readings"  # info: set heading
-    bucket: list[str] = []  # info: set bucket
-    found: list[tuple[str, list[str]]] = []  # info: set found
+    lines: list[str] = []  # info: set lines
+    columns: list[str] = []  # info: set columns
+    table: list[list[str]] = []  # info: set table
+    found: list[dict] = []  # info: set found
 
     def flush() -> None:  # info: def flush
-        if bucket:  # info: if bucket
-            found.append((heading, list(bucket)))  # info: append section
-        bucket.clear()  # info: clear bucket
+        if table and columns:  # info: if table
+            found.append({"heading": heading, "kind": "table", "columns": list(columns), "rows": [list(row) for row in table]})  # info: append table
+        elif lines:  # info: elif lines
+            found.append({"heading": heading, "kind": "list", "rows": list(lines)})  # info: append list
+        lines.clear()  # info: clear lines
+        columns.clear()  # info: clear columns
+        table.clear()  # info: clear table
 
     for line in body.splitlines():  # info: for line in body
         raw = line.strip()  # info: set raw
@@ -131,17 +137,22 @@ def sections(md: str) -> list[tuple[str, list[str]]]:  # info: def sections
             if heading.lower() in {"spoken", "llm summary"}:  # info: if spoken or llm
                 heading = ""  # info: clear heading
             continue  # info: continue
-        if not heading or not raw or raw.startswith("#") or raw.startswith("_") or raw.startswith("|---") or raw.startswith("| Metric") or raw.startswith("| Device"):  # info: if skip
+        if not heading or not raw or raw.startswith("#") or raw.startswith("_") or set(raw.replace("|", "").replace("-", "").replace(":", "").replace(" ", "")) == set():  # info: if skip
             continue  # info: continue
         if raw.startswith("|"):  # info: if table row
-            cells = [cell.strip() for cell in raw.strip("|").split("|")]  # info: set cells
-            item = clean_line(f"{cells[0]}: {cells[1]}") if len(cells) >= 2 else ""  # info: set item
-        else:  # info: else
-            item = clean_line(raw)  # info: set item
-        if item and item not in bucket:  # info: if new
-            bucket.append(item)  # info: append
+            cells = [clean_line(cell.strip()) for cell in raw.strip("|").split("|")]  # info: set cells
+            if not cells:  # info: if empty cells
+                continue  # info: continue
+            if not columns:  # info: if header
+                columns.extend(cells)  # info: store header
+            elif len(cells) == len(columns):  # info: if data row
+                table.append(cells)  # info: append row
+            continue  # info: continue
+        item = clean_line(raw)  # info: set item
+        if item and item not in lines:  # info: if new
+            lines.append(item)  # info: append
     flush()  # info: call flush
-    return [(name, rows) for name, rows in found if name and rows]  # info: return sections
+    return [part for part in found if part.get("heading")]  # info: return sections
 
 
 # ====================================================
@@ -163,15 +174,25 @@ def pair(line: str) -> tuple[str, str] | None:  # info: def pair
 # What it does: One report section as a field table or a reading list.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def render_section(heading: str, rows: list[str]) -> str:  # info: def render_section
-    pairs = [pair(row) for row in rows]  # info: set pairs
-    title = html.escape(heading)  # info: set title
-    if pairs and all(item is not None for item in pairs):  # info: if every row is a field
-        body = "\n".join(f"      <tr><th scope=\"row\">{html.escape(label)}</th><td>{html.escape(value)}</td></tr>" for label, value in pairs)  # info: set body
-        inner = f'    <table class="report-table">\n{body}\n    </table>'  # info: set inner
+def render_section(part: dict) -> str:  # info: def render_section
+    title = html.escape(str(part.get("heading") or "Readings"))  # info: set title
+    if part.get("kind") == "table":  # info: if table
+        columns = part.get("columns") or []  # info: set columns
+        head = "".join(f"<th scope=\"col\">{html.escape(name)}</th>" for name in columns)  # info: set head
+        body_rows = []  # info: set body_rows
+        for row in part.get("rows") or []:  # info: for row in rows
+            cells = "".join(f"<td>{html.escape(cell)}</td>" for cell in row)  # info: set cells
+            body_rows.append(f"      <tr>{cells}</tr>")  # info: append row
+        inner = f'    <table class="report-table">\n      <thead><tr>{head}</tr></thead>\n      <tbody>\n' + "\n".join(body_rows) + "\n      </tbody>\n    </table>"  # info: set inner
     else:  # info: else
-        body = "\n".join(f"      <li>{html.escape(row)}</li>" for row in rows)  # info: set body
-        inner = f'    <ul class="facts">\n{body}\n    </ul>'  # info: set inner
+        rows = part.get("rows") or []  # info: set rows
+        pairs = [pair(row) for row in rows]  # info: set pairs
+        if pairs and all(item is not None for item in pairs):  # info: if every row is a field
+            body = "\n".join(f"      <tr><th scope=\"row\">{html.escape(label)}</th><td>{html.escape(value)}</td></tr>" for label, value in pairs)  # info: set body
+            inner = f'    <table class="report-table">\n{body}\n    </table>'  # info: set inner
+        else:  # info: else
+            body = "\n".join(f"      <li>{html.escape(row)}</li>" for row in rows)  # info: set body
+            inner = f'    <ul class="facts">\n{body}\n    </ul>'  # info: set inner
     return f'  <section class="sec">\n    <h2>{title}</h2>\n{inner}\n  </section>'  # info: return section
 
 
@@ -180,16 +201,36 @@ def render_section(heading: str, rows: list[str]) -> str:  # info: def render_se
 # What it does: Up to three field pairs for an index card.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def highlights(parts: list[tuple[str, list[str]]]) -> list[tuple[str, str]]:  # info: def highlights
+def highlights(parts: list[dict]) -> list[tuple[str, str]]:  # info: def highlights
     picked = []  # info: set picked
-    for _heading, rows in parts:  # info: for heading , rows
-        for row in rows:  # info: for row in rows
+    for part in parts:  # info: for part in parts
+        if part.get("kind") == "table":  # info: if table
+            columns = part.get("columns") or []  # info: set columns
+            for row in part.get("rows") or []:  # info: for row in rows
+                if row and columns:  # info: if row
+                    label = row[0]  # info: set label
+                    value = " · ".join(cell for cell in row[1:] if cell)  # info: set value
+                    if label and value:  # info: if field
+                        picked.append((label, value))  # info: append
+                if len(picked) >= 3:  # info: if three
+                    return picked  # info: return picked
+            continue  # info: continue
+        for row in part.get("rows") or []:  # info: for row in rows
             found = pair(row)  # info: set found
             if found:  # info: if found
                 picked.append(found)  # info: append
             if len(picked) >= 3:  # info: if three
                 return picked  # info: return picked
-    return picked  # info: return picked
+    if picked:  # info: if picked
+        return picked  # info: return picked
+    for part in parts:  # info: for part in parts
+        rows = part.get("rows") or []  # info: set rows
+        if part.get("kind") == "list" and rows:  # info: if list
+            line = rows[0]  # info: set line
+            if len(line) > 140:  # info: if long
+                line = line[:140].rsplit(" ", 1)[0].rstrip(".,;:") + "…"  # info: shorten line
+            return [(str(part.get("heading") or "Reading"), line)]  # info: return lead
+    return []  # info: return empty
 
 
 # ====================================================
@@ -266,71 +307,68 @@ def chrome(title: str, description: str, canonical: str, main: str, wide: bool =
 
 # ====================================================
 # SECTION: function index_page
-# What it does: Build the /reports index as cards with the latest public text.
+# What it does: Build the /reports index as field, energy, and operations cards.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def index_page(rows: list[dict]) -> str:  # info: def index_page
-    groups = {"Ava": [], "Bruce": [], "Carly": []}  # info: set groups
-    for row in rows:  # info: for row in rows
-        key = str(row["key"])  # info: set key
-        who = persona_name(key)  # info: set who
-        slug = html.escape(str(row["name"]), quote=True)  # info: set slug
-        title = html.escape(TITLES.get(key, key.replace("_", " ")))  # info: set title
-        role = html.escape(str(row.get("function") or ""))  # info: set role
-        md = report_markdown(key)  # info: set md
-        preview = excerpt(public_body(key) or "")  # info: set preview
-        if not preview:  # info: if not preview
-            facts = measured(md)  # info: set facts
-            preview = excerpt(facts[0]) if facts else "No public report is on file."  # info: set preview
-        when = as_of(md)  # info: set when
-        stamp = f'<p class="fine">{html.escape(when)}</p>' if when else ""  # info: set stamp
-        groups.setdefault(who, []).append(  # info: append card
-            f'    <a class="card report-card" href="/reports/{slug}">\n'
-            f"      <h3>{title}</h3>\n"
-            f'      <p class="tax-items">{role}</p>\n'
-            f'      <p class="excerpt">{html.escape(preview)}</p>\n'
-            f"      {stamp}\n"
-            f"    </a>"
-        )  # info: card
+    by_key = {str(row["key"]): row for row in rows}  # info: set by_key
     blocks = []  # info: set blocks
-    for who in ("Ava", "Bruce", "Carly"):  # info: for who in personas
-        cards = "\n".join(groups.get(who) or [])  # info: set cards
+    for area, keys in AREAS:  # info: for area , keys in AREAS
+        cards = []  # info: set cards
+        for key in keys:  # info: for key in keys
+            row = by_key.get(key)  # info: set row
+            if not row:  # info: if not row
+                continue  # info: continue
+            slug = html.escape(str(row["name"]), quote=True)  # info: set slug
+            title = html.escape(TITLES.get(key, key.replace("_", " ")))  # info: set title
+            md = report_markdown(key)  # info: set md
+            parts = sections(md)  # info: set parts
+            when = as_of(md)  # info: set when
+            fields = highlights(parts)  # info: set fields
+            if fields:  # info: if fields
+                lines = "\n".join(f"        <div><dt>{html.escape(label)}</dt><dd>{html.escape(value)}</dd></div>" for label, value in fields)  # info: set lines
+                body = f'      <dl class="report-facts">\n{lines}\n      </dl>'  # info: set body
+            else:  # info: else
+                body = '      <p class="excerpt">No reading is on file for this period.</p>'  # info: set body
+            stamp = f'\n      <p class="fine">{html.escape(when)}</p>' if when else ""  # info: set stamp
+            cards.append(  # info: append card
+                f'    <a class="card report-card" href="/reports/{slug}">\n'
+                f"      <h3>{title}</h3>\n"
+                f"{body}{stamp}\n"
+                f"    </a>"
+            )  # info: card
         if cards:  # info: if cards
-            blocks.append(f'  <section class="sec" aria-label="{who}">\n    <h2>{who}</h2>\n    <div class="report-board">\n{cards}\n    </div>\n  </section>')  # info: append section
-    main = """  <p class="eyebrow">Public reports</p>
+            board = "\n".join(cards)  # info: set board
+            blocks.append(f'  <section class="sec" aria-label="{area}">\n    <h2>{area}</h2>\n    <div class="report-board">\n{board}\n    </div>\n  </section>')  # info: append section
+    main = """  <p class="eyebrow">Field record</p>
   <h1>Reports</h1>
-  <p class="prose">Ava, Bruce, and Carly. Each card is the latest public report. Open it for the spoken text and the measured lines.</p>
+  <p class="prose">Latest published readings for weather, geology, energy, and operations. Each report is the measured record for that period.</p>
 """ + "\n".join(blocks)  # info: set main
-    return chrome("Reports — Root Record", "Public reports from Ava, Bruce, and Carly.", f"{SITE}", main, wide=True)  # info: return chrome
+    return chrome("Reports — Root Record", "Latest field and operations readings from Root Record.", f"{SITE}", main, wide=True)  # info: return chrome
 
 
 # ====================================================
 # SECTION: function report_page
-# What it does: Build one /reports/<slug> page with the spoken text and measured lines.
+# What it does: Build one /reports/<slug> page as a measured report.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def report_page(row: dict) -> str:  # info: def report_page
     key = str(row["key"])  # info: set key
     slug = str(row["name"])  # info: set slug
     title = TITLES.get(key, key.replace("_", " "))  # info: set title
-    who = persona_name(key)  # info: set who
     md = report_markdown(key)  # info: set md
-    body = public_body(key)  # info: set body
-    text = html.escape(body) if body else "No public report is on file."  # info: set text
-    blurb = str(row.get("function") or title)  # info: set blurb
+    parts = sections(md)  # info: set parts
     when = as_of(md)  # info: set when
     stamp = f'  <p class="meta">{html.escape(when)}</p>\n' if when else ""  # info: set stamp
-    facts = "\n".join(f"    <li>{html.escape(item)}</li>" for item in measured(md))  # info: set facts
-    measured_block = f'  <section class="sec" aria-label="Measured">\n    <h2>Measured</h2>\n    <ul class="facts">\n{facts}\n    </ul>\n  </section>\n' if facts else ""  # info: set measured_block
-    main = f"""  <p class="eyebrow">{html.escape(who)}</p>
+    body = "\n".join(render_section(part) for part in parts)  # info: set body
+    if not body:  # info: if not body
+        body = '  <p class="empty-note">No reading is on file for this period.</p>'  # info: set body
+    area = area_for(key)  # info: set area
+    main = f"""  <p class="eyebrow">{html.escape(area)}</p>
   <h1>{html.escape(title)}</h1>
-{stamp}  <p class="prose">{html.escape(blurb)}</p>
-  <section class="sec" aria-label="Spoken">
-    <h2>Spoken</h2>
-    <p class="prose">{text}</p>
-  </section>
-{measured_block}  <p class="fine"><a href="/reports">All reports</a></p>"""  # info: set main
-    return chrome(f"{title} — Root Record", blurb, f"{SITE}/{slug}", main)  # info: return chrome
+{stamp}{body}
+  <p class="fine"><a href="/reports">All reports</a></p>"""  # info: set main
+    return chrome(f"{title} — Root Record", f"{area} report. {title}.", f"{SITE}/{slug}", main)  # info: return chrome
 
 
 # ====================================================
