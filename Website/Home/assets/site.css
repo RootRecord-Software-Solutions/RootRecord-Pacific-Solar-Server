@@ -1015,8 +1015,8 @@ body { overflow-x: clip; }
 
 @media (max-width: 860px) {
   .stage {
-    min-height: calc(100vh - 58px);
-    min-height: calc(100dvh - 58px);
+    min-height: calc(100vh - 59px);
+    min-height: calc(100dvh - 59px);
   }
 
   .hud-row,
