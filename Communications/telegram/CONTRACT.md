@@ -36,7 +36,8 @@ Component: `Communications/telegram/scripts/council-relay.py`, started by `ensur
 - A second getUpdates loop.
 - Printing a bot token.
 - Enabling quake or stats sends from this process.
-- Raising FLM context above 4096, or leaving a 3B model resident.
+- Raising FLM context above 4096, or leaving a model resident.
+- Pointing this relay at an FLM tag outside `gemma3:1b`, `llama3.2:1b`, and `llama3.2:3b`.
 - Treating a Telegram username as build permission.
 - Seeding interaction requests from the live council chat.
 - Treating a social "how are you" as a license to dump watts, or answering "No data" when the desk lines are present and the person asked what you see.
