@@ -95,10 +95,10 @@ def source_checks() -> None:  # info: def source_checks
         add("PASS", "relay observes NPU llama3.2:3b")  # info: call add
     else:  # info: else :
         add("FAIL", "relay script missing NPU 3b settings")  # info: call add
-    if "llama3.2:1b" in jobs:  # info: if "llama3.2:1b" in jobs
-        add("WARN", "configuration drift: jobs.py still says llama3.2:1b")  # info: call add
+    if "Council relay" in jobs and "llama3.2:3b" in jobs and "no Ollama fallback" in jobs:  # info: if "Council relay" in jobs and "llama3.2:3b" in jobs and "no Ollama fallback" in jobs
+        add("PASS", "jobs.py council line matches NPU llama3.2:3b")  # info: call add
     else:  # info: else :
-        add("PASS", "jobs.py model note matches or no longer names 1b")  # info: call add
+        add("WARN", "configuration drift: jobs.py council line does not name llama3.2:3b with no Ollama fallback")  # info: call add
     if "SANDBOX_REPLIES=1" in conf:  # info: if "SANDBOX_REPLIES=1" in conf
         add("PASS", "sandbox replies configured on")  # info: call add
     else:  # info: else :

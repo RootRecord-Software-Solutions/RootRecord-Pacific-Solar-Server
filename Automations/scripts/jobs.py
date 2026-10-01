@@ -7,8 +7,9 @@
 # Baks/logs  → /home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Github/
 # GitHub catalog: Github/scripts/repos.conf (same ids as G2; Ecosystem local_path).
 # Pacific .gitignore excludes us-mainland-server/ (own repo). No rclone / aws-sync.
-# Inference: prefer FLM llama3.2:1b on NPU (:52625), loaded on demand by run-infer.sh; Ollama dolphin lanes = CPU fallback.
-# Telegram council-relay via coms/telegram (one getUpdates). Plumbing single-flight.
+# Council relay (ensure-relay.sh): FLM llama3.2:3b on the NPU, RR_NPU_ONLY=1, no Ollama fallback, context 4096, on demand.
+# Other callers and flm-warmup.sh still default to llama3.2:1b on demand. That 1b default is not the council model.
+# Telegram council-relay: one getUpdates (Ava). Sandbox replies on (SANDBOX_REPLIES=1). Live council and private DMs stay quiet (RR_RELAY_REPLIES default 0).
 #
 # Deploy format (standing, all future builds):
 #   push to GitHub → github_sync_all merge → schedule-stack-reload full stop/start + window.
@@ -135,7 +136,7 @@ ON_BOOT = [  # info: set ON_BOOT
         "id": "flm_npu_warmup",  # info: "id" : "flm_npu_warmup" ,
         "enabled": True,  # info: "enabled" : True ,
         "priority": 4,  # info: "priority" : 4 ,
-        "description": "FLM warmup: no-op unless FLM_WARMUP_RESIDENT=1 (llama3.2:1b, :52625). Default: on demand via run-infer.sh.",  # info: "description" : "FLM warmup: no-op unless FLM_WARMUP_RESIDENT=1 (llama3.2:1b, :52625). Default: on demand via 
+        "description": "FLM warmup: no-op unless FLM_WARMUP_RESIDENT=1. Non-council default llama3.2:1b. Council relay uses llama3.2:3b via ensure-relay.sh.",  # info: "description" : "FLM warmup: no-op unless FLM_WARMUP_RESIDENT=1. Non-council default llama3.2:1b. Council relay uses llama3.2:3b via ensure-relay.sh." , 
         "builtin": "",  # info: "builtin" : "" ,
         "command": "bash '/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/System/scripts/plumbing/flm-warmup.sh'",  # info: "command" : "bash '/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Syste
         "timeout_sec": 240,  # info: "timeout_sec" : 240 ,

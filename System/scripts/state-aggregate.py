@@ -434,11 +434,12 @@ def inference_drift() -> dict:  # info: def inference_drift
         relay_text = ENSURE.read_text(encoding="utf-8")  # info: set relay_text
     except OSError:  # info: except
         relay_text = ""  # info: set relay_text
-    configured_model = "llama3.2:1b" if "llama3.2:1b" in jobs_text else "unknown"  # info: set configured_model
+    council = "Council relay" in jobs_text and "llama3.2:3b" in jobs_text and "no Ollama fallback" in jobs_text  # info: set council
+    configured_model = "llama3.2:3b" if council else "unknown"  # info: set configured_model
     observed_model = "llama3.2:3b" if "llama3.2:3b" in relay_text else "unknown"  # info: set observed_model
-    fallback_configured = "Ollama" in jobs_text and "fallback" in jobs_text  # info: set fallback_configured
+    fallback_configured = "disabled" if council else "unknown"  # info: set fallback_configured
     fallback_observed = "disabled" if "RR_NPU_ONLY=1" in relay_text else "unknown"  # info: set fallback_observed
-    drifted = configured_model != observed_model or (fallback_configured and fallback_observed == "disabled")  # info: set drifted
+    drifted = configured_model != observed_model or fallback_configured != fallback_observed  # info: set drifted
     return {  # info: return
         "id": "ai.inference",  # info: "id" : "ai.inference" ,
         "state": "configuration_drift" if drifted else "aligned",  # info: "state" : "configuration_drift" if drifted else "aligned" ,

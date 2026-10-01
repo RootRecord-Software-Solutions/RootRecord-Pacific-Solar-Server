@@ -7,7 +7,7 @@ Component: `System/scripts/state-aggregate.py`. Registry: `System/config/program
 - One canonical snapshot in Database `System/status/rootrecord-state.json`.
 - Projections for agents, a public view, and compact slices. Same facts. Different visibility.
 - Every disagreement between a config comment and a running setting is a drift record. The writer does not pick a winner.
-- `agent_launchable` stays false until an execution broker exists. This contract does not create that broker.
+- `agent_launchable` stays false. `Automations/execution/execution-broker.py` may answer a read from this snapshot. It refuses restarts, writes, and sends. The poller supervisor remains the only automatic restart.
 - Secrets are absent. Credential values are null.
 
 ## Consumes
