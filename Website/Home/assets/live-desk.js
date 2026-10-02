@@ -83,6 +83,15 @@
     return numberFrom(raw, "W") === null ? raw : raw + " solar";
   }
 
+  function ringCaption(prefix) {
+    var label = document.getElementById(prefix + "-acin-label");
+    var incoming = text(prefix + "-acin");
+    if (label && /generator/i.test(label.textContent) && numberFrom(incoming, "W") !== null) {
+      return incoming + " generator";
+    }
+    return solarCaption(prefix + "-solar");
+  }
+
   function paintFlow() {
     var solar = sum(["river-solar", "delta-solar"], "W");
     var bank = mean(["river-soc", "delta-soc"], "%");
@@ -95,8 +104,8 @@
     if (flowOut) flowOut.textContent = ac === null || !T ? "—" : T.watts(ac);
     var riverSub = document.getElementById("ring-river-sub");
     var deltaSub = document.getElementById("ring-delta-sub");
-    if (riverSub) riverSub.textContent = solarCaption("river-solar");
-    if (deltaSub) deltaSub.textContent = solarCaption("delta-solar");
+    if (riverSub) riverSub.textContent = ringCaption("river");
+    if (deltaSub) deltaSub.textContent = ringCaption("delta");
     setGauge("gauge-river", text("river-soc"));
     setGauge("gauge-delta", text("delta-soc"));
   }
@@ -108,7 +117,7 @@
     observer.observe(node, { childList: true, characterData: true, subtree: true });
   }
 
-  ["river-soc", "delta-soc", "river-solar", "delta-solar", "river-ac", "delta-ac"].forEach(watch);
+  ["river-soc", "delta-soc", "river-solar", "delta-solar", "river-ac", "delta-ac", "river-acin", "delta-acin"].forEach(watch);
   paintFlow();
 
   function clock() {

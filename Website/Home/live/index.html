@@ -52,8 +52,10 @@
         <div class="b-split">
           <div class="b-tile"><div class="n">River solar</div><div class="x b-solar" id="river-solar">—</div></div>
           <div class="b-tile"><div class="n">Delta solar</div><div class="x b-solar" id="delta-solar">—</div></div>
-          <div class="b-tile"><div class="n">River AC</div><div class="x" id="river-ac">—</div></div>
-          <div class="b-tile"><div class="n">Delta AC</div><div class="x" id="delta-ac">—</div></div>
+          <div class="b-tile"><div class="n">River AC out</div><div class="x" id="river-ac">—</div></div>
+          <div class="b-tile"><div class="n">Delta AC out</div><div class="x" id="delta-ac">—</div></div>
+          <div class="b-tile"><div class="n" id="river-acin-label">River AC in</div><div class="x" id="river-acin">—</div></div>
+          <div class="b-tile"><div class="n" id="delta-acin-label">Delta AC in</div><div class="x" id="delta-acin">—</div></div>
           <div class="b-tile"><div class="n">River USB-C</div><div class="x b-cyan" id="river-usb">—</div></div>
           <div class="b-tile"><div class="n">Delta USB-C</div><div class="x b-cyan" id="delta-usb">—</div></div>
         </div>
@@ -67,8 +69,8 @@
           <h2 class="b-k">Solar input <span class="b-scale">of rated port</span></h2>
           <div id="chart-solar"></div>
         </section>
-        <section class="b-card" aria-label="AC output">
-          <h2 class="b-k">AC output <span class="b-scale">of rated port</span></h2>
+        <section class="b-card" aria-label="AC input">
+          <h2 class="b-k">AC input <span class="b-scale">of charge limit</span></h2>
           <div id="chart-output"></div>
         </section>
       </div>
@@ -144,10 +146,10 @@
 </div>
 <p class="fine" id="globe-fallback" hidden>Planetary view is unavailable in this browser.</p>
 <script src="https://unpkg.com/globe.gl@2.46.2"></script>
-<script src="/assets/telemetry.js?v=20261001"></script>
+<script src="/assets/telemetry.js?v=20261001p"></script>
 <script src="/assets/charts.js"></script>
-<script src="/assets/live.js?v=20261001w"></script>
-<script src="/assets/live-desk.js?v=20261001k"></script>
+<script src="/assets/live.js?v=20261001x"></script>
+<script src="/assets/live-desk.js?v=20261001p"></script>
 <script src="/assets/starfield.js"></script>
 <script src="/assets/home.js?v=20261001ac"></script>
 </body>

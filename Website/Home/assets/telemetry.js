@@ -86,7 +86,6 @@
       acOut: finite(power.ac_output_power),
       acIn: finite(power.ac_input_power),
       usbc: finite(power.usbc_output_power),
-      acIn: finite(power.ac_input_power),
       chargeSource: typeof power.charge_source === "string" ? power.charge_source : "",
       at: at
     };
