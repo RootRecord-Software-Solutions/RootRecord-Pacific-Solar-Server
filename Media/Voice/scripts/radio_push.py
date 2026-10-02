@@ -15,6 +15,7 @@ import shlex
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))
@@ -38,23 +39,72 @@ REPORT_NAME = re.compile(r"^[a-z0-9_]+$")
 SSH = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20"]
 
 
+PARTIAL_AGE = 15 * 60
+
+
+def prune_tree(root: Path, now: float | None = None) -> list[str]:
+    """Remove junk from a reports directory. Keep live names and fresh partials."""
+    removed: list[str] = []
+    stamp = time.time() if now is None else now
+    root.mkdir(parents=True, exist_ok=True)
+    for name in os.listdir(root):
+        path = root / name
+        if not path.is_file() and not path.is_symlink():
+            continue
+        if name == ".gitkeep" or KEEP_REPORT.fullmatch(name):
+            continue
+        if name.endswith(".partial"):
+            age = stamp - path.stat().st_mtime
+            if age < PARTIAL_AGE:
+                continue
+        path.unlink()
+        removed.append(name)
+    return removed
+
+
+def audio_duration(path: Path) -> float:
+    probe = subprocess.run(
+        [
+            "ffprobe", "-v", "error", "-select_streams", "a:0",
+            "-show_entries", "format=duration",
+            "-of", "default=noprint_wrappers=1:nokey=1",
+            str(path),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=40,
+    )
+    if probe.returncode != 0:
+        return 0.0
+    try:
+        return float((probe.stdout or "").strip().splitlines()[-1])
+    except (ValueError, IndexError):
+        return 0.0
+
+
 def prune_reports() -> bool:
-    """Drop every remote report that is not exactly one <name>_current.ogg."""
+    """Drop remote junk. Keep *_current.ogg and partials younger than 15 minutes."""
     remote_dir = REPORTS_REMOTE.rstrip("/")
     script = (
         "RR_RADIO_REPORTS=" + shlex.quote(remote_dir)
         + " RR_RADIO_KEEP=" + shlex.quote(KEEP_REPORT.pattern)
+        + " RR_RADIO_PARTIAL_AGE=" + str(PARTIAL_AGE)
         + " python3 - <<'PY'\n"
-        "import os, re\n"
+        "import os, re, time\n"
         "root = os.environ['RR_RADIO_REPORTS']\n"
         "keep = re.compile(os.environ['RR_RADIO_KEEP'])\n"
+        "max_age = int(os.environ['RR_RADIO_PARTIAL_AGE'])\n"
+        "now = time.time()\n"
         "os.makedirs(root, exist_ok=True)\n"
         "for name in os.listdir(root):\n"
+        "    path = os.path.join(root, name)\n"
+        "    if not os.path.isfile(path) and not os.path.islink(path):\n"
+        "        continue\n"
         "    if name == '.gitkeep' or keep.fullmatch(name):\n"
         "        continue\n"
-        "    path = os.path.join(root, name)\n"
-        "    if os.path.isfile(path) or os.path.islink(path):\n"
-        "        os.remove(path)\n"
+        "    if name.endswith('.partial') and now - os.path.getmtime(path) < max_age:\n"
+        "        continue\n"
+        "    os.remove(path)\n"
         "PY"
     )
     cleaned = subprocess.run(
@@ -103,6 +153,26 @@ def push_report(report: str) -> dict:
         )
         if sent.returncode != 0:
             return {"ok": False, "detail": "send_failed", "report": report}
+        checked = subprocess.run(
+            SSH + [HOST, "ffprobe -v error -select_streams a:0 -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "
+                   + shlex.quote(partial)],
+            capture_output=True,
+            text=True,
+            timeout=40,
+        )
+        duration = 0.0
+        try:
+            duration = float((checked.stdout or "").strip().splitlines()[-1])
+        except (ValueError, IndexError):
+            duration = 0.0
+        if checked.returncode != 0 or duration < 0.2:
+            subprocess.run(
+                SSH + [HOST, "rm -f -- " + shlex.quote(partial)],
+                capture_output=True,
+                text=True,
+                timeout=40,
+            )
+            return {"ok": False, "detail": "invalid_audio", "report": report}
         moved = subprocess.run(
             SSH + [HOST, "mv -f -- " + shlex.quote(partial) + " " + shlex.quote(final)
                    + " && chmod 644 -- " + shlex.quote(final)],
