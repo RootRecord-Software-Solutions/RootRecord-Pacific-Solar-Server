@@ -640,6 +640,18 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
     {  # info: {
         # Automated report relay (2026-09-30). Alexander asked to start posting.
         # RR_DISCORD_POST is set only in this job's env. The chat poller stays off.
+        # ML2 offline bank catch-up → same Database paths SSH stream writes (LLM/voice readable).
+        # Always-on receive; NOT gated by RR_LOCAL_DATA_POLL (buffer must drain in either mode).
+        "id": "ml2_datapack_pickup",
+        "enabled": True,
+        "description": "Solar catch-up: drain ML2 Telegram offline datapacks into Database (timer + boot). Same path_rel tree as SSH bank stream.",
+        "interval_sec": 120,
+        "timeout_sec": 180,
+        "command": f'nice -n 10 bash "{PACIFIC}/Communications/telegram/scripts/run-datapack-pickup.sh"',
+        "cwd": f"{PACIFIC}/Communications/telegram",
+        "needs_internet": True,
+        "on_boot": True,
+
         "id": "discord_report_relay",  # info: "id" : "discord_report_relay" ,
         "enabled": True,  # info: "enabled" : True ,
         "description": "Post each changed automated report to its Reports channel. Chat poller stays off.",  # info: "description" : "Post each changed automated report to its Reports channel. Chat poller stays off." ,

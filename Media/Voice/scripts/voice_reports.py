@@ -965,6 +965,48 @@ def _first_sentences(text: str, n: int = 2, cap: int = 420) -> str:  # info: def
 
 
 # ====================================================
+# SECTION: function kilauea_photo_summary
+# What it does: Report whether a banked Kīlauea photo was viewed and summarize look conditions.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def kilauea_photo_summary() -> str:  # info: def kilauea_photo_summary
+    """Return a short photo-viewed and conditions line from current/last bank data."""  # info: docstring
+    cams_dir = VOLCANOES / "Cams"  # info: set cams directory
+    current_look = {}  # info: set current look
+    look_paths = [cams_dir / "kilauea-look_current.json", cams_dir / "kilauea-look-current.json"]  # info: set preferred look paths
+    look_paths += sorted(cams_dir.glob("*_current.json"))  # info: add other current look paths
+    for look_path in look_paths:  # info: for current look path
+        data = jload(look_path) or {}  # info: load current look
+        if any(key in data for key in ("image", "activity", "visible", "sentence", "fountaining")):  # info: if look-shaped data
+            current_look = data  # info: set current look data
+            break  # info: stop current look scan
+    look = current_look or jload(cams_dir / "kilauea-look-last.json") or {}  # info: choose current or last look
+    cams_current = jload(cams_dir / "cams_current.json") or {}  # info: load current cams metadata
+    viewed = None  # info: set viewed unknown
+    if isinstance(cams_current.get("photo_viewed"), bool):  # info: if bank photo flag
+        viewed = cams_current["photo_viewed"]  # info: use bank photo flag
+    elif isinstance(cams_current.get("cams"), list):  # info: if bank cam rows
+        viewed = any(isinstance(cam, dict) and (cam.get("viewed") or cam.get("ok")) for cam in cams_current["cams"])  # info: infer bank photo flag
+    if viewed is None:  # info: if no bank photo flag
+        viewed = bool(look.get("image"))  # info: infer viewed from look image
+    activity = str(look.get("activity") or "").strip().lower()  # info: set activity
+    visible = str(look.get("visible") or "").strip()  # info: set visible
+    if bool(look.get("fountaining")) or activity == "fountaining":  # info: if fountaining
+        conditions = "lava fountaining"  # info: set fountaining conditions
+    elif activity:  # info: if activity
+        conditions = activity  # info: set activity conditions
+    else:  # info: if no activity
+        conditions = ""  # info: set empty conditions
+    if visible:  # info: if visible detail
+        conditions = f"{conditions}; {visible}" if conditions else visible  # info: append visible detail
+    if not viewed:  # info: if photo not viewed
+        return "Photo viewed: no. Conditions: no still available."  # info: return no-photo line
+    if not conditions:  # info: if conditions missing
+        conditions = "not recorded"  # info: set unknown conditions
+    return f"Photo viewed: yes. Conditions: {conditions}."  # info: return photo line
+
+
+# ====================================================
 # SECTION: function b_kilauea_report
 # What it does: G1 hourly Kīlauea desk (persona._kilauea_line wording) + HVO notice excerpt, from Database Geology/Volcanoes/.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -973,10 +1015,11 @@ def b_kilauea_report(t: datetime):  # info: def b_kilauea_report
     """G1 hourly Kīlauea desk (persona._kilauea_line wording) + HVO notice excerpt, from Database Geology/Volcanoes/."""  # info: """G1 hourly Kīlauea desk (persona._kilauea_line wording) + HVO notice excerpt, from Database Geology/Volcanoe
     k, ml = jload(VOLCANOES / "kilauea-last.json"), jload(VOLCANOES / "mauna-loa-last.json")  # info: k , ml = jload ( VOLCANOES /
     hi = jload(QUAKES / "hawaii-last.json") or {}  # info: set hi
+    photo_line = kilauea_photo_summary()  # info: set photo line
     md = [f"# Kilauea report — {t.isoformat()}", ""]
     if not isinstance(k, dict) or not k.get("alert_level"):  # info: if not isinstance ( k , dict )
-        md += ["_No HVO data on file (Database Geology/Volcanoes/kilauea-last.json missing). Run geology_collect.py._", ""]  # info: set md
-        return "\n".join(md), ["Kilauea: DOWN."]  # info: return "\n" . join ( md ) ,
+        md += ["_No HVO data on file (Database Geology/Volcanoes/kilauea-last.json missing). Run geology_collect.py._", f"- **Photo:** {photo_line}", "", "## Spoken", "", photo_line, ""]  # info: set md
+        return "\n".join(md), ["Kilauea: DOWN.", photo_line]  # info: return "\n" . join ( md ) ,
     level = str(k.get("alert_level") or "unknown").strip().lower()  # info: set level
     erupting = k.get("erupting")  # info: set erupting
     if erupting:  # info: if erupting :
@@ -988,7 +1031,7 @@ def b_kilauea_report(t: datetime):  # info: def b_kilauea_report
     color = str(k.get("color_code") or "").lower()  # info: set color
     sp = ["Kilauea report.", generated_at(t),  # info: set sp
           f"Alert level {level}" + (f", aviation color code {color}." if color else "."),  # info: f" Alert level { level } " + (
-          f"The volcano {state}."]  # info: f" The volcano { state } . " ]
+          f"The volcano {state}.", photo_line]  # info: f" The volcano { state } . " ]
     note = k.get("latest_activity_notice") if erupting and k.get("latest_activity_notice") else k.get("latest_notice")  # info: set note
     note = note if isinstance(note, dict) else {}  # info: set note
     excerpt = _first_sentences(note.get("synopsis") or "")  # info: set excerpt
@@ -1012,6 +1055,7 @@ def b_kilauea_report(t: datetime):  # info: def b_kilauea_report
            f"- **Latest notice used:** {note.get('type', 'n/a')} ({note.get('sent_utc', 'n/a')} UTC) {note.get('url', '')}",  # info: f" - **Latest notice used:** { note . get ( 'type'
            f"- **Mauna Loa:** {(ml or {}).get('alert_level', 'n/a')} / {(ml or {}).get('color_code', 'n/a')}",  # info: f" - **Mauna Loa:** { ( ml or { }
            f"- **Quakes ≤150 km of Kīlauea (M≥1, {hi.get('window_h', 24)} h):** {hi.get('kilauea_150km_count', 'n/a')}",  # info: f" - **Quakes ≤150 km of Kīlauea (M≥1, { hi . get ( 'window_h'
+           f"- **Photo:** {photo_line}",  # info: photo line
            f"- **Collected:** {k.get('at')} (USGS HANS)", "", "## Spoken", "", " ".join(sp), ""]
     return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
@@ -1036,7 +1080,8 @@ def b_kilauea_image_check(t: datetime):  # info: def b_kilauea_image_check
         err = type(exc).__name__  # info: set err
         row = {}  # info: clear row
     md = [f"# Kilauea image check — {t.isoformat()}", ""]  # info: set md
-    sp = ["Kilauea observation image was checked."]  # info: set sp
+    viewed = bool(row.get("image"))  # info: set viewed
+    sp = [f"Kilauea observation image was checked. Photo viewed: {'yes' if viewed else 'no'}."]  # info: set sp
     if err:  # info: if import/observe failed
         md += [f"_Look failed: {err}_", ""]  # info: md error
         sp.append(f"Vision look failed ({err}).")  # info: sp error
@@ -1069,6 +1114,8 @@ def b_kilauea_image_check(t: datetime):  # info: def b_kilauea_image_check
             f"- **Activity:** {activity}",  # info: activity
             f"- **Fountaining:** `{fountain}`",  # info: fountain
             f"- **Visible:** {visible or 'n/a'}",  # info: visible
+            f"- **Photo viewed:** `{'yes' if viewed else 'no'}`",  # info: photo viewed
+            f"- **Source kind:** `{row.get('source_kind') or 'n/a'}`",  # info: source kind
             f"- **Fetched live this check:** `{row.get('fetched_live')}`",  # info: fetched
             f"- **Reference:** {row.get('reference') or 'none'}",  # info: reference
             f"- **Model:** {row.get('model') or 'n/a'}",  # info: model
@@ -1758,6 +1805,9 @@ def b_current_report(t: datetime):  # info: def b_current_report
     else:  # info: else :
         md.append("- Kilauea: not on file")  # info: md . append ( "- Kilauea: not on file" )
         sp.append("Kilauea status is not on file.")  # info: sp . append ( "Kilauea status is not on file." )
+    photo_line = kilauea_photo_summary()  # info: set geology photo line
+    md.append(f"- Kilauea photo: {photo_line}")  # info: md . append kilauea photo line
+    sp.append(photo_line)  # info: sp . append kilauea photo line
     if isinstance(mauna, dict) and mauna.get("alert_level"):  # info: if isinstance ( mauna , dict ) and mauna . get ( "alert_level" ) :
         md.append(f"- Mauna Loa: {mauna.get('alert_level')} / {mauna.get('color_code')}")  # info: md . append mauna line
         sp.append(f"Mauna Loa alert level {str(mauna.get('alert_level')).lower()}.")  # info: sp . append mauna sentence
