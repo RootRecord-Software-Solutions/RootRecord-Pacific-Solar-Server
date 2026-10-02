@@ -8,6 +8,7 @@
   --cyan: #7dd3fc;
   --blue: #38bdf8;
   --green: #22c55e;
+  --sun: #f5c542;
   --mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
@@ -68,6 +69,7 @@ a:hover { color: #e0f2fe; }
 }
 
 .top nav a,
+.top nav span[aria-current="page"],
 .enter {
   color: #c8c8d4;
   text-decoration: none;
@@ -76,7 +78,8 @@ a:hover { color: #e0f2fe; }
   text-transform: uppercase;
 }
 
-.top nav a[aria-current="page"] { color: #fff; }
+.top nav a[aria-current="page"],
+.top nav span[aria-current="page"] { color: #fff; }
 
 .enter {
   border: 1px solid rgba(125, 211, 252, 0.55);
@@ -294,6 +297,13 @@ a.rel-login:hover { color: #fff; }
 }
 
 .page h1 { font-size: clamp(22px, 3vw, 32px); }
+
+/* Context pages (not Home): sunny yellow headers and subheaders */
+.page h1,
+.page h2,
+.page h3 {
+  color: var(--sun);
+}
 
 .status-line {
   display: flex;

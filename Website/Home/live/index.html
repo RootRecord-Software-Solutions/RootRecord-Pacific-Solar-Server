@@ -17,6 +17,20 @@
 </head>
 <body class="broadcast">
 <a class="skip" href="#content">Skip to content</a>
+<header class="top top-clear">
+  <a class="brand" href="/">Root Record</a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+  <nav id="site-nav" aria-label="Primary">
+    <a href="/">Home</a>
+    <a href="/products">Products</a>
+    <a href="/services">Services</a>
+    <a href="/solutions">Solutions</a>
+    <a href="/about">About</a>
+    <a href="/security">Security</a>
+    <a href="/status">Status</a>
+    <a href="/radio">Radio</a>
+  </nav>
+</header>
 <canvas id="starfield" aria-hidden="true"></canvas>
 <div id="globe"></div>
 <div class="broadcast-hud" id="content">
@@ -142,11 +156,13 @@
       </section>
     </div>
   </div>
-  <footer class="b-bottom">
-    <div>Root Record · Hawaiʻi · Mainland Server</div>
-    <div class="b-flow"><span>Solar <b id="flow-in">—</b></span><span>→ bank <b id="flow-bank">—</b></span><span>→ AC <b id="flow-out">—</b></span></div>
-    <div class="b-src">rootrecord.cloud</div>
-  </footer>
+  <footer class="site-foot">
+  <a href="/reports">Reports</a>
+  <a href="/login">Account</a>
+  <a href="/terms">Terms</a>
+  <a href="/privacy">Privacy</a>
+  <a href="/data-deletion">Data deletion</a>
+</footer>
 </div>
 <p class="fine" id="globe-fallback" hidden>Planetary view is unavailable in this browser.</p>
 <audio id="radio-out" src="https://radio.rootrecord.cloud/radio/live.mp3" autoplay playsinline preload="auto"></audio>
@@ -174,5 +190,6 @@
 <script src="/assets/starfield.js"></script>
 <script src="/assets/home.js?v=20261001ac"></script>
 <script src="/assets/live-radio.js?v=20261001radio"></script>
+<script src="/assets/shell.js"></script>
 </body>
 </html>

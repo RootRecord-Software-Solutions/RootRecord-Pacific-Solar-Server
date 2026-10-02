@@ -303,7 +303,7 @@ def write_if_changed(path: Path, text: str) -> bool:  # info: def write_if_chang
 
 # ====================================================
 # SECTION: function chrome
-# What it does: Shared page head, nav, and footer. No starfield. Reports is the current nav item.
+# What it does: Shared page head, nav, and footer. No starfield. Public primary nav; Reports lives in footer on other pages and is omitted here as self.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def chrome(title: str, description: str, canonical: str, main: str, wide: bool = False) -> str:  # info: def chrome
@@ -334,25 +334,21 @@ def chrome(title: str, description: str, canonical: str, main: str, wide: bool =
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
   <nav id="site-nav" aria-label="Primary">
     <a href="/">Home</a>
-    <a href="/ecosystem">Ecosystem</a>
-    <a href="/operations">Systems</a>
-    <a href="/intelligence">Intelligence</a>
-    <a href="/knowledge">Knowledge</a>
+    <a href="/products">Products</a>
+    <a href="/services">Services</a>
+    <a href="/solutions">Solutions</a>
+    <a href="/about">About</a>
     <a href="/security">Security</a>
-    <a href="/reports" aria-current="page">Reports</a>
     <a href="/status">Status</a>
+    <a href="/radio">Radio</a>
   </nav>
 </header>
 <main class="{width}" id="content">
 {main}
 </main>
 <footer class="site-foot">
-  <a href="/ecosystem">Ecosystem</a>
-  <a href="/operations">Systems</a>
-  <a href="/intelligence">Intelligence</a>
-  <a href="/reports">Reports</a>
-  <a href="/status">Status</a>
-  <a href="/about">About</a>
+  <a href="/live">Live</a>
+  <a href="/login">Account</a>
   <a href="/terms">Terms</a>
   <a href="/privacy">Privacy</a>
   <a href="/data-deletion">Data deletion</a>
