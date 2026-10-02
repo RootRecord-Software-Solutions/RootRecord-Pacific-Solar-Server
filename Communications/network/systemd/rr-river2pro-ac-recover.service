@@ -1,5 +1,5 @@
 [Unit]
-Description=Recover River 2 Pro AC ports when SOC is back at or above 5 percent
+Description=Recover River 2 Pro AC ports when fresh SOC is at least 5 percent or input power is at least 50 watts
 After=default.target
 
 [Service]

@@ -8,8 +8,8 @@
 # Kind: shell
 # ==============================================================================
 #!/usr/bin/env bash
-# Local River 2 Pro AC recover: when SOC is fresh and >= 5% but AC ports are
-# off, run river2pro-ac-on.sh so Starlink/net can return after a low-SOC cut.
+# Local River 2 Pro AC recover: when fresh SOC >= 5% OR fresh AC input power >= 50W
+# and AC ports are off, run river2pro-ac-on.sh so Starlink/net can return after a cut.
 # Does not delete collectors, does not force AC off, and no-ops when AC is on.
 set -euo pipefail  # info: set
 
@@ -19,6 +19,7 @@ COOLDOWN_SEC=120  # info: set COOLDOWN_SEC
 DB="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy"  # info: set DB
 SOC_FILE="$DB/soc/river2pro-last.json"  # info: set SOC_FILE
 PORTS_FILE="$DB/ports/river2pro-last.json"  # info: set PORTS_FILE
+WATTS_FILE="$DB/watts/river2pro-last.json"  # info: set WATTS_FILE
 SAMPLES_DIR="$DB/samples"  # info: set SAMPLES_DIR
 STATE_DIR="$DB/state"  # info: set STATE_DIR
 STAMP="$STATE_DIR/river2pro-ac-recover.last-attempt"  # info: set STAMP
@@ -85,12 +86,12 @@ PY
 
 # ====================================================
 # SECTION: function latest_ac_snapshot
-# What it does: Pick newest ports last or read-river2pro sample; print path TAB ac_ports (true/false/null).
+# What it does: Pick newest ports or read-river2pro sample; print path TAB ac_ports (true/false/null) TAB age seconds.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 latest_ac_snapshot() {  # info: latest_ac_snapshot
   python3 - "$PORTS_FILE" "$SAMPLES_DIR" <<'PY'  # info: python3
-import json, os, sys, glob
+import json, os, sys, glob, time
 ports = sys.argv[1]
 samples_dir = sys.argv[2]
 candidates = []
@@ -98,13 +99,13 @@ if os.path.isfile(ports):
     candidates.append(ports)
 candidates.extend(glob.glob(os.path.join(samples_dir, "read-river2pro-*.json")))
 if not candidates:
-    print("\tnull")
+    print("\tnull\t999999")
     sys.exit(0)
 path = max(candidates, key=os.path.getmtime)
 try:
     data = json.load(open(path, encoding="utf-8"))
 except Exception:
-    print(f"{path}\tnull")
+    print(f"{path}\tnull\t999999")
     sys.exit(0)
 fields = data.get("fields") if isinstance(data.get("fields"), dict) else data
 val = fields.get("ac_ports") if isinstance(fields, dict) else None
@@ -114,9 +115,43 @@ elif val is False:
     flag = "false"
 else:
     flag = "null"
-print(f"{path}\t{flag}")
+print(f"{path}\t{flag}\t{max(0, int(time.time() - os.path.getmtime(path)))}")
 PY
 }  # info: latest_ac_snapshot
+
+# ====================================================
+# SECTION: function latest_input_snapshot
+# What it does: Pick newest River input-power JSON and print path TAB field TAB watts TAB age seconds.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+latest_input_snapshot() {  # info: latest_input_snapshot
+  python3 - "$WATTS_FILE" "$SAMPLES_DIR" <<'PY'  # info: python3
+import json, os, sys, glob, time
+watts = sys.argv[1]
+samples_dir = sys.argv[2]
+candidates = []
+if os.path.isfile(watts):
+    candidates.append(watts)
+candidates.extend(glob.glob(os.path.join(samples_dir, "read-river2pro-*.json")))
+for path in sorted(candidates, key=os.path.getmtime, reverse=True):
+    try:
+        data = json.load(open(path, encoding="utf-8"))
+    except Exception:
+        continue
+    fields = data.get("fields") if isinstance(data.get("fields"), dict) else data
+    if not isinstance(fields, dict):
+        continue
+    for key in ("ac_input_power", "input_watts", "input_power", "charge_watts"):
+        value = fields.get(key)
+        try:
+            number = float(value)
+        except (TypeError, ValueError):
+            continue
+        print(f"{path}\t{key}\t{number:g}\t{max(0, int(time.time() - os.path.getmtime(path)))}")
+        sys.exit(0)
+print("\t\t\t999999")
+PY
+}  # info: latest_input_snapshot
 
 # ====================================================
 # SECTION: function in_cooldown
@@ -144,7 +179,7 @@ mark_attempt() {  # info: mark_attempt
 
 # ====================================================
 # SECTION: function main
-# What it does: Decide whether to run river2pro-ac-on.sh; no-op when AC already on or SOC not ready.
+# What it does: Decide whether to run river2pro-ac-on.sh; no-op when AC is on, inputs are stale, or neither trigger is ready.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 main() {  # info: main
@@ -154,47 +189,55 @@ main() {  # info: main
     usage  # info: usage
   fi  # info: fi
 
-  if [[ ! -f "$SOC_FILE" ]]; then  # info: if
-    log_line "no-op missing_soc_file"  # info: log_line
-    return 0  # info: return
+  local soc_age=999999 soc="" ac_path="" ac_flag="" ac_age=999999  # info: set signal locals
+  local input_path="" input_key="" input_watts="" input_age=999999  # info: set input locals
+  local soc_ready=0 input_ready=0 trigger_reason=""  # info: set trigger flags
+
+  if [[ -f "$SOC_FILE" ]]; then  # info: if
+    soc_age="$(file_age_sec "$SOC_FILE")"  # info: set soc_age
+    soc="$(read_soc || true)"  # info: set soc
+    if [[ -n "$soc" ]] && (( soc_age <= FRESH_SEC )); then  # info: if
+      if awk -v s="$soc" -v m="$SOC_MIN" 'BEGIN { exit !(s+0 >= m+0) }'; then  # info: if
+        soc_ready=1  # info: set soc_ready
+        trigger_reason="soc"  # info: set trigger_reason
+      fi  # info: fi
+    fi  # info: fi
   fi  # info: fi
 
-  local soc_age soc ac_path ac_flag  # info: set locals
-  soc_age="$(file_age_sec "$SOC_FILE")"  # info: set soc_age
-  if (( soc_age > FRESH_SEC )); then  # info: if
-    log_line "no-op stale_soc age=${soc_age}s limit=${FRESH_SEC}s"  # info: log_line
-    return 0  # info: return
+  IFS=$'\t' read -r ac_path ac_flag ac_age < <(latest_ac_snapshot)  # info: read AC snapshot
+  IFS=$'\t' read -r input_path input_key input_watts input_age < <(latest_input_snapshot)  # info: read input snapshot
+  if [[ -n "$input_watts" ]] && (( input_age <= FRESH_SEC )); then  # info: if
+    if awk -v w="$input_watts" 'BEGIN { exit !(w+0 >= 50) }'; then  # info: if
+      input_ready=1  # info: set input_ready
+      if [[ "$soc_ready" -eq 0 ]]; then  # info: if
+        trigger_reason="input_watts"  # info: set trigger_reason
+      else  # info: else
+        trigger_reason="soc_or_input_watts"  # info: set trigger_reason
+      fi  # info: fi
+    fi  # info: fi
   fi  # info: fi
 
-  soc="$(read_soc || true)"  # info: set soc
-  if [[ -z "$soc" ]]; then  # info: if
-    log_line "no-op unreadable_soc"  # info: log_line
-    return 0  # info: return
-  fi  # info: fi
-
-  # bash numeric compare; SOC may be float like 28.8
-  if ! awk -v s="$soc" -v m="$SOC_MIN" 'BEGIN { exit !(s+0 >= m+0) }'; then  # info: if
-    log_line "no-op soc_below_min soc=${soc} min=${SOC_MIN} age=${soc_age}s"  # info: log_line
-    return 0  # info: return
-  fi  # info: fi
-
-  IFS=$'\t' read -r ac_path ac_flag < <(latest_ac_snapshot)  # info: read
   if [[ "$ac_flag" == "true" ]]; then  # info: if
-    log_line "no-op ac_already_on soc=${soc} age=${soc_age}s src=$(basename "${ac_path:-none}")"  # info: log_line
+    log_line "no-op ac_already_on soc=${soc:-null} soc_age=${soc_age}s input_watts=${input_watts:-null} input_key=${input_key:-none} input_age=${input_age}s ac_age=${ac_age}s src=$(basename "${ac_path:-none}")"  # info: log_line
     return 0  # info: return
   fi  # info: fi
-  if [[ "$ac_flag" != "false" ]]; then  # info: if
-    log_line "no-op ac_unknown soc=${soc} age=${soc_age}s flag=${ac_flag} src=$(basename "${ac_path:-none}")"  # info: log_line
+  if [[ "$ac_flag" != "false" || "$ac_age" -gt "$FRESH_SEC" ]]; then  # info: if
+    log_line "no-op ac_unknown_or_stale soc=${soc:-null} soc_age=${soc_age}s input_watts=${input_watts:-null} input_key=${input_key:-none} input_age=${input_age}s ac_ports=${ac_flag:-null} ac_age=${ac_age}s"  # info: log_line
+    return 0  # info: return
+  fi  # info: fi
+
+  if [[ "$soc_ready" -eq 0 && "$input_ready" -eq 0 ]]; then  # info: if
+    log_line "no-op triggers_not_ready soc=${soc:-null} soc_age=${soc_age}s min=${SOC_MIN} input_watts=${input_watts:-null} input_key=${input_key:-none} input_age=${input_age}s input_min=50 ac_ports=${ac_flag} ac_age=${ac_age}s"  # info: log_line
     return 0  # info: return
   fi  # info: fi
 
   if in_cooldown; then  # info: if
-    log_line "no-op cooldown soc=${soc} remaining_lt=${COOLDOWN_SEC}s"  # info: log_line
+    log_line "no-op cooldown reason=${trigger_reason} soc=${soc:-null} soc_age=${soc_age}s input_watts=${input_watts:-null} input_key=${input_key:-none} input_age=${input_age}s ac_ports=${ac_flag} ac_age=${ac_age}s remaining_lt=${COOLDOWN_SEC}s"  # info: log_line
     return 0  # info: return
   fi  # info: fi
 
   if [[ "$DRY_RUN" -eq 1 ]]; then  # info: if
-    log_line "dry-run WOULD_RUN_ac_on soc=${soc} age=${soc_age}s src=$(basename "${ac_path:-none}")"  # info: log_line
+    log_line "dry-run WOULD_RUN_ac_on reason=${trigger_reason} soc=${soc:-null} soc_age=${soc_age}s input_watts=${input_watts:-null} input_key=${input_key:-none} input_age=${input_age}s ac_ports=${ac_flag} ac_age=${ac_age}s"  # info: log_line
     return 0  # info: return
   fi  # info: fi
 
@@ -203,15 +246,15 @@ main() {  # info: main
     return 1  # info: return
   fi  # info: fi
 
-  log_line "run ac_on soc=${soc} age=${soc_age}s src=$(basename "${ac_path:-none}")"  # info: log_line
+  log_line "run ac_on reason=${trigger_reason} soc=${soc:-null} soc_age=${soc_age}s input_watts=${input_watts:-null} input_key=${input_key:-none} input_age=${input_age}s ac_ports=${ac_flag} ac_age=${ac_age}s src=$(basename "${ac_path:-none}")"  # info: log_line
   mark_attempt  # info: mark_attempt
   local rc=0  # info: set rc
   bash "$AC_ON" || rc=$?  # info: bash AC_ON
   if [[ "$rc" -eq 0 ]]; then  # info: if
-    log_line "ok ac_on_finished soc=${soc}"  # info: log_line
+    log_line "ok ac_on_finished reason=${trigger_reason} soc=${soc:-null} input_watts=${input_watts:-null} input_key=${input_key:-none}"  # info: log_line
     return 0  # info: return
   fi  # info: fi
-  log_line "fail ac_on_exit=${rc} soc=${soc}"  # info: log_line
+  log_line "fail ac_on_exit=${rc} reason=${trigger_reason} soc=${soc:-null} input_watts=${input_watts:-null} input_key=${input_key:-none}"  # info: log_line
   return 1  # info: return
 }  # info: main
 

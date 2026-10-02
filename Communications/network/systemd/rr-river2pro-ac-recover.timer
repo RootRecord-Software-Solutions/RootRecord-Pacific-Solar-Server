@@ -1,5 +1,5 @@
 [Unit]
-Description=Local River 2 Pro AC recover watchdog every 90 seconds
+Description=Local River 2 Pro AC recover watchdog every 90 seconds, persistent across reboot
 
 [Timer]
 OnBootSec=45
