@@ -41,11 +41,27 @@ class AwsFallbackPage:  # info: class AwsFallbackPage
         box.append(lbl("The desk is canonical. AWS is a small fallback that keeps basic operations alive when the desk is offline. "  # info: box . append ( lbl ( "The desk is canonical. AWS is a small fallback that keeps basic operations alive when th
                        "Each function has one flag file on AWS. 'Status' reads them once over SSH (read-only). "  # info: "Each function has one flag file on AWS. 'Status' reads them once over SSH (read-only). "
                        "Plan: Library 08-Ideas/2026-09-29-aws-fallback-rebuild.md.", "dim-label", wrap=True))  # info: "Plan: Library 08-Ideas/2026-09-29-aws-fallback-rebuild.md." , "dim-label" , wrap = True )
+
+        box.append(lbl(
+            f"Mode source: Settings → Panel · keys <tt>aws_fallback_mode</tt>={esc(self.awf_mode)} · "
+            f"<tt>aws_fallback_alias</tt>={esc(self.awf_alias)}. Save settings, then leave and reopen this page "
+            f"to apply a mode change. Press <b>Status</b> before trusting any toggle — until then rows show catalog defaults, not live AWS flags.",
+            "rr-warn" if self.awf_mode == "write" else "dim-label", wrap=True, markup=True))
+        if self.awf_mode == "write":
+            box.append(lbl(
+                "This page is in WRITE mode: Apply takes a dated AWS flags backup, then writes one flag. "
+                "Locked / NEEDS SIGN-OFF / DECISION PENDING rows stay labelled.",
+                "dim-label", wrap=True))
+        else:
+            box.append(lbl(
+                "This page is in DRY-RUN mode: confirms show the exact change and write nothing. "
+                "Locked / NEEDS SIGN-OFF / DECISION PENDING rows stay labelled.",
+                "dim-label", wrap=True))
         bar = Gtk.Box(spacing=8)  # info: set bar
         b = Gtk.Button(label="Status (read AWS flags, RAM, disk)")  # info: set b
         b.connect("clicked", lambda *_: self.awf_status())  # info: b . connect ( "clicked" , lambda *
         bar.append(b)  # info: bar . append ( b )
-        self.awf_status_lbl = lbl("not read yet (no SSH until you press Status)", "dim-label", wrap=True)  # info: self . awf_status_lbl = lbl ( "not read yet (no SSH until you press Status)" ,
+        self.awf_status_lbl = lbl("Status: not read yet — press Status (one read-only SSH, ≤10 s) before toggling", "rr-warn", wrap=True)  # info: self . awf_status_lbl = lbl ( "not read yet (no SSH until you press Status)" ,
         bar.append(self.awf_status_lbl)  # info: bar . append ( self . awf_status_lbl )
         box.append(bar)  # info: box . append ( bar )
         self.awf_budget_lbl = lbl("", "rr-mono", wrap=True)  # info: self . awf_budget_lbl = lbl ( "" ,

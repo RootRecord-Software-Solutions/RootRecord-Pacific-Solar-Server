@@ -148,14 +148,29 @@ class BarRow:  # info: class BarRow
         parent.append(row)  # info: parent . append ( row )
         parent.append(self.detail)  # info: parent . append ( self . detail )
 
-    def set(self, pct, detail: str):  # info: def set
-        if isinstance(pct, (int, float)):  # info: if isinstance ( pct , ( int ,
-            self.bar.set_value(max(0.0, min(100.0, float(pct))))  # info: self . bar . set_value ( max (
-            self.val.set_text(f"{float(pct):.1f}%")  # info: self . val . set_text ( f" {
-        else:  # info: else :
-            self.bar.set_value(0)  # info: self . bar . set_value ( 0 )
-            self.val.set_text("n/a")  # info: self . val . set_text ( "n/a" )
-        self.detail.set_text(detail)  # info: self . detail . set_text ( detail )
+    def set(self, pct, detail: str, *, charge_warn: bool = True):
+        """Update bar + value. For charge bars, ≤10% CRITICAL (red), ≤20% LOW (amber)."""
+        for c in ("rr-fail", "rr-warn", "rr-pass"):
+            self.val.remove_css_class(c)
+        if not self.val.has_css_class("rr-big"):
+            self.val.add_css_class("rr-big")
+        if isinstance(pct, (int, float)):
+            v = float(pct)
+            self.bar.set_value(max(0.0, min(100.0, v)))
+            if charge_warn and v <= 10:
+                self.val.set_text(f"{v:.1f}% CRITICAL")
+                self.val.add_css_class("rr-fail")
+            elif charge_warn and v <= 20:
+                self.val.set_text(f"{v:.1f}% LOW")
+                self.val.add_css_class("rr-warn")
+            else:
+                self.val.set_text(f"{v:.1f}%")
+                if charge_warn and v >= 80:
+                    self.val.add_css_class("rr-pass")
+        else:
+            self.bar.set_value(0)
+            self.val.set_text("n/a")
+        self.detail.set_text(detail)
 
 
 # ====================================================
@@ -253,8 +268,13 @@ class Panel(ExtraPages, AwsFallbackPage, AutomationsPage, TelemetryPage):  # inf
         self.bar_b1 = BarRow(i, "B1", "river2pro")  # info: self . bar_b1 = BarRow ( i ,
         self.bar_b2 = BarRow(i, "B2", "delta2")  # info: self . bar_b2 = BarRow ( i ,
         self.bar_b3 = BarRow(i, "B3", "System (laptop)")  # info: self . bar_b3 = BarRow ( i ,
+        self.energy_alert = lbl("", "rr-fail", wrap=True)
+        self.energy_alert.set_visible(False)
+        i.append(self.energy_alert)
         self.exp_lbl = lbl("", "dim-label", wrap=True)  # info: self . exp_lbl = lbl ( "" ,
         i.append(self.exp_lbl)  # info: i . append ( self . exp_lbl )
+        self.energy_refresh_lbl = lbl("", "dim-label")
+        i.append(self.energy_refresh_lbl)
         box.append(o)  # info: box . append ( o )
         o, i = section("Watts (Energy/watts/*-last.json)")  # info: o , i = section ( "Watts (Energy/watts/*-last.json)" )
         self.watts_grid = Gtk.Grid(column_spacing=18, row_spacing=4)  # info: self . watts_grid = Gtk . Grid (
@@ -285,18 +305,41 @@ class Panel(ExtraPages, AwsFallbackPage, AutomationsPage, TelemetryPage):  # inf
         e = src.energy(self.paths)  # info: set e
         lg = self.logd()  # info: set lg
         stale = self.s["stale_after_sec"]  # info: set stale
-        for bar, dev in ((self.bar_b1, "river2pro"), (self.bar_b2, "delta2")):  # info: for bar , dev in ( ( self
-            d = e[dev]  # info: set d
-            st = " · STALE" if d["age"] is not None and d["age"] > stale else ""  # info: set st
-            bar.set(d["soc"], f"{src.fmt_age(d['age'])}{st} · source {d['source'] or '—'} · {lg['summary'].get(dev, '')}")  # info: bar . set ( d [ "soc" ]
-        lap = e["laptop"]  # info: set lap
-        if lap:  # info: if lap :
-            self.bar_b3.set(lap[0], f"System (laptop) · {lap[1]} · {'AC' if lap[2] else 'on battery'} (sysfs)")  # info: self . bar_b3 . set ( lap [
-        else:  # info: else :
-            self.bar_b3.set(None, "no laptop battery found in /sys/class/power_supply")  # info: self . bar_b3 . set ( None ,
-        exp = lg.get("b3_expansion")  # info: set exp
-        self.exp_lbl.set_text(f"Delta2 expansion battery (status line B3): {exp}" if exp else  # info: self . exp_lbl . set_text ( f" Delta2 expansion battery (status line B3):
-                              "Delta2 expansion battery: not in the current status line (status line B3 absent)")  # info: "Delta2 expansion battery: not in the current status line (status line B3 absent)" )
+        alerts = []
+        for bar, dev, nice in ((self.bar_b1, "river2pro", "B1 River 2 Pro"),
+                               (self.bar_b2, "delta2", "B2 Delta 2")):
+            d = e[dev]
+            st = " · STALE" if d["age"] is not None and d["age"] > stale else ""
+            bar.set(d["soc"], f"{src.fmt_age(d['age'])}{st} · source {d['source'] or '—'} · {lg['summary'].get(dev, '')}")
+            soc = d["soc"]
+            if isinstance(soc, (int, float)):
+                if soc <= 10:
+                    alerts.append(f"{nice} CRITICAL at {soc:.1f}%")
+                elif soc <= 20:
+                    alerts.append(f"{nice} LOW at {soc:.1f}%")
+            if d["age"] is not None and d["age"] > stale:
+                alerts.append(f"{nice} sample STALE ({src.fmt_age(d['age'])})")
+        lap = e["laptop"]
+        if lap:
+            self.bar_b3.set(lap[0], f"System (laptop) · {lap[1]} · {'AC' if lap[2] else 'on battery'} (sysfs)")
+            if isinstance(lap[0], (int, float)) and lap[0] <= 20 and not lap[2]:
+                alerts.append(f"B3 laptop LOW at {float(lap[0]):.1f}% (on battery)")
+        else:
+            self.bar_b3.set(None, "no laptop battery found in /sys/class/power_supply")
+        if hasattr(self, "energy_alert"):
+            self.energy_alert.set_text("  ·  ".join(alerts) if alerts else "")
+            self.energy_alert.set_visible(bool(alerts))
+            if alerts and any("CRITICAL" in a for a in alerts):
+                self.energy_alert.remove_css_class("rr-warn")
+                self.energy_alert.add_css_class("rr-fail")
+            elif alerts:
+                self.energy_alert.remove_css_class("rr-fail")
+                self.energy_alert.add_css_class("rr-warn")
+        if hasattr(self, "energy_refresh_lbl"):
+            self.energy_refresh_lbl.set_text(f"Energy page refreshed {now_hst()} · interval {self.s['refresh_sec']}s")
+        exp = lg.get("b3_expansion")
+        self.exp_lbl.set_text(f"Delta2 expansion battery (status line B3): {exp}" if exp else
+                              "Delta2 expansion battery: not in the current status line (status line B3 absent)")
         for dev, cells in self.watt_cells.items():  # info: for dev , cells in self . watt_cells
             d = e[dev]  # info: set d
             vals = [d["solar_in"], d["ac_out"], d["ac_in"], d["usbc_out"]]  # info: set vals
@@ -808,12 +851,14 @@ class Panel(ExtraPages, AwsFallbackPage, AutomationsPage, TelemetryPage):  # inf
         self._spin(g, "stale_after_sec", "Mark SOC stale after (s)", 60, 7200)  # info: self . _spin ( g , "stale_after_sec" ,
         self._spin(g, "log_lines", "Poller log lines shown", 10, 200)  # info: self . _spin ( g , "log_lines" ,
         self._entry(g, "weather_zone", "Weather island (Big Island, Maui, Oahu, Kauai)")  # info: self . _entry ( g , "weather_zone" ,
-        self._entry(g, "start_page", "Start page (energy, weather, system, npu, ai, poller, running, network, ssh, controls, migration, settings)")  # info: self . _entry ( g , "start_page" ,
+        self._entry(g, "start_page", "Start page (energy, weather, system, npu, ai, poller, automations, telemetry, running, network, ssh, aws, cameras, controls, migration, settings)")
         self._entry(g, "gsk_renderer", "GTK renderer (cairo = lightest; applies on next start)")  # info: self . _entry ( g , "gsk_renderer" ,
         self._switch(g, "starlink_enabled", "Starlink status on the Network page", "helper runs only while that page is visible",  # info: self . _switch ( g , "starlink_enabled" ,
                      "Starlink")  # info: "Starlink" )
         self._spin(g, "starlink_poll_sec", "Starlink poll interval (s, minimum 10)", 10, 300)  # info: self . _spin ( g , "starlink_poll_sec" ,
         self._entry(g, "ssh_mainland_alias", "Mainland SSH Host alias (empty = placeholder)")  # info: self . _entry ( g , "ssh_mainland_alias" ,
+        self._entry(g, "aws_fallback_mode", "AWS Fallback mode (dry-run = confirm only; write = SSH flag after confirm)")
+        self._entry(g, "aws_fallback_alias", "AWS Fallback SSH Host alias (default rr-aws-ip)")
         page.add(g)  # info: page . add ( g )
         g = Adw.PreferencesGroup(title="Paths (read-only sources)")  # info: set g
         self._entry(g, "database_root", "Database root")  # info: self . _entry ( g , "database_root" ,
@@ -1008,13 +1053,40 @@ class Panel(ExtraPages, AwsFallbackPage, AutomationsPage, TelemetryPage):  # inf
         e = src.energy(self.paths)  # info: set e
         st, n = src.poller_quick(self.argvs())  # info: st , n = src . poller_quick (
         col = {"PASS": "#859900", "WARN": "#b58900"}.get(st, "#dc322f")
-        f = lambda v: f"{v:.0f}%" if isinstance(v, (int, float)) else "n/a"  # noqa: E731
+        stale_after = int(self.s.get("stale_after_sec") or 900)
+
+        def soc_hdr(label, d):
+            soc = d.get("soc") if isinstance(d, dict) else d
+            age = d.get("age") if isinstance(d, dict) else None
+            if not isinstance(soc, (int, float)):
+                return f"{label} n/a"
+            flag = ""
+            fg = None
+            if soc <= 10:
+                flag = " CRITICAL"
+                fg = "#dc322f"
+            elif soc <= 20:
+                flag = " LOW"
+                fg = "#b58900"
+            if age is not None and age > stale_after:
+                flag += " STALE"
+                fg = fg or "#b58900"
+            body = f"{label} {soc:.0f}%{flag}"
+            if fg:
+                return f"<span foreground='{fg}'><b>{esc(body)}</b></span>"
+            return esc(body)
+
         lap = e["laptop"]  # info: set lap
         la = self.logd().get("log_age")  # info: set la
-        self.header.set_markup(  # info: self . header . set_markup (
-            f"<b>Root Monitor · Pacific Solar Server</b>   poller <span foreground='{col}'><b>● {st}</b></span> ({n} proc)"  # info: f" <b>Root Monitor · Pacific Solar Server</b> poller <span foreground=' { col } '><b>● { st
-            f"   B1 {f(e['river2pro']['soc'])} · B2 {f(e['delta2']['soc'])} · B3 laptop {f(lap[0]) if lap else 'n/a'}"  # info: f" B1 { f ( e [ 'river2pro'
-            f"   log {int(la) if la is not None else '—'}s   <span alpha='70%'>{esc(now_hst())}</span>")  # info: f" log { int ( la ) if
+        b3 = f"B3 laptop {lap[0]:.0f}%" if lap and isinstance(lap[0], (int, float)) else "B3 laptop n/a"
+        if lap and isinstance(lap[0], (int, float)) and lap[0] <= 20 and not lap[2]:
+            b3 = f"<span foreground='#b58900'><b>{esc(f'B3 laptop {lap[0]:.0f}% LOW')}</b></span>"
+        else:
+            b3 = esc(b3)
+        self.header.set_markup(
+            f"<b>Root Monitor · Pacific Solar Server</b>   poller <span foreground='{col}'><b>● {st}</b></span> ({n} proc)"
+            f"   {soc_hdr('B1', e['river2pro'])} · {soc_hdr('B2', e['delta2'])} · {b3}"
+            f"   log {int(la) if la is not None else '—'}s   <span alpha='70%'>{esc(now_hst())}</span>")
 
     def refresh_visible(self):  # info: def refresh_visible
         name = self.stack.get_visible_child_name()  # info: set name

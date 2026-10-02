@@ -1,6 +1,6 @@
 {
-  "_info": "Root Monitor 'Not migrated' placeholders. Refreshed 2026-09-30 19:02 HST from the live desk. Removed this pass: FLM / NPU own-session fix (PASS 2026-09-29 22:16 HST, setsid, exit 0, no flm left) and Geology collect (poller job geology_collect cycling, last ok 19:01 HST). Closed work orders stay in Work-Orders/Complete/. The panel only displays this file.",
-  "as_of": "2026-09-30 19:02 HST",
+  "_info": "Root Monitor 'Not migrated' placeholders. Refreshed 2026-10-02 ~00:20 HST from the live desk. Prior closed (removed): FLM / NPU own-session fix (PASS 2026-09-29 22:16 HST) and Geology collect. Closed work orders stay in Work-Orders/Complete/. The panel only displays this file. States are not closed in this pass without Alexander sign-off; notes updated where Automations/docs already cover part of an item.",
+  "as_of": "2026-10-02 00:20 HST",
   "items": [
     {
       "id": "telegram-replies",
@@ -42,7 +42,7 @@
       "name": "Security timelapse compile",
       "wo": "WO-SRV · WO-AEYES-2026-09-27",
       "state": "VERIFY PENDING",
-      "note": "Daylight compiles ran today: hour_12.mp4 through hour_18.mp4 in Database Media/Timelapses/video_chunks (hour 18 at 19:01 HST). Capture interval is still 1 second. The 5-second proposal was not applied.",
+      "note": "VERIFY PENDING unchanged. Daylight compiles were producing hour_*.mp4 under Database Media/Timelapses/video_chunks as of 2026-09-30. Capture interval is still 1 second; the 5-second proposal was not applied. Re-verify on a daylight day before closing.",
       "settings": "cameras",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-Development/Work-Orders/A-EYES_Work_Order_WO-AEYES-2026-09-27.md",
@@ -51,10 +51,10 @@
     },
     {
       "id": "energy-actions",
-      "name": "Energy actuating actions (arm/disarm, AC)",
+      "name": "Energy actuating actions (arm/disarm immediate; AC schedules landed)",
       "wo": "WO-ECO-001",
       "state": "VERIFY PENDING",
-      "note": "Scheduled catalog actions (AC, DC, USB, charging, backup, bypass, X-Boost, AC always-on) are on the Automations page as of 1 October 2026. The poller runs the matching script when the clock is due. Each schedule needs a confirm. Immediate arm or disarm from Controls is still unwired.",
+      "note": "PARTIAL in Root Monitor: scheduled catalog actions (AC, DC, USB, charging, backup, bypass, X-Boost, AC always-on) are on the Automations page (1 October 2026). The poller runs the matching script when the clock is due; each schedule needs confirm. Immediate arm/disarm from Controls is still unwired. Keep VERIFY PENDING until Controls actuating lands or Alexander closes the WO.",
       "settings": "services",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-Development/Work-Orders/WO-ECO-001-Energy-Domain-Import.md"
@@ -131,7 +131,7 @@
       "name": "Residual jobs path rewire",
       "wo": "WO-SRV-001",
       "state": "BLOCKED",
-      "note": "Draft. jobs.py has no ~/.ollama/skills/ job path and the script paths in it exist. Not closed. Cutover stays on WO-SRV-2026-09-27.",
+      "note": "Draft WO still open. Re-checked 2026-10-02: Automations/scripts/jobs.py has no ~/.ollama/skills/ job path and listed script paths exist. Not closed — cutover stays on WO-SRV-2026-09-27 / Alexander.",
       "settings": "services",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-Development/Work-Orders/WO-SRV-001-Residual-Jobs-Path-Rewire.md"
