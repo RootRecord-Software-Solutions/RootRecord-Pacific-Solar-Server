@@ -859,6 +859,11 @@ class Panel(ExtraPages, AwsFallbackPage, AutomationsPage, TelemetryPage):  # inf
         self._entry(g, "ssh_mainland_alias", "Mainland SSH Host alias (empty = placeholder)")  # info: self . _entry ( g , "ssh_mainland_alias" ,
         self._entry(g, "aws_fallback_mode", "AWS Fallback mode (dry-run = confirm only; write = SSH flag after confirm)")
         self._entry(g, "aws_fallback_alias", "AWS Fallback SSH Host alias (default rr-aws-ip)")
+        self._entry(g, "data_poll_toggle_mode", "Data-poll toggle mode (dry-run = confirm only; write = save intent after confirm)")
+        self._entry(g, "data_poll_desired", "Data-poll desired (local = Pacific poll; ml2 = gate LOCAL_DATA_POLL_JOBS)")
+        self._switch(g, "data_poll_apply_dropin", "Data-poll write also updates systemd drop-in",
+                     "Off = intent/settings only (safe). On = write rr-data-poll.conf; still does not restart the poller.",
+                     "Apply drop-in")
         page.add(g)  # info: page . add ( g )
         g = Adw.PreferencesGroup(title="Paths (read-only sources)")  # info: set g
         self._entry(g, "database_root", "Database root")  # info: self . _entry ( g , "database_root" ,

@@ -119,17 +119,21 @@ def note(now_epoch: float | None = None, raw: str | None = None) -> dict:  # inf
             bucket.setdefault(mode, 0)  # info: bucket . setdefault
     prev = state.get("label")  # info: set prev
     since = float(state.get("since_epoch") or 0)  # info: set since
+    span = float(state.get("span_epoch") or since or 0)  # info: set span
     if prev in MODES and since and now_epoch > since:  # info: if a previous mode has an open interval
         elapsed = int(now_epoch - since)  # info: set elapsed
         seconds[prev] = int(seconds.get(prev) or 0) + elapsed  # info: add elapsed to the running total
         today[prev] = int(today.get(prev) or 0) + elapsed  # info: add elapsed to today
         if prev != label:  # info: if the mode changed
-            start = datetime.fromtimestamp(since, HST)  # info: set start
+            start = datetime.fromtimestamp(span or since, HST)  # info: set start
             with SEGMENTS.open("a", encoding="utf-8") as fh:  # info: with SEGMENTS . open
                 fh.write(json.dumps({  # info: fh . write
                     "mode": prev, "raw": state.get("raw"), "start": start.isoformat(timespec="seconds"),  # info: start of the closed segment
-                    "end": now.isoformat(timespec="seconds"), "seconds": elapsed,  # info: end of the closed segment
+                    "end": now.isoformat(timespec="seconds"), "seconds": int(now_epoch - (span or since)),  # info: whole stretch in that mode
                 }) + "\n")  # info: newline
+            span = now_epoch  # info: set span
+    elif not span:  # info: elif not span
+        span = now_epoch  # info: set span
     summary = {  # info: set summary
         "updated_at": now.isoformat(timespec="seconds"),  # info: "updated_at"
         "today": today_key,  # info: "today"
@@ -140,7 +144,7 @@ def note(now_epoch: float | None = None, raw: str | None = None) -> dict:  # inf
         "today_seconds": {mode: int(today.get(mode) or 0) for mode in MODES},  # info: "today_seconds"
     }  # info: }
     _save(DAILY, summary)  # info: call _save
-    _save(STATE, {"raw": raw, "label": label, "since": summary["since"], "since_epoch": now_epoch})  # info: call _save
+    _save(STATE, {"raw": raw, "label": label, "since": summary["since"], "since_epoch": now_epoch, "span_epoch": span or now_epoch})  # info: call _save
     return summary  # info: return summary
 
 

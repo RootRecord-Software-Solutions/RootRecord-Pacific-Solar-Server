@@ -665,6 +665,20 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
         "cwd": f"{PACIFIC}/Media/RadioRss",  # info: "cwd" : f" { PACIFIC } /Media/RadioRss " ,
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
+    {  # info: {
+        # Mainland site analytics mirror (2026-10-02). OFF unless RR_ANALYTICS_PULL=1 at poller start.
+        # Prefer Logs/Website/analytics/pull-from-api.sh; writes daily/YYYY-MM-DD.json. No send.
+        "id": "analytics_pull",  # info: "id" : "analytics_pull" ,
+        "enabled": os.environ.get("RR_ANALYTICS_PULL", "0") == "1",  # info: "enabled" : os . environ . get (
+        "description": "Mirror ML2 /api/analytics/daily -> Database Logs/Website/analytics/daily/. Gated off. No page JS. No send.",  # info: description
+        "interval_sec": 900,  # info: "interval_sec" : 900 ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Website/scripts/analytics_pull.py"',  # info: command
+        "timeout_sec": 40,  # info: "timeout_sec" : 40 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{PACIFIC}/Website",  # info: cwd
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
     # --- TEMPLATE (EVERY_SECONDS) — copy from the next line through the closing brace, paste ABOVE this template, remove the leading # ---
     # {
     #     "id": "example_every_seconds",
@@ -802,7 +816,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
     {  # info: {
         "id": "voice_bandwidth_desk",  # info: "id" : "voice_bandwidth_desk" ,
         "enabled": os.environ.get("RR_VOICE_BANDWIDTH", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "Carly bandwidth desk at :22 and :52 from host byte samples, before the radio snapshot. Voice note when RR_VOICE_DELIVER=1. Needs system_net_sample.",  # info: "description" : "Carly bandwidth desk at :22 and :52 from host byte samples, before the radio snapshot. Voice note when RR_VOICE_DELIVER=1. Needs system_net_sample." ,
+        "description": "Carly bandwidth desk at :22 and :52 from host byte samples plus Mainland Home/Radio analytics, before the radio snapshot. Voice note when RR_VOICE_DELIVER=1. Needs system_net_sample; analytics_pull optional.",  # info: bandwidth desk description
         "only_at_minutes": [22, 52],  # info: "only_at_minutes" : [ 22 , 52 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" bandwidth_desk',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" bandwidth_desk

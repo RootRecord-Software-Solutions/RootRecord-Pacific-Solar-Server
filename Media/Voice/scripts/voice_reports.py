@@ -31,7 +31,9 @@ kilauea_report = G1 hourly Kīlauea desk line (persona._kilauea_line) + the cach
 Geology/Volcanoes/{kilauea,mauna-loa}-last.json; job gated RR_VOICE_KILAUEA=1. G1 rr-kilauea Grok draft / Discord post NOT ported.
 solar_desk = combined energy + solar product (Bruce): EcoFlow packs, sun times, newest ch1 still, and this hour's
 camera look (refreshes via panel_look.observe when the hour has no reading). The separate energy_report voice job
-is retired; content lives here. security_desk / bandwidth_desk = G1 hourly desks (Carly) from host_desks.py.
+is retired; content lives here. security_desk / bandwidth_desk = G1 hourly desks (Carly) from host_desks.py;
+bandwidth_desk also folds Mainland site analytics (Home proxy + Radio listeners) from
+Database Logs/Website/analytics/daily (Website/scripts/analytics_pull.py / pull-from-api.sh).
 Gates: RR_VOICE_SOLAR / RR_VOICE_SECURITY / RR_VOICE_BANDWIDTH (jobs.py).
 official_weather = G1 official-weather-media spoken statement (Ava): HLS (Pacific Weather/scripts/official_statement.py ->
 Database Weather/Hawai'i/official/) or HWO / AFD (weather poller text products). boot_brief = G1 boot-prelims Boot Report
@@ -71,6 +73,7 @@ QUAKES = DB / "Geology" / "Earthquakes"  # info: set QUAKES
 QUAKE_STATE = REPORTS / "earthquake_report_seen.json"  # G1 earthquake-hourly.json seen_ids (new since last report)
 QUAKE_STALE_MIN = 20  # info: set QUAKE_STALE_MIN
 VOLCANOES = DB / "Geology" / "Volcanoes"  # info: set VOLCANOES
+ANALYTICS_DAILY = DB / "Logs" / "Website" / "analytics" / "daily"  # info: set ANALYTICS_DAILY
 HVO_STALE_MIN = 30  # info: set HVO_STALE_MIN
 _MAX_HI, _MAX_GLOBAL = 6, 8  # G1 spoken caps
 HURRICANES = WX / "hurricanes" / "tracking"  # <Storm>_<first-seen>/track.json (Pacific Weather/hurricanes/scripts/sources.py)
@@ -1010,6 +1013,105 @@ def b_kilauea_report(t: datetime):  # info: def b_kilauea_report
     return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
+
+# ====================================================
+# SECTION: function _analytics_pull_mod
+# What it does: Import Website/scripts/analytics_pull (desk mirror of ML2 daily analytics). Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _analytics_pull_mod():  # info: def _analytics_pull_mod
+    sys.path.insert(0, str(PACIFIC / "Website" / "scripts"))  # info: sys . path . insert ( 0 , Website/scripts )
+    import analytics_pull  # noqa: E402  (Pacific Website/scripts/analytics_pull.py)
+    return analytics_pull  # info: return analytics_pull
+
+
+# ====================================================
+# SECTION: function site_analytics_doc
+# What it does: Load today's Mainland analytics JSON from the desk bank (refresh when stale). Returns {} when missing.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def site_analytics_doc(t: datetime, *, refresh: bool = True) -> dict:  # info: def site_analytics_doc
+    """Load today's Mainland analytics JSON from the desk bank (refresh when stale). Returns {} when missing."""  # info: docstring
+    day = t.date().isoformat()  # info: set day
+    try:  # info: try :
+        mod = _analytics_pull_mod()  # info: set mod
+        doc = mod.load_daily(day, refresh=refresh)  # info: set doc
+    except Exception:  # info: except Exception :
+        path = ANALYTICS_DAILY / f"{day}.json"  # info: set path
+        doc = jload(path) or {}  # info: set doc
+    return doc if isinstance(doc, dict) else {}  # info: return doc if isinstance ( doc , dict ) else {}
+
+
+# ====================================================
+# SECTION: function site_traffic_md_lines
+# What it does: Markdown bullets for Home/Radio/API traffic from one analytics daily doc. Honest about partial Home.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def site_traffic_md_lines(doc: dict) -> list[str]:  # info: def site_traffic_md_lines
+    """Markdown bullets for Home/Radio/API traffic from one analytics daily doc. Honest about partial Home."""  # info: docstring
+    if not doc or not doc.get("ok"):  # info: if not doc or not doc . get ( "ok" ) :
+        return ["- Mainland site analytics: not on file"]  # info: return missing bullet
+    api = doc.get("api") if isinstance(doc.get("api"), dict) else {}  # info: set api
+    radio = doc.get("radio") if isinstance(doc.get("radio"), dict) else {}  # info: set radio
+    home = doc.get("home") if isinstance(doc.get("home"), dict) else {}  # info: set home
+    proxy = api.get("home_proxy") if isinstance(api.get("home_proxy"), dict) else {}  # info: set proxy
+    lines = [  # info: set lines
+        f"- Analytics day: {doc.get('day')} ({doc.get('timezone') or 'Pacific/Honolulu'}), schema {doc.get('schema')}",  # info: analytics day line
+        f"- API requests / unique visitors: {api.get('requests')} / {api.get('unique_visitors')} (bots {api.get('bots')})",  # info: api line
+        f"- Home proxy (telemetry Referer www only): {proxy.get('requests')} requests, {proxy.get('unique_visitors')} visitors — not full www pageviews",  # info: home proxy line
+        f"- Home pageviews: {home.get('pageviews')}",  # info: home pageviews line
+        f"- Radio listeners: max {radio.get('listeners_max')}, avg {radio.get('listeners_avg')}, ~{radio.get('listen_minutes_est')} listen-minutes est ({radio.get('samples')} samples)",  # info: radio line
+    ]  # info: ]
+    note = home.get("note") or proxy.get("note")  # info: set note
+    if note:  # info: if note :
+        lines.append(f"- Note: {note}")  # info: lines . append note
+    return lines  # info: return lines
+
+
+# ====================================================
+# SECTION: function site_traffic_spoken
+# What it does: Spoken measured Home/Radio/API lines for bandwidth/current desks. No invention when fields are null.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def site_traffic_spoken(doc: dict, t: datetime) -> list[str]:  # info: def site_traffic_spoken
+    """Spoken measured Home/Radio/API lines for bandwidth/current desks. No invention when fields are null."""  # info: docstring
+    if not doc or not doc.get("ok"):  # info: if not doc or not doc . get ( "ok" ) :
+        return ["Mainland site analytics are not on file yet."]  # info: return missing spoken
+    api = doc.get("api") if isinstance(doc.get("api"), dict) else {}  # info: set api
+    radio = doc.get("radio") if isinstance(doc.get("radio"), dict) else {}  # info: set radio
+    home = doc.get("home") if isinstance(doc.get("home"), dict) else {}  # info: set home
+    proxy = api.get("home_proxy") if isinstance(api.get("home_proxy"), dict) else {}  # info: set proxy
+    out = ["Site traffic for today."]  # info: set out
+    if api.get("requests") is not None:  # info: if api . get ( "requests" ) is not None :
+        out.append(f"API saw {api.get('requests')} requests from {api.get('unique_visitors')} unique visitors.")  # info: out . append api sentence
+        say_change(out, "analytics.api.requests", api.get("requests"), "API requests", t)  # info: say_change api requests
+        say_change(out, "analytics.api.unique_visitors", api.get("unique_visitors"), "API unique visitors", t)  # info: say_change api visitors
+    if proxy.get("requests") is not None:  # info: if proxy . get ( "requests" ) is not None :
+        out.append(  # info: out . append
+            f"Home proxy signal: {proxy.get('requests')} requests from {proxy.get('unique_visitors')} visitors. "  # info: home proxy counts
+            "That is partial Home coverage from telemetry pages only, not full www pageviews."  # info: honesty clause
+        )  # info: )
+        say_change(out, "analytics.home_proxy.requests", proxy.get("requests"), "Home proxy requests", t)  # info: say_change home proxy
+    elif home.get("pageviews") is None:  # info: elif home . get ( "pageviews" ) is None :
+        out.append("Full Home pageviews are not on this Mainland feed yet.")  # info: out . append missing home
+    if home.get("pageviews") is not None:  # info: if home . get ( "pageviews" ) is not None :
+        out.append(f"Home pageviews: {home.get('pageviews')}.")  # info: out . append home pageviews
+        say_change(out, "analytics.home.pageviews", home.get("pageviews"), "Home pageviews", t)  # info: say_change home pageviews
+    if radio.get("listeners_max") is not None or radio.get("listeners_avg") is not None:  # info: if radio listeners present
+        avg = radio.get("listeners_avg")  # info: set avg
+        avg_s = f"{avg:.1f}" if isinstance(avg, float) else str(avg)  # info: set avg_s
+        mins = radio.get("listen_minutes_est")  # info: set mins
+        mins_s = f"{mins:.0f}" if isinstance(mins, float) else str(mins)  # info: set mins_s
+        out.append(  # info: out . append
+            f"Radio listeners: max {radio.get('listeners_max')}, average {avg_s}, about {mins_s} listen minutes estimated."  # info: radio sentence
+        )  # info: )
+        say_change(out, "analytics.radio.listeners_max", radio.get("listeners_max"), "Radio listeners max", t)  # info: say_change radio max
+        say_change(out, "analytics.radio.listen_minutes_est", radio.get("listen_minutes_est"), "Radio listen minutes", t)  # info: say_change radio minutes
+    else:  # info: else :
+        out.append("Radio listener samples are not on file yet.")  # info: out . append missing radio
+    return out  # info: return out
+
+
 # ====================================================
 # SECTION: function _host_desks
 # What it does:  host desks.
@@ -1192,33 +1294,38 @@ def b_security_desk(t: datetime):  # info: def b_security_desk
 
 # ====================================================
 # SECTION: function b_bandwidth_desk
-# What it does: G1 host_metrics.bandwidth_spoken (records one sample, then last hour / 24 h deltas).
+# What it does: Host byte samples (last hour / 24 h) plus Mainland Home/Radio site analytics from the desk bank.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def b_bandwidth_desk(t: datetime):  # info: def b_bandwidth_desk
-    """G1 host_metrics.bandwidth_spoken (records one sample, then last hour / 24 h deltas)."""  # info: """G1 host_metrics.bandwidth_spoken (records one sample, then last hour / 24 h deltas)."""
+    """Host byte samples (last hour / 24 h) plus Mainland Home/Radio site analytics from the desk bank."""  # info: docstring
     hd = _host_desks()  # info: set hd
     net = hd.net_counters()  # info: set net
-    if net and not os.environ.get("RR_VOICE_BANDWIDTH_DRY"):  # info: if net and not os . environ .
+    if net and not os.environ.get("RR_VOICE_BANDWIDTH_DRY"):  # info: if net and not os . environ . get ( "RR_VOICE_BANDWIDTH_DRY" )
         hd.append_net_sample(net)  # info: hd . append_net_sample ( net )
-    hour, day = hd.net_usage_window(3600, now=net), hd.net_usage_window(86400, now=net)  # info: hour , day = hd . net_usage_window (
-    md = [f"# Bandwidth desk — {t.isoformat()}", "", f"- iface: {(net or {}).get('iface')} ({(net or {}).get('link')})",
-          f"- last hour: {hour}", f"- last 24 h: {day}", ""]  # info: f" - last hour: { hour } " , f"
-    if hour is None and day is None:  # info: if hour is None and day is None
-        md += ["_Not enough samples yet (needs samples covering 45 min; run `host_desks.py net-sample` every 5 min)._", ""]  # info: set md
-        return "\n".join(md), ["Bandwidth desk.", generated_at(t), "Bandwidth data is not on file yet."]  # info: return "\n" . join ( md ) , ["Bandwidth desk." , generated_at ( t ) , "Bandwidth data is not on file yet." ]
-    sb = hd.spoken_bytes  # info: set sb
+    hour, day = hd.net_usage_window(3600, now=net), hd.net_usage_window(86400, now=net)  # info: hour , day = hd . net_usage_window
+    site = site_analytics_doc(t, refresh=True)  # info: set site
+    md = [f"# Bandwidth desk — {t.isoformat()}", "", "## Host link", "",  # info: set md header
+          f"- iface: {(net or {}).get('iface')} ({(net or {}).get('link')})",  # info: iface line
+          f"- last hour: {hour}", f"- last 24 h: {day}", "", "## Site traffic (Mainland analytics)", ""]  # info: host + site headings
+    md += site_traffic_md_lines(site) + [""]  # info: md += site traffic bullets
     bits = ["Bandwidth desk.", generated_at(t), f"This host is on {(net or {}).get('link') or 'network'}."]  # info: set bits
-    bits.append(f"Last hour: {sb(hour['rx'])} down, {sb(hour['tx'])} up, {sb(hour['total'])} total." if hour else "Last hour is not on file yet.")  # info: bits . append ( f" Last hour: { sb
-    if hour:  # info: if hour
-        say_change(bits, "bandwidth.hour_total", hour["total"], "Last hour total", t)  # info: say_change hour total
-    bits.append(f"Last twenty four hours: {sb(day['rx'])} down, {sb(day['tx'])} up, {sb(day['total'])} total." if day  # info: bits . append ( f" Last twenty four hours: { sb
-                else "Last twenty four hours is not on file yet.")  # info: else "Last twenty four hours is not on file yet." )
-    if day:  # info: if day
-        say_change(bits, "bandwidth.day_total", day["total"], "Last twenty four hour total", t)  # info: say_change day total
-    md += ["## Spoken", "", " ".join(bits), ""]
-    return "\n".join(md), bits  # info: return "\n" . join ( md ) ,
-
+    if hour is None and day is None:  # info: if hour is None and day is None
+        md.append("_Not enough host samples yet (needs samples covering 45 min; run `host_desks.py net-sample` every 5 min)._")  # info: md . append host sample note
+        bits.append("Bandwidth data is not on file yet.")  # info: bits . append missing host bandwidth
+    else:  # info: else :
+        sb = hd.spoken_bytes  # info: set sb
+        bits.append(f"Last hour: {sb(hour['rx'])} down, {sb(hour['tx'])} up, {sb(hour['total'])} total." if hour else "Last hour is not on file yet.")  # info: bits . append hour
+        if hour:  # info: if hour
+            say_change(bits, "bandwidth.hour_total", hour["total"], "Last hour total", t)  # info: say_change hour total
+        bits.append(f"Last twenty four hours: {sb(day['rx'])} down, {sb(day['tx'])} up, {sb(day['total'])} total." if day  # info: bits . append day
+                    else "Last twenty four hours is not on file yet.")  # info: else day missing
+        if day:  # info: if day
+            say_change(bits, "bandwidth.day_total", day["total"], "Last twenty four hour total", t)  # info: say_change day total
+    bits += site_traffic_spoken(site, t)  # info: bits += site traffic spoken
+    md += ["## Spoken", "", " ".join(bits), "",  # info: md += spoken
+           "_Sources: Pacific System/scripts/host_desks.py (host iface bytes); Database Logs/Website/analytics/daily (ML2 API + radio samples via analytics_pull / pull-from-api.sh). Home pageviews stay null until edge analytics; home_proxy is telemetry Referer www only._", ""]  # info: source footer
+    return "\n".join(md), bits  # info: return join md bits
 
 # ====================================================
 # SECTION: function _say_code
@@ -1651,6 +1758,9 @@ def b_current_report(t: datetime):  # info: def b_current_report
     else:  # info: else :
         md.append("- Not enough samples yet")  # info: md . append ( "- Not enough samples yet" )
         sp.append("Bandwidth data is not on file yet.")  # info: sp . append ( "Bandwidth data is not on file yet." )
+    site = site_analytics_doc(t, refresh=True)  # info: set site
+    md += ["", "## Site traffic (Mainland analytics)", ""] + site_traffic_md_lines(site)  # info: md += site traffic section
+    sp += site_traffic_spoken(site, t)  # info: sp += site traffic spoken
     md += ["", "## Camera", ""]  # info: md += camera heading
     if still:  # info: if still :
         md.append(f"- Solar panel still age: {still['age_min']} min")  # info: md . append still age

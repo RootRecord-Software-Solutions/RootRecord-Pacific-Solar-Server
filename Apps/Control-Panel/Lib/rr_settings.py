@@ -9,6 +9,8 @@ INFO — MUST HAVE (future agents), added 2026-09-29:
   token/key/password query parameters. Never copy anything from Security/Cameras/store/CONNECTION.json.
 - Camera toggles only decide what the PANEL shows. They never change collectors, grab jobs or the poller.
 - risky_actions_enabled is False by default; turning it on is a sign-off item (see README).
+- data_poll_toggle_mode defaults to "dry-run"; data_poll_desired defaults to "local" (RR_LOCAL_DATA_POLL fail-safe).
+  data_poll_apply_dropin defaults False so write mode never touches the live poller env until signed.
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
@@ -66,6 +68,10 @@ DEFAULTS: dict = {  # info: set DEFAULTS
     # AWS Fallback page (2026-09-29): dry-run by default; "write" is a sign-off item.
     "aws_fallback_mode": "dry-run",  # info: "aws_fallback_mode" : "dry-run" ,
     "aws_fallback_alias": "rr-aws-ip",  # info: "aws_fallback_alias" : "rr-aws-ip" ,
+    # Data-poll toggle (2026-10-02): Local Pacific vs ML2. Dry-run by default; never auto-disables local.
+    "data_poll_toggle_mode": "dry-run",  # dry-run | write (Settings → Panel; write = sign-off)
+    "data_poll_desired": "local",  # local | ml2  (panel intent; maps to RR_LOCAL_DATA_POLL 1|0)
+    "data_poll_apply_dropin": False,  # False = intent/settings only; True = also write rr-data-poll.conf (still no restart)
 }  # info: }
 
 # Seeded 2026-09-29 by read-only discovery from poller-watch.py, rootserver_poller.py, cam_server.py,

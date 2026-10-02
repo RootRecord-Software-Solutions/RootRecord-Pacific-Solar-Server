@@ -1,0 +1,10 @@
+# Copy to data_poll_mode.yaml only if you prefer a file flag later.
+# Root Monitor (Automations → Data poll) can write Database System/control-panel/data_poll_mode.yaml
+# as panel intent; poller still honors env RR_LOCAL_DATA_POLL only (until a file reader is added).
+# Primary control is env RR_LOCAL_DATA_POLL on the poller process:
+#   1 / unset = Pacific runs internet data-poll jobs (default, fail-safe)
+#   0         = those jobs gated off; ML2 collectors + stream should be healthy
+#
+# This is a TOGGLE, not a removal. Home collectors stay in jobs.py.
+# If ML2/AWS is down: set RR_LOCAL_DATA_POLL=1 (or unset) and restart poller.
+mode: local  # local | remote  (documentation only until a file reader is added)

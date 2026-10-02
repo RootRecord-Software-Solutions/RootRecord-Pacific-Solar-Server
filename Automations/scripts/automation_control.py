@@ -189,12 +189,34 @@ def overrides_mtime() -> float:  # info: def overrides_mtime
 # What it does: Whether one poller job should run. A boolean override wins over the jobs.py flag.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
+# Jobs gated when RR_LOCAL_DATA_POLL=0 (ML2 owns internet data fetches).
+# TOGGLE only — do not delete these jobs. Flip env back to 1 (or unset) to restore local polling immediately if ML2 is down.
+LOCAL_DATA_POLL_JOBS = frozenset({
+    "geology_collect",
+    "geology_kilauea_cams",
+    "weather_poller",
+    "weather_us_states",
+    "weather_radar_zip",
+    "weather_retention",
+    "country_location_pollers",
+    "radio_rss_poll",
+})
+
+
+def local_data_poll_enabled() -> bool:
+    """True when Pacific should run internet data-poll jobs (default). False = ML2 offload."""
+    v = (os.environ.get("RR_LOCAL_DATA_POLL") or "1").strip().lower()
+    return v not in ("0", "false", "off", "no")
+
+
 def job_enabled(job: dict, overrides: dict | None = None) -> bool:  # info: def job_enabled
     jid = str(job.get("id") or "")  # info: set jid
     doc = load_overrides() if overrides is None else overrides  # info: set doc
     flags = doc.get("jobs") if isinstance(doc, dict) else None  # info: set flags
     if isinstance(flags, dict) and isinstance(flags.get(jid), bool):  # info: if isinstance ( flags , dict ) and
         return bool(flags[jid])  # info: return bool
+    if jid in LOCAL_DATA_POLL_JOBS and not local_data_poll_enabled():
+        return False
     return bool(job.get("enabled"))  # info: return bool ( job . get ( "enabled" ) )
 
 

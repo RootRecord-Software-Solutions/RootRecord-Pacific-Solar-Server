@@ -19,7 +19,7 @@ Desk runtime for Stripe snapshots, Vercel failed-build records, and last-known o
 | Item | State |
 | --- | --- |
 | Folder | **`Website/`** on Pacific. No lowercase twin and no symlink |
-| Scripts | `scripts/stripe_poll.py`, `scripts/vercel_builds.py`, `scripts/live_data_pages.py` — landed. No-key run PASS |
+| Scripts | `scripts/stripe_poll.py`, `analytics_pull.py`, `scripts/vercel_builds.py`, `scripts/live_data_pages.py` — landed. No-key run PASS |
 | Keys | `lib/envload.py` reads `/home/rootrecord/master/master-key.env` only. Names: `STRIPE_SECRET_KEY`, `AVA_STRIPE_SECRET_KEY`, `VERCEL_TOKEN`, `VERCEL_API_TOKEN`, `VERCEL_TEAM_ID`, `VERCEL_ORG_ID`. None of those names are in the file today. Values are never printed |
 | `jobs.py` | `stripe_poll` every 1800 s behind `RR_STRIPE=1`. `vercel_builds` every 300 s behind `RR_VERCEL_BUILDS=1`. Both **gated off** |
 | Data | `2 - RootRecord-Database/Website/` — `stripe-snapshot.json`, `pages/{power,weather,kilauea}.json` |
@@ -51,3 +51,7 @@ Live Energy BLE, the poller, Hawaiʻi weather, the globe, cameras, Kokoro, and `
 ```text
 /home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Website/
 ```
+
+## Analytics (desk mirror)
+
+`scripts/analytics_pull.py` mirrors ML2 `GET /api/analytics/daily` into Database `Logs/Website/analytics/daily/` (and `analytics-last.json`). Gate: job `analytics_pull` / `RR_ANALYTICS_PULL=1`. Voice `bandwidth_desk` and `current_report` consume that bank (partial Home via `home_proxy`; full www pageviews stay null until edge analytics).
