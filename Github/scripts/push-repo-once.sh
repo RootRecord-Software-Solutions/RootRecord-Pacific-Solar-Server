@@ -156,7 +156,9 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do  # info:
   mirror_writeback() {  # info: mirror_writeback
     [[ "$mode" == "mirror" ]] || return 0  # info: command
     rsync -a --exclude '.git' "$root"/ "$local_path"/  # info: rsync
-    echo "↓ [$id] merged GitHub copy written back to the live folder"  # info: echo
+    # Same direction for every mirror id after a GitHub merge: worktree → live.
+    # Mainland also refreshes Servers from the worktree at sync start (above).
+    echo "↓ [$id] worktree/GitHub copy written back to the live folder"  # info: echo
   }  # info: command
 
   if [[ "$mode" == "inplace" ]]; then  # info: if
@@ -167,13 +169,28 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do  # info:
       bash "$GITHUB_SCRIPTS/setup-remote.sh" "$id" || exit 1  # info: bash
     fi  # info: fi
     [[ -d "$root/.git" ]] || { echo "ERROR: mirror worktree missing for $id" >&2; exit 1; }  # info: command
-    rsync -a --delete \
-      --exclude '.git' \
-      --exclude '.venv' \
-      --exclude 'node_modules' \
-      --exclude '.next' \
-      --exclude 'tsconfig.tsbuildinfo' \
-      "$local_path"/ "$root"/  # info: command
+    # Mainland: Github-worktrees/mainland is canonical git truth. Servers umbrella
+    # is a read-through mirror only. Never rsync Servers → worktree (that path
+    # restored stale DUCK 0.25 over a good worktree 0.1 as auto desk sync).
+    # Pacific/database/library/website keep live-folder → worktree (edit live).
+    if [[ "$id" == "mainland" ]]; then  # info: if
+      rsync -a --delete \
+        --exclude '.git' \
+        --exclude '.venv' \
+        --exclude 'node_modules' \
+        --exclude '.next' \
+        --exclude 'tsconfig.tsbuildinfo' \
+        "$root"/ "$local_path"/  # info: command
+      echo "↑ [$id] worktree canonical → umbrella Servers mirror refreshed"  # info: echo
+    else  # info: else
+      rsync -a --delete \
+        --exclude '.git' \
+        --exclude '.venv' \
+        --exclude 'node_modules' \
+        --exclude '.next' \
+        --exclude 'tsconfig.tsbuildinfo' \
+        "$local_path"/ "$root"/  # info: command
+    fi  # info: fi
   fi  # info: fi
 
   [[ -d "$root/.git" ]] || { echo "ERROR: not a git repo: $root" >&2; exit 1; }  # info: command
