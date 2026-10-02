@@ -407,12 +407,66 @@ def retire_report_sidecars(report: str) -> None:  # info: def retire_report_side
         side.replace(dest)  # info: side . replace ( dest )
 
 
+DAYPARTS = ("morning_report", "midday_report", "late_report")  # info: set DAYPARTS
+
+
+# ====================================================
+# SECTION: function daypart_open
+# What it does: True when this rollup is the current Pacific/Honolulu daypart.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def daypart_open(report: str) -> bool:  # info: def daypart_open
+    if report not in DAYPARTS:  # info: if report not in DAYPARTS
+        return True  # info: return True
+    from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
+    clock = datetime.now(ZoneInfo("Pacific/Honolulu"))  # info: set clock
+    minute = clock.hour * 60 + clock.minute  # info: set minute
+    if report == "morning_report":  # info: if report == "morning_report"
+        return 9 * 60 <= minute < 12 * 60  # info: return 9 * 60 <= minute < 12 * 60
+    if report == "midday_report":  # info: if report == "midday_report"
+        return 12 * 60 <= minute < 21 * 60  # info: return 12 * 60 <= minute < 21 * 60
+    return minute >= 21 * 60 or minute < 9 * 60  # info: return minute >= 21 * 60 or minute < 9 * 60
+
+
+# ====================================================
+# SECTION: function daypart_blocked
+# What it does: A daypart outside its Hawaii window must not be written as _current.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def daypart_blocked(report: str, out: Path | None) -> bool:  # info: def daypart_blocked
+    dest = out or (OUT_DIR / f"{report}_current.wav")  # info: set dest
+    if report not in DAYPARTS or dest.name != f"{report}_current.wav":  # info: if report not in DAYPARTS or dest . name != current wav
+        return False  # info: return False
+    return not daypart_open(report)  # info: return not daypart_open ( report )
+
+
+# ====================================================
+# SECTION: function keep_only_this_daypart
+# What it does: After one daypart _current is saved, remove the other two audio copies beside it.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def keep_only_this_daypart(dest: Path, report: str) -> None:  # info: def keep_only_this_daypart
+    if report not in DAYPARTS or dest.name != f"{report}_current.wav":  # info: if report not in DAYPARTS or dest name is not the current wav
+        return  # info: return
+    for other in DAYPARTS:  # info: for other in DAYPARTS
+        if other == report:  # info: if other == report
+            continue  # info: continue
+        for ext in (".wav", ".opus", ".ogg"):  # info: for ext in ( ".wav" , ".opus" , ".ogg" )
+            path = dest.parent / f"{other}_current{ext}"  # info: set path
+            try:  # info: try
+                path.unlink()  # info: path . unlink ( )
+            except FileNotFoundError:  # info: except FileNotFoundError
+                continue  # info: continue
+
+
 # ====================================================
 # SECTION: function publish
 # What it does: publish.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def publish(report: str, w, read: str, speak: str, out: Path | None) -> Path:  # info: def publish
+def publish(report: str, w, read: str, speak: str, out: Path | None) -> Path | None:  # info: def publish
+    if daypart_blocked(report, out):  # info: if daypart_blocked ( report , out )
+        return None  # info: return None
     dest = out or (OUT_DIR / f"{report}_current.wav")  # info: set dest
     tmp = dest.with_name("." + dest.stem + ".new.wav")  # info: set tmp
     write_wav(tmp, w)                          # render fully first ...
@@ -420,6 +474,7 @@ def publish(report: str, w, read: str, speak: str, out: Path | None) -> Path:  #
         speakers.retire_current(dest)          # ... then retire the old _current (G1 pattern) ...
     retire_report_sidecars(report)  # info: call retire_report_sidecars
     os.replace(tmp, dest)                      # ... and move the new one into place
+    keep_only_this_daypart(dest, report)  # info: call keep_only_this_daypart
     REPORT_OUT_DIR.mkdir(parents=True, exist_ok=True)  # info: REPORT_OUT_DIR . mkdir ( parents = True ,
     (REPORT_OUT_DIR / f"{report}_current.read.txt").write_text(read.strip() + "\n", encoding="utf-8")  # info: call (
     (REPORT_OUT_DIR / f"{report}_current.speak.txt").write_text(speak.strip() + "\n", encoding="utf-8")  # info: call (
@@ -432,6 +487,8 @@ def publish(report: str, w, read: str, speak: str, out: Path | None) -> Path:  #
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def mode_render(a) -> dict:  # info: def mode_render
+    if daypart_blocked(a.report, Path(a.out) if a.out else None):  # info: if daypart_blocked ( a . report , a . out )
+        return {"ok": False, "skipped": True, "detail": "outside_daypart", "report": a.report}  # info: return { "ok" : False , "skipped" : True , "detail" : "outside_daypart" }
     import numpy as np  # info: import numpy as np
     text = speakers.without_name(a.text)  # info: set text
     if not a.no_gate and not speakers.is_live(a.kind, text):  # info: if not a . no_gate and not speakers
@@ -444,6 +501,8 @@ def mode_render(a) -> dict:  # info: def mode_render
     if w is None:  # info: if w is None :
         return {"ok": False, "detail": "no_audio"}  # info: return { "ok" : False , "detail" :
     dest = publish(a.report, np.asarray(w, dtype=np.float32), text, spoken, Path(a.out) if a.out else None)  # info: set dest
+    if dest is None:  # info: if dest is None
+        return {"ok": False, "skipped": True, "detail": "outside_daypart", "report": a.report}  # info: return { "ok" : False , "skipped" : True , "detail" : "outside_daypart" }
     return {"ok": True, "mode": "render", "report": a.report, "agent": speakers.agent_for(a.kind), "voice": voice,  # info: return { "ok" : True , "mode" :
             "speed": rate, "wav": str(dest), "render_s": round(time.monotonic() - t0, 2), **qc(dest)}  # info: "speed" : rate , "wav" : str (
 
@@ -454,6 +513,8 @@ def mode_render(a) -> dict:  # info: def mode_render
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def mode_stitch(a) -> dict:  # info: def mode_stitch
+    if daypart_blocked(a.report, Path(a.out) if a.out else None):  # info: if daypart_blocked ( a . report , a . out )
+        return {"ok": False, "skipped": True, "detail": "outside_daypart", "report": a.report}  # info: return { "ok" : False , "skipped" : True , "detail" : "outside_daypart" }
     import numpy as np  # info: import numpy as np
     import soundfile as sf  # info: import soundfile as sf
     text = speakers.without_name(a.text)  # info: set text
@@ -488,6 +549,8 @@ def mode_stitch(a) -> dict:  # info: def mode_stitch
         joined += ([gap] if i else []) + [w]  # info: set joined
     joined.append(gap[: len(gap) // 2])  # info: joined . append ( gap [ : len
     dest = publish(a.report, np.concatenate(joined), text, " ".join(spoken_all), Path(a.out) if a.out else None)  # info: set dest
+    if dest is None:  # info: if dest is None
+        return {"ok": False, "skipped": True, "detail": "outside_daypart", "report": a.report}  # info: return { "ok" : False , "skipped" : True , "detail" : "outside_daypart" }
     return {"ok": True, "mode": "stitch", "report": a.report, "agent": agent, "voice": voice, "speed": rate,  # info: return { "ok" : True , "mode" :
             "wav": str(dest), "clips_used": sum(1 for p in plan if "clip" in p),  # info: "wav" : str ( dest ) , "clips_used"
             "live_sentences": sum(1 for p in plan if "live" in p), "model_loaded": _PIPELINE is not None,  # info: "live_sentences" : sum ( 1 for p in

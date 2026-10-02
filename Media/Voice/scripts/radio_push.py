@@ -19,7 +19,9 @@ import subprocess
 import sys
 import tempfile
 import time
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))
 VOICE = DB / "Media" / "Audio" / "Voice"
@@ -42,6 +44,43 @@ MUSIC = Path(os.environ.get(
 ))
 REPORT_NAME = re.compile(r"^[a-z0-9_]+$")
 SSH = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20"]
+# Pacific/Honolulu. End is exclusive. Late wraps past midnight until 09:00.
+DAYPARTS = ("morning_report", "midday_report", "late_report")
+
+
+def hawaii_now() -> datetime:
+    return datetime.now(ZoneInfo("Pacific/Honolulu"))
+
+
+def daypart_open(report: str, when: datetime | None = None) -> bool:
+    """True when this id is the one rollup the Hawaii clock may keep."""
+    if report not in DAYPARTS:
+        return True
+    clock = when.astimezone(ZoneInfo("Pacific/Honolulu")) if when is not None else hawaii_now()
+    minute = clock.hour * 60 + clock.minute
+    if report == "morning_report":
+        return 9 * 60 <= minute < 12 * 60
+    if report == "midday_report":
+        return 12 * 60 <= minute < 21 * 60
+    return minute >= 21 * 60 or minute < 9 * 60
+
+
+def clear_remote_dayparts(keep: str) -> bool:
+    """Remove the other two daypart opus and ogg files. Leave every other report."""
+    remote_dir = REPORTS_REMOTE.rstrip("/")
+    stale: list[str] = []
+    for other in DAYPARTS:
+        if other == keep:
+            continue
+        stale.append(remote_dir + "/" + other + "_current.opus")
+        stale.append(remote_dir + "/" + other + "_current.ogg")
+    cleared = subprocess.run(
+        SSH + [HOST, "rm -f -- " + " ".join(shlex.quote(name) for name in stale)],
+        capture_output=True,
+        text=True,
+        timeout=40,
+    )
+    return cleared.returncode == 0
 
 
 PARTIAL_AGE = 15 * 60
@@ -124,6 +163,8 @@ def prune_reports() -> bool:
 def push_report(report: str) -> dict:
     if not REPORT_NAME.fullmatch(report):
         return {"ok": False, "detail": "bad_report"}
+    if report in DAYPARTS and not daypart_open(report):
+        return {"ok": False, "skipped": True, "detail": "outside_daypart", "report": report}
     wav = VOICE / f"{report}_current.wav"
     if not wav.is_file():
         return {"ok": False, "detail": "no_wav", "report": report}
@@ -193,6 +234,8 @@ def push_report(report: str) -> dict:
         )
         if moved.returncode != 0:
             return {"ok": False, "detail": "replace_failed", "report": report}
+        if report in DAYPARTS and not clear_remote_dayparts(report):
+            return {"ok": False, "detail": "daypart_clear_failed", "report": report, "file": final_name}
         if not prune_reports():
             return {"ok": False, "detail": "prune_failed", "report": report, "file": final_name}
         return {"ok": True, "report": report, "file": final_name, "bytes": tmp.stat().st_size}
