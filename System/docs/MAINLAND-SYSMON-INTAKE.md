@@ -26,6 +26,11 @@ Staged 2026-10-02. Receiver and pickup units are **not installed** by this work.
 
 Unchanged. Pacific-only Energy collectors. Receiver **denies** `Energy/` and EcoFlow path segments.
 
+
+## Verification note — 2026-10-02 ~01:30 HST
+
+The operator scaffold is present in Pacific commit `a422105`; the receiver and pickup units remain not installed. Mainland source commits are ML1 `16645da` and ML2 `7065795`, both with `config/sysmon-stream.yaml` set to `enabled: false`; Database layout is staged in `65dea848`. This page remains the operator detail for the primary SSH bank, acknowledgement purge, Telegram datapack fallback, and pickup drain.
+
 ## Enable later (sign-off)
 
 1. Deploy `rr_db_stream_receive.py` forced-command for stream keys
