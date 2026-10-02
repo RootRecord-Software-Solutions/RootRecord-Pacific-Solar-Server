@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Pacific Telegram datapack pickup — drain free buffer into Database when home is online.
+"""Solar catch-up: drain Telegram offline datapacks into Database.
 
-Uses the dedicated datapack bot token (NOT Ava council-relay). Own getUpdates owner.
-Writes zip contents into allowlisted Database paths from envelope path_rel.
-Moves processed evidence under Network/datapacks/processed/ (optional keep of zip).
-Staged only; timer not installed by this scaffold.
+When ML2 could not SSH-stream (Pacific down / tunnel fail), Mainland sent
+zips to the datapack Telegram chat. This script is the receive side on the
+solar desk: poll that chat, unpack allowlisted path_rel into RR_DATABASE_ROOT,
+and keep evidence under Network/datapacks/processed/.
+
+Run on a timer and once at boot so a cold solar start still catches up.
+Dedicated datapack bot (NOT Ava council-relay). Own getUpdates owner.
 """
 from __future__ import annotations
 
@@ -19,6 +22,7 @@ import urllib.request
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 DB = Path(
     os.environ.get(
@@ -46,13 +50,20 @@ STATE = Path(
 )
 OFFSET_FILE = STATE / "telegram-offset.json"
 
+HST = ZoneInfo("Pacific/Honolulu")
+
+# Must stay aligned with ML2 stream/protocol.py ALLOWED_PATH_PREFIXES —
+# Telegram is the offline twin of the SSH bank stream.
 ALLOWED = (
-    "System/metrics/ml1/",
-    "System/metrics/ml2/",
-    "Logs/ML1/",
-    "Logs/ML2/",
-    "Intake/ml1/",
+    "Geology/",
+    "Weather/",
+    "Media/RadioRss/",
     "Intake/ml2/",
+    "Intake/ml1/",
+    "Logs/ML2/",
+    "Logs/ML1/",
+    "System/metrics/ml2/",
+    "System/metrics/ml1/",
 )
 
 
@@ -105,6 +116,37 @@ def allowed(path_rel: str) -> bool:
     return any(path_rel.startswith(p) for p in ALLOWED)
 
 
+
+def is_current_product(path_rel: str, dest: Path | None = None) -> bool:
+    """True when the bank filename contains _current (stable live path)."""
+    name = (dest.name if dest is not None else Path(path_rel).name)
+    return "_current" in name
+
+
+def archive_before_replace(dest: Path, path_rel: str = "") -> str | None:
+    """If dest exists and basename contains _current, rename into sibling archive/.
+
+    Keeps the stable *_current path for LLM/desk readers; archives are historical
+    only under archive/YYYYMMDD/<stem>_<HHMMSS><suffix> (HST). Non-_current files
+    are never archived on replace.
+    """
+    if not dest.is_file():
+        return None
+    if not is_current_product(path_rel or dest.name, dest):
+        return None
+    now = datetime.now(HST).replace(microsecond=0)
+    archive_dir = dest.parent / "archive" / now.strftime("%Y%m%d")
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    archived = archive_dir / f"{dest.stem}_{now.strftime('%H%M%S')}{dest.suffix}"
+    if archived.exists():
+        archived = (
+            archive_dir
+            / f"{dest.stem}_{now.strftime('%H%M%S')}_{os.getpid()}{dest.suffix}"
+        )
+    os.rename(dest, archived)
+    return str(archived)
+
+
 def atomic_write(dest: Path, data: bytes) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=dest.parent, prefix=".dp-")
@@ -143,7 +185,10 @@ def apply_zip(zpath: Path) -> int:
                 continue
             raw = zf.read(body_name)
             dest = DB / path_rel
+            archived = archive_before_replace(dest, path_rel)
             atomic_write(dest, raw)
+            if archived:
+                print(f"archived prior _current -> {archived}")
             # daily append for host-last
             if path_rel.endswith("host-last.json") and path_rel.startswith("System/metrics/"):
                 day = datetime.now(timezone.utc).strftime("%Y-%m-%d")

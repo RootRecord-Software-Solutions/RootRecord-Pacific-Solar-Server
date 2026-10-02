@@ -14,9 +14,10 @@
   python3 kilauea_look.py --force    look again even if this slot already has a reading
   python3 kilauea_look.py --ensure-ref  download the USGS fountain reference if missing
 
-Prefers Database Geology/Volcanoes/Cams/{v1,v2,v3}cam-last.jpg from geology_kilauea_cams.
-When the preferred still is older than RR_KILAUEA_LOOK_STALE_MIN (default 12), fetches one
-live USGS HVO still (V3 lava lake first). Writes Geology/Volcanoes/Cams/kilauea-look-last.json.
+Prefers Cams `*_current` (ML2 bank) → `*-last.jpg` → live USGS GET.
+Current images are used when they are no older than RR_KILAUEA_LOOK_STALE_MIN (default 12);
+otherwise one live USGS HVO still is fetched (V3 lava lake first). Writes
+Geology/Volcanoes/Cams/kilauea-look-last.json.
 Optional public-domain USGS fountain reference under Cams/references/ for compare.
 Report-side only — not a LOCAL_DATA_POLL collector. Soft-gated via voice_kilauea_image_check.
 """
@@ -163,10 +164,19 @@ def fetch_still(file_stem: str, url: str) -> Path | None:  # info: def fetch_sti
     dest = CAMS / f"{file_stem}-last.jpg"  # info: set dest
     hdr = {"User-Agent": UA, "Accept": "image/jpeg,image/*;q=0.8"}  # info: set hdr
     prev = {}  # info: set prev
-    for cam in (jload(CAMS / "cams-last.json").get("cams") or []):  # info: for cam
-        if isinstance(cam, dict) and str(cam.get("still") or "") == url:  # info: if match
-            prev = cam.get("still_status") if isinstance(cam.get("still_status"), dict) else {}  # info: set prev
-            break  # info: break
+    for catalog_name in ("cams_current.json", "cams-last.json"):  # info: prefer ML2 catalog
+        for cam in (jload(CAMS / catalog_name).get("cams") or []):  # info: for cam
+            if not isinstance(cam, dict):  # info: skip bad
+                continue  # info: continue
+            still_url = str(cam.get("still") or cam.get("source_url") or "")  # info: still url
+            if still_url != url:  # info: if no match
+                continue  # info: continue
+            prev = cam.get("still_status") if isinstance(cam.get("still_status"), dict) else {}  # info: nested
+            if not prev:  # info: flat cite fields from cams_current
+                prev = {k: cam.get(k) for k in ("etag", "last_modified", "sha256", "fetched_at") if cam.get(k)}  # info: flat
+            break  # info: break inner
+        if prev:  # info: if found
+            break  # info: break outer
     if dest.is_file():  # info: if dest exists
         if prev.get("etag"):  # info: if etag
             hdr["If-None-Match"] = str(prev["etag"])  # info: set if-none-match
@@ -194,32 +204,66 @@ def fetch_still(file_stem: str, url: str) -> Path | None:  # info: def fetch_sti
 
 # ====================================================
 # SECTION: function pick_still
-# What it does: Prefer a fresh local Cams still; otherwise pull one live USGS frame.
+# What it does: Prefer a fresh ML2-banked current still, then a fresh -last still, then live USGS.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def pick_still(t: datetime, force_fetch: bool = False) -> tuple[Path | None, str, str, bool]:  # info: def pick_still
-    """Return path, cam file stem, title, and whether a live fetch ran."""  # info: docstring
-    best: Path | None = None  # info: set best
-    best_meta = ("", "")  # info: set best_meta
-    best_age = None  # info: set best_age
-    for stem, title, _url in CAM_STILLS:  # info: for cam
-        path = CAMS / f"{stem}-last.jpg"  # info: set path
-        if not path.is_file():  # info: if missing
+def pick_still(t: datetime, force_fetch: bool = False) -> tuple[Path | None, str, str, bool, str]:  # info: def pick_still
+    """Return path, cam stem, title, live-fetch flag, and source kind."""  # info: docstring
+    stem_order = {stem: index for index, (stem, _title, _url) in enumerate(CAM_STILLS)}  # info: set stem order
+    titles = {stem: title for stem, title, _url in CAM_STILLS}  # info: set titles
+    current_candidates = []  # info: set current candidates
+    try:  # info: try current scan
+        cam_files = list(CAMS.iterdir())  # info: list CAMS files
+    except OSError:  # info: except current scan
+        cam_files = []  # info: set empty CAMS files
+    for path in cam_files:  # info: for CAMS file
+        name = path.name.lower()  # info: set lowercase name
+        if not path.is_file() or path.suffix.lower() != ".jpg" or not (name.endswith("_current.jpg") or name.endswith("-current.jpg")):  # info: if not current jpg
             continue  # info: continue
-        age = max(0.0, (t.timestamp() - path.stat().st_mtime) / 60.0)  # info: set age
-        if best is None or age < (best_age if best_age is not None else 1e9):  # info: if better
-            best, best_meta, best_age = path, (stem, title), age  # info: set best
-    if best is not None and best_age is not None and best_age <= STALE_MIN and not force_fetch:  # info: if fresh
-        return best, best_meta[0], best_meta[1], False  # info: return local
+        prefix = path.stem[:-8].lower()  # info: set current prefix
+        stem = ""  # info: set current stem
+        for candidate, _title, _url in CAM_STILLS:  # info: for current stem
+            if re.search(rf"(?:^|[-_]){re.escape(candidate)}(?:[-_]|$)", prefix) or prefix == candidate:  # info: if current maps to stem
+                stem = candidate  # info: set mapped stem
+                break  # info: break current stem
+        if not stem:  # info: if unmapped current
+            continue  # info: continue
+        try:  # info: try current stat
+            mtime = path.stat().st_mtime  # info: set current mtime
+        except OSError:  # info: except current stat
+            continue  # info: continue
+        age = max(0.0, (t.timestamp() - mtime) / 60.0)  # info: set current age
+        if age <= STALE_MIN:  # info: if current fresh
+            current_candidates.append((mtime, -stem_order[stem], path, stem))  # info: add current candidate
+    current_candidates.sort(key=lambda item: (item[0], item[1]), reverse=True)  # info: sort current freshest first
+    best_current = current_candidates[0] if current_candidates else None  # info: set best current
+    if best_current is not None and not force_fetch:  # info: if current preferred
+        _mtime, _order, path, stem = best_current  # info: unpack current
+        return path, stem, titles[stem], False, "current"  # info: return current
+    best: Path | None = None  # info: set best last
+    best_meta = ("", "")  # info: set best last metadata
+    best_age = None  # info: set best last age
+    for stem, title, _url in CAM_STILLS:  # info: for last cam
+        path = CAMS / f"{stem}-last.jpg"  # info: set last path
+        if not path.is_file():  # info: if last missing
+            continue  # info: continue
+        age = max(0.0, (t.timestamp() - path.stat().st_mtime) / 60.0)  # info: set last age
+        if best is None or age < (best_age if best_age is not None else 1e9):  # info: if last better
+            best, best_meta, best_age = path, (stem, title), age  # info: set best last
+    if best is not None and best_age is not None and best_age <= STALE_MIN and not force_fetch:  # info: if last fresh
+        return best, best_meta[0], best_meta[1], False, "last"  # info: return last
     fetched = False  # info: set fetched
-    for stem, title, url in CAM_STILLS:  # info: for cam
-        path = fetch_still(stem, url)  # info: set path
-        if path and path.is_file():  # info: if ok
+    for stem, title, url in CAM_STILLS:  # info: for live cam
+        path = fetch_still(stem, url)  # info: set live path
+        if path and path.is_file():  # info: if live ok
             fetched = True  # info: set fetched
-            return path, stem, title, fetched  # info: return live
-    if best is not None:  # info: if stale local
-        return best, best_meta[0], best_meta[1], fetched  # info: return stale
-    return None, "", "", fetched  # info: return none
+            return path, stem, title, fetched, "live"  # info: return live
+    if best is not None:  # info: if stale last
+        return best, best_meta[0], best_meta[1], fetched, "last"  # info: return stale last
+    if best_current is not None:  # info: if current remains available
+        _mtime, _order, path, stem = best_current  # info: unpack current fallback
+        return path, stem, titles[stem], fetched, "current"  # info: return current fallback
+    return None, "", "", fetched, ""  # info: return none
 
 
 # ====================================================
@@ -338,7 +382,7 @@ def observe(t: datetime, force: bool = False) -> dict:  # info: def observe
         cached = load_cache()  # info: reload
         if reuse_slot(cached, slot, force):  # info: if reuse after lock
             return dict(cached)  # info: return cache
-        path, stem, title, fetched = pick_still(t, force_fetch=force)  # info: pick still
+        path, stem, title, fetched, source_kind = pick_still(t, force_fetch=force)  # info: pick still
         reference = ensure_reference()  # info: ensure ref
         activity, fountaining, visible = "unclear", False, ""  # info: defaults
         error = ""  # info: set error
@@ -367,6 +411,7 @@ def observe(t: datetime, force: bool = False) -> dict:  # info: def observe
             "fountaining": bool(fountaining) if not error else False,  # info: fountaining
             "visible": visible if not error else "",  # info: visible
             "fetched_live": fetched,  # info: fetched
+            "source_kind": source_kind,  # info: source kind
             "reference": str(reference.name) if reference else "",  # info: reference
             "error": error,  # info: error
             "sentence": sentence,  # info: sentence

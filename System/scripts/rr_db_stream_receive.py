@@ -5,6 +5,9 @@ Staged on desk. Install path expectation (NOT done by this scaffold):
   forced-command for ml1/ml2 stream keys → this script only.
 
 Writes atomically under RR_DATABASE_ROOT / path_rel when allowlisted.
+Same tree desks/voice/LLMs already read — twin of Telegram datapack-pickup.
+Before replace, if the destination filename contains _current, the prior file
+is renamed into sibling archive/YYYYMMDD/ (HST); live *_current path stays stable.
 Also appends a one-line audit to Logs/System/mainland-stream-receive.jsonl when possible.
 Never writes Energy/ or EcoFlow paths.
 """
@@ -17,6 +20,7 @@ import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 ALLOWED_PATH_PREFIXES = (
     "Geology/",
@@ -33,6 +37,8 @@ ALLOWED_PATH_PREFIXES = (
 
 DENY_SUBSTRINGS = ("EcoFlow", "ecoflow", "Energy/")
 
+HST = ZoneInfo("Pacific/Honolulu")
+
 DB = Path(
     os.environ.get(
         "RR_DATABASE_ROOT",
@@ -48,6 +54,34 @@ def allowed(path_rel: str) -> bool:
         if d in path_rel:
             return False
     return any(path_rel.startswith(p) for p in ALLOWED_PATH_PREFIXES)
+
+
+
+def is_current_product(path_rel: str, dest: Path | None = None) -> bool:
+    """True when the bank filename contains _current (stable live path)."""
+    name = (dest.name if dest is not None else Path(path_rel).name)
+    return "_current" in name
+
+
+def archive_before_replace(dest: Path, path_rel: str = "") -> str | None:
+    """If dest exists and basename contains _current, rename into sibling archive/.
+
+    Keeps the stable *_current path for LLM/desk readers; archives are historical
+    only under archive/YYYYMMDD/<stem>_<HHMMSS><suffix> (HST). Non-_current files
+    (e.g. *-last.json) are never archived on replace.
+    """
+    if not dest.is_file():
+        return None
+    if not is_current_product(path_rel or dest.name, dest):
+        return None
+    now = datetime.now(HST).replace(microsecond=0)
+    archive_dir = dest.parent / "archive" / now.strftime("%Y%m%d")
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    archived = archive_dir / f"{dest.stem}_{now.strftime('%H%M%S')}{dest.suffix}"
+    if archived.exists():
+        archived = archive_dir / f"{dest.stem}_{now.strftime('%H%M%S')}_{now.microsecond}{dest.suffix}"
+    os.rename(dest, archived)
+    return str(archived)
 
 
 def atomic_write(dest: Path, data: bytes) -> None:
@@ -117,10 +151,14 @@ def main() -> int:
                 raise ValueError(f"path not allowed: {path_rel}")
             raw = base64.b64decode(obj["body_b64"])
             dest = DB / path_rel
+            archived = archive_before_replace(dest, path_rel)
             atomic_write(dest, raw)
             append_daily(path_rel, raw, obj)
             written += 1
-            print(f"ok {path_rel} bytes={len(raw)}")
+            msg = f"ok {path_rel} bytes={len(raw)}"
+            if archived:
+                msg += f" archived={archived}"
+            print(msg)
             audit(
                 {
                     "ts": datetime.now(timezone.utc)
@@ -131,6 +169,7 @@ def main() -> int:
                     "path_rel": path_rel,
                     "source_node": obj.get("source_node"),
                     "bytes": len(raw),
+                    "archived": archived,
                 }
             )
         except Exception as e:
