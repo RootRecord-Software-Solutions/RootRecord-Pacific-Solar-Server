@@ -23,6 +23,7 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 from common import DB, PACIFIC, iso, parse_iso, utc_now  # info: from common import DB , PACIFIC , iso , parse_iso , utc_now
 from pipeline import _publisher, _summary, _when, poll_feed  # info: from pipeline import _publisher , _summary , _when , poll_feed
 from registry import configured_on  # info: from registry import configured_on
+from stories import sports  # info: from stories import sports
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 RANK = {"urgent": 4, "high": 3, "normal": 2, "low": 1}  # info: set RANK
@@ -149,7 +150,7 @@ def _desk_lines(desk: dict, fresh: list[dict], older: list[dict], budget: int, r
 
 # ====================================================
 # SECTION: function build_update
-# What it does: Write the desks for one hour. The first voice follows the Hawaii hour.
+# What it does: Write the desks for one hour. Sports stories are left out. The first voice follows the Hawaii hour.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def build_update(stories: list[dict], registry: dict, when: datetime) -> dict:  # info: def build_update
@@ -161,6 +162,7 @@ def build_update(stories: list[dict], registry: dict, when: datetime) -> dict:  
     backfill_hours = float(cfg.get("backfill_hours") or 36)  # info: set backfill_hours
     desk_words = int(cfg.get("desk_words") or 150)  # info: set desk_words
     target = int(cfg.get("target_words") or 750)  # info: set target
+    stories = [story for story in stories if not sports({}, story, registry)]  # info: set stories
     fresh = [story for story in stories if _recent(story, now, fresh_hours)]  # info: set fresh
     older = [story for story in stories if _recent(story, now, backfill_hours)]  # info: set older
     desks = [desk for desk in (cfg.get("desks") or []) if isinstance(desk, dict)]  # info: set desks

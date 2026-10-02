@@ -23,7 +23,7 @@ sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 , str ( HERE ) )
 
 from datetime import datetime, timezone  # info: from datetime import datetime , timezone
 from parse_feed import parse_document  # info: from parse_feed import parse_document
-from stories import normalize, violent  # info: from stories import normalize , violent
+from stories import normalize, sports, violent  # info: from stories import normalize , sports , violent
 from news_hour import build_update, persona_for  # info: from news_hour import build_update , persona_for
 from pipeline import handoff, health_report, poll, trace  # info: from pipeline import handoff , health_report , poll , trace
 from registry import load_registry  # info: from registry import load_registry
@@ -246,6 +246,11 @@ def test_news_update() -> None:  # info: def test_news_update
     calm = {"title": "Harbor ferry schedule", "summary": "The state published a new timetable.", "url": "https://news.test/ferry", "guid": "ferry", "published_at": "2026-10-01T18:00:00Z"}  # info: set calm
     assert violent(hawaii, crime, registry) is True  # info: assert violent ( hawaii , crime , registry ) is True
     assert normalize(hawaii, crime, registry) is None  # info: assert normalize ( hawaii , crime , registry ) is None
+    game = {"title": "Prep football preview", "summary": "OIA playoff puzzle.", "url": "https://www.staradvertiser.com/2026/10/01/sports/hawaii-prep-world/prep-football/", "guid": "sports-1"}  # info: set game
+    assert sports(hawaii, game, registry) is True  # info: assert sports ( hawaii , game , registry ) is True
+    assert normalize(hawaii, game, registry) is None  # info: assert normalize ( hawaii , game , registry ) is None
+    transit = {"title": "Harbor ferry schedule", "summary": "Transportation brief for Honolulu Harbor.", "url": "https://news.test/transportation", "guid": "transit"}  # info: set transit
+    assert sports(hawaii, transit, registry) is False  # info: assert sports ( hawaii , transit , registry ) is False
     gated = {"id": "sx", "category": "spacex", "provider": "Spaceflight Now", "name": "Spaceflight Now", "priority": "high", "require_patterns": ["spacex", "starship"]}  # info: set gated
     assert normalize(gated, {"title": "Canada rocket test", "summary": "An engine site.", "url": "https://news.test/rocket", "guid": "rocket"}, registry) is None  # info: assert normalize ( gated , { "title" : "Canada rocket test" , "summary" : "An engine site." , "url" : "https://news.test/rocket" , "guid" : "rocket" } , registry ) is None
     assert normalize(gated, {"title": "Starship test", "summary": "A flight.", "url": "https://news.test/star", "guid": "star"}, registry) is not None  # info: assert normalize ( gated , { "title" : "Starship test" , "summary" : "A flight." , "url" : "https://news.test/star" , "guid" : "star" } , registry ) is not None
@@ -266,6 +271,7 @@ def test_news_update() -> None:  # info: def test_news_update
     assert built["words"] >= 400  # info: assert built [ "words" ] >= 400
     assert [section["persona"] for section in built["sections"][:4]] == ["ava", "bruce", "carly", "ava"]  # info: assert [ section [ "persona" ] for section in built [ "sections" ] [ : 4 ] ] == [ "ava" , "bruce" , "carly" , "ava" ]
     assert "Markets." in built["speak"] and "SpaceX." in built["speak"] and "killed" not in built["speak"].lower()  # info: assert "Markets." in built [ "speak" ] and "SpaceX." in built [ "speak" ] and "killed" not in built [ "speak" ] . lower ( )
+    assert "football" not in built["speak"].lower() and "sports" not in built["speak"].lower()  # info: assert "football" not in built [ "speak" ] . lower ( ) and "sports" not in built [ "speak" ] . lower ( )
     assert "2026" in built["speak"]  # info: assert "2026" in built [ "speak" ]
 
 

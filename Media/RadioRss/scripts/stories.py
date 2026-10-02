@@ -101,6 +101,17 @@ def violent(feed: dict, item: dict, registry: dict) -> bool:  # info: def violen
     return _hit(text, registry["policy"].get("violence_patterns") or [])  # info: return _hit ( text , registry [ "policy" ] . get ( "violence_patterns" ) or [ ] )
 
 
+
+# ====================================================
+# SECTION: function sports
+# What it does: Drop a sports item from every feed. League names and /sports/ URLs match. Bare "sport" is not used so transportation stays.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def sports(feed: dict, item: dict, registry: dict) -> bool:  # info: def sports
+    text = f"{item.get('title') or ''} {item.get('summary') or ''} {item.get('url') or ''} {item.get('guid') or ''} {item.get('canonical_url') or ''}"  # info: set text
+    return _hit(text, registry["policy"].get("sports_patterns") or [])  # info: return _hit ( text , registry [ "policy" ] . get ( "sports_patterns" ) or [ ] )
+
+
 # ====================================================
 # SECTION: function _required
 # What it does: Keep an item when the feed lists required phrases. A feed with no list keeps every item.
@@ -116,7 +127,7 @@ def _required(feed: dict, item: dict) -> bool:  # info: def _required
 
 # ====================================================
 # SECTION: function normalize
-# What it does: Turn one feed item into the story object. An empty title is invalid.
+# What it does: Turn one feed item into the story object. Empty titles, overlap, violence, and sports items are dropped.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def normalize(feed: dict, item: dict, registry: dict) -> dict | None:  # info: def normalize
@@ -127,7 +138,7 @@ def normalize(feed: dict, item: dict, registry: dict) -> dict | None:  # info: d
     guid = (item.get("guid") or "").strip()  # info: set guid
     if not url and not guid:  # info: if not url and not guid :
         return None  # info: return None
-    if blocked(feed, item, registry) or violent(feed, item, registry):  # info: if blocked ( feed , item , registry ) or violent ( feed , item , registry ) :
+    if blocked(feed, item, registry) or violent(feed, item, registry) or sports(feed, item, registry):  # info: if blocked ( feed , item , registry ) or violent ( feed , item , registry ) or sports ( feed , item , registry ) :
         return None  # info: return None
     if not _required(feed, item):  # info: if not _required ( feed , item ) :
         return None  # info: return None

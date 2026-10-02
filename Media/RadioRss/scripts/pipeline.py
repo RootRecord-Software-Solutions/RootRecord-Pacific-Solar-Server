@@ -31,7 +31,7 @@ from store import (  # info: from store import (
     write_raw,  # info: write_raw ,
     write_story,  # info: write_story ,
 )  # info: )
-from stories import fresh, normalize, same_event  # info: from stories import fresh , normalize , same_event
+from stories import fresh, normalize, same_event, sports  # info: from stories import fresh , normalize , same_event , sports
 
 WEIGHT = {"urgent": 4, "high": 3, "normal": 2, "low": 1}  # info: set WEIGHT
 SENTENCE = re.compile(r"(?<=[.!?])\s+")  # info: set SENTENCE
@@ -310,7 +310,7 @@ def script_for(cluster: dict, stories: list[dict], registry: dict) -> tuple[str,
 
 # ====================================================
 # SECTION: function compose
-# What it does: Turn new clusters into queued scripts. It does not speak and it does not call the broadcaster.
+# What it does: Turn new clusters into queued scripts. Sports stories are left out. It does not speak and it does not call the broadcaster.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def compose(registry: dict, conn, root: Path | None = None) -> list[str]:  # info: def compose
@@ -319,6 +319,13 @@ def compose(registry: dict, conn, root: Path | None = None) -> list[str]:  # inf
     clusters = conn.execute("SELECT * FROM clusters WHERE status='new'").fetchall()  # info: set clusters
     for cluster in clusters:  # info: for cluster in clusters
         stories = [dict(row) for row in conn.execute("SELECT * FROM stories WHERE cluster_id=? AND status='new' ORDER BY published_at", (cluster["id"],))]  # info: set stories
+        kept = [row for row in stories if not sports({}, row, registry)]  # info: set kept
+        dropped = [row for row in stories if sports({}, row, registry)]  # info: set dropped
+        if dropped:  # info: if dropped :
+            stamp = iso(utc_now())  # info: set stamp
+            for row in dropped:  # info: for row in dropped
+                conn.execute("UPDATE stories SET status='archived', processed_at=? WHERE id=?", (stamp, row["id"]))  # info: conn . execute ( "UPDATE stories SET status='archived', processed_at=? WHERE id=?" , ( stamp , row [ "id" ] ) )
+        stories = kept  # info: set stories
         if not stories:  # info: if not stories :
             conn.execute("UPDATE clusters SET status='archived' WHERE id=? AND status='new'", (cluster["id"],))  # info: conn . execute ( "UPDATE clusters SET status='archived' WHERE id=? AND status='new'" , ( cluster [ "id" ] , ) )
             continue  # info: continue

@@ -32,7 +32,7 @@ python3 scripts/rss_radio.py trace STORY_ID
 
 The poller job is `radio_rss_poll`. It runs when `RR_RADIO_RSS=1` (the poller script defaults that on). The job does not speak and does not push audio.
 
-`news-hour` polls the market, national-security, SpaceX, and Hawaii desks, then writes one script aimed at about five minutes. Hawaii items that match the violence list are dropped. `--speak` renders that script with Ava, Bruce, and Carly rotating by the Hawaii hour, replaces `news_update_current.wav`, and `radio_push.py` encodes that one report to `news_update_current.opus` (24 kbps mono) on the Mainland runtime. The poller job is `radio_news_update` at minute 20. It runs when `RR_RADIO_NEWS=1` (the poller script defaults that on).
+`news-hour` polls the market, national-security, SpaceX, and Hawaii desks, then writes one script aimed at about five minutes. Hawaii items that match the violence list are dropped. Sports items are dropped from every feed. `--speak` renders that script with Ava, Bruce, and Carly rotating by the Hawaii hour, replaces `news_update_current.wav`, and `radio_push.py` encodes that one report to `news_update_current.opus` (24 kbps mono) on the Mainland runtime. The poller job is `radio_news_update` at minute 20. It runs when `RR_RADIO_NEWS=1` (the poller script defaults that on).
 
 `handoff` without `--speak` shows the next queued brief and leaves it queued. `--speak` renders with the existing Kokoro path. Hawaii still renders a WAV. `radio_push.py` encodes that one report to `<report>_current.opus` and replaces it on `/home/ubuntu/rootrecord-radio`. Prune keeps both `*_current.ogg` and `*_current.opus` until that report is replaced, then deletes only that report's old ogg.
 

@@ -121,6 +121,48 @@ violence_patterns:
   - kidnapping
   - hostage
 
+# Whole items dropped from every feed. Keeps sports out of news and radio reports.
+# Prefer /sports/ and league names. Do not use bare "sport" (matches transportation).
+sports_patterns:
+  - "/sports/"
+  - "/sport/"
+  - "/sport?"
+  - "bbc.co.uk/sport"
+  - "espn.com"
+  - "espn."
+  - "sports "
+  - " sports"
+  - "sports:"
+  - "sports,"
+  - "nfl"
+  - "nba"
+  - "mlb"
+  - "nhl"
+  - "ncaa"
+  - "wnba"
+  - " soccer"
+  - "soccer "
+  - "football"
+  - "basketball"
+  - "baseball"
+  - "volleyball"
+  - "hockey"
+  - "scoreboard"
+  - "super bowl"
+  - "world cup"
+  - "premier league"
+  - "march madness"
+  - "olympics"
+  - "olympic "
+  - "boxing"
+  - "ufc"
+  - "pga tour"
+  - "touchdown"
+  - "home run"
+  - "prep football"
+  - "tennis"
+  - "golf tournament"
+
 programs:
   NEWS_BRIEF:
     report: news_brief

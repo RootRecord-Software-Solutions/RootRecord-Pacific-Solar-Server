@@ -1078,6 +1078,7 @@ feeds:
     native_overlap: false
     origin: external
     directory: https://www.aljazeera.com/
+    note: "Sports items are dropped."
 
   - id: sciencedaily_all
     name: ScienceDaily
@@ -1163,6 +1164,7 @@ feeds:
     native_overlap: false
     origin: external
     directory: https://www.bbc.com/news/business
+    note: "Sports URLs that leak into this feed are dropped."
 
   - id: cnbc_markets
     name: CNBC Markets
@@ -1367,6 +1369,7 @@ feeds:
     nonviolent: true
     origin: external
     directory: https://www.staradvertiser.com/
+    note: "Sports items are dropped. Violent crime is dropped."
 
   - id: hawaii_news_now
     name: Hawaii News Now
@@ -1380,4 +1383,4 @@ feeds:
     nonviolent: true
     origin: overlapping
     directory: https://www.hawaiinewsnow.com/
-    note: "Broadcast desk. Weather, quake, and volcano items are dropped. Violent crime is dropped."
+    note: "Broadcast desk. Weather, quake, and volcano items are dropped. Violent crime is dropped. Sports items are dropped."
