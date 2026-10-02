@@ -32,27 +32,6 @@ LOG_FILE="$LOG_DIR/weather-poller.log"  # info: set LOG_FILE
 MATCH_PATTERN='[Ww]eather/scripts/run_poller\.py'  # also sees a G2 instance (no parallel owners)
 
 # ====================================================
-# SECTION: SOFT GATE (RR_LOCAL_DATA_POLL)
-# What it does: When RR_LOCAL_DATA_POLL=0, ML2 owns internet weather fetches.
-# Soft refuse start only — do not delete this launcher. Flip env back to 1 (or
-# unset) + poller/supervisor path restores local weather immediately.
-# ====================================================
-_rr_local_poll="${RR_LOCAL_DATA_POLL-}"
-if [[ -z "$_rr_local_poll" ]]; then
-  # Fallback when ensure is run outside the poller unit env (manual / older shells).
-  _dropin="/home/rootrecord/.config/systemd/user/rr-rootserver-poller.service.d/rr-data-poll.conf"
-  if [[ -f "$_dropin" ]]; then
-    _rr_local_poll=$(grep -E '^Environment=RR_LOCAL_DATA_POLL=' "$_dropin" 2>/dev/null | tail -n1 | cut -d= -f3 || true)
-  fi
-fi
-case "${_rr_local_poll:-1}" in
-  0|false|FALSE|off|OFF|no|NO)
-    echo "[ensure-weather-poller] gated off (RR_LOCAL_DATA_POLL=${_rr_local_poll}) — ML2 owns weather; not starting"
-    exit 0
-    ;;
-esac
-
-# ====================================================
 # SECTION: ALREADY RUNNING? -- idempotent, exit clean
 # ====================================================
 if pgrep -f "$MATCH_PATTERN" >/dev/null 2>&1; then  # info: if
