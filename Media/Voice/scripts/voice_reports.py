@@ -950,6 +950,9 @@ def b_hurricane_desk(t: datetime):  # info: def b_hurricane_desk
         sp.append(f"{title}. {n['label']} {n['name']} is about {n['nm']} nautical miles from {n['island']}."  # info: sp . append ( f" { title }
                   f" Center {abs(n['lat']):.1f} {ns}, {abs(n['lon']):.1f} {ew}. It bears {n['bearing']} of {n['island']}."  # info: f" Center { abs ( n [ 'lat'
                   f"{hint}{move}{wind}{watch}")  # info: f" { hint } { move } {
+        say_change(sp, f"hurricane.{n['name']}.nm", n["nm"], f"{n['name']} distance", t)  # info: say_change distance
+        if n.get("knots"):  # info: if n . get ( "knots" )
+            say_change(sp, f"hurricane.{n['name']}.knots", n["knots"], f"{n['name']} winds", t)  # info: say_change winds
         if len(active) > 1:  # info: if len ( active ) > 1 :
             others = "; ".join(f"{s['label']} {s['name']}, about {s['nm']} nautical miles from {s['island']}" for s in active[1:4])  # info: set others
             sp.append(f"{len(active)} tropical systems are on the Hawaii tracking board. Also tracked: {others}.")  # info: sp . append ( f" { len (
@@ -1229,8 +1232,12 @@ def b_bandwidth_desk(t: datetime):  # info: def b_bandwidth_desk
     sb = hd.spoken_bytes  # info: set sb
     bits = ["Bandwidth desk.", generated_at(t), f"This host is on {(net or {}).get('link') or 'network'}."]  # info: set bits
     bits.append(f"Last hour: {sb(hour['rx'])} down, {sb(hour['tx'])} up, {sb(hour['total'])} total." if hour else "Last hour is not on file yet.")  # info: bits . append ( f" Last hour: { sb
+    if hour:  # info: if hour
+        say_change(bits, "bandwidth.hour_total", hour["total"], "Last hour total", t)  # info: say_change hour total
     bits.append(f"Last twenty four hours: {sb(day['rx'])} down, {sb(day['tx'])} up, {sb(day['total'])} total." if day  # info: bits . append ( f" Last twenty four hours: { sb
                 else "Last twenty four hours is not on file yet.")  # info: else "Last twenty four hours is not on file yet." )
+    if day:  # info: if day
+        say_change(bits, "bandwidth.day_total", day["total"], "Last twenty four hour total", t)  # info: say_change day total
     md += ["## Spoken", "", " ".join(bits), ""]
     return "\n".join(md), bits  # info: return "\n" . join ( md ) ,
 
@@ -1275,6 +1282,10 @@ def _rollup(t: datetime, slot: str):  # info: def _rollup
         solar = sum(f["solar_w"] or 0 for f in ok)  # info: set solar
         # spoken form says "at": "Delta 2 36%" would hit the G1 clock rule ("two thirty six a.m.")
         sp.append("Battery levels: " + ", ".join(f"{f['name']} at {f['soc']}%" for f in ok) + f". Solar input {spoken_watts(solar)}.")  # info: sp . append ( "Battery levels: " + ", " .
+        for f in ok:  # info: for f in ok
+            if f.get("key"):  # info: if f . get ( "key" )
+                say_change(sp, f"energy.{f['key']}.soc", f["soc"], f"{f['name']} state of charge", t)  # info: say_change soc
+        say_change(sp, "energy.solar_total", solar, "Solar input", t)  # info: say_change solar total
         lines.append(s + f"; solar input {solar} W")  # info: lines . append ( s + f" ; solar input
     elif not off:  # info: elif not off :
         sp.append("EcoFlow is offline.")  # info: sp . append ( "EcoFlow is offline." )
@@ -1284,16 +1295,21 @@ def _rollup(t: datetime, slot: str):  # info: def _rollup
         lines.append(off_sentence(f))  # info: lines . append ( off_sentence ( f ) )
     if rows:  # info: if rows :
         sp.append(f"{len(rows)} active weather alert{'s' if len(rows) != 1 else ''}, including {rows[0]['event']}.")  # info: sp . append ( f" { len (
+        say_change(sp, "nws.alerts", len(rows), "Active alerts", t)  # info: say_change alerts
     else:  # info: else :
         sp.append("No active HI alerts from the API sample.")  # info: sp . append ( "No active HI alerts from the API sample." )
+        say_change(sp, "nws.alerts", 0, "Active alerts", t)  # info: say_change alerts
     lines.append(f"NWS alerts active: {len(rows)}" + (f" ({', '.join(r['event'] for r in rows)})" if rows else ""))  # info: lines . append ( f" NWS alerts active: { len
     if today:  # info: if today :
         first = re.split(r"(?<=\.)\s", today.split(":", 1)[1].strip())[0]  # info: set first
         sp.append(f"Forecast for {today.split(':', 1)[0].lower()}: {first}")  # info: sp . append ( f" Forecast for { today
         lines.append(f"Forecast {today}")  # info: lines . append ( f" Forecast { today
     sp.append(f"Host CPU {h['cpu']}%, memory {h['mem']}% used.")  # info: sp . append ( f" Host CPU { h
+    say_change(sp, "system.cpu_pct", h["cpu"], "CPU", t)  # info: say_change cpu
+    say_change(sp, "system.mem_pct", h["mem"], "Memory", t)  # info: say_change memory
     lines.append(f"Host CPU {h['cpu']}%, memory {h['mem']}% used")  # info: lines . append ( f" Host CPU { h
     sp.append(f"{tasks} open work order items.")  # info: sp . append ( f" { tasks }
+    say_change(sp, "tasks.open", tasks, "Open work orders", t)  # info: say_change open tasks
     lines.append(f"Open work-order items: {tasks}")  # info: lines . append ( f" Open work-order items: { tasks
     summary = llm_summary(lines) if os.environ.get("RR_VOICE_ROLLUP_LLM", "0") == "1" else None  # info: set summary
     if summary:  # info: if summary :
@@ -1494,6 +1510,10 @@ def b_current_report(t: datetime):  # info: def b_current_report
     if ok:  # info: if ok :
         solar = sum(f.get("solar_w") or 0 for f in ok)  # info: set solar
         sp.append("Battery levels: " + ", ".join(f"{f['name']} at {f['soc']}%" for f in ok) + f". Solar input {spoken_watts(solar)}.")  # info: sp . append battery line
+        for f in ok:  # info: for f in ok
+            if f.get("key"):  # info: if f . get ( "key" )
+                say_change(sp, f"energy.{f['key']}.soc", f["soc"], f"{f['name']} state of charge", t)  # info: say_change soc
+        say_change(sp, "energy.solar_total", solar, "Solar input", t)  # info: say_change solar total
         for f in ok:  # info: for f in ok :
             age_bit = reading_age_clause(f).lstrip(", ")  # info: set age_bit
             if age_bit:  # info: if age_bit :
@@ -1530,9 +1550,11 @@ def b_current_report(t: datetime):  # info: def b_current_report
     if rows:  # info: if rows :
         md += [f"- {r['event']} — {r['area']}" for r in rows]  # info: md += alert lines
         sp.append(f"{len(rows)} active weather alert{'s' if len(rows) != 1 else ''}, including {rows[0]['event']}.")  # info: sp . append alert sentence
+        say_change(sp, "nws.alerts", len(rows), "Active alerts", t)  # info: say_change alerts
     else:  # info: else :
         md.append("- No active Hawaii alerts")  # info: md . append ( "- No active Hawaii alerts" )
         sp.append("No active Hawaii alerts.")  # info: sp . append ( "No active Hawaii alerts." )
+        say_change(sp, "nws.alerts", 0, "Active alerts", t)  # info: say_change alerts
     today = None  # info: set today
     if groups and groups[0]["periods"]:  # info: if groups and groups [ 0 ] [ "periods" ] :
         label, body = groups[0]["periods"][0]  # info: label , body = groups [ 0 ] [ "periods" ] [ 0 ]
@@ -1549,6 +1571,11 @@ def b_current_report(t: datetime):  # info: def b_current_report
                 bits.append(f"low {p['low']}")  # info: bits . append ( f" low { p [ 'low' ] } " )
             md.append(f"- {p['place']}: " + ", ".join(bits))  # info: md . append place line
         sp.append("Temperatures. " + ". ".join(f"{p['place']} high {p['high'] or 'n/a'}, low {p['low'] or 'n/a'}" for p in places) + ".")  # info: sp . append temperature sentence
+        for p in places:  # info: for p in places
+            if p.get("high"):  # info: if p . get ( "high" )
+                say_change(sp, f"nws.{p['place']}.high", p["high"], f"{p['place']} high", t)  # info: say_change high
+            if p.get("low"):  # info: if p . get ( "low" )
+                say_change(sp, f"nws.{p['place']}.low", p["low"], f"{p['place']} low", t)  # info: say_change low
     md.append(f"- Alerts updated: {upd or 'n/a'}")  # info: md . append ( f" - Alerts updated: { upd or 'n/a' } " )
     md += ["", "## Geology", ""]  # info: md += geology heading
     for label, key in (("Hawaii", "hawaii"), ("Global", "global")):  # info: for label , key in
@@ -1568,7 +1595,9 @@ def b_current_report(t: datetime):  # info: def b_current_report
         md.append(f"- {label}: {len(_m25(ev))} magnitude 2.5 or greater in 24 h{largest}, sample age {pack.get('age_min')} min")  # info: md . append quake line
     hi_pack = quakes.get("hawaii") or {}  # info: set hi_pack
     if hi_pack:  # info: if hi_pack :
-        sp.append(f"Local earthquakes, last twenty four hours: {len(_m25(list(hi_pack.get('events') or [])))} magnitude 2.5 or greater.")  # info: sp . append quake sentence
+        local_m25 = len(_m25(list(hi_pack.get("events") or [])))  # info: set local_m25
+        sp.append(f"Local earthquakes, last twenty four hours: {local_m25} magnitude 2.5 or greater.")  # info: sp . append quake sentence
+        say_change(sp, "quake.hawaii.m25", local_m25, "Local magnitude 2.5 count", t)  # info: say_change local quakes
     else:  # info: else :
         sp.append("Local earthquake data is not on file.")  # info: sp . append ( "Local earthquake data is not on file." )
     if isinstance(kilauea, dict) and kilauea.get("alert_level"):  # info: if isinstance ( kilauea , dict ) and kilauea . get ( "alert_level" ) :
@@ -1601,6 +1630,11 @@ def b_current_report(t: datetime):  # info: def b_current_report
         md.append(f"- Temperature {perf['temp_c']} C")  # info: md . append temp line
         host_say = host_say[:-1] + f", temperature {perf['temp_c']} degrees Celsius."  # info: set host_say
     sp.append(host_say)  # info: sp . append ( host_say )
+    say_change(sp, "system.cpu_pct", round(perf["cpu_pct"]), "CPU", t)  # info: say_change cpu
+    say_change(sp, "system.mem_pct", round(perf["mem_pct"]), "Memory", t)  # info: say_change memory
+    say_change(sp, "system.disk_pct", round(perf["disk_pct"]), "Disk", t)  # info: say_change disk
+    if perf.get("temp_c") is not None:  # info: if perf . get ( "temp_c" ) is not None
+        say_change(sp, "system.temp_c", perf["temp_c"], "Temperature", t)  # info: say_change temperature
     md += ["", "## Security", ""]  # info: md += security heading
     md.append(f"- Firewall starts on boot: {sec.get('ufw_boot')}")  # info: md . append firewall line
     md.append(f"- SSH active: {sec.get('ssh_active')}")  # info: md . append ssh line
@@ -1609,6 +1643,10 @@ def b_current_report(t: datetime):  # info: def b_current_report
     md.append(f"- Failed sign-ins, last hour / 24 h: {sec.get('failed_1h')} / {sec.get('failed_24h')}")  # info: md . append failed sign-ins
     if sec.get("failed_1h") is not None:  # info: if sec . get ( "failed_1h" ) is not None :
         sp.append(f"Security. Failed sign-ins {sec.get('failed_1h')} in the last hour, {sec.get('failed_24h')} in the last twenty four hours.")  # info: sp . append security sentence
+        say_change(sp, "security.failed_1h", sec.get("failed_1h"), "Failed sign-ins in the last hour", t)  # info: say_change failed hour
+        say_change(sp, "security.failed_24h", sec.get("failed_24h"), "Failed sign-ins in twenty four hours", t)  # info: say_change failed day
+        say_change(sp, "security.listen_tcp", sec.get("listen_tcp"), "TCP listeners", t)  # info: say_change listeners
+        say_change(sp, "security.established", sec.get("established"), "Established connections", t)  # info: say_change connections
     else:  # info: else :
         sp.append("The sign-in log is not readable.")  # info: sp . append ( "The sign-in log is not readable." )
     md += ["", "## Bandwidth", ""]  # info: md += bandwidth heading
@@ -1616,8 +1654,10 @@ def b_current_report(t: datetime):  # info: def b_current_report
         if bw_hour:  # info: if bw_hour :
             md.append(f"- Last hour: {bw_hour['rx']} bytes down, {bw_hour['tx']} bytes up")  # info: md . append hour bytes
             sp.append(f"Last hour bandwidth: {desks.spoken_bytes(bw_hour['rx'])} down, {desks.spoken_bytes(bw_hour['tx'])} up.")  # info: sp . append hour bandwidth
+            say_change(sp, "bandwidth.hour_total", bw_hour["total"], "Last hour total", t)  # info: say_change hour total
         if bw_day:  # info: if bw_day :
             md.append(f"- Last 24 h: {bw_day['rx']} bytes down, {bw_day['tx']} bytes up")  # info: md . append day bytes
+            say_change(sp, "bandwidth.day_total", bw_day["total"], "Last twenty four hour total", t)  # info: say_change day total
     else:  # info: else :
         md.append("- Not enough samples yet")  # info: md . append ( "- Not enough samples yet" )
         sp.append("Bandwidth data is not on file yet.")  # info: sp . append ( "Bandwidth data is not on file yet." )
@@ -1653,7 +1693,9 @@ def b_current_report(t: datetime):  # info: def b_current_report
         md.append("- No fresh Honolulu statement")  # info: md . append ( "- No fresh Honolulu statement" )
         sp.append("No fresh Honolulu weather statement is on file.")  # info: sp . append ( "No fresh Honolulu weather statement is on file." )
     md += ["", "## Work orders", "", f"- Open items: {tasks}", ""]  # info: md += work orders
-    sp.append(f"{tasks} open work order items. End of current report.")  # info: sp . append ( f" { tasks } open work order items. End of current report. " )
+    sp.append(f"{tasks} open work order items.")  # info: sp . append open tasks
+    say_change(sp, "tasks.open", tasks, "Open work orders", t)  # info: say_change open tasks
+    sp.append("End of current report.")  # info: sp . append end
     md += ["## Spoken", "", " ".join(sp), ""]  # info: md += spoken
     return "\n".join(md), sp  # info: return "\n" . join ( md ) , sp
 

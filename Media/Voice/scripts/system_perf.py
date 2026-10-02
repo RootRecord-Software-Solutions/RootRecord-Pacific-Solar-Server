@@ -160,22 +160,30 @@ def texts(s: dict, now: datetime) -> tuple[str, str]:  # info: def texts
         f"Memory {round(s['mem_pct'])}% used, {s['mem_used_gb']} of {s['mem_total_gb']} gigabytes.",  # info: f" Memory { round ( s [ 'mem_pct'
         f"Disk {round(s['disk_pct'])}% used.",  # info: f" Disk { round ( s [ 'disk_pct'
     ]  # info: ]
+    import compare_span  # info: import compare_span
+    spoken.extend(compare_span.sentences("system.cpu_pct", round(s["cpu_pct"]), "CPU", now))  # info: spoken . extend cpu change
+    spoken.extend(compare_span.sentences("system.mem_pct", round(s["mem_pct"]), "Memory", now))  # info: spoken . extend memory change
+    spoken.extend(compare_span.sentences("system.disk_pct", round(s["disk_pct"]), "Disk", now))  # info: spoken . extend disk change
     if s["battery_pct"] is not None:  # info: if s [ "battery_pct" ] is not None
         spoken.append(f"Host battery {s['battery_pct']}%, {'on AC' if s['on_ac'] else 'on battery'}.")  # info: spoken . append ( f" Host battery { s
+        spoken.extend(compare_span.sentences("system.battery_pct", s["battery_pct"], "Host battery", now))  # info: spoken . extend battery change
     spoken.append(f"Uptime {up_h} hour{'s' if up_h != 1 else ''} {up_m} minute{'s' if up_m != 1 else ''}.")  # info: spoken . append ( f" Uptime { up_h
     if s.get("temp_c") is not None:  # info: if s . get ( "temp_c" ) is not None
         src = f" ({s['temp_source']})" if s.get("temp_source") else ""  # info: set src
         md += f"| Temp | {s['temp_c']}°C{src} |\n"  # info: set md
         spoken.append(f"Temperature {s['temp_c']} degrees Celsius.")  # info: spoken . append ( f" Temperature { s [ 'temp_c' ] } degrees Celsius. " )
+        spoken.extend(compare_span.sentences("system.temp_c", s["temp_c"], "Temperature", now))  # info: spoken . extend temperature change
     if s.get("gpu_pct") is not None:  # info: if s . get ( "gpu_pct" ) is not None
         name = s.get("gpu_name") or "iGPU"  # info: set name
         md += f"| iGPU | {name} — {s['gpu_pct']}% |\n"  # info: set md
         spoken.append(f"Integrated GPU {s['gpu_pct']} percent.")  # info: spoken . append
+        spoken.extend(compare_span.sentences("system.gpu_pct", s["gpu_pct"], "Integrated GPU", now))  # info: spoken . extend gpu change
     elif s.get("gpu_name"):  # info: elif s . get ( "gpu_name" )
         md += f"| iGPU | {s['gpu_name']} |\n"  # info: set md
     if s.get("npu_present") is True and s.get("npu_pct") is not None:  # info: if s . get ( "npu_present" ) is True and s . get ( "npu_pct" )
         md += f"| NPU | {s['npu_pct']}% (present) |\n"  # info: set md
         spoken.append(f"NPU {s['npu_pct']} percent, present.")  # info: spoken . append
+        spoken.extend(compare_span.sentences("system.npu_pct", s["npu_pct"], "NPU", now))  # info: spoken . extend npu change
     elif s.get("npu_present") is True:  # info: elif s . get ( "npu_present" ) is True
         md += "| NPU | present, busy percent not sampled |\n"  # info: set md
         spoken.append("NPU is present. Busy percent was not sampled.")  # info: spoken . append
