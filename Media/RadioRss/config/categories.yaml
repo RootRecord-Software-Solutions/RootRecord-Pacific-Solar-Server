@@ -11,7 +11,12 @@ categories:
     name: Science
     program: SCIENCE_BRIEF
     lead: "Science brief."
-    rank: 20
+    rank: 16
+  - id: universities
+    name: Universities
+    program: UNIVERSITIES_BRIEF
+    lead: "Universities brief."
+    rank: 17
   - id: research
     name: Research
     program: SCIENCE_BRIEF

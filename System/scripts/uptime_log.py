@@ -143,6 +143,11 @@ def tick() -> dict:  # info: def tick
     _write_marker(m)  # info: call _write_marker
     _write_presence(now)  # info: call _write_presence
     refresh_daily(now)  # info: call refresh_daily
+    try:  # info: try
+        import power_profile  # info: import power_profile
+        power_profile.note(now)  # info: log the host power mode in use
+    except Exception:  # info: except Exception
+        pass  # info: a profile miss does not drop the heartbeat
     return m  # info: return m
 
 

@@ -152,6 +152,24 @@ def connectivity_lines(now: datetime) -> tuple[dict, list[str]]:  # info: def co
 
 
 # ====================================================
+# SECTION: function power_lines
+# What it does: Log the host power mode and return the spoken line. Empty when the host has no profile.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def power_lines() -> tuple[dict, str]:  # info: def power_lines
+    """Log the host power mode and return the spoken line. Empty when the host has no profile."""  # info: docstring
+    path = HERE.parents[2] / "System" / "scripts"  # info: set path
+    if str(path) not in sys.path:  # info: if str ( path ) not in sys . path
+        sys.path.insert(0, str(path))  # info: sys . path . insert
+    try:  # info: try
+        import power_profile  # info: import power_profile
+        row = power_profile.note()  # info: set row
+        return row, power_profile.sentence()  # info: return
+    except Exception:  # info: except Exception
+        return {}, ""  # info: return
+
+
+# ====================================================
 # SECTION: function texts
 # What it does: texts.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -195,6 +213,10 @@ def texts(s: dict, now: datetime) -> tuple[str, str]:  # info: def texts
         if isinstance(conn.get("avg_return_hour"), int):  # info: if isinstance
             md += f"| Average return | {conn['avg_return_hour']:02d}:{conn['avg_return_minute']:02d} HST |\n"  # info: set md
         spoken.extend(conn_say)  # info: spoken . extend
+    mode_row, mode_say = power_lines()  # info: set mode_row , mode_say
+    if mode_row.get("mode"):  # info: if mode_row . get ( "mode" )
+        md += f"| Power mode | {mode_row['mode']} |\n"  # info: set md
+        spoken.append(mode_say)  # info: spoken . append
     if s.get("temp_c") is not None:  # info: if s . get ( "temp_c" ) is not None
         src = f" ({s['temp_source']})" if s.get("temp_source") else ""  # info: set src
         md += f"| Temp | {s['temp_c']}°C{src} |\n"  # info: set md

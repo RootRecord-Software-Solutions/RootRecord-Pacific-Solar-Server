@@ -102,6 +102,19 @@ def violent(feed: dict, item: dict, registry: dict) -> bool:  # info: def violen
 
 
 
+
+# ====================================================
+# SECTION: function partisan
+# What it does: Drop partisan phrasing on feeds marked centrist: true. Mainland politics uses this.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def partisan(feed: dict, item: dict, registry: dict) -> bool:  # info: def partisan
+    if not feed.get("centrist"):  # info: if not feed . get ( "centrist" ) :
+        return False  # info: return False
+    text = f"{item.get('title') or ''} {item.get('summary') or ''}"  # info: set text
+    return _hit(text, registry["policy"].get("partisan_patterns") or [])  # info: return _hit ( text , registry [ "policy" ] . get ( "partisan_patterns" ) or [ ] )
+
+
 # ====================================================
 # SECTION: function sports
 # What it does: Drop a sports item from every feed. League names and /sports/ URLs match. Bare "sport" is not used so transportation stays.
@@ -127,7 +140,7 @@ def _required(feed: dict, item: dict) -> bool:  # info: def _required
 
 # ====================================================
 # SECTION: function normalize
-# What it does: Turn one feed item into the story object. Empty titles, overlap, violence, and sports items are dropped.
+# What it does: Turn one feed item into the story object. Empty titles, overlap, violence, sports, and partisan items are dropped.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def normalize(feed: dict, item: dict, registry: dict) -> dict | None:  # info: def normalize
@@ -138,7 +151,7 @@ def normalize(feed: dict, item: dict, registry: dict) -> dict | None:  # info: d
     guid = (item.get("guid") or "").strip()  # info: set guid
     if not url and not guid:  # info: if not url and not guid :
         return None  # info: return None
-    if blocked(feed, item, registry) or violent(feed, item, registry) or sports(feed, item, registry):  # info: if blocked ( feed , item , registry ) or violent ( feed , item , registry ) or sports ( feed , item , registry ) :
+    if blocked(feed, item, registry) or violent(feed, item, registry) or sports(feed, item, registry) or partisan(feed, item, registry):  # info: if blocked ( feed , item , registry ) or violent ( feed , item , registry ) or sports ( feed , item , registry ) or partisan ( feed , item , registry ) :
         return None  # info: return None
     if not _required(feed, item):  # info: if not _required ( feed , item ) :
         return None  # info: return None

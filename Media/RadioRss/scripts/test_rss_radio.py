@@ -23,8 +23,8 @@ sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 , str ( HERE ) )
 
 from datetime import datetime, timezone  # info: from datetime import datetime , timezone
 from parse_feed import parse_document  # info: from parse_feed import parse_document
-from stories import normalize, sports, violent  # info: from stories import normalize , sports , violent
-from news_hour import build_update, persona_for  # info: from news_hour import build_update , persona_for
+from stories import normalize, partisan, sports, violent  # info: from stories import normalize , sports , violent
+from news_hour import balance_personas, build_update, persona_for  # info: from news_hour import build_update , persona_for
 from pipeline import handoff, health_report, poll, trace  # info: from pipeline import handoff , health_report , poll , trace
 from registry import load_registry  # info: from registry import load_registry
 from store import connect, feed_row  # info: from store import connect , feed_row
@@ -238,9 +238,13 @@ def test_conditional() -> None:  # info: def test_conditional
 def test_news_update() -> None:  # info: def test_news_update
     registry = load_registry(HERE.parent / "config")  # info: set registry
     assert "markets" in registry["categories"] and "spacex" in registry["categories"]  # info: assert "markets" in registry [ "categories" ] and "spacex" in registry [ "categories" ]
+    assert "chips" in registry["categories"] and "mainland_weather" in registry["categories"]  # info: assert "chips" in registry [ "categories" ] and "mainland_weather" in registry [ "categories" ]
+    assert "mainland_politics" in registry["categories"] and "universities" in registry["categories"]  # info: assert "mainland_politics" in registry [ "categories" ] and "universities" in registry [ "categories" ]
     assert persona_for(0, 0, ("ava", "bruce", "carly")) == "ava"  # info: assert persona_for ( 0 , 0 , ( "ava" , "bruce" , "carly" ) ) == "ava"
     assert persona_for(1, 0, ("ava", "bruce", "carly")) == "bruce"  # info: assert persona_for ( 1 , 0 , ( "ava" , "bruce" , "carly" ) ) == "bruce"
     assert persona_for(0, 1, ("ava", "bruce", "carly")) == "bruce"  # info: assert persona_for ( 0 , 1 , ( "ava" , "bruce" , "carly" ) ) == "bruce"
+    cfg = registry["policy"]["news_update"]  # info: set cfg
+    assert int(cfg.get("target_words") or 0) >= 3000  # info: assert int ( cfg . get ( "target_words" ) or 0 ) >= 3000
     hawaii = {"id": "hi", "nonviolent": True, "category": "hawaii", "provider": "Honolulu Civil Beat", "name": "Honolulu Civil Beat", "priority": "high"}  # info: set hawaii
     crime = {"title": "Shooting in Honolulu", "summary": "A man was killed.", "url": "https://news.test/crime", "guid": "crime"}  # info: set crime
     calm = {"title": "Harbor ferry schedule", "summary": "The state published a new timetable.", "url": "https://news.test/ferry", "guid": "ferry", "published_at": "2026-10-01T18:00:00Z"}  # info: set calm
@@ -251,6 +255,10 @@ def test_news_update() -> None:  # info: def test_news_update
     assert normalize(hawaii, game, registry) is None  # info: assert normalize ( hawaii , game , registry ) is None
     transit = {"title": "Harbor ferry schedule", "summary": "Transportation brief for Honolulu Harbor.", "url": "https://news.test/transportation", "guid": "transit"}  # info: set transit
     assert sports(hawaii, transit, registry) is False  # info: assert sports ( hawaii , transit , registry ) is False
+    politics = {"id": "pol", "centrist": True, "category": "mainland_politics", "provider": "NPR", "name": "NPR Politics", "priority": "high"}  # info: set politics
+    rant = {"title": "Far-left radicals storm the capital", "summary": "A deep state witch hunt.", "url": "https://news.test/rant", "guid": "rant"}  # info: set rant
+    assert partisan(politics, rant, registry) is True  # info: assert partisan ( politics , rant , registry ) is True
+    assert normalize(politics, rant, registry) is None  # info: assert normalize ( politics , rant , registry ) is None
     gated = {"id": "sx", "category": "spacex", "provider": "Spaceflight Now", "name": "Spaceflight Now", "priority": "high", "require_patterns": ["spacex", "starship"]}  # info: set gated
     assert normalize(gated, {"title": "Canada rocket test", "summary": "An engine site.", "url": "https://news.test/rocket", "guid": "rocket"}, registry) is None  # info: assert normalize ( gated , { "title" : "Canada rocket test" , "summary" : "An engine site." , "url" : "https://news.test/rocket" , "guid" : "rocket" } , registry ) is None
     assert normalize(gated, {"title": "Starship test", "summary": "A flight.", "url": "https://news.test/star", "guid": "star"}, registry) is not None  # info: assert normalize ( gated , { "title" : "Starship test" , "summary" : "A flight." , "url" : "https://news.test/star" , "guid" : "star" } , registry ) is not None
@@ -258,19 +266,29 @@ def test_news_update() -> None:  # info: def test_news_update
     assert kept is not None and kept["category"] == "hawaii"  # info: assert kept is not None and kept [ "category" ] == "hawaii"
     long = "The agency published a market note. " * 40  # info: set long
     stories = []  # info: set stories
-    for index, category in enumerate(["markets", "national_security", "spacex", "hawaii", "space"]):  # info: for index , category in enumerate ( [ "markets" , "national_security" , "spacex" , "hawaii" , "space" ] )
-        for copy in range(6):  # info: for copy in range ( 6 )
+    categories = ["markets", "national_security", "spacex", "hawaii", "chips", "global_news", "mainland_weather", "mainland_politics", "science", "universities", "space"]  # info: set categories
+    for index, category in enumerate(categories):  # info: for index , category in enumerate ( categories )
+        for copy in range(8):  # info: for copy in range ( 8 )
             stories.append({  # info: stories . append ( {
                 "id": f"{category}-{copy}", "category": category, "provider": "NPR", "title": f"{category} item {copy} with a live figure {copy}",  # info: "id" : f"{ category }-{ copy }" , "category" : category , "provider" : "NPR" , "title" : f"{ category } item { copy } with a live figure { copy }" ,
-                "summary": long, "url": f"https://news.test/{category}/{copy}", "published_at": f"2026-10-01T1{copy}:00:00Z",  # info: "summary" : long , "url" : f"https://news.test/{ category }/{ copy }" , "published_at" : f"2026-10-01T1{ copy }:00:00Z" ,
+                "summary": long, "url": f"https://news.test/{category}/{copy}", "published_at": f"2026-10-01T{10 + (copy % 9):02d}:00:00Z",  # info: "summary" : long , "url" : f"https://news.test/{ category }/{ copy }" , "published_at" : f"2026-10-01T{ 10 + ( copy % 9 ) :02d }:00:00Z" ,
                 "priority": "high", "cluster_id": f"c-{category}-{copy}", "political": 0, "canonical_url": f"https://news.test/{category}/{copy}",  # info: "priority" : "high" , "cluster_id" : f"c-{ category }-{ copy }" , "political" : 0 , "canonical_url" : f"https://news.test/{ category }/{ copy }" ,
             })  # info: } )
     when = datetime(2026, 10, 1, 10, 0, tzinfo=timezone.utc)  # info: set when
     built = build_update(stories, registry, when)  # info: set built
-    assert built["words"] <= 900  # info: assert built [ "words" ] <= 900
-    assert built["words"] >= 400  # info: assert built [ "words" ] >= 400
-    assert [section["persona"] for section in built["sections"][:4]] == ["ava", "bruce", "carly", "ava"]  # info: assert [ section [ "persona" ] for section in built [ "sections" ] [ : 4 ] ] == [ "ava" , "bruce" , "carly" , "ava" ]
-    assert "Markets." in built["speak"] and "SpaceX." in built["speak"] and "killed" not in built["speak"].lower()  # info: assert "Markets." in built [ "speak" ] and "SpaceX." in built [ "speak" ] and "killed" not in built [ "speak" ] . lower ( )
+    assert built["words"] <= 4200  # info: assert built [ "words" ] <= 4200
+    assert built["words"] >= 2000  # info: assert built [ "words" ] >= 2000
+    ids = [section["id"] for section in built["sections"]]  # info: set ids
+    assert "chips" in ids and "world" in ids and "mainland_weather" in ids and "mainland_politics" in ids  # info: assert "chips" in ids and "world" in ids and "mainland_weather" in ids and "mainland_politics" in ids
+    assert "science" in ids and "universities" in ids  # info: assert "science" in ids and "universities" in ids
+    voice_words = {"ava": 0, "bruce": 0, "carly": 0}  # info: set voice_words
+    for section in built["sections"]:  # info: for section in built [ "sections" ]
+        voice_words[section["persona"]] = voice_words.get(section["persona"], 0) + len(section["text"].split())  # info: voice_words [ section [ "persona" ] ] = voice_words . get ( section [ "persona" ] , 0 ) + len ( section [ "text" ] . split ( ) )
+    assert set(voice_words) >= {"ava", "bruce", "carly"}  # info: assert set ( voice_words ) >= { "ava" , "bruce" , "carly" }
+    values = list(voice_words.values())  # info: set values
+    assert max(values) - min(values) <= max(120, int(0.25 * (sum(values) / 3)))  # info: assert max ( values ) - min ( values ) <= max ( 120 , int ( 0.25 * ( sum ( values ) / 3 ) ) )
+    assert "Markets." in built["speak"] and "SpaceX." in built["speak"] and "Tech and chips." in built["speak"]  # info: assert "Markets." in built [ "speak" ] and "SpaceX." in built [ "speak" ] and "Tech and chips." in built [ "speak" ]
+    assert "World." in built["speak"] and "Universities." in built["speak"] and "killed" not in built["speak"].lower()  # info: assert "World." in built [ "speak" ] and "Universities." in built [ "speak" ] and "killed" not in built [ "speak" ] . lower ( )
     assert "football" not in built["speak"].lower() and "sports" not in built["speak"].lower()  # info: assert "football" not in built [ "speak" ] . lower ( ) and "sports" not in built [ "speak" ] . lower ( )
     assert "2026" in built["speak"]  # info: assert "2026" in built [ "speak" ]
 

@@ -52,12 +52,32 @@ def _cfg(registry: dict) -> dict:  # info: def _cfg
 
 # ====================================================
 # SECTION: function persona_for
-# What it does: Leapfrog Ava, Bruce, and Carly. The Hawaii hour picks the first desk.
+# What it does: Preferred voice for one desk index. The Hawaii hour picks the first preference.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def persona_for(hour: int, index: int, roster: tuple[str, ...]) -> str:  # info: def persona_for
     names = roster or ("ava", "bruce", "carly")  # info: set names
     return names[(int(hour) + int(index)) % len(names)]  # info: return names [ ( int ( hour ) + int ( index ) ) % len ( names ) ]
+
+
+# ====================================================
+# SECTION: function balance_personas
+# What it does: Assign Ava, Bruce, and Carly so spoken words stay roughly equal across the hour.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def balance_personas(sections: list[dict], hour: int, roster: tuple[str, ...]) -> list[dict]:  # info: def balance_personas
+    names = tuple(roster) or ("ava", "bruce", "carly")  # info: set names
+    totals = {name: 0 for name in names}  # info: set totals
+    ranked = sorted(enumerate(sections), key=lambda pair: _words(pair[1].get("text") or ""), reverse=True)  # info: set ranked
+    assigned = {}  # info: set assigned
+    for index, section in ranked:  # info: for index , section in ranked
+        prefer = persona_for(hour, index, names)  # info: set prefer
+        voice = min(names, key=lambda name: (totals[name], 0 if name == prefer else 1, names.index(name)))  # info: set voice
+        assigned[index] = voice  # info: assigned [ index ] = voice
+        totals[voice] += _words(section.get("text") or "")  # info: totals [ voice ] += _words ( section . get ( "text" ) or "" )
+    for index, section in enumerate(sections):  # info: for index , section in enumerate ( sections )
+        section["persona"] = assigned[index]  # info: section [ "persona" ] = assigned [ index ]
+    return sections  # info: return sections
 
 
 # ====================================================
@@ -150,7 +170,7 @@ def _desk_lines(desk: dict, fresh: list[dict], older: list[dict], budget: int, r
 
 # ====================================================
 # SECTION: function build_update
-# What it does: Write the desks for one hour. Sports stories are left out. The first voice follows the Hawaii hour.
+# What it does: Write the desks for one hour. Sports stories are left out. Per-desk word budgets apply. Voices share airtime evenly.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def build_update(stories: list[dict], registry: dict, when: datetime) -> dict:  # info: def build_update
@@ -161,7 +181,7 @@ def build_update(stories: list[dict], registry: dict, when: datetime) -> dict:  
     fresh_hours = float(cfg.get("fresh_hours") or 18)  # info: set fresh_hours
     backfill_hours = float(cfg.get("backfill_hours") or 36)  # info: set backfill_hours
     desk_words = int(cfg.get("desk_words") or 150)  # info: set desk_words
-    target = int(cfg.get("target_words") or 750)  # info: set target
+    target = int(cfg.get("target_words") or 3500)  # info: set target
     stories = [story for story in stories if not sports({}, story, registry)]  # info: set stories
     fresh = [story for story in stories if _recent(story, now, fresh_hours)]  # info: set fresh
     older = [story for story in stories if _recent(story, now, backfill_hours)]  # info: set older
@@ -173,8 +193,9 @@ def build_update(stories: list[dict], registry: dict, when: datetime) -> dict:  
     sections = []  # info: set sections
     for index, desk in enumerate(primary):  # info: for index , desk in enumerate ( primary )
         lead = str(desk.get("lead") or desk.get("name") or "News.")  # info: set lead
+        allot = int(desk.get("words") or desk_words)  # info: set allot
         overhead = _words(lead) + (_words(opener) if index == 0 else 0)  # info: set overhead
-        budget = max(24, desk_words - overhead)  # info: set budget
+        budget = max(24, allot - overhead)  # info: set budget
         lines, picked = _desk_lines(desk, fresh, older, budget, registry, seen)  # info: lines , picked = _desk_lines ( desk , fresh , older , budget , registry , seen )
         if not lines:  # info: if not lines :
             lines = [f"No fresh items on the {desk.get('name') or 'news'} desk."]  # info: set lines
@@ -192,7 +213,9 @@ def build_update(stories: list[dict], registry: dict, when: datetime) -> dict:  
     spent = sum(_words(section["text"]) for section in sections)  # info: set spent
     if fill is not None and target - spent > 40:  # info: if fill is not None and target - spent > 40 :
         lead = str(fill.get("lead") or "Also in the news.")  # info: set lead
-        budget = max(24, target - spent - _words(lead) - 6)  # info: set budget
+        remaining = target - spent - _words(lead) - 6  # info: set remaining
+        cap = int(fill.get("words") or remaining)  # info: set cap
+        budget = max(24, min(remaining, cap))  # info: set budget
         lines, picked = _desk_lines(fill, fresh, older, budget, registry, seen)  # info: lines , picked = _desk_lines ( fill , fresh , older , budget , registry , seen )
         if lines:  # info: if lines :
             parts = [lead, *lines]  # info: set parts
@@ -206,6 +229,7 @@ def build_update(stories: list[dict], registry: dict, when: datetime) -> dict:  
             })  # info: } )
     if sections:  # info: if sections :
         sections[-1]["text"] = sections[-1]["text"].rstrip() + " That is the news update."  # info: sections [ - 1 ] [ "text" ] = sections [ - 1 ] [ "text" ] . rstrip ( ) + " That is the news update."
+    sections = balance_personas(sections, local.hour, roster)  # info: set sections
     speak = " ".join(section["text"] for section in sections)  # info: set speak
     return {  # info: return {
         "report": str(cfg.get("report") or "news_update"),  # info: "report" : str ( cfg . get ( "report" ) or "news_update" ) ,

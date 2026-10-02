@@ -353,7 +353,7 @@ def compose(registry: dict, conn, root: Path | None = None) -> list[str]:  # inf
 
 # ====================================================
 # SECTION: function _ordered
-# What it does: Order the queue so urgent and multi-source global items come before offbeat briefs.
+# What it does: Order the queue so urgent and multi-source world, chips, weather, and politics items come before offbeat briefs.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _ordered(registry: dict, conn) -> list[dict]:  # info: def _ordered
@@ -364,7 +364,8 @@ def _ordered(registry: dict, conn) -> list[dict]:  # info: def _ordered
             continue  # info: continue
         category = registry["categories"].get(cluster["category"]) or {"rank": 50}  # info: set category
         multi = 0  # info: set multi
-        if cluster["category"] == "global_news" and int(cluster["source_count"] or 0) >= 2:  # info: if cluster [ "category" ] == "global_news" and int ( cluster [ "source_count" ] or 0 ) >= 2 :
+        boost = {"global_news", "chips", "mainland_weather", "mainland_politics", "artificial_intelligence"}  # info: set boost
+        if cluster["category"] in boost and int(cluster["source_count"] or 0) >= 2:  # info: if cluster [ "category" ] in boost and int ( cluster [ "source_count" ] or 0 ) >= 2 :
             multi = 1  # info: set multi
         rows.append((WEIGHT.get(item["priority"], 2), multi, -int(category.get("rank") or 50), item["created_at"], dict(item)))  # info: rows . append ( ( WEIGHT . get ( item [ "priority" ] , 2 ) , multi , - int ( category . get ( "rank" ) or 50 ) , item [ "created_at" ] , dict ( item ) ) )
     rows.sort(key=lambda row: (row[0], row[1], row[2], row[3]), reverse=True)  # info: rows . sort ( key = lambda row : ( row [ 0 ] , row [ 1 ] , row [ 2 ] , row [ 3 ] ) , reverse = True )

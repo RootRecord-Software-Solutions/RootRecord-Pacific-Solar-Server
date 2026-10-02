@@ -9,7 +9,7 @@ fetch:
   max_bytes: 2000000
   user_agent: "RootRecord Radio RSS/1.0"
   max_redirects: 5
-  max_feeds_per_run: 18
+  max_feeds_per_run: 24
   max_items_per_feed: 20
   max_broadcast_age_hours: 36
   cluster_window_hours: 48
@@ -42,6 +42,8 @@ overlap_patterns:
 category_rules:
   - category: spacex
     patterns: ["spacex", "starship", "falcon 9", "falcon heavy"]
+  - category: universities
+    patterns: ["university", "universities", "college research", "campus", "peer-reviewed study", "academic journal"]
   - category: chips
     patterns: ["nvidia", "cuda", "geforce", "tensor core", "semiconductor", "chipmaker", "foundry", " wafer", "gpu ", " gpus", "hbm3", "hbm4", "blackwell gpu", "hopper gpu", "microsoft", "azure", "openai", "google cloud", "alphabet", "amazon web services", " aws ", "meta platforms", "apple silicon", "tsmc", "taiwan semiconductor", "samsung electronics", "intel ", "amd ", "broadcom", "qualcomm", "arm holdings"]
   - category: maritime
@@ -63,6 +65,11 @@ priority_signals:
     - "known exploited"
     - "major outage"
   high:
+    - "breakthrough"
+    - "peer-reviewed"
+    - "nature journal"
+    - "science journal"
+    - "university study"
     - "launch"
     - "artemis"
     - "vulnerability"
@@ -238,6 +245,10 @@ programs:
     report: chips_brief
     voice: am_echo
     lead: "Tech and chips brief."
+  UNIVERSITIES_BRIEF:
+    report: universities_brief
+    voice: af_heart
+    lead: "Universities brief."
   MAINLAND_WEATHER_BRIEF:
     report: mainland_weather_brief
     voice: af_nova
@@ -271,14 +282,17 @@ programs:
     voice: af_heart
     lead: "Hawaii brief."
 
-# One hourly bulletin aimed at about ten spoken minutes (~150 words/min).
-# Freed former sports airtime goes to chips/NVIDIA, world news, U.S. mainland weather, and centrist mainland politics.
-# Voices leapfrog by the Hawaii hour: midnight Ava, 1 Bruce, 2 Carly, then the next desk takes the next voice.
+# One hourly bulletin aimed at about twenty to twenty-five spoken minutes (~150 words/min).
+# Solar desk uses about five to seven minutes; remaining airtime (~20-25 min) fills here instead of sports.
+# Weighting: tech/chips (NVIDIA, Microsoft, big tech), truly global world news (Asia, Australia, Africa,
+# Europe, Latin America, Middle East, North America), U.S. mainland weather, centrist mainland politics,
+# universities, and science breakthroughs — plus markets, security, SpaceX, and Hawaii.
+# Voices: Ava, Bruce, and Carly share the hour with roughly equal airtime; Hawaii hour still picks the first preference.
 # Optional per-desk words override desk_words. Primary desks are polled by news-hour.
 news_update:
   report: news_update
-  target_words: 1500
-  desk_words: 150
+  target_words: 3500
+  desk_words: 220
   fresh_hours: 18
   backfill_hours: 36
   roster: [ava, bruce, carly]
@@ -286,48 +300,59 @@ news_update:
     - id: markets
       name: Markets
       lead: "Markets."
-      words: 120
+      words: 220
       categories: [markets, economics_finance, energy_market]
     - id: defence
       name: National security
       lead: "National security."
-      words: 120
+      words: 220
       categories: [national_security]
     - id: spacex
       name: SpaceX
       lead: "SpaceX."
-      words: 100
+      words: 180
       categories: [spacex]
     - id: hawaii
       name: Hawaii
       lead: "Hawaii."
-      words: 120
+      words: 220
       categories: [hawaii]
     - id: chips
       name: Tech and chips
       lead: "Tech and chips."
-      words: 280
+      words: 420
       categories: [chips, artificial_intelligence, developer_ecosystem]
     - id: world
       name: World
       lead: "World."
-      words: 280
+      words: 520
       categories: [global_news]
     - id: mainland_weather
       name: Mainland weather
       lead: "Mainland weather."
-      words: 240
+      words: 360
       categories: [mainland_weather]
     - id: mainland_politics
       name: Mainland politics
       lead: "Mainland politics."
-      words: 240
+      words: 360
       categories: [mainland_politics]
+    - id: science
+      name: Science
+      lead: "Science."
+      words: 400
+      categories: [science, research, science_offbeat]
+    - id: universities
+      name: Universities
+      lead: "Universities."
+      words: 340
+      categories: [universities]
     - id: also
       name: Also
       lead: "Also in the news."
       fill: true
-      categories: [space, cybersecurity, science, technology, aviation]
+      words: 280
+      categories: [space, cybersecurity, technology, aviation]
 
 publishers:
   NASA: "NASA"
@@ -385,6 +410,14 @@ publishers:
   "Deutsche Welle": "Deutsche Welle"
   "France 24": "France 24"
   "Latin America Reports": "Latin America news desks"
+  "White House": "the White House"
+  "United Nations": "the United Nations"
+  Nature: "Nature"
+  "MIT News": "MIT News"
+  "Stanford News": "Stanford News"
+  "Harvard Gazette": "the Harvard Gazette"
+  "UC Berkeley": "UC Berkeley"
+  "Phys.org": "Phys.org"
   NOAA: "the National Oceanic and Atmospheric Administration"
   "National Hurricane Center": "the National Hurricane Center"
   "Storm Prediction Center": "the Storm Prediction Center"

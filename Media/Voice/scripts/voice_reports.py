@@ -1616,6 +1616,10 @@ def b_current_report(t: datetime):  # info: def b_current_report
         host_say = host_say[:-1] + f", temperature {perf['temp_c']} degrees Celsius."  # info: set host_say
     sp.append(host_say)  # info: sp . append ( host_say )
     sp.extend(conn_say)  # info: sp . extend connectivity lines
+    mode_row, mode_say = system_perf.power_lines()  # info: set mode_row , mode_say
+    if mode_say:  # info: if mode_say
+        md.append(f"- Host power mode: {mode_row.get('mode')}")  # info: md . append power mode
+        sp.append(mode_say)  # info: sp . append power mode
     say_change(sp, "system.cpu_pct", round(perf["cpu_pct"]), "CPU", t)  # info: say_change cpu
     say_change(sp, "system.mem_pct", round(perf["mem_pct"]), "Memory", t)  # info: say_change memory
     say_change(sp, "system.disk_pct", round(perf["disk_pct"]), "Disk", t)  # info: say_change disk
