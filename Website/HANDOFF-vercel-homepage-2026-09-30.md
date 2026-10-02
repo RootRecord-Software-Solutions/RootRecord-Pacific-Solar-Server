@@ -1,6 +1,16 @@
 ## Handoff — 2026-09-30 — Mainland → Vercel homepage
 
-### Current (2026-09-30 21:00 HST)
+### Locked 2026-10-01
+
+`www.rootrecord.cloud` stays on Vercel. Do not point it at the Mainland tunnel. `ssh.rootrecord.cloud` is retired. `ml1` and `rr-aws` use `ml1.rootrecord.cloud` through cloudflared. Direct fallback `rr-aws-ip` is `3.140.195.32`. `ml2` uses `ml2.rootrecord.cloud`. Direct fallback `ml2-ip` is `3.149.238.83`. Do not restart cloudflared over `ssh ml1`.
+
+Mainland One is radio only. Tunnel Mainland-One is `939b16f7-7d13-4776-bd4d-80fe8021fc72`. `radio.rootrecord.cloud` is HTTP to `127.0.0.1:8092`. The listener stream is `https://radio.rootrecord.cloud/radio/live.mp3` (`audio/mpeg`, 128 kbps). Now-playing is `https://radio.rootrecord.cloud/radio/now.json`. The station library is Opus. The public mix is that mp3. There is no music bed on the live host.
+
+`api.rootrecord.cloud` is aimed at Mainland Two (tunnel `bd8e68a4-8a97-4b20-afd9-b058473a0a22`). The API process is not there yet. Do not treat it as live on Mainland One. `rootserver.rootrecord.cloud` stays the Pacific poller. Earthquake and hurricane voice reports are Pacific poller jobs. Pollers have not moved to Mainland Two.
+
+The DNS table and SSH paragraph below are the evening of 2026-09-30. They are not the live routes.
+
+### Evening of 2026-09-30 (not the live routes)
 
 The public page is Vercel project `rootrecord` (team `rrc-ore`). Production is `https://www.rootrecord.cloud/`. `https://rootrecord.vercel.app/` serves the same page. AWS is not the site.
 
@@ -100,4 +110,4 @@ Merged JSON the globe process built while `www` was still that process, `GET /ap
 
 ### Next recommended action
 
-- Leave `play.rootmc.net` and the `rootserver` poller tunnel alone unless Alexander asks. SSH is the Hawaii-to-AWS path (`rr-aws` / `rr-aws-ip` → `18.118.30.226`). The public API is already `https://api.rootrecord.cloud`.
+- Leave `play.rootmc.net` and the `rootserver` poller tunnel alone unless Alexander asks. Desk SSH is `ml1.rootrecord.cloud` and `ml2.rootrecord.cloud`. `api.rootrecord.cloud` is aimed at Mainland Two and is not live yet.

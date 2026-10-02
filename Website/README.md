@@ -7,8 +7,9 @@ Desk runtime for Stripe snapshots, Vercel failed-build records, and last-known o
 | Public page | [Home/](Home/) — the RootRecord-Website presentation layer. Home, ecosystem, infrastructure, systems, intelligence, data, knowledge, security, status, and about. Public names are Hawaiʻi and Mainland Server |
 | GitHub / Vercel | Org `RootRecord-Software-Solutions/RootRecord-Website` (row `website`, Vercel) and personal `rootrecordsoftwaresolutions/RootRecord-Website` (row `website-personal`). Both pull and push from `Github/scripts/repos.conf` |
 | Public page | `https://www.rootrecord.cloud/` on Vercel. Apex CNAME matches `www` and 308s there. Contract: [HANDOFF-vercel-homepage-2026-09-30.md](HANDOFF-vercel-homepage-2026-09-30.md) |
-| SSH | `ssh.rootrecord.cloud` A `18.118.30.226`, proxy off. `rr-aws` and `rr-aws-ip` use that address. Hawaii snapshots go to AWS over SSH |
-| API | The page requests `https://api.rootrecord.cloud`. That name is A `18.118.30.226`, proxy off. Caddy on AWS proxies it to `127.0.0.1:8091`. Do not use port 8787 |
+| SSH | `ssh.rootrecord.cloud` is retired. `ml1` and `rr-aws` use `ml1.rootrecord.cloud` through cloudflared. Direct fallback `rr-aws-ip` is `3.140.195.32`. Do not restart cloudflared over `ssh ml1` |
+| Radio | Mainland One is radio only. Listeners use `https://radio.rootrecord.cloud/radio/live.mp3` (`audio/mpeg`, 128 kbps) and `https://radio.rootrecord.cloud/radio/now.json`. The station library is Opus |
+| API | `api.rootrecord.cloud` is aimed at Mainland Two. The API process is not there yet. Do not treat it as live on Mainland One. Do not use port 8787 |
 | Last-known file | `2 - RootRecord-Database/Website/operations.json` and the Hawaii snapshot `Communications/network/local-data-globe/rebroadcast/status-current.json` |
 
 `3 - RootRecord-Website/` is not on this desk. Do not recreate it. Do not bind port 3001. `https://rootserver.rootrecord.cloud/` is the poller on `127.0.0.1:8799`, not this page.

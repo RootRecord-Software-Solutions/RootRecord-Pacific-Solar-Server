@@ -49,6 +49,6 @@ Products on the public site are software Root Record ships: Business Manager by 
 
 ## Status feed
 
-The homepage, systems page, and status page request `https://api.rootrecord.cloud` for public readings. A missing reading stays missing. Counts and field values are shown only when that feed reports them.
+The homepage, systems page, and status page request `https://api.rootrecord.cloud` for public readings. That name is aimed at Mainland Two. The API process is not there yet, so a missing reading stays missing. Counts and field values are shown only when that feed reports them.
 
-The radio page and the live page play `https://radio.rootrecord.cloud/radio/live.mp3`. Now-playing is `https://radio.rootrecord.cloud/radio/now.json`.
+The radio page and the live page play `https://radio.rootrecord.cloud/radio/live.mp3` (`audio/mpeg`, 128 kbps). Now-playing is `https://radio.rootrecord.cloud/radio/now.json`. The station library is Opus. Those library files are not the public mix. There is no music bed on the live Mainland host.

@@ -2,8 +2,9 @@
 """Send a finished voice report to the Mainland radio library.
 
 Hawaii writes the WAV. This script encodes it and replaces that one
-<report>_current.ogg over SSH. Older copies and any other name in the
-reports folder are removed. It never downloads. Music is a separate
+<report>_current.opus over SSH. Older copies and any other name in the
+reports folder are removed. A report that is still .ogg stays until
+this report replaces it. It never downloads. Music is a separate
 one-way copy of the library that already sits on this desk.
 """
 from __future__ import annotations
@@ -30,7 +31,7 @@ REPORTS_REMOTE = os.environ.get(
     "RR_RADIO_REPORTS",
     "/home/ubuntu/rootrecord-radio/audio/reports",
 )
-KEEP_REPORT = re.compile(r"^[a-z0-9]+(?:_[a-z0-9]+)*_current\.ogg$")
+KEEP_REPORT = re.compile(r"^[a-z0-9]+(?:_[a-z0-9]+)*_current\.(?:ogg|opus)$")
 MUSIC = Path(os.environ.get(
     "RR_RADIO_MUSIC",
     "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/2 - RootRecord-US-Mainland-One/communications/rootrecord-radio/audio/music",
@@ -83,7 +84,7 @@ def audio_duration(path: Path) -> float:
 
 
 def prune_reports() -> bool:
-    """Drop remote junk. Keep *_current.ogg and partials younger than 15 minutes."""
+    """Drop remote junk. Keep *_current.ogg and *_current.opus, and partials younger than 15 minutes."""
     remote_dir = REPORTS_REMOTE.rstrip("/")
     script = (
         "RR_RADIO_REPORTS=" + shlex.quote(remote_dir)
@@ -123,15 +124,20 @@ def push_report(report: str) -> dict:
     if not wav.is_file():
         return {"ok": False, "detail": "no_wav", "report": report}
     remote_dir = REPORTS_REMOTE.rstrip("/")
-    final_name = f"{report}_current.ogg"
+    final_name = f"{report}_current.opus"
     partial = remote_dir + "/." + final_name + ".partial"
     final = remote_dir + "/" + final_name
-    fd, tmp_name = tempfile.mkstemp(prefix=report + "-", suffix=".ogg")
+    old_ogg = remote_dir + "/" + f"{report}_current.ogg"
+    fd, tmp_name = tempfile.mkstemp(prefix=report + "-", suffix=".opus")
     os.close(fd)
     tmp = Path(tmp_name)
     try:
         made = subprocess.run(
-            ["ffmpeg", "-y", "-i", str(wav), "-c:a", "libvorbis", "-q:a", "5", str(tmp)],
+            [
+                "ffmpeg", "-y", "-i", str(wav),
+                "-c:a", "libopus", "-b:a", "24k", "-application", "voip", "-ac", "1",
+                str(tmp),
+            ],
             capture_output=True,
             timeout=180,
         )
@@ -175,7 +181,8 @@ def push_report(report: str) -> dict:
             return {"ok": False, "detail": "invalid_audio", "report": report}
         moved = subprocess.run(
             SSH + [HOST, "mv -f -- " + shlex.quote(partial) + " " + shlex.quote(final)
-                   + " && chmod 644 -- " + shlex.quote(final)],
+                   + " && chmod 644 -- " + shlex.quote(final)
+                   + " && rm -f -- " + shlex.quote(old_ogg)],
             capture_output=True,
             text=True,
             timeout=40,
