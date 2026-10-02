@@ -15,7 +15,7 @@
 # Secrets: config/tuya-devices.local.json (gitignored) holds local_key per plug.
 # Template: config/tuya-devices.example.json. local_key is NEVER printed or logged.
 # Alternative path (no keys): flash Tasmota/ESPHome -> plain HTTP/MQTT; see Library
-#   Documentation/00-architecture/Smart-Devices-Energy.md
+#   Documentation/06-Domains-and-External-Systems/Smart-Devices-Energy.md
 # ==============================================================================
 """Tuya local driver scaffold: listen (no key) / config-check / status / on / off."""  # info: """Tuya local driver scaffold: listen (no key) / config-check / status / on / off."""
 from __future__ import annotations  # info: from __future__ import annotations
