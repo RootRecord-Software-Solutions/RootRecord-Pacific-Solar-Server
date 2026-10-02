@@ -70,13 +70,17 @@ class PublicReportTests(unittest.TestCase):  # info: class
             rows = samples(root, "energy_report", start, end)  # info: set rows
             self.assertEqual(len(rows), 1)  # info: assert one
 
-    def test_full_reports_are_scheduled_on_the_hour(self):  # info: def test_schedule
+    def test_voice_reports_render_before_the_radio_snapshot(self):  # info: def test_schedule
         jobs = (DISCORD.parents[1] / "Automations" / "scripts" / "jobs.py").read_text(encoding="utf-8")  # info: set jobs
-        for stamp in ("09:02", "12:02", "21:02", "23:30", ":06", ":08", "16:55", "07:18"):  # info: for stamp
+        for stamp in ("23:30", ":06", ":08", "16:55", "07:18", '"only_at_minutes": [15, 30, 45]'):  # info: for stamp
             self.assertNotIn(stamp, jobs)  # info: assert gone
         self.assertIn('"at_times": ["00:00", "08:00", "16:00"]', jobs)  # info: assert 8h
         self.assertIn('"id": "discord_report_24h"', jobs)  # info: assert noon job
-        self.assertIn('"only_at_minutes": [15, 30, 45]', jobs)  # info: assert nws notice
+        self.assertIn('"only_at_minutes": [12, 42]', jobs)  # info: assert voice lead
+        self.assertIn('"only_at_minutes": [0, 30]', jobs)  # info: assert chime stays on the announcement
+        self.assertIn('"at_times": ["09:02"]', jobs)  # info: assert morning inside window
+        self.assertIn('"at_times": ["12:02"]', jobs)  # info: assert midday inside window
+        self.assertIn('"at_times": ["21:02"]', jobs)  # info: assert late inside window
 
 
 if __name__ == "__main__":  # info: if main
