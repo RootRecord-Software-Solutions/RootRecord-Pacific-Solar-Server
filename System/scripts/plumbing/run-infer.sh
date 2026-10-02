@@ -23,7 +23,7 @@ case "$TARGET" in  # info: case
   carly) OM=carly-telegram ;;  # info: carly
   *) OM="$TARGET" ;;  # info: command
 esac  # info: esac
-# Specialist hook (g3-specialists, landed 2026-09-29 ~04:56 HST; Library 01-AI-and-Agent-Runtime/AI-Specialist-Models-and-Routing.md §4).
+# Specialist hook (g3-specialists, landed 2026-09-29 ~04:56 HST; Library 10-AI-and-Agent-Runtime/AI-Specialist-Models-and-Routing.md §4).
 # OFF unless RR_SPECIALIST_ROUTING=1 -> nothing below runs and behaviour is byte-identical. ON: route-specialist.py picks the
 # specialist (voices by prompt; RR_SPECIALIST / TARGET=rr-* forced). Ollama path -> its model; FLM path -> its Modelfile SYSTEM
 # (+ temperature / num_predict) as the system message. JSONL gains "specialist" + "route_confidence". Router errors -> generic.

@@ -15,7 +15,7 @@
 # FLM/NPU: flm cannot load Ollama Modelfiles, so for prefer=flm the SYSTEM block is sent as the system
 #      message to the FLM base model (llama3.2:1b). --with-system adds RR_SPEC_SYSTEM to --shell output.
 # Gate: run-infer.sh hook LANDED 2026-09-29 ~04:56, OFF unless RR_SPECIALIST_ROUTING=1 — see Library
-#      Documentation/01-AI-and-Agent-Runtime/AI-Specialist-Models-and-Routing.md. Fail-safe: errors -> generic, exit 0.
+#      Documentation/10-AI-and-Agent-Runtime/AI-Specialist-Models-and-Routing.md. Fail-safe: errors -> generic, exit 0.
 # HOW TO ADD a specialist: see the "_info" block in the config and the Library doc.
 # Created 2026-09-29 HST (g3-specialists). Bak snapshots: 2 - RootRecord-Database/Archive/Github-desk-backups/
 # ==============================================================================

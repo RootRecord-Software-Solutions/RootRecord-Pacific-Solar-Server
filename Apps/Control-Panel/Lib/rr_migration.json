@@ -10,7 +10,7 @@
       "note": "Sandbox replies are on. Live council and private DMs stay quiet because RR_RELAY_REPLIES defaults to 0. Council inference is NPU llama3.2:3b on demand. Alexander has not opted the live room in.",
       "settings": "messaging",
       "sources": [
-        "5 - RootRecord-Library/Documentation/02-Runtime-Jobs-and-Control/G3-Runtime-Verification-Checklist-2026-09-28.md",
+        "5 - RootRecord-Library/Documentation/11-Runtime-Jobs-and-Control/G3-Runtime-Verification-Checklist-2026-09-28.md",
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/Servers_Cutover_Work_Order_WO-SRV-2026-09-27.md"
       ]
     },
@@ -46,7 +46,7 @@
       "settings": "cameras",
       "sources": [
         "5 - RootRecord-Library/Documentation/06-development/Work-Orders/A-EYES_Work_Order_WO-AEYES-2026-09-27.md",
-        "5 - RootRecord-Library/Documentation/04-Migration-and-Legacy-Recovery/Residual-Path-Retirement-Table-2026-09-28.md"
+        "5 - RootRecord-Library/Documentation/13-Migration-and-Legacy-Recovery/Residual-Path-Retirement-Table-2026-09-28.md"
       ]
     },
     {
@@ -123,7 +123,7 @@
       "note": "~/.ollama/skills was given back to Ollama at 17:45 HST (desk folders only). The G2 checkout, HEAD 6483586, is at Old repos deleted and merged/ollama-skills-g2-2026-09-30. The skills sync row is off. That checkout is not retired.",
       "settings": "services",
       "sources": [
-        "5 - RootRecord-Library/Documentation/04-Migration-and-Legacy-Recovery/Residual-Path-Retirement-Table-2026-09-28.md"
+        "5 - RootRecord-Library/Documentation/13-Migration-and-Legacy-Recovery/Residual-Path-Retirement-Table-2026-09-28.md"
       ]
     },
     {

@@ -35,7 +35,7 @@ Navigation is Home, Products, Services, Solutions, About, Security, Status, and 
 
 ## Service windows
 
-`service-notice.json` in this folder is the public list of planned down times. An empty `windows` array means there is no window. The homepage banner (`assets/service-banner.js`) shows a window that is active, or one that starts inside 24 hours. Dismiss hides that window for the browser session. During an active window, `assets/live.js` shows the stored network counts and labels the panel planned-down. Root Monitor's Telemetry page is what writes the file. The contract is Library `Documentation/02-Runtime-Jobs-and-Control/Desk-Automations-and-Service-Windows.md`.
+`service-notice.json` in this folder is the public list of planned down times. An empty `windows` array means there is no window. The homepage banner (`assets/service-banner.js`) shows a window that is active, or one that starts inside 24 hours. Dismiss hides that window for the browser session. During an active window, `assets/live.js` shows the stored network counts and labels the panel planned-down. Root Monitor's Telemetry page is what writes the file. The contract is Library `Documentation/11-Runtime-Jobs-and-Control/Desk-Automations-and-Service-Windows.md`.
 
 ## Live readings
 

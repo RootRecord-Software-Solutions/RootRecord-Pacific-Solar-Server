@@ -70,7 +70,7 @@ DRY_RUN=1 bash "…/Reports/scripts/weekly_archive_logs.sh"
 in the templates' exact structure; `template_validate.py` rejects any heading / table-column / vocabulary mismatch and
 flags numbers not found in the sources. Output: non-git `test-reports/Templates/<Template-Name>_current.md` (+ `Archive/`),
 never the Library; publishing to the Library stays manual. Free text only: `rr-exec` via `run-infer.sh` (facts-only prompt; unsupported drafts fall back to fixed text).
-Job `template_reports_daily` 18:40, **OFF** unless `RR_TEMPLATE_REPORTS=1`. Doc: Library `01-AI-and-Agent-Runtime/Template-Report-Generation.md`.
+Job `template_reports_daily` 18:40, **OFF** unless `RR_TEMPLATE_REPORTS=1`. Doc: Library `10-AI-and-Agent-Runtime/Template-Report-Generation.md`.
 
 ```bash
 python3 "…/Reports/template_fill.py" --all --draft none --dry-run     # validate only, no writes, no model

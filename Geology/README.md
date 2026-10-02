@@ -106,4 +106,4 @@ Deploy path after import: `jobs.py` entries landed gated (2026-09-29); enabling 
 
 ---
 
-*Ownership declared 2026-09-28 HST. Scripts landed 2026-09-29 (migration-geology; Library `Documentation/04-Migration-and-Legacy-Recovery/Old-Repo-Migration-Matrix.md`).*
+*Ownership declared 2026-09-28 HST. Scripts landed 2026-09-29 (migration-geology; Library `Documentation/13-Migration-and-Legacy-Recovery/Old-Repo-Migration-Matrix.md`).*

@@ -29,7 +29,7 @@ ENERGY = DB / "Energy"  # info: set ENERGY
 SCHEMA = 2  # info: set SCHEMA
 PROJ = DB / "System" / "status" / "projections"  # info: set PROJ
 ENSURE = PACIFIC / "Communications" / "telegram" / "scripts" / "ensure-relay.sh"  # info: set ENSURE
-MATRIX = Path("/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library/Documentation/04-Migration-and-Legacy-Recovery/Old-Repo-Migration-Matrix.md")  # info: set MATRIX
+MATRIX = Path("/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library/Documentation/13-Migration-and-Legacy-Recovery/Old-Repo-Migration-Matrix.md")  # info: set MATRIX
 LEDGER = Path("/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library/Documentation/01-operations/2026-09-30-whats-left-for-alexander.md")  # info: set LEDGER
 
 # ====================================================
