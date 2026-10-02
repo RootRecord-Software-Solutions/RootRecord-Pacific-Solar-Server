@@ -30,7 +30,7 @@ SCHEMA = 2  # info: set SCHEMA
 PROJ = DB / "System" / "status" / "projections"  # info: set PROJ
 ENSURE = PACIFIC / "Communications" / "telegram" / "scripts" / "ensure-relay.sh"  # info: set ENSURE
 MATRIX = Path("/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library/Documentation/13-Migration-and-Legacy-Recovery/Old-Repo-Migration-Matrix.md")  # info: set MATRIX
-LEDGER = Path("/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library/Documentation/01-operations/2026-09-30-whats-left-for-alexander.md")  # info: set LEDGER
+LEDGER = Path("/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library/Documentation/01-Operations/2026-09-30-whats-left-for-alexander.md")  # info: set LEDGER
 
 # ====================================================
 # SECTION: function now_local
@@ -603,7 +603,7 @@ def write_projections(doc: dict, slices: dict) -> None:  # info: def write_proje
     for voice, role in roles.items():  # info: for voice , role in roles . items ( )
         caps = []  # info: set caps
         try:  # info: try :
-            reg = json.loads((ECOSYSTEM / "5 - RootRecord-Library" / "Documentation" / "02-agents" / "capabilities" / "capability-registry.json").read_text(encoding="utf-8"))  # info: set reg
+            reg = json.loads((ECOSYSTEM / "5 - RootRecord-Library" / "Documentation" / "02-Agents" / "Capabilities" / "capability-registry.json").read_text(encoding="utf-8"))  # info: set reg
             caps = [row.get("id") for row in reg.get("capabilities") or [] if (row.get("agents") or {}).get(voice) == "allowed" and row.get("agent_may_invoke")]  # info: set caps
         except (OSError, ValueError):  # info: except ( OSError , ValueError )
             caps = []  # info: set caps

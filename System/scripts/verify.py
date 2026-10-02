@@ -84,7 +84,7 @@ def exe_present(exe: str) -> bool:  # info: def exe_present
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def source_checks() -> None:  # info: def source_checks
-    handoff = ROOT / "5 - RootRecord-Library" / "Documentation" / "01-operations" / "HANDOFF.md"  # info: set handoff
+    handoff = ROOT / "5 - RootRecord-Library" / "Documentation" / "01-Operations" / "HANDOFF.md"  # info: set handoff
     add("PASS" if handoff.is_file() else "FAIL", "handoff file")  # info: call add
     relay = read(PACIFIC / "Communications" / "telegram" / "scripts" / "ensure-relay.sh")  # info: set relay
     jobs = read(PACIFIC / "Automations" / "scripts" / "jobs.py")  # info: set jobs
@@ -113,7 +113,7 @@ def source_checks() -> None:  # info: def source_checks
         add("FAIL", "a program is marked agent_launchable")  # info: call add
     else:  # info: else :
         add("PASS", "no program is agent_launchable")  # info: call add
-    caps_path = ROOT / "5 - RootRecord-Library" / "Documentation" / "02-agents" / "capabilities" / "capability-registry.json"  # info: set caps_path
+    caps_path = ROOT / "5 - RootRecord-Library" / "Documentation" / "02-Agents" / "Capabilities" / "capability-registry.json"  # info: set caps_path
     try:  # info: try :
         caps = json.loads(caps_path.read_text(encoding="utf-8")).get("capabilities") or []  # info: set caps
     except (OSError, ValueError):  # info: except ( OSError , ValueError )
@@ -138,7 +138,7 @@ def source_checks() -> None:  # info: def source_checks
         add("PASS", "cursor_api and attempt-cap gates ship closed")  # info: call add
     else:  # info: else :
         add("FAIL", "cursor_api or attempt-cap seed gate is open")  # info: call add
-    principals = ROOT / "5 - RootRecord-Library" / "Documentation" / "02-agents" / "identity" / "principal-registry.json"  # info: set principals
+    principals = ROOT / "5 - RootRecord-Library" / "Documentation" / "02-Agents" / "Identity" / "principal-registry.json"  # info: set principals
     try:  # info: try :
         people = json.loads(principals.read_text(encoding="utf-8"))  # info: set people
     except (OSError, ValueError):  # info: except ( OSError , ValueError )

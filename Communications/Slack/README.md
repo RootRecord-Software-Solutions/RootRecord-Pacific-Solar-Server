@@ -15,7 +15,7 @@ Before any Slack call on Pacific:
 3. Posts, including `chat.postMessage`, stay off until Alexander signs off.
 4. Mark LIVE only after that sign-off. Leaving the job off is the current state.
 
-Draft: `5 - RootRecord-Library/Documentation/06-development/Work-Orders/drafts/Slack_poller_Work_Order_WO-MIG-22-2026-09-29.md`
+Draft: `5 - RootRecord-Library/Documentation/06-Development/Work-Orders/drafts/Slack_poller_Work_Order_WO-MIG-22-2026-09-29.md`
 
 ---
 

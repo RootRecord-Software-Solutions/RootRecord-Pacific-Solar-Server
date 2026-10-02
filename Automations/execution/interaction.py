@@ -18,11 +18,11 @@ import audit  # info: import audit
 import gates  # info: import gates
 
 ROOT = Path("/home/rootrecord/RootRecord-Ecosystem")  # info: set ROOT
-LIB = ROOT / "5 - RootRecord-Library" / "Documentation" / "02-agents"  # info: set LIB
-PRINCIPALS = Path(os.environ.get("RR_PRINCIPAL_REGISTRY", str(LIB / "identity" / "principal-registry.json")))  # info: set PRINCIPALS
+LIB = ROOT / "5 - RootRecord-Library" / "Documentation" / "02-Agents"  # info: set LIB
+PRINCIPALS = Path(os.environ.get("RR_PRINCIPAL_REGISTRY", str(LIB / "Identity" / "principal-registry.json")))  # info: set PRINCIPALS
 REQUESTS = Path(os.environ.get("RR_REQUEST_DIR", str(ROOT / "2 - RootRecord-Database" / "System" / "status" / "requests")))  # info: set REQUESTS
-CAPS = LIB / "capabilities" / "capability-registry.json"  # info: set CAPS
-ORDERS = LIB / "work-orders"  # info: set ORDERS
+CAPS = LIB / "Capabilities" / "capability-registry.json"  # info: set CAPS
+ORDERS = LIB / "Work-Orders"  # info: set ORDERS
 INFER = ROOT / "1 - Servers" / "1 - RootRecord-Pacific-Solar-Server" / "System" / "scripts" / "plumbing" / "run-infer.sh"  # info: set INFER
 VERIFIER = Path(__file__).resolve().parent / "verifier.py"  # info: set VERIFIER
 QUESTION_CAP = 3  # info: set QUESTION_CAP

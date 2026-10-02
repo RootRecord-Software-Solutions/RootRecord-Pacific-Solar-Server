@@ -8,7 +8,7 @@ Energy monitoring, EcoFlow device reads, and power subsystem ownership for the P
 
 Pack readings come from EcoFlow BLE into Database `Energy/soc` and `Energy/watts`. If a pack is out of BLE range, the same read uses the EcoFlow Open Platform quota while that device is online there, labeled `source: cloud`. If the pack is in range but the inverter heartbeat never arrives, only the missing AC watts are filled from that quota and the reading is labeled `source: ble+cloud`. The energy voice note is Carly at :15 and :45. A reading older than 30 minutes is "out of range." Delta 2 AC in above 550 W is generator. River 2 Pro AC in above 300 W is generator, unless that input matches the Delta's AC output, which is a transfer. The same rules are in `Energy/lib/read_runner.py` and `Energy/scripts/load_categories.py`.
 
-Channel 1 is looked at once per hour from that energy note. Left side up is morning, flat is day, right side up is evening. The note asks for a person when the tilt is wrong. It does not move the panels. Full record: [voice desk](../../../5%20-%20RootRecord-Library/Documentation/01-operations/2026-09-30-voice-desk.md). The actuator plan is in [Desired upgrades](#desired-upgrades).
+Channel 1 is looked at once per hour from that energy note. Left side up is morning, flat is day, right side up is evening. The note asks for a person when the tilt is wrong. It does not move the panels. Full record: [voice desk](../../../5%20-%20RootRecord-Library/Documentation/01-Operations/2026-09-30-voice-desk.md). The actuator plan is in [Desired upgrades](#desired-upgrades).
 
 Host and weather speech units are not in this folder. Host temperature is Celsius. Weather degrees stay Fahrenheit.
 

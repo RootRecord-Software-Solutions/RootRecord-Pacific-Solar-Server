@@ -1,6 +1,6 @@
 # Execution
 
-The broker, the interaction request loop, the verifier, and the audit writer. Capability names stay in Library `Documentation/02-agents/capabilities/`. Do not add a second registry here.
+The broker, the interaction request loop, the verifier, and the audit writer. Capability names stay in Library `Documentation/02-Agents/Capabilities/`. Do not add a second registry here.
 
 | File | Role |
 | --- | --- |
@@ -11,4 +11,4 @@ The broker, the interaction request loop, the verifier, and the audit writer. Ca
 | `audit.py` | One JSON line per decision. No chat text. |
 | `test_interaction.py` | Temp directories. Does not call the NPU or the Cursor API. |
 
-The narrative is Library `Documentation/02-agents/INTERACTION-MODES.md`.
+The narrative is Library `Documentation/02-Agents/INTERACTION-MODES.md`.

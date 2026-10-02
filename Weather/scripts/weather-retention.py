@@ -10,7 +10,7 @@
 #!/usr/bin/env python3
 """weather-retention.py — Weather data retention (policy signed off by Alexander 2026-09-29).
 
-Policy source: Pacific Weather/README.md §Retention; Library 08-ideas/2026-09-29-weather-retention-and-repo.md
+Policy source: Pacific Weather/README.md §Retention; Library 08-Ideas/2026-09-29-weather-retention-and-repo.md
 (the separate Weather repo is NOT approved and is not used here).
 
 | Class                    | Where                                          | Rule                               |

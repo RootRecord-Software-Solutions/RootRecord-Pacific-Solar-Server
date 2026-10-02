@@ -9,7 +9,7 @@ set -euo pipefail  # info: set
 
 WORKLOG_DIR="${WORKLOG_DIR:-/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Worklog}"  # info: set WORKLOG_DIR
 LIBRARY_ROOT="${LIBRARY_ROOT:-/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library}"  # info: set LIBRARY_ROOT
-LOG_DIR="${LIBRARY_ROOT}/Documentation/01-operations/0 - Human Operator Work Logs"  # info: set LOG_DIR
+LOG_DIR="${LIBRARY_ROOT}/Documentation/01-Operations/0 - Human Operator Work Logs"  # info: set LOG_DIR
 TODAY="$(TZ=Pacific/Honolulu date '+%Y-%m-%d')"  # info: set TODAY
 NOW_HM="$(TZ=Pacific/Honolulu date '+%H:%M')"  # info: set NOW_HM
 OUT="${LOG_DIR}/${TODAY} System Operator Worklog — Session auto.md"  # info: set OUT
@@ -142,7 +142,7 @@ ${MIG}
 Filename: ${TODAY} System Operator Worklog — Session auto.md
 
 Weekly archive (logs): move closed sessions older than the current week into
-Documentation/01-operations/archive/YYYY-Www/ without rewriting content.
+Documentation/01-Operations/Archive/YYYY-Www/ without rewriting content.
 EOF
 
 chmod 600 "$OUT" 2>/dev/null || true  # info: chmod

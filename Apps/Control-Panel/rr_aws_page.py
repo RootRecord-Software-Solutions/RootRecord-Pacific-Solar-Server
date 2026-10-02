@@ -40,7 +40,7 @@ class AwsFallbackPage:  # info: class AwsFallbackPage
                        markup=True, wrap=True))  # info: set markup
         box.append(lbl("The desk is canonical. AWS is a small fallback that keeps basic operations alive when the desk is offline. "  # info: box . append ( lbl ( "The desk is canonical. AWS is a small fallback that keeps basic operations alive when th
                        "Each function has one flag file on AWS. 'Status' reads them once over SSH (read-only). "  # info: "Each function has one flag file on AWS. 'Status' reads them once over SSH (read-only). "
-                       "Plan: Library 08-ideas/2026-09-29-aws-fallback-rebuild.md.", "dim-label", wrap=True))  # info: "Plan: Library 08-ideas/2026-09-29-aws-fallback-rebuild.md." , "dim-label" , wrap = True )
+                       "Plan: Library 08-Ideas/2026-09-29-aws-fallback-rebuild.md.", "dim-label", wrap=True))  # info: "Plan: Library 08-Ideas/2026-09-29-aws-fallback-rebuild.md." , "dim-label" , wrap = True )
         bar = Gtk.Box(spacing=8)  # info: set bar
         b = Gtk.Button(label="Status (read AWS flags, RAM, disk)")  # info: set b
         b.connect("clicked", lambda *_: self.awf_status())  # info: b . connect ( "clicked" , lambda *

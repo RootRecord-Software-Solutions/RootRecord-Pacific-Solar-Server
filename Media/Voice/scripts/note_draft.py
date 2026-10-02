@@ -22,7 +22,7 @@ DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosys
 LIB = Path(os.environ.get("RR_LIBRARY_ROOT", "/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library"))  # info: set LIB
 NOTES = Path(os.environ.get("RR_VOICE_NOTES", str(DB / "Communications" / "VoiceDeliver" / "notes.jsonl")))  # info: set NOTES
 CURSOR = Path(os.environ.get("RR_NOTE_DRAFT_CURSOR", str(DB / "Communications" / "VoiceDeliver" / "note-draft-cursor.json")))  # info: set CURSOR
-DRAFTS = Path(os.environ.get("RR_NOTE_DRAFT_DIR", str(LIB / "Documentation" / "06-development" / "Work-Orders" / "drafts")))  # info: set DRAFTS
+DRAFTS = Path(os.environ.get("RR_NOTE_DRAFT_DIR", str(LIB / "Documentation" / "06-Development" / "Work-Orders" / "drafts")))  # info: set DRAFTS
 
 
 # ====================================================

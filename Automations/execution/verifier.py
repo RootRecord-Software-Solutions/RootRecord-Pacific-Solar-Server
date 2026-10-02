@@ -15,7 +15,7 @@ from datetime import datetime  # info: from datetime import datetime
 from pathlib import Path  # info: from pathlib import Path
 
 ROOT = Path("/home/rootrecord/RootRecord-Ecosystem")  # info: set ROOT
-ORDERS = ROOT / "5 - RootRecord-Library" / "Documentation" / "02-agents" / "work-orders"  # info: set ORDERS
+ORDERS = ROOT / "5 - RootRecord-Library" / "Documentation" / "02-Agents" / "Work-Orders"  # info: set ORDERS
 REQUESTS = Path(os.environ.get("RR_REQUEST_DIR", str(ROOT / "2 - RootRecord-Database" / "System" / "status" / "requests")))  # info: set REQUESTS
 
 # ====================================================

@@ -6,8 +6,8 @@ Worklog and operational reporting for the Pacific desk — **and the structured 
 **News (2026-09-29):** `News/` — G0 Hawaiʻi state news collector port + 16 seed feeds (on demand; job PROPOSED `RR_HAWAII_NEWS`, env `RR_NEWS_SEEDS_ONLY=1`; smoke PASS 278 posts 14:25 HST, see `News/README.md`)  
 **Report board (2026-09-29):** `scripts/report_board.py status|run-due [--voice]` — G1 daily-report-board due ledger + 14:00 catch-up: re-runs a missed morning / midday roll-up (text; `--voice` renders WAV, never plays) → Database `Reports/board/daily-reports-due.json`. Smoke PASS 14:31 HST (temp root). Job PROPOSED `reports_board_catchup` (`RR_REPORT_BOARD`, 14:00)  
 **Economy brief (2026-09-30):** `Economy-Brief/scripts/economy_brief.py` — daily markdown from a MySQL desk-facts snapshot plus `Geology/Volcanoes/kilauea-last.json`. Fixture dry-run PASS 00:41 HST. Job PROPOSED `RR_ECONOMY_BRIEF` 15:00 (not in jobs.py). Discord send stays off.  
-**Human narrative:** Library `Documentation/01-operations/` (templates + session logs)  
-**Work order:** [WO-RPT-001](https://github.com/RootRecord-Software-Solutions/RootRecord-Library/blob/main/Documentation/06-development/Work-Orders/WO-RPT-001-Reports-Worklog-Domain-Import.md)
+**Human narrative:** Library `Documentation/01-Operations/` (templates + session logs)  
+**Work order:** [WO-RPT-001](https://github.com/RootRecord-Software-Solutions/RootRecord-Library/blob/main/Documentation/06-Development/Work-Orders/WO-RPT-001-Reports-Worklog-Domain-Import.md)
 
 ---
 
@@ -66,7 +66,7 @@ DRY_RUN=1 bash "…/Reports/scripts/weekly_archive_logs.sh"
 
 ### Template reports (2026-09-29, gated)
 
-`template_fill.py` fills the four Library ops templates (`Documentation/01-operations/templates/`) from measured data,
+`template_fill.py` fills the four Library ops templates (`Documentation/01-Operations/Templates/`) from measured data,
 in the templates' exact structure; `template_validate.py` rejects any heading / table-column / vocabulary mismatch and
 flags numbers not found in the sources. Output: non-git `test-reports/Templates/<Template-Name>_current.md` (+ `Archive/`),
 never the Library; publishing to the Library stays manual. Free text only: `rr-exec` via `run-infer.sh` (facts-only prompt; unsupported drafts fall back to fixed text).

@@ -2,7 +2,7 @@
 
 INFO — MUST HAVE (future agents):
 - Catalog = Lib/rr_aws_fallback.json (function id, default, RAM/disk/net estimates). Design: Library
-  08-ideas/2026-09-29-aws-fallback-rebuild.md. The desk is canonical; AWS only holds per-function flag files.
+  08-Ideas/2026-09-29-aws-fallback-rebuild.md. The desk is canonical; AWS only holds per-function flag files.
 - DEFAULT MODE IS "dry-run" (settings.json "aws_fallback_mode"); the desk settings.json is set to "write" since
   2026-09-29 16:05 HST (Phase 2 runtime deployed, Alexander approved AWS changes). In dry-run nothing is sent to AWS except the
   read-only Status button. "write" mode is a sign-off item AND needs the AWS runtime (remote flags/ dir) to exist;

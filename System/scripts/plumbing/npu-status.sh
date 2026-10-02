@@ -3,7 +3,7 @@
 # npu-status.sh — read-only NPU / FLM / inference-lock status (Pacific copy)
 # ------------------------------------------------------------------------------
 # Copied 2026-09-29 from G2 ~/.ollama/skills/plumbing/scripts/npu-status.sh
-# (G2 original KEPT, unchanged). Approved: Library 08-ideas/2026-09-29-npu-status-pacific-copy.md.
+# (G2 original KEPT, unchanged). Approved: Library 08-Ideas/2026-09-29-npu-status-pacific-copy.md.
 # Re-pointed at the Pacific single-flight.sh (same folder) and the canonical
 # plumbing state (2 - RootRecord-Database/Github/plumbing/state).
 # Read-only: lists /dev/accel, dpkg packages, lock holder, flm serve / :52625.

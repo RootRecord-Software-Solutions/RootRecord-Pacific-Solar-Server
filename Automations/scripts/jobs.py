@@ -326,7 +326,7 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
     {  # info: {
         "id": "service_supervisor",  # info: "id" : "service_supervisor" ,
         "enabled": True,  # info: "enabled" : True ,
-        "description": "Mid-session auto-recovery (08-ideas weather-relay-auto-recovery, approved 2026-09-29): respawn weather / council relay via their ensure scripts if dead; max 3 per 30 min, then BLOCKED. Dry run: supervise-services.sh --dry-run.",  # info: "description" : "Mid-session auto-recovery (08-ideas weather-relay-auto-recovery, approved 2026-09-29): respaw
+        "description": "Mid-session auto-recovery (08-Ideas weather-relay-auto-recovery, approved 2026-09-29): respawn weather / council relay via their ensure scripts if dead; max 3 per 30 min, then BLOCKED. Dry run: supervise-services.sh --dry-run.",  # info: "description" : "Mid-session auto-recovery (08-Ideas weather-relay-auto-recovery, approved 2026-09-29): respaw
         "interval_sec": 300,  # info: "interval_sec" : 300 ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'bash "{PACIFIC}/Automations/scripts/supervise-services.sh"',  # info: "command" : f' bash " { PACIFIC } /Automations/scripts/supervise-services.sh"

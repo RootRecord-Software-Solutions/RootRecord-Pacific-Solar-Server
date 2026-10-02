@@ -10,7 +10,7 @@
 #!/usr/bin/env python3
 """relay-inbox-replay.py — list / answer messages the council relay held while quiet.
 
-Approved 2026-09-29 (Library 08-ideas/2026-09-29-relay-quiet-mode-message-hold.md).
+Approved 2026-09-29 (Library 08-Ideas/2026-09-29-relay-quiet-mode-message-hold.md).
 
 While RR_RELAY_REPLIES=0 (default), council-relay.py consumes each update and appends it to
   2 - RootRecord-Database/Logs/Communications/Relay-Inbox/relay-inbox_current.jsonl

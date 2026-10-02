@@ -3,15 +3,15 @@
 # Reports/scripts/weekly_archive_logs.sh — WO-RPT-001 Phase D / WO-ARCH
 # ----------------------------------------------------------------------------
 # Move closed human operator logs older than the current HST calendar week into
-# Documentation/01-operations/archive/YYYY-Www/
+# Documentation/01-Operations/Archive/YYYY-Www/
 # Does NOT touch Work-Orders (closed WOs → Work-Orders/Complete/).
 # Does NOT rewrite content. Prefer git mv when run from a Library git checkout.
 # ============================================================================
 set -euo pipefail  # info: set
 
 LIBRARY_ROOT="${LIBRARY_ROOT:-/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library}"  # info: set LIBRARY_ROOT
-LOG_DIR="${LIBRARY_ROOT}/Documentation/01-operations/0 - Human Operator Work Logs"  # info: set LOG_DIR
-ARCHIVE_ROOT="${LIBRARY_ROOT}/Documentation/01-operations/archive"  # info: set ARCHIVE_ROOT
+LOG_DIR="${LIBRARY_ROOT}/Documentation/01-Operations/0 - Human Operator Work Logs"  # info: set LOG_DIR
+ARCHIVE_ROOT="${LIBRARY_ROOT}/Documentation/01-Operations/Archive"  # info: set ARCHIVE_ROOT
 DRY_RUN="${DRY_RUN:-0}"  # info: set DRY_RUN
 
 # ISO week (HST). %u is 1=Monday .. 7=Sunday.
@@ -59,8 +59,8 @@ for f in "$LOG_DIR"/*.md; do  # info: for
   else  # info: else
     if [[ -d "${LIBRARY_ROOT}/.git" ]]; then  # info: if
       (cd "$LIBRARY_ROOT" && git mv -f \
-        "Documentation/01-operations/0 - Human Operator Work Logs/${base}" \
-        "Documentation/01-operations/archive/${WEEK_LABEL}/${base}" 2>/dev/null) \
+        "Documentation/01-Operations/0 - Human Operator Work Logs/${base}" \
+        "Documentation/01-Operations/Archive/${WEEK_LABEL}/${base}" 2>/dev/null) \
         || mv -f "$f" "${DEST}/${base}"  # info: command
     else  # info: else
       mv -f "$f" "${DEST}/${base}"  # info: mv

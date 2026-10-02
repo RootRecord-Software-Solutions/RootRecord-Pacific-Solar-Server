@@ -383,7 +383,7 @@ def zfp_temps() -> list[dict]:  # info: def zfp_temps
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def open_tasks() -> tuple[int, list[tuple[int, str]]]:  # info: def open_tasks
-    wo = LIB / "Documentation" / "06-development" / "Work-Orders"  # info: set wo
+    wo = LIB / "Documentation" / "06-Development" / "Work-Orders"  # info: set wo
     per = []  # info: set per
     for f in sorted(wo.glob("*.md")):  # info: for f in sorted ( wo . glob
         try:  # info: try :

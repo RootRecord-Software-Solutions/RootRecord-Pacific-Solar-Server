@@ -17,7 +17,7 @@ import audit  # info: import audit
 import gates  # info: import gates
 
 ROOT = Path("/home/rootrecord/RootRecord-Ecosystem")  # info: set ROOT
-REGISTRY = ROOT / "5 - RootRecord-Library" / "Documentation" / "02-agents" / "capabilities" / "capability-registry.json"  # info: set REGISTRY
+REGISTRY = ROOT / "5 - RootRecord-Library" / "Documentation" / "02-Agents" / "Capabilities" / "capability-registry.json"  # info: set REGISTRY
 STATE = ROOT / "2 - RootRecord-Database" / "System" / "status" / "rootrecord-state.json"  # info: set STATE
 VERIFY = ROOT / "verify.sh"  # info: set VERIFY
 

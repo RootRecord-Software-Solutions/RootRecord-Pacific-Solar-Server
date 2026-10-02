@@ -16,9 +16,9 @@ Before any Discord bot is brought online on Pacific:
 4. `config/channels.json` lists only `#help-desk` (`1555097963049521192`). The poller does not fetch other channels.
 5. Chat replies stay off unless `RR_DISCORD_POST=1` is set for that process. The report relay job sets the gate for itself. Mark the chat poller LIVE only after a smoke test Alexander signs off.
 
-Canonical process: [WO-COM-002 — Discord Bot Credential Rotation](https://github.com/RootRecord-Software-Solutions/RootRecord-Library/blob/main/Documentation/06-development/Work-Orders/WO-COM-002-Discord-Bot-Credential-Rotation.md)
+Canonical process: [WO-COM-002 — Discord Bot Credential Rotation](https://github.com/RootRecord-Software-Solutions/RootRecord-Library/blob/main/Documentation/06-Development/Work-Orders/WO-COM-002-Discord-Bot-Credential-Rotation.md)
 
-Draft: `5 - RootRecord-Library/Documentation/06-development/Work-Orders/drafts/Discord_poller_Work_Order_WO-MIG-21-2026-09-29.md`
+Draft: `5 - RootRecord-Library/Documentation/06-Development/Work-Orders/drafts/Discord_poller_Work_Order_WO-MIG-21-2026-09-29.md`
 
 ---
 

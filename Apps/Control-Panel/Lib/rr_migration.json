@@ -11,7 +11,7 @@
       "settings": "messaging",
       "sources": [
         "5 - RootRecord-Library/Documentation/11-Runtime-Jobs-and-Control/G3-Runtime-Verification-Checklist-2026-09-28.md",
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/Servers_Cutover_Work_Order_WO-SRV-2026-09-27.md"
+        "5 - RootRecord-Library/Documentation/06-Development/Work-Orders/Servers_Cutover_Work_Order_WO-SRV-2026-09-27.md"
       ]
     },
     {
@@ -22,7 +22,7 @@
       "note": "Poller code is on Pacific and the job stays off (discord_poller enabled false, no token). A fresh token is required before any enable. Do not load a token from archive history.",
       "settings": "messaging",
       "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-COM-002-Discord-Bot-Credential-Rotation.md"
+        "5 - RootRecord-Library/Documentation/06-Development/Work-Orders/WO-COM-002-Discord-Bot-Credential-Rotation.md"
       ]
     },
     {
@@ -33,8 +33,8 @@
       "note": "Tunnel, globe, and the quiet relay are on Pacific. The Slack poller is on Pacific (communications_slack) and stays off unless RR_SLACK=1. No token, no HTTP, and no post. Notify policy is still unsealed, so this draft is not promoted.",
       "settings": "messaging",
       "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-COM-001-Communications-Surface.md",
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/drafts/Slack_poller_Work_Order_WO-MIG-22-2026-09-29.md"
+        "5 - RootRecord-Library/Documentation/06-Development/Work-Orders/WO-COM-001-Communications-Surface.md",
+        "5 - RootRecord-Library/Documentation/06-Development/Work-Orders/drafts/Slack_poller_Work_Order_WO-MIG-22-2026-09-29.md"
       ]
     },
     {
@@ -45,7 +45,7 @@
       "note": "Daylight compiles ran today: hour_12.mp4 through hour_18.mp4 in Database Media/Timelapses/video_chunks (hour 18 at 19:01 HST). Capture interval is still 1 second. The 5-second proposal was not applied.",
       "settings": "cameras",
       "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/A-EYES_Work_Order_WO-AEYES-2026-09-27.md",
+        "5 - RootRecord-Library/Documentation/06-Development/Work-Orders/A-EYES_Work_Order_WO-AEYES-2026-09-27.md",
         "5 - RootRecord-Library/Documentation/13-Migration-and-Legacy-Recovery/Residual-Path-Retirement-Table-2026-09-28.md"
       ]
     },
@@ -57,7 +57,7 @@
       "note": "Scheduled catalog actions (AC, DC, USB, charging, backup, bypass, X-Boost, AC always-on) are on the Automations page as of 1 October 2026. The poller runs the matching script when the clock is due. Each schedule needs a confirm. Immediate arm or disarm from Controls is still unwired.",
       "settings": "services",
       "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-ECO-001-Energy-Domain-Import.md"
+        "5 - RootRecord-Library/Documentation/06-Development/Work-Orders/WO-ECO-001-Energy-Domain-Import.md"
       ]
     },
     {
@@ -68,7 +68,7 @@
       "note": "Dry run at 02:02 HST would have moved 0 files. The job stays disabled and the command stays --dry-run. Nothing was applied.",
       "settings": "weather",
       "sources": [
-        "5 - RootRecord-Library/Documentation/01-operations/2026-09-30-whats-left-for-alexander.md"
+        "5 - RootRecord-Library/Documentation/01-Operations/2026-09-30-whats-left-for-alexander.md"
       ]
     },
     {
@@ -79,7 +79,7 @@
       "note": "The operations page paints River and Delta charge, solar, and AC output from the public operations feed when those readings exist. A missing reading stays missing. WO-WEB-001 is still open.",
       "settings": "network",
       "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-WEB-001-Public-Status-Solar-Board.md"
+        "5 - RootRecord-Library/Documentation/06-Development/Work-Orders/WO-WEB-001-Public-Status-Solar-Board.md"
       ]
     },
     {
@@ -90,7 +90,7 @@
       "note": "Production is https://www.rootrecord.cloud/ on Vercel. Apex 308s there. ssh.rootrecord.cloud is A 18.118.30.226. rr-aws and rr-aws-ip use that address with no ProxyCommand. api.rootrecord.cloud is A 18.118.30.226, proxy off. Caddy on AWS proxies it to 127.0.0.1:8091. Reports are at https://www.rootrecord.cloud/reports/. SSH carries Hawaii data to AWS. The API is to be served from AWS to Vercel. Contract: Website/HANDOFF-vercel-homepage-2026-09-30.md. Do not recreate 3 - RootRecord-Website, bind port 3001, or call port 8787.",
       "settings": "services",
       "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-WEB-002-Public-Site-Foundation.md"
+        "5 - RootRecord-Library/Documentation/06-Development/Work-Orders/WO-WEB-002-Public-Site-Foundation.md"
       ]
     },
     {
@@ -101,7 +101,7 @@
       "note": "Mainland sync row stays disabled. Its catalog path is the archived G2 tree under Old repos deleted and merged, not a live desk. Stub only.",
       "settings": "network",
       "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/Ecosystem_Migration_Work_Order_WO-ECO-2026-09-27.md"
+        "5 - RootRecord-Library/Documentation/06-Development/Work-Orders/Ecosystem_Migration_Work_Order_WO-ECO-2026-09-27.md"
       ]
     },
     {
@@ -112,7 +112,7 @@
       "note": "Scheduler trio is migrated. Other G1 packets stay blocked. The G2 skills checkout was moved on 2026-09-30 and is not a G1 recovery. Do not retire G1 without Alexander naming the tree.",
       "settings": "services",
       "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/Old_Server_Selective_Recovery_Work_Order_WO-OLD-2026-09-28.md"
+        "5 - RootRecord-Library/Documentation/06-Development/Work-Orders/Old_Server_Selective_Recovery_Work_Order_WO-OLD-2026-09-28.md"
       ]
     },
     {
@@ -134,7 +134,7 @@
       "note": "Draft. jobs.py has no ~/.ollama/skills/ job path and the script paths in it exist. Not closed. Cutover stays on WO-SRV-2026-09-27.",
       "settings": "services",
       "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-SRV-001-Residual-Jobs-Path-Rewire.md"
+        "5 - RootRecord-Library/Documentation/06-Development/Work-Orders/WO-SRV-001-Residual-Jobs-Path-Rewire.md"
       ]
     },
     {
@@ -145,7 +145,7 @@
       "note": "The canonical Database path is in use. Geology last-files are updating on the poller. Publication choices (those files, users/PII, timelapse masters, the cloudflared binary) are still Alexander's.",
       "settings": "environment",
       "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/Database_Boundary_Work_Order_WO-DATA-2026-09-27.md"
+        "5 - RootRecord-Library/Documentation/06-Development/Work-Orders/Database_Boundary_Work_Order_WO-DATA-2026-09-27.md"
       ]
     },
     {
@@ -156,7 +156,7 @@
       "note": "Architecture only. Carly seal and operator accept are still required before any implementation.",
       "settings": "environment",
       "sources": [
-        "5 - RootRecord-Library/Documentation/06-development/Work-Orders/WO-WOGEN-001-Work-Order-Generator.md"
+        "5 - RootRecord-Library/Documentation/06-Development/Work-Orders/WO-WOGEN-001-Work-Order-Generator.md"
       ]
     }
   ]

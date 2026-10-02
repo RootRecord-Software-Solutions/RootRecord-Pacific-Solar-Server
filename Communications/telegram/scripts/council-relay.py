@@ -366,7 +366,7 @@ def mark_seen(voice_id, voices, chat_id, message_id):  # info: def mark_seen
 def mark_typing(voice_id, voices, chat_id):  # info: def mark_typing
     return bot_call(voice_id, voices, "sendChatAction", {"chat_id": chat_id, "action": "typing"})  # info: return bot_call ( voice_id , voices , "sendChatAction"
 
-# Quiet-mode inbox (Alexander 2026-09-29, Library 08-ideas relay-quiet-mode-message-hold): while replies are
+# Quiet-mode inbox (Alexander 2026-09-29, Library 08-Ideas relay-quiet-mode-message-hold): while replies are
 # OFF, each consumed message (metadata + text) is appended to a git-ignored JSONL so it can be answered later
 # with relay-inbox-replay.py. Cut hourly into Archive/YYYY-MM-DD/. Local file only; never sends anything.
 INBOX_DIR = Path(os.environ.get("RR_RELAY_INBOX_DIR", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Communications/Relay-Inbox"))  # info: set INBOX_DIR

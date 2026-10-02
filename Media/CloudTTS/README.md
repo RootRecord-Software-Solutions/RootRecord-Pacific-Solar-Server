@@ -1,6 +1,6 @@
 # Media/CloudTTS
 
-Gated route for one cloud voice beside Kokoro. Work order: Library `Documentation/06-development/Work-Orders/drafts/Cloud_TTS_routing_Work_Order_WO-MIG-33-2026-09-29.md`.
+Gated route for one cloud voice beside Kokoro. Work order: Library `Documentation/06-Development/Work-Orders/drafts/Cloud_TTS_routing_Work_Order_WO-MIG-33-2026-09-29.md`.
 
 | Path | Role |
 | --- | --- |

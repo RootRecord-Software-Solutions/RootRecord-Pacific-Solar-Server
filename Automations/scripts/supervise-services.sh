@@ -2,7 +2,7 @@
 # ==============================================================================
 # supervise-services.sh — mid-session auto-recovery for weather + council relay
 # ------------------------------------------------------------------------------
-# Approved: Library 08-ideas/2026-09-29-weather-relay-auto-recovery.md (Alexander).
+# Approved: Library 08-Ideas/2026-09-29-weather-relay-auto-recovery.md (Alexander).
 # Called from jobs.py EVERY_SECONDS job `service_supervisor` (every 300 s).
 # jobs.py is read once at poller start, so this only runs after the NEXT poller start.
 #

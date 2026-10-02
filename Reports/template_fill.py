@@ -4,9 +4,9 @@
 # ------------------------------------------------------------------------------
 # Usage: template_fill.py [--all | --template worklog|checkpoint|event|workorder] [--date YYYY-MM-DD]
 #                         [--draft none|model|auto] [--model-templates worklog,workorder] [--dry-run]
-# Templates (read-only): Library Documentation/01-operations/templates/TEMPLATE *.md — same headings,
+# Templates (read-only): Library Documentation/01-Operations/Templates/TEMPLATE *.md — same headings,
 #   tables, field order, date formats (YYYY-MM-DD, HH:MM HST, HH_MM in filenames) and status vocabulary.
-# Sources: Library 07-testing index, 08-ideas index, Work-Orders, operator worklogs of the day (sign-off list);
+# Sources: Library 07-Testing index, 08-Ideas index, Work-Orders, operator worklogs of the day (sign-off list);
 #   Database Logs/AI/Inference JSONL, Logs/Automations poller log (+ hourly Archive), System/last host sample,
 #   Energy/soc, Media/Images, Weather reports, Worklog; read-only systemctl --user is-active / process checks.
 # Free text ONLY (purpose, status line, next step, principle, scope, intent) is drafted by a specialist via
@@ -44,7 +44,7 @@ ECO = Path("/home/rootrecord/RootRecord-Ecosystem")  # info: set ECO
 DB = Path(os.environ.get("RR_DATABASE_ROOT", str(ECO / "2 - RootRecord-Database")))  # info: set DB
 LIB = Path(os.environ.get("RR_LIBRARY_ROOT", str(ECO / "5 - RootRecord-Library")))  # info: set LIB
 DOCS = LIB / "Documentation"  # info: set DOCS
-TPL_DIR = DOCS / "01-operations" / "templates"  # info: set TPL_DIR
+TPL_DIR = DOCS / "01-Operations" / "Templates"  # info: set TPL_DIR
 OUT_DIR = Path(os.environ.get("RR_TEMPLATE_OUT", str(ECO / "test-reports" / "Templates")))  # info: set OUT_DIR
 RUN_INFER = PACIFIC / "System" / "scripts" / "plumbing" / "run-infer.sh"  # info: set RUN_INFER
 SF = PACIFIC / "System" / "scripts" / "plumbing" / "single-flight.sh"  # info: set SF
@@ -221,7 +221,7 @@ class Facts:  # info: class Facts
 # ====================================================
 def testing_records(f: Facts) -> list[dict]:  # info: def testing_records
     rows = []  # info: set rows
-    for ln in read(DOCS / "07-testing" / "README.md").splitlines():  # info: for ln in read ( DOCS / "07-testing"
+    for ln in read(DOCS / "07-Testing" / "README.md").splitlines():  # info: for ln in read ( DOCS / "07-Testing"
         m = re.match(r"^\|\s*(\d{4}-\d{2}-\d{2})\s+(~?\d{2}:\d{2})\s*\|\s*\[([^\]]+)\]\(([^)]+)\)\s*\|\s*(.+?)\s*\|\s*$", ln)  # info: set m
         if m and m.group(1) == f.day:  # info: if m and m . group ( 1
             rows.append({"time": m.group(2), "title": m.group(3), "file": m.group(4), "state": m.group(5)})  # info: rows . append ( { "time" : m
@@ -237,7 +237,7 @@ def testing_records(f: Facts) -> list[dict]:  # info: def testing_records
 # ====================================================
 def ideas(f: Facts) -> list[dict]:  # info: def ideas
     rows = []  # info: set rows
-    for ln in read(DOCS / "08-ideas" / "README.md").splitlines():  # info: for ln in read ( DOCS / "08-ideas"
+    for ln in read(DOCS / "08-Ideas" / "README.md").splitlines():  # info: for ln in read ( DOCS / "08-Ideas"
         m = re.match(r"^\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*\[([^\]]+)\]\([^)]+\)\s*\|\s*(.+?)\s*\|", ln)  # info: set m
         if m:  # info: if m :
             rows.append({"date": m.group(1), "title": m.group(2), "state": m.group(3)})  # info: rows . append ( { "date" : m
@@ -252,7 +252,7 @@ def ideas(f: Facts) -> list[dict]:  # info: def ideas
 # ====================================================
 def signoff_items(f: Facts) -> list[str]:  # info: def signoff_items
     items = []  # info: set items
-    logs = sorted((DOCS / "01-operations" / "0 - Human Operator Work Logs").glob(f"{f.day} *.md"))  # info: set logs
+    logs = sorted((DOCS / "01-Operations" / "0 - Human Operator Work Logs").glob(f"{f.day} *.md"))  # info: set logs
     for p in logs:  # info: for p in logs :
         txt = read(p)  # info: set txt
         m = re.search(r"^## Needs Alexander sign-off\s*$(.*?)(?=^## |\Z)", txt, re.M | re.S)
@@ -283,7 +283,7 @@ def signoff_items(f: Facts) -> list[str]:  # info: def signoff_items
 # ====================================================
 def work_orders(f: Facts) -> list[dict]:  # info: def work_orders
     rows = []  # info: set rows
-    for p in sorted((DOCS / "06-development" / "Work-Orders").glob("*.md")):  # info: for p in sorted ( ( DOCS /
+    for p in sorted((DOCS / "06-Development" / "Work-Orders").glob("*.md")):  # info: for p in sorted ( ( DOCS /
         if p.name == "README.md":  # info: if p . name == "README.md" :
             continue  # info: continue
         txt = read(p)  # info: set txt
@@ -594,7 +594,7 @@ def render_worklog(f: Facts, mode: str, log: dict) -> str:  # info: def render_w
           "Rationale: decisions come from the operator; this digest only aggregates measured sources.", "", "---", "",  # info: "Rationale: decisions come from the operator; this digest only aggregates measured sources." , "" , "---" , ""
           f"## State at session close (~{hm(f.t)} HST)", "",
           f"- **Runtime:** poller `{is_active('rr-rootserver-poller.service')}`; BLE `{is_active('ava-ecoflow-ble.service')}`; last poller log line {pl['last_time'] or 'none'} HST",  # info: f" - **Runtime:** poller ` { is_active ( 'rr-rootserver-poller.service' ) }
-          f"- **Library / docs:** {len(tr)} testing records dated {f.day} in the 07-testing index",  # info: f" - **Library / docs:** { len ( tr ) }
+          f"- **Library / docs:** {len(tr)} testing records dated {f.day} in the 07-Testing index",  # info: f" - **Library / docs:** { len ( tr ) }
           f"- **GitHub / sync:** {'issues in recent github_sync_all lines' if pl['gh_bad'] else ('ok (last github_sync_all line ' + pl['gh_last_time'] + ' HST)' if pl['gh_last_time'] else 'no github_sync_all line today')}",  # info: f" - **GitHub / sync:** { 'issues in recent github_sync_all lines' if pl [ 'gh_bad'
           f"- **Next useful step:** {nxt}", "", f"**Status:** {status}", "", "---", ""]  # info: f" - **Next useful step:** { nxt } " , ""
     L.append(section_verbatim(t, "## Archive note", {"{{YYYY-MM-DD}}": f.day, "{{SESSION_NN}}": f.session}))
@@ -617,7 +617,7 @@ def render_checkpoint(f: Facts, mode: str, log: dict) -> str:  # info: def rende
     verified = [f"Host sample {hm(h['at'])} HST: load1 {h['load1']}, CPU {h['cpu']}%, MemAvailable {h['mem_avail_mb']} MB" if h["at"] else "Host sample: not found"]  # info: set verified
     verified += [f"{e['pack']} SOC {e['soc']}% at {hm(e['at'])} HST ({e['source']})" for e in en]  # info: set verified
     verified += [f"{n}: {s} — {note}" for n, s, note in subs]  # info: set verified
-    deferred = [f"{cell(r['title'], 80)} — {cell(r['state'], 60)}" for r in idl if "PROPOSED" in r["state"]] or ["None recorded in 08-ideas"]  # info: set deferred
+    deferred = [f"{cell(r['title'], 80)} — {cell(r['state'], 60)}" for r in idl if "PROPOSED" in r["state"]] or ["None recorded in 08-Ideas"]  # info: set deferred
     facts = [f"poller {poller_state}", f"{sum(1 for s in subs if s[1] == 'ok')} of {len(subs)} subsystems ok"] + \
             [f"{n} {s}" for n, s, _ in subs] + [f"sign-off needed: {s}" for s in so[:4]]  # info: [ f" { n } { s
     d = draft({"PRINCIPLE": "one short operating principle grounded in the facts", "STATUS": "one short status line"}, facts, mode, f, log)  # info: set d
@@ -714,7 +714,7 @@ def render_workorder(f: Facts, mode: str, log: dict) -> str:  # info: def render
     L = ["# WORK ORDER — Desk Sign-off Backlog (generated draft)", "", "| Field | Value |", "| --- | --- |",
          f"| **Work Order ID** | WO-{code}-{f.day} |", f"| **Date** | {f.day} (HST) |",  # info: f" | **Work Order ID** | WO- { code } - { f
          "| **Status** | OPEN — generated draft, not on the active index |", "| **Owner** | RootRecord |",  # info: "| **Status** | OPEN — generated draft, not on the active index |" , "| **Owner** | RootRecord |" ,
-         "| **Related** | Library 07-testing, 08-ideas and the operator worklog of the day |", "",  # info: "| **Related** | Library 07-testing, 08-ideas and the operator worklog of the day |" , "" ,
+         "| **Related** | Library 07-Testing, 08-Ideas and the operator worklog of the day |", "",  # info: "| **Related** | Library 07-Testing, 08-Ideas and the operator worklog of the day |" , "" ,
          f"**Scope:** {scope}", "", "---", "", "## 1. Intent", "", intent, "", "---", "", "## 2. Current reality", "",
          "### 2.1 What exists", "", "| Item | Location / status |", "| --- | --- |"]
     L += [f"| {cell(w['file'], 70)} | {w['status']} |" for w in wos]  # info: set L
@@ -725,8 +725,8 @@ def render_workorder(f: Facts, mode: str, log: dict) -> str:  # info: def render
     L += ["", "---", "", "## 4. Non-goals", "", "- Executing any task listed here (generated drafts are never auto-promoted).",
           "- Writing into the Library or changing runtime services.", "", "---", "", "## 5. Key file / path reference", "",
           "| Path | Role |", "|------|------|",  # info: "| Path | Role |" , "|------|------|" ,
-          "| `Library Documentation/07-testing/README.md` | Testing record index (source) |",  # info: "| `Library Documentation/07-testing/README.md` | Testing record index (source) |" ,
-          "| `Library Documentation/01-operations/0 - Human Operator Work Logs/` | Operator worklogs; sign-off list (source) |",  # info: "| `Library Documentation/01-operations/0 - Human Operator Work Logs/` | Operator worklogs; sign-off list (sou
+          "| `Library Documentation/07-Testing/README.md` | Testing record index (source) |",  # info: "| `Library Documentation/07-Testing/README.md` | Testing record index (source) |" ,
+          "| `Library Documentation/01-Operations/0 - Human Operator Work Logs/` | Operator worklogs; sign-off list (source) |",  # info: "| `Library Documentation/01-Operations/0 - Human Operator Work Logs/` | Operator worklogs; sign-off list (sou
           f"| `{INFER_LOG}` | Inference JSONL (source) |", f"| `{POLLER_LOG}` | Poller log (source) |", "", "---", ""]  # info: f" | ` { INFER_LOG } ` | Inference JSONL (source) | " ,
     L.append(section_verbatim(t, "## 6. Open items", {}))
     L += ["", "---", "", "## 7. Notes & constraints", "", "- No force-push.", "- Secrets stay out of git.", "- Prefer small reversible steps.",

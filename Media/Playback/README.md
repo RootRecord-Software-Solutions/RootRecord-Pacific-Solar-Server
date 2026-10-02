@@ -1,6 +1,6 @@
 # Media/Playback
 
-On-demand player for one Kokoro WAV. Work order: Library `Documentation/06-development/Work-Orders/drafts/Report_playback_Work_Order_WO-MIG-15-2026-09-29.md`.
+On-demand player for one Kokoro WAV. Work order: Library `Documentation/06-Development/Work-Orders/drafts/Report_playback_Work_Order_WO-MIG-15-2026-09-29.md`.
 
 | Path | Role |
 | --- | --- |
