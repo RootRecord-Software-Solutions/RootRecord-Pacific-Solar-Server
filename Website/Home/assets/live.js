@@ -72,6 +72,12 @@
     return "REPORTING";
   }
 
+  function dischargedOff(reading) {
+    if (!reading || reading.soc === null || reading.soc === undefined) return false;
+    if (reading.at === null || reading.at === undefined) return false;
+    return Number(reading.soc) <= 5 && (Date.now() - reading.at) > 30 * 60 * 1000;
+  }
+
   function paintState(d) {
     var s = (d && d.stats) || {};
     var hi = T.finite(s.hawaiiActiveFlows);
@@ -131,6 +137,7 @@
 
   function deviceLine(reading) {
     if (!reading) return "NO READING";
+    if (dischargedOff(reading)) return "Discharged and powered off";
     var parts = [];
     if (reading.soc !== null) parts.push(T.pct(reading.soc));
     if (reading.solar !== null) parts.push(T.watts(reading.solar) + " solar");
@@ -150,6 +157,18 @@
       text("st-" + prefix, "NO PUBLIC SIGNAL");
       text("val-" + prefix, "NO READING");
       text("at-" + prefix, "—");
+      return;
+    }
+    if (dischargedOff(reading)) {
+      text(prefix + "-soc", "POWERED OFF");
+      text(prefix + "-solar", "POWERED OFF");
+      text(prefix + "-ac", "POWERED OFF");
+      text(prefix + "-acin", "POWERED OFF");
+      text(prefix + "-usb", "POWERED OFF");
+      text(prefix + "-at", reading.at ? T.formatHst(reading.at, true) : "—");
+      text("st-" + prefix, "POWERED OFF");
+      text("val-" + prefix, "Discharged and powered off");
+      text("at-" + prefix, reading.at ? T.formatHst(reading.at, true) : "—");
       return;
     }
     text(prefix + "-soc", reading.soc === null ? "NO READING" : T.pct(reading.soc));
@@ -199,8 +218,8 @@
       max: 100,
       empty: "No public signal",
       bars: [
-        r.river ? bar("River", r.river.soc, T.pct(r.river.soc), r.river.at) : null,
-        r.delta ? bar("Delta", r.delta.soc, T.pct(r.delta.soc), r.delta.at) : null
+        r.river && !dischargedOff(r.river) ? bar("River", r.river.soc, T.pct(r.river.soc), r.river.at) : null,
+        r.delta && !dischargedOff(r.delta) ? bar("Delta", r.delta.soc, T.pct(r.delta.soc), r.delta.at) : null
       ].filter(Boolean)
     });
     window.RRCharts.bars(document.getElementById("chart-solar"), {
@@ -208,13 +227,13 @@
       question: "What solar input is each system reporting right now?",
       empty: "No public signal",
       bars: [
-        r.river ? ratedBar("River", r.river.solar, r.river.at, RATED.river.solar) : null,
-        r.delta ? ratedBar("Delta", r.delta.solar, r.delta.at, RATED.delta.solar) : null
+        r.river && !dischargedOff(r.river) ? ratedBar("River", r.river.solar, r.river.at, RATED.river.solar) : null,
+        r.delta && !dischargedOff(r.delta) ? ratedBar("Delta", r.delta.solar, r.delta.at, RATED.delta.solar) : null
       ].filter(Boolean)
     });
     var inputTitle = document.querySelector("#chart-output") && document.querySelector("#chart-output").closest("section");
     var inputHeading = inputTitle ? inputTitle.querySelector(".b-k") : null;
-    var generatorOn = (r.river && r.river.chargeSource === "generator") || (r.delta && r.delta.chargeSource === "generator");
+    var generatorOn = (r.river && !dischargedOff(r.river) && r.river.chargeSource === "generator") || (r.delta && !dischargedOff(r.delta) && r.delta.chargeSource === "generator");
     if (inputHeading) {
       inputHeading.innerHTML = generatorOn
         ? "AC input <span class=\"b-scale\">generator</span>"
@@ -225,8 +244,8 @@
       question: "What AC input is each system reporting right now?",
       empty: "No public signal",
       bars: [
-        r.river ? ratedBar("River", r.river.acIn, r.river.at, RATED.river.acIn) : null,
-        r.delta ? ratedBar("Delta", r.delta.acIn, r.delta.at, RATED.delta.acIn) : null
+        r.river && !dischargedOff(r.river) ? ratedBar("River", r.river.acIn, r.river.at, RATED.river.acIn) : null,
+        r.delta && !dischargedOff(r.delta) ? ratedBar("Delta", r.delta.acIn, r.delta.at, RATED.delta.acIn) : null
       ].filter(Boolean)
     });
   }

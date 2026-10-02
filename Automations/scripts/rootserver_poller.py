@@ -216,6 +216,22 @@ def _fmt_soc(n) -> str:  # info: def _fmt_soc
 
 
 # ====================================================
+# SECTION: function _discharged_off
+# What it does: True when the last SOC is 5 percent or less and the file is older than 30 minutes.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _discharged_off(blob) -> bool:  # info: def _discharged_off
+    if not isinstance(blob, dict):  # info: if not isinstance ( blob , dict ) :
+        return False  # info: return False
+    try:  # info: try :
+        soc = float(blob.get("soc"))  # info: set soc
+        age_min = (datetime.now().astimezone() - datetime.fromisoformat(blob["at"])).total_seconds() / 60  # info: set age_min
+    except (TypeError, ValueError, KeyError):  # info: except ( TypeError , ValueError , KeyError ) :
+        return False  # info: return False
+    return soc <= 5 and age_min > 30  # info: return soc <= 5 and age_min > 30
+
+
+# ====================================================
 # SECTION: function _sqlite_board
 # What it does:  sqlite board.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -315,7 +331,10 @@ def build_energy_snapshot() -> dict:  # info: def build_energy_snapshot
 # ====================================================
 def _energy_log_line() -> str:  # info: def _energy_log_line
     snap = build_energy_snapshot()  # info: set snap
-    parts = [f"status={snap.get('status')}", f"B2={snap.get('deltaSoc')}", f"B1={snap.get('riverSoc')}",  # info: set parts
+    delta_off = _discharged_off(_read_energy_json("soc/delta2-last.json"))  # info: set delta_off
+    river_off = _discharged_off(_read_energy_json("soc/river2pro-last.json"))  # info: set river_off
+    status = "powered_off" if delta_off and river_off else snap.get("status")  # info: set status
+    parts = [f"status={status}", f"B2={'off' if delta_off else snap.get('deltaSoc')}", f"B1={'off' if river_off else snap.get('riverSoc')}",  # info: set parts
              f"solar={snap.get('solarInW')}", f"ac={snap.get('acOut')}", f"usbc={snap.get('usbC')}", f"src={snap.get('source')}"]  # info: f" solar= { snap . get ( 'solarInW'
     b3 = snap.get("b3")  # info: set b3
     if isinstance(b3, dict):  # info: if isinstance ( b3 , dict ) :

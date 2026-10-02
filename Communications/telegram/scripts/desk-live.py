@@ -67,6 +67,12 @@ def pack_lines(key: str, name: str, now: datetime) -> list[str]:  # info: def pa
     if not isinstance(soc, dict) or "soc" not in soc:  # info: if not isinstance ( soc , dict ) or
         return [f"{name} SOC_percent=No data"]  # info: return [ f" { name } SOC_percent=No data" ]
     age = age_min(soc.get("at"), now)  # info: set age
+    try:  # info: try :
+        low = float(soc["soc"]) <= 5  # info: set low
+    except (TypeError, ValueError):  # info: except ( TypeError , ValueError ) :
+        low = False  # info: set low
+    if low and isinstance(age, int) and age > 30:  # info: if low and isinstance ( age , int ) and age > 30 :
+        return [f"{name} observation=discharged and powered off last_soc_percent={soc['soc']} age_min={age}"]  # info: return [ f" { name } observation=discharged and powered off last_soc_percent= { soc [ 'soc' ] } age_min= { age } " ]
     lines = [f"{name} SOC_percent={soc['soc']} measured_at={soc.get('at')} age_min={age if age is not None else 'No data'} source={soc.get('source') or 'No data'}"]  # info: set lines
     if not isinstance(watts, dict):  # info: if not isinstance ( watts , dict )
         return lines  # info: return lines

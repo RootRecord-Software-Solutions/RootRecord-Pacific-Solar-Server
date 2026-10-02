@@ -525,7 +525,15 @@ def energy_domain(power: dict) -> dict:  # info: def energy_domain
         state, age = freshness(val.get("at"))  # info: state , age = freshness ( val . get ( "at" ) )
         if row.get("confidence") == "unknown":  # info: if row . get ( "confidence" ) == "unknown"
             state = "unknown"  # info: set state
-        out[key] = {"state": state, "soc_percent": val.get("soc_percent"), "age_min": age, "at": val.get("at"), "reason": "not transmitting" if state == "dead" else "", "source": row.get("source"), "confidence": row.get("confidence"), "visibility": "operator"}  # info: out [ key ] = { "state" : state , "soc_percent" : val . get ( "soc_percent" )
+        reason = "not transmitting" if state == "dead" else ""  # info: set reason
+        try:  # info: try :
+            low = val.get("soc_percent") is not None and float(val.get("soc_percent")) <= 5  # info: set low
+        except (TypeError, ValueError):  # info: except ( TypeError , ValueError ) :
+            low = False  # info: set low
+        if low and isinstance(age, int) and age > 30:  # info: if low and isinstance ( age , int ) and age > 30 :
+            state = "powered_off"  # info: set state
+            reason = "discharged and powered off"  # info: set reason
+        out[key] = {"state": state, "soc_percent": val.get("soc_percent"), "age_min": age, "at": val.get("at"), "reason": reason, "source": row.get("source"), "confidence": row.get("confidence"), "visibility": "operator"}  # info: out [ key ] = { "state" : state , "soc_percent" : val . get ( "soc_percent" )
     return out  # info: return out
 
 # ====================================================
@@ -538,7 +546,7 @@ def slices_for(doc: dict) -> dict:  # info: def slices_for
     drift = (doc.get("drift") or [{}])[0]  # info: set drift
     health = doc.get("health") or {}  # info: set health
     services = doc.get("services") or {}  # info: set services
-    energy_lines = [f"{key} state={row.get('state')} soc={row.get('soc_percent')} age_min={row.get('age_min')}" for key, row in energy.items()]  # info: set energy_lines
+    energy_lines = [f"{key} state={row.get('state')} soc={row.get('soc_percent')} age_min={row.get('age_min')} reason={row.get('reason') or 'none'}" for key, row in energy.items()]  # info: set energy_lines
     run_lines = [f"{name}={row.get('status')}" for name, row in services.items()]  # info: set run_lines
     safety = "can_launch=false do_not=enable gates,launch programs,restart poller,start a second relay,invent numbers,treat a commit as a deploy"  # info: set safety
     scope = "\n".join([  # info: set scope
