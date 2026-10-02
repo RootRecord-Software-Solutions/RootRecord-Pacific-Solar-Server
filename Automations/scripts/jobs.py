@@ -727,17 +727,6 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
     {  # info: {
-        "id": "voice_energy_report",  # info: "id" : "voice_energy_report" ,
-        "enabled": os.environ.get("RR_VOICE_ENERGY", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "Refresh the hourly channel-1 solar look. The sentence is spoken on the hourly solar desk, not as a second voice note.",  # info: "description" : "Refresh the hourly channel-1 solar look. The sentence is spoken on the hourly solar desk, not as a second voice note." ,
-        "only_at_minutes": [12, 42],  # info: "only_at_minutes" : [ 12 , 42 ] ,
-        "builtin": "",  # info: "builtin" : "" ,
-        "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" energy_report',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" energy_report
-        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd" : f" { PACIFIC } /Media/Voice/scripts "
-        "env": {},  # info: "env" : { } ,
-    },  # info: } ,
-    {  # info: {
         "id": "voice_remaining_tasks",  # info: "id" : "voice_remaining_tasks" ,
         "enabled": os.environ.get("RR_VOICE_REMAINING", "0") == "1",  # info: "enabled" : os . environ . get (
         "description": "Bruce remaining tasks from the report board, at :12 and :42 before the radio snapshot. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Bruce remaining tasks from the report board, at :12 and :42 before the radio snapshot. Voice note when RR_VOICE_DELIVER=1." ,
@@ -787,11 +776,11 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
     {  # info: {
-        # Hourly solar voice (2026-09-30). OFF unless RR_VOICE_SOLAR=1 at poller start.
+        # Combined energy+solar voice (2026-10-02). OFF unless RR_VOICE_SOLAR=1 at poller start.
         # Voice note posts only when RR_VOICE_DELIVER=1. Default chat is the sandbox.
         "id": "voice_solar_desk",  # info: "id" : "voice_solar_desk" ,
         "enabled": os.environ.get("RR_VOICE_SOLAR", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "Bruce solar desk at :12 and :42: packs, sun times, newest channel-1 still, and the last stored camera look. Runs after the energy look. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Bruce solar desk at :12 and :42: packs, sun times, newest channel-1 still, and the last stored camera look. Runs after the energy look. Voice note when RR_VOICE_DELIVER=1." ,
+        "description": "Bruce combined energy+solar desk at :12 and :42: packs, sun times, newest channel-1 still, and this hour's camera look (refreshes when needed). Voice note when RR_VOICE_DELIVER=1.",  # info: solar desk description
         "only_at_minutes": [12, 42],  # info: "only_at_minutes" : [ 12 , 42 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" solar_desk',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" solar_desk

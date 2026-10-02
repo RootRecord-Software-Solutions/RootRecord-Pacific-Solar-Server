@@ -11,7 +11,7 @@
 """G3 voice reports (template-first ports of G1 desks). Stdlib only; run with system python3.
 
   python3 voice_reports.py <report> [--no-voice]
-  reports: hourly_chime · nws_weather · energy_report · remaining_tasks · morning_report · midday_report · late_report
+  reports: hourly_chime · nws_weather · remaining_tasks · morning_report · midday_report · late_report
            · earthquake_report · hurricane_desk · kilauea_report · solar_desk · security_desk · bandwidth_desk
            · official_weather · boot_brief · current_report
 
@@ -29,9 +29,10 @@ tracking/*/track.json (Pacific weather poller, NHC CurrentStorms, Hawaiʻi-relev
 RR_VOICE_HURRICANE=1. G1 global JTWC/RAMMB board, OBS and radio push stay NOT ported.
 kilauea_report = G1 hourly Kīlauea desk line (persona._kilauea_line) + the cached HVO-notice lead-in, from Database
 Geology/Volcanoes/{kilauea,mauna-loa}-last.json; job gated RR_VOICE_KILAUEA=1. G1 rr-kilauea Grok draft / Discord post NOT ported.
-solar_desk / security_desk / bandwidth_desk = G1 hourly-clip-reports desks (Bruce solar; Carly security + bandwidth) from
-Database Energy/{soc,watts,sun} and Pacific System/scripts/host_desks.py (net samples in Database System/network/).
-Gates PROPOSED (RR_VOICE_SOLAR / RR_VOICE_SECURITY / RR_VOICE_BANDWIDTH) - not registered in jobs.py (sign-off).
+solar_desk = combined energy + solar product (Bruce): EcoFlow packs, sun times, newest ch1 still, and this hour's
+camera look (refreshes via panel_look.observe when the hour has no reading). The separate energy_report voice job
+is retired; content lives here. security_desk / bandwidth_desk = G1 hourly desks (Carly) from host_desks.py.
+Gates: RR_VOICE_SOLAR / RR_VOICE_SECURITY / RR_VOICE_BANDWIDTH (jobs.py).
 official_weather = G1 official-weather-media spoken statement (Ava): HLS (Pacific Weather/scripts/official_statement.py ->
 Database Weather/Hawai'i/official/) or HWO / AFD (weather poller text products). boot_brief = G1 boot-prelims Boot Report
 (file-only, no Grok) as a template brief (Ava). Both PROPOSED (RR_VOICE_OFFICIAL / RR_VOICE_BOOT), not in jobs.py.
@@ -92,7 +93,7 @@ RIVER_GEN_W = 300  # info: River 2 Pro AC in above this is the generator
 # What it does: Set KIND.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-KIND = {"hourly_chime": "chime", "nws_weather": "nws", "energy_report": "energy", "remaining_tasks": "remaining",  # info: set KIND
+KIND = {"hourly_chime": "chime", "nws_weather": "nws", "remaining_tasks": "remaining",  # info: set KIND
         "morning_report": "morning", "midday_report": "midday", "late_report": "late", "earthquake_report": "earthquake",  # info: "morning_report" : "morning" , "midday_report" : "midday" ,
         "hurricane_desk": "hurricane", "kilauea_report": "kilauea",  # info: "hurricane_desk" : "hurricane" , "kilauea_report" : "kilauea" ,
         "solar_desk": "solar", "security_desk": "security", "bandwidth_desk": "bandwidth",  # info: "solar_desk" : "solar" , "security_desk" : "security" ,
@@ -705,56 +706,12 @@ def speak_board(t: datetime, payload: dict | None):  # info: def speak_board
 
 # ====================================================
 # SECTION: function b_energy_report
-# What it does: Pack watts, the newest ch1 still, and one hourly camera observation.
+# What it does: Retired. Energy content folded into b_solar_desk (packs + camera look refresh). Kept as an alias for one release.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def b_energy_report(t: datetime):  # info: def b_energy_report
-    facts = energy_facts(t)  # info: set facts
-    sp = ["Energy desk report.", generated_at(t)]  # info: set sp
-    md = [f"# Energy desk — {t.isoformat()}", "", "| Device | SOC | Solar in | AC out | USB-C out | Reading at | Age |", "|---|---|---|---|---|---|---|"]
-    if not any(f["ok"] for f in facts):  # info: if not any ( f [ "ok" ]
-        sp.append("EcoFlow is offline.")  # info: sp . append ( "EcoFlow is offline." )
-    for f in facts:  # info: for f in facts :
-        if not f["ok"]:  # info: if not f [ "ok" ] :
-            md.append(f"| {f['name']} | no reading | | | | | |")  # info: md . append ( f" | { f
-            continue  # info: continue
-        if f.get("off"):  # info: if f . get ( "off" ) :
-            md.append(f"| {f['name']} | powered off | | | | {f['at']} | {f['age_min']} min |")  # info: md . append ( f" | { f
-            sp.append(off_sentence(f))  # info: sp . append ( off_sentence ( f ) )
-            continue  # info: continue
-        md.append(f"| {f['name']} | {f['soc']}% | {f['solar_w']} W | {f['ac_out_w']} W | {f['usbc_out_w']} W | {f['at']} | {f['age_min']} min |")  # info: md . append ( f" | { f
-        s = f"{f['name']} battery {f['soc']}%"  # info: set s
-        if f["solar_w"] is not None:  # info: if f [ "solar_w" ] is not None
-            s += f", solar input {spoken_watts(f['solar_w'])}"  # info: set s
-        out = sum(x for x in (f["ac_out_w"], f["usbc_out_w"]) if isinstance(x, (int, float)))  # info: set out
-        if f["ac_out_w"] is not None or f["usbc_out_w"] is not None:  # info: if f [ "ac_out_w" ] is not None
-            s += f", output {spoken_watts(out)}"  # info: set s
-        sp.append(s + supply_clause(f) + reading_age_clause(f) + ".")  # info: sp . append ( s + supply_clause ( f ) + reading_age_clause ( f ) + "." )
-        say_change(sp, f"energy.{f['key']}.soc", f["soc"], f"{f['name']} state of charge", t)  # info: say_change soc
-        if f["solar_w"] is not None:  # info: if f [ "solar_w" ] is not None
-            say_change(sp, f"energy.{f['key']}.solar_w", f["solar_w"], f"{f['name']} solar input", t)  # info: say_change solar
-        if f["ac_out_w"] is not None or f["usbc_out_w"] is not None:  # info: if f [ "ac_out_w" ] is not None
-            say_change(sp, f"energy.{f['key']}.output_w", out, f"{f['name']} output", t)  # info: say_change output
-        note = range_clause(f)  # info: set note
-        if note:  # info: if note :
-            sp.append(note)  # info: sp . append ( note )
-    still = newest_ch1(t)  # info: set still
-    if still:  # info: if still :
-        name = Path(still["path"]).name  # info: set name
-        if still["age_min"] > 0:  # info: if still [ "age_min" ] > 0 :
-            md.append(f"- Solar panel still age: {still['age_min']} min (`{name}`)")  # info: md . append ( f" - Solar panel still age: { still
-            sp.append(f"Solar panel still is {still['age_min']} minutes old.")  # info: sp . append ( f" Solar panel still is { still
-        else:  # info: else :
-            md.append(f"- Solar panel still: current (`{name}`)")  # info: md . append ( f" - Solar panel still: current ( ` { name } ` ) " )
-    else:  # info: else :
-        md.append("- Solar panel still: not on file")  # info: md . append ( "- Solar panel still: not on file" )
-        sp.append("No solar panel still on file.")  # info: sp . append ( "No solar panel still on file." )
-    look = camera_observation(t)  # info: set look
-    if look:  # info: if look :
-        md.append(f"- {look}")  # info: md . append ( f" - { look } " )
-        sp.append(look)  # info: sp . append ( look )
-    md += ["", "_Source: Database Energy/soc + Energy/watts (*-last.json, EcoFlow BLE), the newest ch1 camera still, and one hourly Gemma look at that still._", ""]  # info: set md
-    return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
+def b_energy_report(t: datetime):  # info: def b_energy_report (retired alias)
+    """Retired energy desk. Forwards to the combined solar desk."""  # info: docstring
+    return b_solar_desk(t)  # info: return b_solar_desk ( t )
 
 
 _KM_ABOUT = re.compile(r"^(\d+(?:\.\d+)?)\s+km\b")  # info: set _KM_ABOUT
@@ -1091,11 +1048,11 @@ def spoken_hhmm(hhmm) -> str:  # info: def spoken_hhmm
 
 # ====================================================
 # SECTION: function b_solar_desk
-# What it does: Hourly packs, sun times, the newest channel-1 still, and the last stored camera look.
+# What it does: Combined energy+solar desk: packs, sun times, newest ch1 still, and this hour's camera look (refreshes when needed).
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def b_solar_desk(t: datetime):  # info: def b_solar_desk
-    """Hourly packs, sun times, the newest channel-1 still, and the last stored camera look."""  # info: """Hourly packs, sun times, the newest channel-1 still, and the last stored camera look."""
+    """Combined energy+solar desk: packs, sun times, newest ch1 still, and this hour's camera look (refreshes when needed)."""  # info: docstring
     facts = energy_facts(t)  # info: set facts
     sun = jload(ENERGY / "sun" / "sun-times-last.json") or {}  # info: set sun
     sp = ["Solar desk.", generated_at(t)]  # info: set sp
@@ -1168,21 +1125,23 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
     else:  # info: else :
         extra.append("- Solar panel still: not on file")  # info: extra . append ( "- Solar panel still: not on file" )
         sp.append("No solar panel still on file.")  # info: sp . append ( "No solar panel still on file." )
+    camera_observation(t)  # info: refresh this hour's ch1 look (was energy_report)
     look = last_camera_look(t)  # info: set look
-    if look.get("sentence"):  # info: if look . get ( "sentence" ) :
-        extra.append(f"- {look['sentence']}")  # info: extra . append ( f" - { look [ 'sentence' ] } " )
-        sp.append(look["sentence"])  # info: sp . append ( look [ "sentence" ] )
-        if look.get("hour") != t.strftime("%Y-%m-%dT%H") and look.get("age_min") is not None:  # info: if look . get ( "hour" ) != t . strftime
-            extra.append(f"- Camera look age: {look['age_min']} min ({look.get('at')})")  # info: extra . append ( f" - Camera look age: { look
+    sentence = str(look.get("sentence") or "")  # info: set sentence
+    if sentence:  # info: if sentence :
+        extra.append(f"- {sentence}")  # info: extra . append sentence
+        sp.append(sentence)  # info: sp . append sentence
+        if look.get("hour") != t.strftime("%Y-%m-%dT%H") and look.get("age_min") is not None:  # info: if look hour stale
+            extra.append(f"- Camera look age: {look['age_min']} min ({look.get('at')})")  # info: extra age
             unit = "minute" if look["age_min"] == 1 else "minutes"  # info: set unit
-            sp.append(f"That camera look is {look['age_min']} {unit} old.")  # info: sp . append ( f" That camera look is { look
+            sp.append(f"That camera look is {look['age_min']} {unit} old.")  # info: sp age
     else:  # info: else :
-        extra.append("- Camera look: not on file")  # info: extra . append ( "- Camera look: not on file" )
-        sp.append("No solar panel camera look on file.")  # info: sp . append ( "No solar panel camera look on file." )
+        extra.append("- Camera look: not on file")  # info: extra missing
+        sp.append("No solar panel camera look on file.")  # info: sp missing
     md = [f"# Solar desk — {t.isoformat()}", ""] + [f"- {x}" for x in lines] + [
         f"- Sun: {sun.get('sunrise', 'n/a')} / {sun.get('sunset', 'n/a')} ({sun.get('date', 'n/a')}, Open-Meteo)",  # info: f" - Sun: { sun . get ( 'sunrise'
     ] + extra + ["", "## Spoken", "", " ".join(sp), "",  # info: ] + extra + [ "" , "## Spoken" , "" , " " . join ( sp ) , "" ,
-        "_Source: Database Energy/soc + Energy/watts (EcoFlow BLE), Energy/sun/sun-times-last.json, the newest ch1 still, and Energy/vision/ch1-look-last.json._", ""]  # info: "_Source: Database Energy/soc + Energy/watts (EcoFlow BLE), Energy/sun/sun-times-last.json, the newest ch1 still, and Energy/vision/ch1-look-last.json._" , "" ]
+        "_Source: Database Energy/soc + Energy/watts (EcoFlow BLE), Energy/sun/sun-times-last.json, the newest ch1 still, and Energy/vision/ch1-look-last.json (refreshed this hour when needed)._", ""]  # info: source footer
     return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
@@ -1724,8 +1683,8 @@ def b_current_report(t: datetime):  # info: def b_current_report
 # What it does: Set BUILD.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-BUILD = {"hourly_chime": b_hourly_chime, "nws_weather": b_nws_weather, "energy_report": b_energy_report,  # info: set BUILD
-         "remaining_tasks": b_remaining_tasks, "morning_report": lambda t: _rollup(t, "morning"),  # info: "remaining_tasks" : b_remaining_tasks , "morning_report" : lambda t
+BUILD = {"hourly_chime": b_hourly_chime, "nws_weather": b_nws_weather,  # info: set BUILD
+         "remaining_tasks": b_remaining_tasks, "morning_report": lambda t: _rollup(t, "morning"),  # info: remaining / morning
          "midday_report": lambda t: _rollup(t, "midday"), "late_report": lambda t: _rollup(t, "late"),  # info: "midday_report" : lambda t : _rollup ( t
          "earthquake_report": b_earthquake_report, "hurricane_desk": b_hurricane_desk,  # info: "earthquake_report" : b_earthquake_report , "hurricane_desk" : b_hurricane_desk ,
          "kilauea_report": b_kilauea_report, "solar_desk": b_solar_desk, "security_desk": b_security_desk,  # info: "kilauea_report" : b_kilauea_report , "solar_desk" : b_solar_desk ,
@@ -1830,9 +1789,7 @@ def main() -> int:  # info: def main
         if report == "current_report":  # info: if report == "current_report" :
             keep_voice_text(report)  # info: call keep_voice_text
         wav = (res.get("voice") or {}).get("wav")  # info: set wav
-        if report == "energy_report":  # info: if report == "energy_report" :
-            res["deliver"] = {"ok": True, "skipped": True, "detail": "blended into the hourly solar desk; the radio file is refreshed"}  # info: res [ "deliver" ] = { "ok" : True , "skipped" : True , "detail" : "blended into the hourly solar desk; the radio file is refreshed" }
-        elif wav:  # info: elif wav
+        if wav:  # info: if wav
             import voice_deliver  # info: import voice_deliver
             photo = newest_ch1(t) if report == "solar_desk" else None  # info: set photo
             look = str(last_camera_look(t).get("sentence") or "") if report == "solar_desk" else ""  # info: set look

@@ -35,7 +35,6 @@ TEMPLATE = ECO / "5 - RootRecord-Library" / "Agent Context" / "Documenter-Agent-
 STACK = (
     "voice_system_perf",
     "voice_nws_weather",
-    "voice_energy_report",
     "voice_remaining_tasks",
     "voice_earthquake_report",
     "voice_kilauea_report",
@@ -47,7 +46,6 @@ STACK = (
 LABELS = {
     "voice_system_perf": "System",
     "voice_nws_weather": "NWS",
-    "voice_energy_report": "Energy",
     "voice_remaining_tasks": "Remaining tasks",
     "voice_earthquake_report": "Earthquakes",
     "voice_kilauea_report": "Kīlauea",

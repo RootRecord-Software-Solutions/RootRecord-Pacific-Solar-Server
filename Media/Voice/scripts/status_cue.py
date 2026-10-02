@@ -18,11 +18,10 @@ CLIPS = Path(os.environ.get("RR_VOICE_CLIPS", str(DB / "Media" / "Audio" / "Voic
 STACK_STATE = Path(os.environ.get("RR_VOICE_STACK_STATE", str(DB / "Reports" / "Voice" / "stack-send.json")))
 CLOSER = ("Ava", "stack_all_sent", "All reports have been sent successfully. Heavy work may resume.")
 
-# Ten generating desks. The hourly chime is a replay of files, not a render.
+# Nine generating desks. The hourly chime is a replay of files, not a render.
 TYPES = {
     "system_perf": ("Bruce", "System"),
     "nws_weather": ("Ava", "NWS"),
-    "energy_report": ("Carly", "Energy"),
     "remaining_tasks": ("Bruce", "Remaining tasks"),
     "earthquake_report": ("Carly", "Earthquake"),
     "kilauea_report": ("Carly", "Kilauea"),

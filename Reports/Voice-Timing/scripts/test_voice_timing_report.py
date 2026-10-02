@@ -19,15 +19,15 @@ class VoiceTimingTests(unittest.TestCase):
                 "\n".join([
                     "2026-10-01T21:00:00-10:00job:voice_nws_weather RUN  python3 voice_reports.py nws_weather",
                     "2026-10-01T21:00:30-10:00job:voice_nws_weather | {\"ok\": true}",
-                    "2026-10-01T21:00:30-10:00job:voice_energy_report RUN  python3 voice_reports.py energy_report",
-                    "2026-10-01T21:01:30-10:00job:voice_energy_report | {\"ok\": true}",
+                    "2026-10-01T21:00:30-10:00job:voice_solar_desk RUN  python3 voice_reports.py solar_desk",
+                    "2026-10-01T21:01:30-10:00job:voice_solar_desk | {\"ok\": true}",
                     "noise",
                 ]),
                 encoding="utf-8",
             )
             rows = v.durations(v.log_files(Path(tmp)))
         self.assertEqual(rows["voice_nws_weather"], [30.0])
-        self.assertEqual(rows["voice_energy_report"], [60.0])
+        self.assertEqual(rows["voice_solar_desk"], [60.0])
 
     def test_page_uses_the_handoff_sections_and_no_model(self):
         rows = {

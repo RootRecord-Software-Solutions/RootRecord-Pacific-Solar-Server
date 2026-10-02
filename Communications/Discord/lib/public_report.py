@@ -22,7 +22,7 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 SITE = "https://www.rootrecord.cloud/reports"  # info: set SITE
 KIND = {  # info: set KIND
-    "nws_weather": "nws", "energy_report": "energy", "remaining_tasks": "remaining",  # info: kinds
+    "nws_weather": "nws", "remaining_tasks": "remaining",  # info: kinds
     "morning_report": "morning", "midday_report": "midday", "late_report": "late",  # info: kinds
     "earthquake_report": "earthquake", "hurricane_desk": "hurricane", "kilauea_report": "kilauea",  # info: kinds
     "solar_desk": "solar", "security_desk": "security", "bandwidth_desk": "bandwidth",  # info: kinds
@@ -31,14 +31,14 @@ KIND = {  # info: set KIND
 AGENT = {  # info: set AGENT
     "morning": "ava", "midday": "ava", "late": "ava", "nws": "ava", "official": "ava", "boot": "ava", "current": "ava",  # info: ava
     "solar": "bruce", "system": "bruce", "remaining": "bruce",  # info: bruce
-    "energy": "carly", "earthquake": "carly", "kilauea": "carly", "hurricane": "carly",  # info: carly
+    "earthquake": "carly", "kilauea": "carly", "hurricane": "carly",  # info: carly
     "security": "carly", "bandwidth": "carly",  # info: carly
 }  # info: }
 NAMES = {"ava": "Ava", "bruce": "Bruce", "carly": "Carly"}  # info: set NAMES
 TITLES = {  # info: set TITLES
     "nws_weather": "NWS Hawaiʻi", "kilauea_report": "Kīlauea", "security_desk": "Security",  # info: titles
-    "bandwidth_desk": "Bandwidth", "energy_report": "Energy", "remaining_tasks": "Remaining tasks",  # info: titles
-    "system_perf": "System performance", "solar_desk": "Solar", "earthquake_report": "Earthquake",  # info: titles
+    "bandwidth_desk": "Bandwidth", "remaining_tasks": "Remaining tasks",  # info: titles
+    "system_perf": "System performance", "solar_desk": "Energy and solar", "earthquake_report": "Earthquake",  # info: titles
     "hurricane_desk": "Hurricane", "morning_report": "Morning report", "midday_report": "Midday report",  # info: titles
     "late_report": "Late report", "official_weather": "Official weather", "boot_brief": "Boot brief",  # info: titles
     "current_report": "Current report",  # info: titles

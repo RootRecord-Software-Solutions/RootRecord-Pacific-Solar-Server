@@ -33,7 +33,6 @@ export RR_VOICE_KILAUEA="${RR_VOICE_KILAUEA:-1}"  # info: export
 export RR_VOICE_SECURITY="${RR_VOICE_SECURITY:-1}"  # info: export
 export RR_VOICE_BANDWIDTH="${RR_VOICE_BANDWIDTH:-1}"  # info: export
 export RR_VOICE_SYSTEM_PERF="${RR_VOICE_SYSTEM_PERF:-1}"  # info: export
-export RR_VOICE_ENERGY="${RR_VOICE_ENERGY:-1}"  # info: export
 export RR_VOICE_REMAINING="${RR_VOICE_REMAINING:-1}"  # info: export
 export RR_VOICE_QUAKE="${RR_VOICE_QUAKE:-1}"  # info: export
 export RR_VOICE_SOLAR="${RR_VOICE_SOLAR:-1}"  # info: export

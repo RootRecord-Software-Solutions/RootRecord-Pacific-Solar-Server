@@ -29,17 +29,17 @@ class PublicReportTests(unittest.TestCase):  # info: class
         self.assertEqual(persona_name("solar_desk"), "Bruce")  # info: assert bruce
         self.assertEqual(persona_name("system_perf"), "Bruce")  # info: assert system
         self.assertEqual(persona_name("earthquake_report"), "Carly")  # info: assert carly
-        self.assertEqual(persona_name("energy_report"), "Carly")  # info: assert energy
+        self.assertEqual(persona_name("security_desk"), "Carly")  # info: assert security
         self.assertEqual(persona_name("kilauea_report"), "Carly")  # info: assert kilauea
 
     def test_public_text_is_spoken_and_links_the_live_page(self):  # info: def test_public
-        md = "# Energy\n\n| Delta 2 | 64% | 0 W | 92 W | 0 W | at | 1 min |\n\n_Source: Database Energy/soc._\n"  # info: set md
-        text = public_message("energy_report", "energy-report", md, "Delta 2 battery 64 percent.")  # info: set text
-        self.assertTrue(text.startswith("Energy\n"))  # info: assert header
-        self.assertIn("Delta 2 battery 64%, solar 0 W, AC out 92 W.", text)  # info: assert measured
-        self.assertNotIn("Carly", text)  # info: assert no persona
+        md = "# Solar desk\n\n- Delta 2: state of charge 64%, AC out 92 W\n\n_Source: Database Energy/soc._\n"  # info: set md
+        text = public_message("solar_desk", "solar-desk", md, "Delta 2 battery 64 percent.")  # info: set text
+        self.assertTrue(text.startswith("Energy and solar\n"))  # info: assert header
+        self.assertIn("Delta 2: state of charge 64%, AC out 92 W", text)  # info: assert measured
+        self.assertNotIn("Bruce", text)  # info: assert no persona
         self.assertNotIn("64 percent", text)  # info: assert no transcript
-        self.assertIn("https://www.rootrecord.cloud/reports/energy-report", text)  # info: assert link
+        self.assertIn("https://www.rootrecord.cloud/reports/solar-desk", text)  # info: assert link
         self.assertNotIn("Database", text)  # info: assert no source path
 
     def test_average_needs_two_readings(self):  # info: def test_average
