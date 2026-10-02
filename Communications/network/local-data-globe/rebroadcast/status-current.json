@@ -1,11 +1,11 @@
 {
   "ok": true,
   "kind": "last-known",
-  "as_of": "Thursday, October 1, 2026 \u00b7 23:54 Hawaiian Standard Time",
+  "as_of": "Thursday, October 1, 2026 \u00b7 23:59 Hawaiian Standard Time",
   "power": {
     "resource": "power",
     "title": "Power / solar",
-    "as_of": "Thursday, October 1, 2026 \u00b7 23:54 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 23:59 Hawaiian Standard Time",
     "devices": {
       "delta2": {
         "watts": {
@@ -44,7 +44,7 @@
   "weather": {
     "resource": "weather",
     "title": "Weather",
-    "as_of": "Thursday, October 1, 2026 \u00b7 23:54 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 23:59 Hawaiian Standard Time",
     "report": {
       "generated": "2026-10-01T23:39:28-10:00 HST",
       "sections": 35
@@ -53,9 +53,9 @@
   "kilauea": {
     "resource": "kilauea",
     "title": "K\u012blauea",
-    "as_of": "Thursday, October 1, 2026 \u00b7 23:54 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 23:59 Hawaiian Standard Time",
     "status": {
-      "at": "2026-10-01T23:51:27-10:00",
+      "at": "2026-10-01T23:59:06-10:00",
       "alert_level": "WATCH",
       "color_code": "ORANGE",
       "headline": "WATCH \u2014 elevated unrest",
@@ -66,7 +66,7 @@
   "moon": {
     "resource": "moon",
     "title": "Current moon",
-    "as_of": "Thursday, October 1, 2026 \u00b7 23:54 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 23:59 Hawaiian Standard Time",
     "status": {
       "phase": 0.7028,
       "phase_name": "Waning Gibbous",
