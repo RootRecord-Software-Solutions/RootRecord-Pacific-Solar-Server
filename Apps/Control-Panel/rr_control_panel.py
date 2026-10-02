@@ -70,7 +70,7 @@ APP_ID = "cloud.rootrecord.ControlPanel"  # info: set APP_ID
 APP_NAME = "Root Monitor"  # info: set APP_NAME
 PAGES = [("energy", "Energy"), ("weather", "Weather"), ("system", "System"), ("npu", "NPU"), ("ai", "AI log"),  # info: set PAGES
          ("poller", "Poller / services"), ("automations", "Automations"), ("telemetry", "Telemetry"), ("running", "Running"), ("network", "Network"), ("ssh", "SSH"), ("aws", "AWS Fallback"),  # info: call (
-         ("cameras", "Cameras"), ("controls", "Controls"), ("migration", "Not migrated"), ("settings", "Settings")]  # info: call (
+         ("radio", "ML1 playlist"), ("cameras", "Cameras"), ("controls", "Controls"), ("migration", "Not migrated"), ("settings", "Settings")]  # info: call (
 
 # ====================================================
 # SECTION: CSS
@@ -114,6 +114,7 @@ from rr_pages import ExtraPages  # noqa: E402
 from rr_aws_page import AwsFallbackPage  # noqa: E402
 from rr_automations_page import AutomationsPage  # noqa: E402
 from rr_telemetry_page import TelemetryPage  # noqa: E402
+from rr_radio_page import RadioPage  # noqa: E402
 
 
 # ====================================================
@@ -178,7 +179,7 @@ class BarRow:  # info: class BarRow
 # What it does: Panel.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-class Panel(ExtraPages, AwsFallbackPage, AutomationsPage, TelemetryPage):  # info: class Panel
+class Panel(ExtraPages, AwsFallbackPage, AutomationsPage, TelemetryPage, RadioPage):  # info: class Panel
     def __init__(self, settings: dict, check: bool = False, camera_override: bool | None = None):  # info: def __init__
         self.s = settings  # info: self . s = settings
         self.check = check  # info: self . check = check
@@ -230,12 +231,12 @@ class Panel(ExtraPages, AwsFallbackPage, AutomationsPage, TelemetryPage):  # inf
                          "npu": self.b_npu, "ai": self.b_ai, "poller": self.b_poller, "cameras": self.b_cameras,  # info: "npu" : self . b_npu , "ai" :
                          "controls": self.b_controls, "settings": self.b_settings, "running": self.b_running,  # info: "controls" : self . b_controls , "settings" :
                          "network": self.b_network, "ssh": self.b_ssh, "migration": self.b_migration,  # info: "network" : self . b_network , "ssh" :
-                         "aws": self.b_aws, "automations": self.b_automations, "telemetry": self.b_telemetry}  # info: "aws" : self . b_aws , "automations" : self . b_automations , "telemetry" : self . b_telemetry }
+                         "aws": self.b_aws, "automations": self.b_automations, "telemetry": self.b_telemetry, "radio": self.b_radio}  # info: "aws" : self . b_aws , "automations" : self . b_automations , "telemetry" : self . b_telemetry }
         self.refreshers = {"energy": self.r_energy, "weather": self.r_weather, "system": self.r_system,  # info: self . refreshers = { "energy" : self
                            "npu": self.r_npu, "ai": self.r_ai, "poller": self.r_poller, "cameras": self.r_cameras,  # info: "npu" : self . r_npu , "ai" :
                            "controls": self.r_controls, "settings": lambda: None, "running": self.r_running,  # info: "controls" : self . r_controls , "settings" :
                            "network": self.r_network, "ssh": lambda: None, "migration": lambda: None,  # info: "network" : self . r_network , "ssh" :
-                           "aws": lambda: None, "automations": self.r_automations, "telemetry": self.r_telemetry}  # info: "aws" : lambda : None , "automations" : self . r_automations , "telemetry" : self . r_telemetry }
+                           "aws": lambda: None, "automations": self.r_automations, "telemetry": self.r_telemetry, "radio": self.r_radio}  # info: "aws" : lambda : None , "automations" : self . r_automations , "telemetry" : self . r_telemetry }
         self.page_boxes, self.built = {}, set()  # info: self . page_boxes , self . built =
         self.cam_tiles = {}  # info: self . cam_tiles = { }
         for name, title in PAGES:  # info: for name , title in PAGES :
