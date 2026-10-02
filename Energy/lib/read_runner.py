@@ -8,7 +8,7 @@
 # Kind: python
 # ==============================================================================
 #!/usr/bin/env python3
-"""Read live snapshot (BLE preferred, cloud quota when BLE misses and the device is cloud-online)."""  # info: """Read live snapshot (BLE preferred, cloud quota when BLE misses and the device is cloud-online)."""
+"""Read live snapshot. BLE is the reading. Cloud quota fills only after BLE has been quiet."""  # info: """Read live snapshot. BLE is the reading. Cloud quota fills only after BLE has been quiet."""
 from __future__ import annotations  # info: from __future__ import annotations
 
 import argparse  # info: import argparse
@@ -32,6 +32,8 @@ from Energy.db.condense import condense_closed_periods  # noqa: E402
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 CLOUD_FALLBACK_SEC = 120  # info: set CLOUD_FALLBACK_SEC
+# A scan miss while the last BLE file is still this fresh must not be replaced by quota.
+BLE_HOLD_SEC = 180  # info: set BLE_HOLD_SEC
 # Inverter watts live in one heartbeat. These packs withhold that heartbeat while the AC outlet is off.
 # Quota is used only when BLE already measured the outlet as on and the watt field itself is empty.
 POWER_FROM_CLOUD = ("ac_output_power", "ac_input_power")  # info: set POWER_FROM_CLOUD
@@ -371,6 +373,29 @@ def _cloud_throttled(alias: str) -> bool:  # info: def _cloud_throttled
 
 
 # ====================================================
+# SECTION: function _hold_last_ble
+# What it does: True when this pack's last watt file is a BLE read younger than BLE_HOLD_SEC.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _hold_last_ble(alias: str) -> bool:  # info: def _hold_last_ble
+    path = WATTS / f"{alias}-last.json"  # info: set path
+    if not path.is_file():  # info: if not path . is_file ( ) :
+        return False  # info: return False
+    try:  # info: try :
+        data = json.loads(path.read_text(encoding="utf-8"))  # info: set data
+        source = str(data.get("source") or "")  # info: set source
+        stamp = datetime.fromisoformat(str(data.get("at") or ""))  # info: set stamp
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):  # info: except ( OSError , ValueError , TypeError , json . JSONDecodeError ) :
+        return False  # info: return False
+    if not source.startswith("ble"):  # info: if not source . startswith ( "ble" ) :
+        return False  # info: return False
+    if stamp.tzinfo is None:  # info: if stamp . tzinfo is None :
+        stamp = stamp.replace(tzinfo=HST)  # info: set stamp
+    age = (datetime.now(HST) - stamp).total_seconds()  # info: set age
+    return 0 <= age < BLE_HOLD_SEC  # info: return 0 <= age < BLE_HOLD_SEC
+
+
+# ====================================================
 # SECTION: function _write_sample
 # What it does: BLE samples stay in Energy/samples. A cloud read goes under Cloud-Quota.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -445,7 +470,14 @@ def main() -> int:  # info: def main
             _zero_missing_inverter_watts(fields)  # info: call _zero_missing_inverter_watts
             _stamp_device_watts(device, fields)  # info: call _stamp_device_watts
 
-    # 2) Cloud fallback when BLE missed or prefer_api. A ble+cloud fill is already a reading.
+    # 2) One scan miss keeps the last BLE file. Quota runs only after that file is older than BLE_HOLD_SEC.
+    if source == "none" and _hold_last_ble(alias):  # info: if source == "none" and _hold_last_ble ( alias ) :
+        print("WAITING")  # info: call print
+        print(f"No data — BLE: {ble_err or 'skipped'}; keeping last BLE reading")  # info: call print
+        print("STATUS=WAITING")  # info: call print
+        return 2  # info: return 2
+
+    # Cloud fallback when BLE has been quiet, or prefer_api. A ble+cloud fill is already a reading.
     if source == "none":  # info: if source == "none" :
         cached = _fresh_cloud_cache(alias)  # info: set cached
         if cached:  # info: if cached :
