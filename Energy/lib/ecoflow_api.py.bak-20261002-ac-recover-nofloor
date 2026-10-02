@@ -144,27 +144,6 @@ def _first(d: dict, *keys, default=None):  # info: def _first
 
 
 # ====================================================
-# SECTION: function _switch_bool
-# What it does: Map a quota switch (1/0) to True/False, or None when the key is absent.
-# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
-# ====================================================
-def _switch_bool(value):  # info: def _switch_bool
-    if value is None:  # info: if value is None
-        return None  # info: return None
-    if isinstance(value, bool):  # info: if isinstance
-        return value  # info: return value
-    try:  # info: try
-        return float(value) != 0.0  # info: return numeric switch
-    except (TypeError, ValueError):  # info: except
-        text = str(value).strip().lower()  # info: set text
-    if text in ("1", "true", "on", "yes"):  # info: if text on
-        return True  # info: return True
-    if text in ("0", "false", "off", "no"):  # info: if text off
-        return False  # info: return False
-    return None  # info: return None
-
-
-# ====================================================
 # SECTION: function map_quota_to_fields
 # What it does: Map EcoFlow quota dict → same shape used by read_runner._fields().
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -225,9 +204,7 @@ def map_quota_to_fields(quota: dict[str, Any]) -> dict[str, Any]:  # info: def m
         "solar_input_power": float(solar) if solar is not None else None,  # info: "solar_input_power" : float ( solar ) if solar
         "usbc_output_power": float(usbc) if usbc is not None else None,  # info: "usbc_output_power" : float ( usbc ) if usbc
         "usba_output_power": None,  # info: "usba_output_power" : None ,
-        "ac_ports": _switch_bool(_first(  # info: ac outlet switch from quota, not a watt guess
-            quota, "mppt.cfgAcEnabled", "pd.cfgAcEnabled", "inv.cfgAcEnabled", "cfgAcEnabled",  # info: River 2 Pro uses mppt.cfgAcEnabled
-        )),  # info: "ac_ports"
+        "ac_ports": None,  # info: "ac_ports" : None ,
         "usb_ports": None,  # info: "usb_ports" : None ,
         "dc_12v_port": None,  # info: "dc_12v_port" : None ,
         "_raw_charger_type": charger_type,  # info: "_raw_charger_type" : charger_type ,

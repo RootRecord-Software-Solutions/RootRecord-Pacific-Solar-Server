@@ -152,13 +152,9 @@ async def apply_bool(alias: str, method: str, want: bool) -> dict:  # info: asyn
     try:  # info: try :
         # connect() returns before the background auth task finishes (encrypt type 7: _encryption is None
         # until then) so send_packet asserts. Wait for AUTHENTICATED, then let the first heartbeat land.
-        state, exc = await asyncio.wait_for(device.wait_until_authenticated_or_error(return_exc=True), timeout=20)  # info: auth state and exception class
-        if not getattr(state, "authenticated", False):  # info: if not authenticated
-            kind = type(exc).__name__ if exc is not None else "none"  # info: class name only, never secrets
-            hint = ""  # info: set hint
-            if kind == "NeedBindInstallFirst":  # info: official app must bind this pack
-                hint = " (re-pair this pack in the EcoFlow app; no credential is stored here)"  # info: human next step
-            raise BleUnavailable(f"auth not completed: {state} exc={kind}{hint}")  # info: raise named auth failure
+        state = await asyncio.wait_for(device.wait_until_authenticated_or_error(), timeout=20)  # info: set state
+        if not state.authenticated:  # info: if not state . authenticated :
+            raise BleUnavailable(f"auth not completed: {state}")  # info: raise BleUnavailable ( f" auth not completed: { state }
         await asyncio.sleep(1.0)  # info: await asyncio . sleep ( 1.0 )
         fn = getattr(device, method, None)  # info: set fn
         if fn is None:  # info: if fn is None :
