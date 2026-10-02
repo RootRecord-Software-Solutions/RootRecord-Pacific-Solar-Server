@@ -845,6 +845,17 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "cwd": f"{PACIFIC}/Media/RadioRss",  # info: "cwd" : f" { PACIFIC } /Media/RadioRss " ,
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
+    {  # info: {
+        "id": "voice_timing_report",  # info: "id" : "voice_timing_report" ,
+        "enabled": True,  # info: "enabled" : True ,
+        "description": "Rewrite Library voice-timing.md from the automations log. Measured durations only. No model.",  # info: "description" : "Rewrite Library voice-timing.md from the automations log. Measured durations only. No model." ,
+        "only_at_minutes": [5],  # info: "only_at_minutes" : [ 5 ] ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Reports/Voice-Timing/scripts/voice_timing_report.py"',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Reports/Voice-Timing/scripts/voice_timing_report.py"
+        "timeout_sec": 60,  # info: "timeout_sec" : 60 ,
+        "cwd": f"{PACIFIC}/Reports/Voice-Timing/scripts",  # info: "cwd" : f" { PACIFIC } /Reports/Voice-Timing/scripts "
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
     # --- TEMPLATE (EVERY_MINUTE) — copy from the next line through the closing brace, paste ABOVE this template, remove the leading # ---
     # {
     #     "id": "example_every_minute",
