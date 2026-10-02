@@ -49,7 +49,7 @@ class VoiceTimingTests(unittest.TestCase):
         ):
             self.assertIn(heading, text)
         self.assertIn("**Model:** none", text)
-        self.assertIn("`voice_current_report` is scheduled [12, 42].", text)
+        self.assertIn("| `voice_current_report` | [12, 42] |", text)
         self.assertNotIn("llama", text.lower())
 
     def test_live_jobs_file_schedules_the_half_hour_set(self):

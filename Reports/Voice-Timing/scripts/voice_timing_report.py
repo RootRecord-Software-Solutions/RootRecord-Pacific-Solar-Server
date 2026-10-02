@@ -151,7 +151,7 @@ def render(rows: dict[str, list[float]], when: datetime, files: list[Path], sche
         "The station locks the playlist at HH:29:59 and HH:59:59, then chimes on the hour and the half hour.",
         "A file that arrives after that lock waits for the next cycle.",
         "The measured desks share one poller thread and one voice lock, so a set runs one after another.",
-        f"The lead from :12:00 to the :29:59 lock is {LEAD_SEC} seconds. :42 has the same lead before :59:59.",
+        "The lead from :12:00 to the :29:59 lock is 17 minutes 59 seconds. :42 has the same lead before :59:59.",
     ]
     if med is not None and avg is not None and p90 is not None:
         facts.append(
@@ -163,10 +163,8 @@ def render(rows: dict[str, list[float]], when: datetime, files: list[Path], sche
             facts.append("That p90 sum is longer than the lead.")
     else:
         facts.append("The ten-desk set is incomplete in this log, so no stack sum is stated.")
-    for job in (*STACK, "radio_news_update", "voice_hurricane_desk", "voice_morning_report", "voice_midday_report", "voice_late_report"):
-        slot = sched.get(job)
-        if slot:
-            facts.append(f"`{job}` is scheduled {slot}.")
+    facts.append("The schedule table is copied from jobs.py.")
+    order = list(STACK) + [job for job in LABELS if job not in STACK]
 
     lines = [
         "# Voice timing",
@@ -191,10 +189,16 @@ def render(rows: dict[str, list[float]], when: datetime, files: list[Path], sche
         "",
         f"{total} finished runs in {len(files)} log files.",
         "",
+        "| Job | Scheduled |",
+        "| --- | --- |",
+    ]
+    for job in order:
+        lines.append(f"| `{job}` | {sched.get(job) or '—'} |")
+    lines += [
+        "",
         "| Report | Job | Runs | Median | Average | p90 |",
         "| --- | --- | ---: | ---: | ---: | ---: |",
     ]
-    order = list(STACK) + [job for job in LABELS if job not in STACK]
     for job in order:
         values = rows.get(job) or []
         if not values:
