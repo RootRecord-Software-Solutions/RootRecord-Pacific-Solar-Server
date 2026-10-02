@@ -37,8 +37,8 @@ Database Weather/Hawai'i/official/) or HWO / AFD (weather poller text products).
 (file-only, no Grok) as a template brief (Ava). Both PROPOSED (RR_VOICE_OFFICIAL / RR_VOICE_BOOT), not in jobs.py.
 Roll-ups append an LLM summary via run-infer.sh only when RR_VOICE_ROLLUP_LLM=1 (off by default). The off state is not written into the report.
 Scheduling: jobs.py, one env gate per report (read at poller start). Added 2026-09-29 (g3-voice-reports2).
-current_report runs at :00 and :30 and summarizes the same measured desks. Headings use the scheduled slot, not the finish time.
-Morning, midday, and late stay at 09:00, 12:00, and 21:00.
+current_report summarizes the same measured desks. Spoken time and headings are the clock when the text is built.
+Morning, midday, and late still run at 09:02, 12:02, and 21:02, and they say that clock.
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
@@ -98,12 +98,11 @@ KIND = {"hourly_chime": "chime", "nws_weather": "nws", "energy_report": "energy"
         "solar_desk": "solar", "security_desk": "security", "bandwidth_desk": "bandwidth",  # info: "solar_desk" : "solar" , "security_desk" : "security" ,
         "official_weather": "official", "boot_brief": "boot", "current_report": "current"}  # info: "official_weather" : "official" , "boot_brief" : "boot" , "current_report" : "current"
 DEV_NOTE = "Automated Reports are in active development and is expected to change"  # info: set DEV_NOTE
-ROLLUP_AT = {"morning": (9, 0), "midday": (12, 0), "late": (21, 0)}  # info: set ROLLUP_AT }
 
 
 # ====================================================
 # SECTION: function now
-# What it does: now.
+# What it does: Hawaii clock when the report text is built.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def now() -> datetime:  # info: def now
@@ -111,20 +110,8 @@ def now() -> datetime:  # info: def now
 
 
 # ====================================================
-# SECTION: function on_the_dot
-# What it does: Scheduled clock with seconds cleared. Half hours snap to :00 or :30. A named hour and minute stay put.
-# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
-# ====================================================
-def on_the_dot(t: datetime, hour: int | None = None, minute: int | None = None) -> datetime:  # info: def on_the_dot
-    if hour is None:  # info: if hour is None :
-        hour = t.hour  # info: set hour
-        minute = 0 if t.minute < 30 else 30  # info: set minute
-    return t.replace(hour=hour, minute=0 if minute is None else minute, second=0, microsecond=0)  # info: return t . replace (
-
-
-# ====================================================
 # SECTION: function clock
-# What it does: clock.
+# What it does: Spoken hour and minute of the generation clock.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def clock(t: datetime) -> str:  # info: def clock
@@ -664,8 +651,7 @@ def speak_board(t: datetime, payload: dict | None):  # info: def speak_board
         rows.append((when, str(key), str(row.get("status") or "unknown")))  # info: rows . append ( ( when , str ( key ) , str ( row . get ( "status" ) or "unknown" ) ) )
     rows.sort()  # info: rows . sort ( )
     hour = [row for row in rows if t < row[0] <= t + timedelta(hours=1) and row[2] not in closed]  # info: set hour
-    stamp = on_the_dot(t, t.hour, 0)  # info: set stamp
-    sp = ["Remaining tasks.", generated_at(stamp), DEV_NOTE + "."]  # info: set sp
+    sp = ["Remaining tasks.", generated_at(t), DEV_NOTE + "."]  # info: set sp
     if payload is None:  # info: if payload is None :
         sp.append("The report board is not on file.")  # info: sp . append ( "The report board is not on file." )
     else:  # info: else :
@@ -678,7 +664,7 @@ def speak_board(t: datetime, payload: dict | None):  # info: def speak_board
                 sp.append(f"Next is {clock(later[0][0])} {labels.get(later[0][1], later[0][1])}.")  # info: sp . append ( f" Next is { clock ( later [ 0 ] [ 0 ] ) } { labels . get ( later [ 0 ] [ 1 ] , later [ 0 ] [ 1 ] ) } . " )
             else:  # info: else :
                 sp.append("No later report slots are open.")  # info: sp . append ( "No later report slots are open." )
-    md = [f"# Remaining tasks — {stamp.isoformat()}", "", DEV_NOTE, "", "Source: report_board.py status (morning 09:00, midday 12:00, late 21:00).", ""]  # info: set md
+    md = [f"# Remaining tasks — {t.isoformat()}", "", DEV_NOTE, "", "Source: report_board.py status (morning 09:00, midday 12:00, late 21:00).", ""]  # info: set md
     md += [f"- {labels.get(key, key)} {when.isoformat()} {status}" for when, key, status in rows]  # info: set md
     md += ["", "## Spoken", "", " ".join(sp), ""]  # info: set md
     return "\n".join(md), sp  # info: return "\n" . join ( md ) , sp
@@ -1245,9 +1231,8 @@ def b_remaining_tasks(t: datetime):  # info: def b_remaining_tasks
 # ====================================================
 def _rollup(t: datetime, slot: str):  # info: def _rollup
     title = {"morning": "Morning report.", "midday": "Midday report.", "late": "Late report."}[slot]  # info: set title
-    when = on_the_dot(t, *ROLLUP_AT[slot])  # info: set when
     facts, (rows, _), (today, _), h, (tasks, per) = energy_facts(t), alerts(), sfp_today(), host(), open_tasks()  # info: call facts
-    sp = [title, generated_at(when), DEV_NOTE + "."]  # info: set sp
+    sp = [title, generated_at(t), DEV_NOTE + "."]  # info: set sp
     lines = []  # info: set lines
     ok = [f for f in facts if f["ok"] and not f.get("off")]  # info: set ok
     off = [f for f in facts if f.get("off")]  # info: set off
@@ -1280,7 +1265,7 @@ def _rollup(t: datetime, slot: str):  # info: def _rollup
     if summary:  # info: if summary :
         sp.append(summary)  # info: sp . append ( summary )
     sp.append("End of report.")  # info: sp . append ( "End of report." )
-    md = [f"# {title[:-1]} — {when.isoformat()}", "", DEV_NOTE, "", "## Measured", ""] + [f"- {x}" for x in lines]
+    md = [f"# {title[:-1]} — {t.isoformat()}", "", DEV_NOTE, "", "## Measured", ""] + [f"- {x}" for x in lines]
     if summary:  # info: if summary
         md += ["", "## LLM summary", "", summary, ""]  # info: md += the summary only
     return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
@@ -1442,12 +1427,11 @@ def b_boot_brief(t: datetime):  # info: def b_boot_brief
 
 # ====================================================
 # SECTION: function b_current_report
-# What it does: Full current summary of every measured desk, stamped on the half hour.
+# What it does: Full current summary of every measured desk, stamped with the clock when the text is built.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def b_current_report(t: datetime):  # info: def b_current_report
-    """Full current summary of every measured desk. The heading is the :00 or :30 slot, not the finish time."""  # info: docstring
-    stamp = on_the_dot(t)  # info: set stamp
+    """Full current summary of every measured desk. The heading is the clock when the text is built."""  # info: docstring
     facts = energy_facts(t)  # info: set facts
     sun = jload(ENERGY / "sun" / "sun-times-last.json") or {}  # info: set sun
     moon = jload(ENERGY / "moon" / "moon-last.json") or {}  # info: set moon
@@ -1468,8 +1452,8 @@ def b_current_report(t: datetime):  # info: def b_current_report
     tasks, _per = open_tasks()  # info: tasks , _per = open_tasks ( )
     board = board_status()  # info: set board
     fresh = [p for p in official_products(t) if p.get("age_h") is not None and p["age_h"] <= OFFICIAL_MAX_H]  # info: set fresh
-    md = [f"# Current report — {stamp.isoformat()}", "", DEV_NOTE, ""]  # info: set md
-    sp = ["Current report.", generated_at(stamp), DEV_NOTE + "."]  # info: set sp
+    md = [f"# Current report — {t.isoformat()}", "", DEV_NOTE, ""]  # info: set md
+    sp = ["Current report.", generated_at(t), DEV_NOTE + "."]  # info: set sp
     md += ["## Energy", ""]  # info: md += energy heading
     ok = [f for f in facts if f.get("ok") and not f.get("off")]  # info: set ok
     off = [f for f in facts if f.get("off")]  # info: set off
@@ -1500,7 +1484,7 @@ def b_current_report(t: datetime):  # info: def b_current_report
     md += ["", "## Sun and moon", ""]  # info: md += sun heading
     md.append(f"- Sun: {sun.get('sunrise', 'n/a')} / {sun.get('sunset', 'n/a')} ({sun.get('date', 'n/a')})")  # info: md . append sun line
     md.append(f"- Moon: {moon.get('phase_name', 'n/a')}, {moon.get('illumination', 'n/a')}% lit, rise {moon.get('moonrise', 'n/a')}, set {moon.get('moonset', 'n/a')}")  # info: md . append moon line
-    if sun.get("date") == stamp.date().isoformat() and sun.get("sunrise") and sun.get("sunset"):  # info: if sun . get ( "date" ) == stamp . date
+    if sun.get("date") == t.date().isoformat() and sun.get("sunrise") and sun.get("sunset"):  # info: if sun . get ( "date" ) == t . date
         sp.append(f"Sunrise {spoken_hhmm(sun['sunrise'])}, sunset {spoken_hhmm(sun['sunset'])}.".replace("..", "."))  # info: sp . append sun sentence
     else:  # info: else :
         sp.append("Sun times for today are not on file.")  # info: sp . append ( "Sun times for today are not on file." )
