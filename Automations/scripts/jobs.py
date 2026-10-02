@@ -269,8 +269,8 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
     },  # info: } ,
     {  # info: {
         "id": "ecoflow_read_cycle",  # info: "id" : "ecoflow_read_cycle" ,
-        "enabled": True,  # info: "enabled" : True ,
-        "description": "Leap-frog: Delta2 / River2Pro alternate.",  # info: "description" : "Leap-frog: Delta2 / River2Pro alternate." ,
+        "enabled": False,  # info: "enabled" : False ,
+        "description": "Off. rr-ecoflow-read.timer reads the older pack so voice and GitHub jobs cannot freeze solar.",  # info: "description" : "Off. rr-ecoflow-read.timer reads the older pack so voice and GitHub jobs cannot freeze solar." ,
         "interval_sec": 15,  # info: "interval_sec" : 15 ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'bash "{PACIFIC}/Energy/scripts/read/leapfrog-read.sh"',  # info: "command" : f' bash " { PACIFIC } /Energy/scripts/read/leapfrog-read.sh"

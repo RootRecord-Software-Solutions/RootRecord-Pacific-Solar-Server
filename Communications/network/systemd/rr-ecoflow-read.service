@@ -1,0 +1,10 @@
+[Unit]
+Description=Read the older EcoFlow pack over BLE, outside the poller queue
+After=default.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/read/leapfrog-read.sh"
+WorkingDirectory=/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy
+TimeoutStartSec=90
+Nice=10

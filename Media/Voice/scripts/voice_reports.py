@@ -246,6 +246,20 @@ def range_clause(f: dict) -> str | None:  # info: def range_clause
 
 
 # ====================================================
+# SECTION: function reading_age_clause
+# What it does: Comma clause when a pack sample is at least 10 minutes old.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def reading_age_clause(f: dict) -> str:  # info: def reading_age_clause
+    """Comma clause when a pack sample is at least 10 minutes old."""  # info: """Comma clause when a pack sample is at least 10 minutes old."""
+    age = f.get("age_min")  # info: set age
+    if not f.get("ok") or not isinstance(age, int) or age < 10:  # info: if not f . get ( "ok" ) or not isinstance
+        return ""  # info: return ""
+    unit = "minute" if age == 1 else "minutes"  # info: set unit
+    return f", reading is {age} {unit} old"  # info: return f" , reading is { age } { unit } old "
+
+
+# ====================================================
 # SECTION: function alerts
 # What it does: alerts.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -678,7 +692,7 @@ def b_energy_report(t: datetime):  # info: def b_energy_report
         out = sum(x for x in (f["ac_out_w"], f["usbc_out_w"]) if isinstance(x, (int, float)))  # info: set out
         if f["ac_out_w"] is not None or f["usbc_out_w"] is not None:  # info: if f [ "ac_out_w" ] is not None
             s += f", output {spoken_watts(out)}"  # info: set s
-        sp.append(s + supply_clause(f) + ".")  # info: sp . append ( s + supply_clause ( f ) + "." )
+        sp.append(s + supply_clause(f) + reading_age_clause(f) + ".")  # info: sp . append ( s + supply_clause ( f ) + reading_age_clause ( f ) + "." )
         note = range_clause(f)  # info: set note
         if note:  # info: if note :
             sp.append(note)  # info: sp . append ( note )
@@ -1058,6 +1072,10 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
             sbits += [f"{labels[k]} {spoken_watts(v)}" for k, v in nonzero]  # info: set sbits
         elif not clause:  # info: elif not clause :
             sbits.append("idle")  # no solar in, no AC out, no USB-C out, not on generator or transfer
+        age_bit = reading_age_clause(f).lstrip(", ")  # info: set age_bit
+        if age_bit:  # info: if age_bit :
+            bits.append(age_bit)  # info: bits . append ( age_bit )
+            sbits.append(age_bit)  # info: sbits . append ( age_bit )
         lines.append(f"{f['name']}: " + ", ".join(bits))  # info: lines . append ( f" { f [
         spoken_lines.append(f"{f['name']}: " + ", ".join(sbits))  # info: spoken_lines . append ( f" { f [
     if not any(f["ok"] for f in facts):  # info: if not any ( f [ "ok" ]
@@ -1427,6 +1445,10 @@ def b_current_report(t: datetime):  # info: def b_current_report
     if ok:  # info: if ok :
         solar = sum(f.get("solar_w") or 0 for f in ok)  # info: set solar
         sp.append("Battery levels: " + ", ".join(f"{f['name']} at {f['soc']}%" for f in ok) + f". Solar input {spoken_watts(solar)}.")  # info: sp . append battery line
+        for f in ok:  # info: for f in ok :
+            age_bit = reading_age_clause(f).lstrip(", ")  # info: set age_bit
+            if age_bit:  # info: if age_bit :
+                sp.append(f"{f['name']} {age_bit}.")  # info: sp . append ( f" { f [ 'name' ] } { age_bit } . " )
     else:  # info: else :
         sp.append("EcoFlow is offline.")  # info: sp . append ( "EcoFlow is offline." )
     for f in facts:  # info: for f in facts :

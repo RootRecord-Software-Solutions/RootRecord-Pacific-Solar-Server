@@ -8,14 +8,23 @@
 # Kind: shell
 # ==============================================================================
 #!/usr/bin/env bash
-# Leap-frog: every ~5s call → alternate Delta2 / River2Pro (each pack ~10s)
-# Phase 1 import: Pacific Energy/scripts/read (ROOT resolved relative)
+# Read the pack whose watt file is older. A wall-clock slot was skipping River
+# whenever the poller freed up on an even 5-second boundary.
 set -euo pipefail  # info: set
 ROOT="$(cd "$(dirname "$0")" && pwd)"  # info: set ROOT
-# slot = floor(epoch/5); even → delta2, odd → river2pro
-slot=$(( $(date +%s) / 5 ))  # info: set slot
-if (( slot % 2 == 0 )); then  # info: if
-  exec bash "$ROOT/delta2-read.sh"  # info: exec
-else  # info: else
-  exec bash "$ROOT/river2pro-read.sh"  # info: exec
+WATTS="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/watts"  # info: set WATTS
+LOCK="/tmp/ecoflow-ble.lock"  # info: set LOCK
+exec 9>"$LOCK"  # info: exec
+if ! flock -n 9; then  # info: if
+  echo "ecoflow read already running"  # info: echo
+  exit 0  # info: exit
 fi  # info: fi
+delta="$WATTS/delta2-last.json"  # info: set delta
+river="$WATTS/river2pro-last.json"  # info: set river
+pick="river2pro"  # info: set pick
+if [[ -f "$river" && -f "$delta" && "$delta" -ot "$river" ]]; then  # info: if
+  pick="delta2"  # info: set pick
+elif [[ ! -f "$delta" && -f "$river" ]]; then  # info: elif
+  pick="delta2"  # info: set pick
+fi  # info: fi
+exec bash "$ROOT/${pick}-read.sh"  # info: exec

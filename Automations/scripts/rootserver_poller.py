@@ -258,9 +258,9 @@ def build_energy_snapshot() -> dict:  # info: def build_energy_snapshot
 
     d_soc = soc_of(delta_sql, delta_soc)  # info: set d_soc
     r_soc = soc_of(river_sql, river_soc)  # info: set r_soc
-    solar = watt_of(delta_sql, "solar_input_power", delta_w)  # info: set solar
-    if solar is None:  # info: if solar is None :
-        solar = watt_of(river_sql, "solar_input_power", river_w)  # info: set solar
+    d_solar = watt_of(delta_sql, "solar_input_power", delta_w)  # info: set d_solar
+    r_solar = watt_of(river_sql, "solar_input_power", river_w)  # info: set r_solar
+    solar = None if d_solar is None and r_solar is None else (d_solar or 0) + (r_solar or 0)  # info: set solar
     ac = watt_of(delta_sql, "ac_output_power", delta_w)  # info: set ac
     if ac is None:  # info: if ac is None :
         ac = watt_of(river_sql, "ac_output_power", river_w)  # info: set ac

@@ -87,7 +87,7 @@ def chime_phrases(hour: int, minute: int = 0) -> list[str]:  # info: def chime_p
         f"Report generated at {spoken_clock(h, m)}.",  # info: f" Report generated at { spoken_clock ( h , m ) } . "
         f"Mountain Daylight Time is {spoken_clock((h + MDT_AHEAD) % 24, m)}.",  # info: f" Mountain Daylight Time is { spoken_clock ( ( h + MDT_AHEAD ) % 24 , m ) } . "
         f"Eastern time is {spoken_clock((h + EASTERN_AHEAD) % 24, m)}.",  # info: f" Eastern time is { spoken_clock ( ( h + EASTERN_AHEAD ) % 24 , m ) } . "
-        f"U.T.C. is {spoken_clock((h + UTC_AHEAD) % 24, m)}.",  # info: f" U.T.C. is { spoken_clock ( ( h + UTC_AHEAD ) % 24 , m ) } . "
+        f"Universal time is {spoken_clock((h + UTC_AHEAD) % 24, m)}.",  # info: f" Universal time is { spoken_clock ( ( h + UTC_AHEAD ) % 24 , m ) } . "
     ]  # info: ]
     return [line.replace("..", ".") for line in lines]  # info: return [ line . replace ( ".." , "." ) for line in lines ]
 

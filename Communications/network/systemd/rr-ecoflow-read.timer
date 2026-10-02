@@ -1,0 +1,11 @@
+[Unit]
+Description=Keep EcoFlow BLE samples moving while the poller is busy
+
+[Timer]
+OnBootSec=20
+OnUnitActiveSec=20
+AccuracySec=2
+Persistent=true
+
+[Install]
+WantedBy=timers.target

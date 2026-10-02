@@ -27,6 +27,7 @@ GLOBE="network-globe-hawaii.service"  # info: set GLOBE
 BLE="ava-ecoflow-ble.service"  # info: set BLE
 AWS_TUNNEL="rr-aws-fetch-tunnel.service"  # info: set AWS_TUNNEL
 STATUS_TIMER="rr-status-snapshot.timer"  # info: set STATUS_TIMER
+ECOFLOW_TIMER="rr-ecoflow-read.timer"  # info: set ECOFLOW_TIMER
 MONITOR='python3 .*rr_control_panel\.py'  # info: set MONITOR
 
 mkdir -p "$(dirname "$LOG")"  # info: mkdir
@@ -70,6 +71,8 @@ echo "restarting $AWS_TUNNEL"  # info: echo
 systemctl --user restart "$AWS_TUNNEL"  # info: systemctl
 echo "starting $STATUS_TIMER"  # info: echo
 systemctl --user start "$STATUS_TIMER"  # info: systemctl
+echo "starting $ECOFLOW_TIMER"  # info: echo
+systemctl --user start "$ECOFLOW_TIMER"  # info: systemctl
 
 systemctl --user daemon-reload  # info: systemctl
 echo "starting $POLLER"  # info: echo
@@ -77,7 +80,7 @@ systemctl --user start "$POLLER"  # info: systemctl
 echo "starting $GLOBE"  # info: echo
 systemctl --user start "$GLOBE"  # info: systemctl
 sleep 2  # info: sleep
-systemctl --user is-active "$POLLER" "$BLE" "$GLOBE" "$AWS_TUNNEL" "$STATUS_TIMER"  # info: systemctl
+systemctl --user is-active "$POLLER" "$BLE" "$GLOBE" "$AWS_TUNNEL" "$STATUS_TIMER" "$ECOFLOW_TIMER"  # info: systemctl
 
 # ====================================================
 # SECTION: function wait_monitor_gone
