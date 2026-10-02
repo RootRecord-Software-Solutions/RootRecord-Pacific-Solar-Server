@@ -238,7 +238,8 @@ def push_report(report: str) -> dict:
             return {"ok": False, "detail": "daypart_clear_failed", "report": report, "file": final_name}
         if not prune_reports():
             return {"ok": False, "detail": "prune_failed", "report": report, "file": final_name}
-        return {"ok": True, "report": report, "file": final_name, "bytes": tmp.stat().st_size}
+        staged = stage_on_air(report)
+        return {"ok": True, "report": report, "file": final_name, "bytes": tmp.stat().st_size, "stage": staged}
     except (OSError, subprocess.TimeoutExpired):
         return {"ok": False, "detail": "send_failed", "report": report}
     finally:

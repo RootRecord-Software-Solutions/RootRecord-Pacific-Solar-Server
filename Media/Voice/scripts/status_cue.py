@@ -35,11 +35,17 @@ PHASES = (
     ("sent", "{label} report was sent successfully."),
 )
 
+# The clock is the prebuilt chime. These lines only name the slot.
+STAGED = (
+    ("staged_hour", "{label} report has been staged for the hour."),
+    ("staged_half", "{label} report has been staged for the half hour."),
+)
+
 
 def catalog_rows() -> list[dict]:
     rows = []
     for report, (persona, label) in TYPES.items():
-        for phase, template in PHASES:
+        for phase, template in PHASES + STAGED:
             rows.append({
                 "persona": persona,
                 "slug": f"{report}_{phase}",
