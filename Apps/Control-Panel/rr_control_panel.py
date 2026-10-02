@@ -862,8 +862,15 @@ class Panel(ExtraPages, AwsFallbackPage, AutomationsPage, TelemetryPage):  # inf
         self._entry(g, "data_poll_toggle_mode", "Data-poll toggle mode (dry-run = confirm only; write = save intent after confirm)")
         self._entry(g, "data_poll_desired", "Data-poll desired (local = Pacific poll; ml2 = gate LOCAL_DATA_POLL_JOBS)")
         self._switch(g, "data_poll_apply_dropin", "Data-poll write also updates systemd drop-in",
-                     "Off = intent/settings only (safe). On = write rr-data-poll.conf; still does not restart the poller.",
+                     "Off = intent/settings only (safe). On = write rr-data-poll.conf.",
                      "Apply drop-in")
+        self._switch(g, "data_poll_restart_poller", "Data-poll write restarts poller when gate flips",
+                     "Only when apply-dropin wrote a new RR_LOCAL_DATA_POLL that differs from live. Prefer off unless kill-switch must bind now.",
+                     "Restart poller")
+        self._switch(g, "data_poll_sync_ml2", "Data-poll write soft-syncs ML2 collectors/stream timers",
+                     "Exclusive gate peer: Local → stop ml2-collectors+db-stream; ML2 → start them. Never deletes units.",
+                     "Sync ML2")
+        self._entry(g, "data_poll_ml2_alias", "Data-poll ML2 SSH Host alias (default ml2-ip)")
         page.add(g)  # info: page . add ( g )
         g = Adw.PreferencesGroup(title="Paths (read-only sources)")  # info: set g
         self._entry(g, "database_root", "Database root")  # info: self . _entry ( g , "database_root" ,

@@ -11,6 +11,7 @@ INFO — MUST HAVE (future agents), added 2026-09-29:
 - risky_actions_enabled is False by default; turning it on is a sign-off item (see README).
 - data_poll_toggle_mode defaults to "dry-run"; data_poll_desired defaults to "local" (RR_LOCAL_DATA_POLL fail-safe).
   data_poll_apply_dropin defaults False so write mode never touches the live poller env until signed.
+  data_poll_restart_poller / data_poll_sync_ml2 default False; enable with apply_dropin for the exclusive-gate kill-switch.
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
@@ -71,7 +72,10 @@ DEFAULTS: dict = {  # info: set DEFAULTS
     # Data-poll toggle (2026-10-02): Local Pacific vs ML2. Dry-run by default; never auto-disables local.
     "data_poll_toggle_mode": "dry-run",  # dry-run | write (Settings → Panel; write = sign-off)
     "data_poll_desired": "local",  # local | ml2  (panel intent; maps to RR_LOCAL_DATA_POLL 1|0)
-    "data_poll_apply_dropin": False,  # False = intent/settings only; True = also write rr-data-poll.conf (still no restart)
+    "data_poll_apply_dropin": False,  # False = intent/settings only; True = also write rr-data-poll.conf
+    "data_poll_restart_poller": False,  # True = after drop-in change that flips the gate, daemon-reload+restart poller
+    "data_poll_sync_ml2": False,  # True = soft start/stop ml2-collectors+ml2-db-stream timers for exclusive gate
+    "data_poll_ml2_alias": "ml2-ip",  # SSH Host for ML2 soft sync
 }  # info: }
 
 # Seeded 2026-09-29 by read-only discovery from poller-watch.py, rootserver_poller.py, cam_server.py,

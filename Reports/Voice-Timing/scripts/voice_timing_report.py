@@ -69,7 +69,24 @@ SCHED = re.compile(
     r'(?:"only_at_minutes": (\[[0-9, ]+\])|"at_times": (\[[^\]]+\]))',
     re.S,
 )
-LEAD_SEC = (29 * 60 + 59) - (12 * 60)
+def stack_minutes(sched: dict[str, str]) -> tuple[int, int]:
+    """First STACK job's only_at_minutes (live desk starts). Fallback :22/:52."""
+    raw = sched.get(STACK[0], "") or ""
+    mins = [int(x) for x in re.findall(r"\d+", raw)]
+    if len(mins) >= 2:
+        return mins[0], mins[1]
+    if len(mins) == 1:
+        return mins[0], mins[0]
+    return 22, 52
+
+
+def lead_seconds(start_minute: int) -> int:
+    """Seconds from start_minute:00 to the next playlist lock (:29:59 or :59:59)."""
+    if start_minute < 30:
+        return (29 * 60 + 59) - start_minute * 60
+    return (59 * 60 + 59) - start_minute * 60
+
+
 
 
 def log_files(root: Path) -> list[Path]:
@@ -145,22 +162,30 @@ def render(rows: dict[str, list[float]], when: datetime, files: list[Path], sche
     avg = stack_sum(rows, statistics.mean)
     p90 = stack_sum(rows, lambda values: percentile(values, 90))
     clock = when.astimezone(HST).strftime("%Y-%m-%d %H:%M HST")
+    start_a, start_b = stack_minutes(sched)
+    lead_sec = lead_seconds(start_a)
+    n_desks = len(STACK)
+    desk_word = f"{n_desks}-desk"
+    lead_min, lead_rem = divmod(lead_sec, 60)
     facts = [
         "The station locks the playlist at HH:29:59 and HH:59:59, then chimes on the hour and the half hour.",
         "A file that arrives after that lock waits for the next cycle.",
         "The measured desks share one poller thread and one voice lock, so a set runs one after another.",
-        "The lead from :12:00 to the :29:59 lock is 17 minutes 59 seconds. :42 has the same lead before :59:59.",
+        (
+            f"The lead from :{start_a:02d}:00 to the :29:59 lock is {lead_min} minutes {lead_rem} seconds. "
+            f":{start_b:02d} has the same lead before :59:59."
+        ),
     ]
     if med is not None and avg is not None and p90 is not None:
         facts.append(
-            f"The ten-desk set sums to median {seconds(med)}, average {seconds(avg)}, and p90 {seconds(p90)}."
+            f"The {desk_word} set sums to median {seconds(med)}, average {seconds(avg)}, and p90 {seconds(p90)}."
         )
-        if p90 <= LEAD_SEC:
+        if p90 <= lead_sec:
             facts.append("That p90 sum fits inside the lead.")
         else:
             facts.append("That p90 sum is longer than the lead.")
     else:
-        facts.append("The ten-desk set is incomplete in this log, so no stack sum is stated.")
+        facts.append(f"The {desk_word} set is incomplete in this log, so no stack sum is stated.")
     facts.append("The schedule table is copied from jobs.py.")
     order = list(STACK) + [job for job in LABELS if job not in STACK]
 
@@ -222,10 +247,14 @@ def render(rows: dict[str, list[float]], when: datetime, files: list[Path], sche
         "### Next recommended action",
         "",
     ]
-    if p90 is not None and p90 > LEAD_SEC:
-        lines.append("- Move the :12 and :42 start earlier. The summed p90 no longer fits the lead.")
+    if p90 is not None and p90 > lead_sec:
+        lines.append(
+            f"- Move the :{start_a:02d} and :{start_b:02d} start earlier. The summed p90 no longer fits the lead."
+        )
     else:
-        lines.append("- Keep the :12 and :42 start while the summed p90 still fits the lead.")
+        lines.append(
+            f"- Keep the :{start_a:02d} and :{start_b:02d} start while the summed p90 still fits the lead."
+        )
     lines.append("")
     return "\n".join(lines)
 

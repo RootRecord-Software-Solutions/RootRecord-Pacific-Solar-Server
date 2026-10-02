@@ -203,19 +203,29 @@ LOCAL_DATA_POLL_JOBS = frozenset({
 })
 
 
-def local_data_poll_enabled() -> bool:
-    """True when Pacific should run internet data-poll jobs (default). False = ML2 offload."""
-    v = (os.environ.get("RR_LOCAL_DATA_POLL") or "1").strip().lower()
+def local_data_poll_enabled(raw: str | None = None) -> bool:
+    """True when Pacific should run internet data-poll jobs (default). False = ML2 offload.
+
+    raw=None → read process env (poller). Root Monitor has no RR_LOCAL_DATA_POLL in its own
+    environ; pass the live poller value (or drop-in) via job_enabled(..., local_data_poll=...).
+    """
+    if raw is None:
+        raw = os.environ.get("RR_LOCAL_DATA_POLL")
+    v = (str(raw) if raw is not None else "1").strip().lower()
+    if v == "":
+        return True
     return v not in ("0", "false", "off", "no")
 
 
-def job_enabled(job: dict, overrides: dict | None = None) -> bool:  # info: def job_enabled
+def job_enabled(job: dict, overrides: dict | None = None, *, local_data_poll: bool | None = None) -> bool:  # info: def job_enabled
     jid = str(job.get("id") or "")  # info: set jid
     doc = load_overrides() if overrides is None else overrides  # info: set doc
     flags = doc.get("jobs") if isinstance(doc, dict) else None  # info: set flags
     if isinstance(flags, dict) and isinstance(flags.get(jid), bool):  # info: if isinstance ( flags , dict ) and
         return bool(flags[jid])  # info: return bool
-    if jid in LOCAL_DATA_POLL_JOBS and not local_data_poll_enabled():
+    # Exclusive gate: when local_data_poll is False, LOCAL_DATA_POLL_JOBS stay installed but do not run.
+    poll_on = local_data_poll_enabled() if local_data_poll is None else bool(local_data_poll)
+    if jid in LOCAL_DATA_POLL_JOBS and not poll_on:
         return False
     return bool(job.get("enabled"))  # info: return bool ( job . get ( "enabled" ) )
 

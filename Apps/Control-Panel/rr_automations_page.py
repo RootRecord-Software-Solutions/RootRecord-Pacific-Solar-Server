@@ -15,8 +15,10 @@ systemd timers. The rest timers stop and start the stack later. Saving one
 does not stop the poller now.
 
 Data-poll toggle (2026-10-02): Local Pacific poll vs ML2 offload for
-RR_LOCAL_DATA_POLL / LOCAL_DATA_POLL_JOBS. Matches AWS Fallback safety
-(dry-run default, confirm, write mode). Never restarts the poller.
+RR_LOCAL_DATA_POLL / LOCAL_DATA_POLL_JOBS. Exclusive gate soft kill-switch.
+Matches AWS Fallback safety (dry-run default, confirm, write mode).
+When write + apply_dropin + restart_poller and the gate flips, restarts the
+poller so live env binds; optional ML2 timer soft-sync. EcoFlow/cams ungated.
 """
 from __future__ import annotations  # info: from __future__ import annotations
 
@@ -170,9 +172,21 @@ class AutomationsPage:  # info: class AutomationsPage
         intent = snap.get("intent_desired") or "—"  # info: intent
         drop = ("none" if snap["dropin_raw"] is None  # info: drop
                 else f"{snap['dropin_raw']} ({'local' if snap['dropin_local'] else 'ml2'})")  # info: drop else
+        mismatch = ""  # info: mismatch
+        if (snap["desired"] == "local") != bool(snap["live_local"]):  # info: if desired != live
+            mismatch = " · <span foreground='#dc322f'><b>DESIRED≠LIVE — Apply/restart needed</b></span>"  # info: mismatch txt
+        flags = []  # info: flags
+        if snap.get("apply_dropin"):  # info: apply
+            flags.append("drop-in")  # info: flags
+        if bool(self.s.get("data_poll_restart_poller")):  # info: restart flag
+            flags.append("restart")  # info: flags
+        if bool(self.s.get("data_poll_sync_ml2")):  # info: ml2 flag
+            flags.append("sync-ml2")  # info: flags
+        flag_txt = ", ".join(flags) if flags else "intent-only"  # info: flag_txt
         self.dpoll_status.set_markup(  # info: set markup
-            f"Live poller: <b>{esc(live)}</b> · <tt>{esc(dpoll.ENV_NAME)}</tt>={esc(raw)}\n"
+            f"Live poller: <b>{esc(live)}</b> · <tt>{esc(dpoll.ENV_NAME)}</tt>={esc(raw)}{mismatch}\n"
             f"Panel desired: <b>{esc(snap['desired'])}</b> · intent file: {esc(intent)} · drop-in: {esc(drop)}\n"
+            f"Write side-effects: <b>{esc(flag_txt)}</b> · "
             f"<span alpha='80%'>{esc(snap['fail_safe'])}</span>")  # info: markup body
         want_local = snap["desired"] == "local"  # info: want
         btn = getattr(self, "dpoll_btn", None)  # info: btn
@@ -181,6 +195,8 @@ class AutomationsPage:  # info: class AutomationsPage
         self.report.setdefault("automations", {})["data_poll"] = {  # info: report
             "mode": snap["toggle_mode"], "desired": snap["desired"], "live_local": snap["live_local"],
             "apply_dropin": snap["apply_dropin"],
+            "restart_poller": bool(self.s.get("data_poll_restart_poller")),
+            "sync_ml2": bool(self.s.get("data_poll_sync_ml2")),
         }  # info: end report
 
     def _data_poll_toggled(self, btn, active):  # info: def _data_poll_toggled
@@ -190,7 +206,11 @@ class AutomationsPage:  # info: class AutomationsPage
         snap = dpoll.snapshot(self.s)  # info: snap
         write_mode = snap["toggle_mode"] == "write"  # info: write_mode
         apply_dropin = bool(self.s.get("data_poll_apply_dropin"))  # info: apply_dropin
-        body = dpoll.confirm_body(snap, bool(active), write_mode, apply_dropin)  # info: body
+        restart_flag = bool(self.s.get("data_poll_restart_poller"))  # info: restart_flag
+        sync_ml2 = bool(self.s.get("data_poll_sync_ml2"))  # info: sync_ml2
+        body = dpoll.confirm_body(  # info: body
+            snap, bool(active), write_mode, apply_dropin,  # info: args
+            restart_poller_flag=restart_flag, sync_ml2=sync_ml2)  # info: kwargs
         ok_label = "Apply" if write_mode else "Dry-run"  # info: ok_label
 
         def yes():  # info: def yes
@@ -209,11 +229,19 @@ class AutomationsPage:  # info: class AutomationsPage
                 btn.rr_set(not active)  # info: revert
                 self.toast(f"Data-poll write failed: {exc}")  # info: toast
                 return  # info: return
-            msg = f"data poll intent → {result['desired']} (env would be {result['env_value']})"  # info: msg
+            msg = f"data poll → {result['desired']} (env {result['env_value']})"  # info: msg
             if result.get("dropin_path"):  # info: dropin
-                msg += " · drop-in written (restart poller yourself when ready)"  # info: msg+
+                msg += " · drop-in written"  # info: msg+
+            rst = result.get("restart")  # info: rst
+            if rst is not None:  # info: if restarted
+                msg += (" · poller restarted OK" if rst.get("ok") else f" · poller restart FAILED active={rst.get('active')}")  # info: msg+
+            elif result.get("needs_poller_restart"):  # info: needs but skipped
+                msg += " · restart skipped (enable data_poll_restart_poller)"  # info: msg+
             else:  # info: else
-                msg += " · live poller env unchanged"  # info: msg+
+                msg += " · live env already matched" if result.get("live_unchanged") else " · live updated"  # info: msg+
+            ml2 = result.get("ml2")  # info: ml2
+            if ml2 is not None:  # info: if ml2
+                msg += f" · ML2 {ml2.get('action')} {'OK' if ml2.get('ok') else 'FAIL'}"  # info: msg+
             self.toast(msg)  # info: toast
             self._refresh_data_poll_view()  # info: refresh
             self._refresh_automations_view()  # info: refresh jobs
@@ -288,16 +316,20 @@ class AutomationsPage:  # info: class AutomationsPage
         self._sync_power_rows(doc)  # info: self . _sync_power_rows ( doc )
         self._sync_rest_rows()  # info: self . _sync_rest_rows ( )
         overrides = actl.load_overrides()  # info: set overrides
+        live_local = dpoll.snapshot(self.s).get("live_local", True)  # info: live_local once
         counts: dict[str, list] = {}  # info: set counts
         for jid, meta in self.auto_rows.items():  # info: for jid , meta in self . auto_rows . items ( )
             job = {"id": jid, "enabled": meta["code_on"]}  # info: set job
-            eff = actl.job_enabled(job, overrides)  # info: set eff
+            eff = actl.job_enabled(job, overrides, local_data_poll=live_local)  # info: set eff
             btn = self.auto_job_btns[jid]  # info: set btn
             if not getattr(btn, "_rr_pending", False) and btn.get_active() != eff:  # info: if not getattr ( btn , "_rr_pending" , False ) and
                 btn.rr_set(eff)  # info: btn . rr_set ( eff )
             flag = "override" if isinstance(overrides.get("jobs"), dict) and jid in overrides["jobs"] else "code default"  # info: set flag
             code = "On" if meta["code_on"] else "Off"  # info: set code
-            gate = " · RR_LOCAL_DATA_POLL gate" if jid in dpoll.GATED_JOBS else ""  # info: set gate
+            if jid in dpoll.GATED_JOBS:  # info: if gated job
+                gate = " · RR_LOCAL_DATA_POLL gate (ML2 owns)" if not live_local else " · RR_LOCAL_DATA_POLL gate (local on)"  # info: set gate
+            else:  # info: else
+                gate = ""  # info: set gate
             self.auto_job_widgets[jid]["text"].set_markup(  # info: self . auto_job_widgets [ jid ] [ "text" ] . set_markup
                 f"<b>{_esc(jid)}</b>  <span alpha='70%'>{_esc(meta['schedule'])} · {flag} {code}{gate}</span>\n"  # info: f" <b> { _esc ( jid ) } </b>
                 f"<span alpha='75%'>{_esc(meta['description'])}</span>")  # info: f" <span alpha='75%'> { _esc ( meta [ 'description' ] ) } </span> " )
