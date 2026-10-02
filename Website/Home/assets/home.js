@@ -328,6 +328,21 @@
     var first = out[0];
     var last = out[out.length - 1];
     if (first[0] !== last[0] || first[1] !== last[1]) out.push([first[0], first[1]]);
+    var planar = 0;
+    var n;
+    for (n = 1; n < out.length; n++) {
+      planar += out[n - 1][0] * out[n][1] - out[n][0] * out[n - 1][1];
+    }
+    // Counter-clockwise keeps the fill inside the ring. The other winding
+    // is the rest of the planet.
+    if (planar < 0) out.reverse();
+    if (out.length > 180) {
+      var step = Math.ceil((out.length - 1) / 160);
+      var slim = [];
+      for (n = 0; n < out.length - 1; n += step) slim.push(out[n]);
+      slim.push(out[out.length - 1]);
+      out = slim;
+    }
     return out;
   }
 
@@ -387,19 +402,12 @@
   }
 
   function zoneFill(d) {
-    if (d.kind === "cone") return "rgba(255, 196, 72, 0.14)";
-    var r = Number(d.props && d.props.radii);
-    if (r >= 64) return "rgba(255, 72, 72, 0.20)";
-    if (r >= 50) return "rgba(255, 160, 48, 0.16)";
-    return "rgba(125, 196, 255, 0.13)";
+    if (d.kind === "cone") return "rgba(255, 72, 72, 0.28)";
+    return "rgba(0,0,0,0)";
   }
 
   function zoneStroke(d) {
-    if (d.kind === "cone") return "rgba(255, 210, 110, 0.55)";
-    var r = Number(d.props && d.props.radii);
-    if (r >= 64) return "rgba(255, 120, 120, 0.7)";
-    if (r >= 50) return "rgba(255, 180, 80, 0.6)";
-    return "rgba(160, 210, 255, 0.55)";
+    return d.kind === "cone" ? "rgba(110, 0, 0, 0.95)" : "rgba(110, 0, 0, 0.45)";
   }
 
   function bindStormStyle() {
@@ -411,16 +419,20 @@
       .pathPointLng("lng")
       .pathPointAlt(0.006)
       .pathColor(function (d) {
+        if (d.kind === "cone") return "rgba(110, 0, 0, 0.95)";
         return d.kind === "forecast" ? "rgba(255, 196, 72, 0.92)" : "rgba(255, 244, 220, 0.8)";
       })
-      .pathStroke(function (d) { return d.kind === "forecast" ? 0.16 : 0.22; })
+      .pathStroke(function (d) {
+        if (d.kind === "cone") return 0.42;
+        return d.kind === "forecast" ? 0.16 : 0.22;
+      })
       .pathDashLength(function (d) { return d.kind === "forecast" ? 0.32 : 1; })
       .pathDashGap(function (d) { return d.kind === "forecast" ? 0.14 : 0; })
       .pathDashAnimateTime(0)
       .pathLabel(trackLabel)
       .pathTransitionDuration(0)
       .polygonGeoJsonGeometry(function (d) { return d.geometry; })
-      .polygonCapCurvatureResolution(45)
+      .polygonCapCurvatureResolution(90)
       .polygonAltitude(0.001)
       .polygonCapColor(zoneFill)
       .polygonSideColor(function () { return "rgba(0,0,0,0)"; })
@@ -441,6 +453,103 @@
     globe.polygonsData(zones);
   }
 
+  function coneKmzUrl(props, extra) {
+    var basin = String((props && props.basin) || "").toUpperCase();
+    var num = String(Math.round(Number(props && props.stormnum) || 0));
+    if (num.length < 2) num = "0" + num;
+    var year = String(new Date().getUTCFullYear());
+    var raw = String((props && props.advisnum) || "");
+    var match = raw.match(/^(\d+)([A-Za-z]*)$/);
+    if (!basin || !match) return "";
+    var token = ("000" + match[1]).slice(-3) + (match[2] || "") + (extra || "");
+    return "https://www.nhc.noaa.gov/storm_graphics/api/" + basin + num + year + "_" + token + "adv_CONE.kmz";
+  }
+
+  function unzipKml(buffer) {
+    var view = new DataView(buffer);
+    if (buffer.byteLength < 30 || view.getUint32(0, true) !== 0x04034b50) return Promise.reject(new Error("zip"));
+    if (view.getUint16(6, true) & 8) return Promise.reject(new Error("zip"));
+    var method = view.getUint16(8, true);
+    var size = view.getUint32(18, true);
+    var nameLen = view.getUint16(26, true);
+    var extraLen = view.getUint16(28, true);
+    var start = 30 + nameLen + extraLen;
+    var bytes = new Uint8Array(buffer, start, size);
+    if (method === 0) return Promise.resolve(new TextDecoder().decode(bytes));
+    if (method !== 8 || typeof DecompressionStream !== "function") return Promise.reject(new Error("zip"));
+    return new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).text();
+  }
+
+  function kmlRings(xml) {
+    var doc = new DOMParser().parseFromString(xml, "text/xml");
+    var nodes = doc.getElementsByTagName("coordinates");
+    var rings = [];
+    var i;
+    for (i = 0; i < nodes.length; i++) {
+      var ring = [];
+      nodes[i].textContent.trim().split(/\s+/).forEach(function (part) {
+        var bits = part.split(",");
+        if (bits.length < 2) return;
+        ring.push([Number(bits[0]), Number(bits[1])]);
+      });
+      var clean = cleanRing(ring);
+      if (clean) rings.push(clean);
+    }
+    return rings;
+  }
+
+  function readKmz(url) {
+    return fetch(url, { cache: "no-store", credentials: "omit" }).then(function (res) {
+      if (!res.ok) throw new Error("http");
+      return res.arrayBuffer();
+    }).then(unzipKml).then(kmlRings);
+  }
+
+  function coneAreas(geo) {
+    var features = geo && geo.features;
+    if (!Array.isArray(features) || !features.length) return Promise.resolve([]);
+    return Promise.all(features.map(function (feature) {
+      var props = (feature && feature.properties) || {};
+      var urls = [];
+      var primary = coneKmzUrl(props, "");
+      if (primary) urls.push(primary);
+      if (primary && primary.indexOf("Aadv_CONE") === -1) urls.push(coneKmzUrl(props, "A"));
+      function next(i) {
+        if (i >= urls.length) {
+          return cleanPolygons(feature.geometry).map(function (geometry) {
+            return { kind: "cone", geometry: geometry, props: props };
+          });
+        }
+        return readKmz(urls[i]).then(function (rings) {
+          if (!rings.length) return next(i + 1);
+          return rings.map(function (ring) {
+            return { kind: "cone", geometry: { type: "Polygon", coordinates: [ring] }, props: props };
+          });
+        }).catch(function () { return next(i + 1); });
+      }
+      return next(0);
+    })).then(function (groups) {
+      var out = [];
+      groups.forEach(function (list) { list.forEach(function (zone) { out.push(zone); }); });
+      return out;
+    });
+  }
+
+  function coneOutlines(zones) {
+    var out = [];
+    zones.forEach(function (zone) {
+      if (!zone || zone.kind !== "cone" || !zone.geometry) return;
+      var ring = zone.geometry.coordinates && zone.geometry.coordinates[0];
+      if (!ring || ring.length < 2) return;
+      out.push({
+        kind: "cone",
+        props: zone.props,
+        points: ring.map(function (p) { return { lng: p[0], lat: p[1] }; })
+      });
+    });
+    return out;
+  }
+
   function pullStorms() {
     if (!globe || disposed) return;
     Promise.all([
@@ -449,14 +558,16 @@
       readQuakeFeed(stormQuery(7)).catch(function () { return null; }),
       readQuakeFeed(stormQuery(16, "tau=0")).catch(function () { return null; })
     ]).then(function (packs) {
-      if (!globe || disposed) return;
-      if (!packs[0] && !packs[1] && !packs[2] && !packs[3]) return;
+      if (!globe || disposed) return null;
+      if (!packs[0] && !packs[1] && !packs[2] && !packs[3]) return null;
       var names = nameByBin(packs[1]);
       var coneNames = nameByBin(packs[2]);
       Object.keys(coneNames).forEach(function (k) { if (!names[k]) names[k] = coneNames[k]; });
       var paths = linePaths(packs[0], "past", names).concat(linePaths(packs[1], "forecast", names));
-      var zones = zoneFeatures(packs[2], "cone").concat(zoneFeatures(packs[3], "wind"));
-      showStorms(paths, zones);
+      return coneAreas(packs[2]).then(function (cones) {
+        var zones = cones.concat(zoneFeatures(packs[3], "wind"));
+        showStorms(paths.concat(coneOutlines(zones)), zones);
+      });
     }).catch(function () {});
   }
 
