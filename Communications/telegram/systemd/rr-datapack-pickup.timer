@@ -1,0 +1,12 @@
+[Unit]
+Description=Drain Telegram datapacks every 5 minutes (staged; not installed)
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=5min
+AccuracySec=30s
+Persistent=true
+Unit=rr-datapack-pickup.service
+
+[Install]
+WantedBy=timers.target

@@ -30,3 +30,9 @@ Use this folder name only. Do not create a parallel `system` or `system-stats` p
 ---
 
 *Updated 2026-09-30 02:00 HST — skills checkout is past restore commit `1dcee66` (HEAD `87ec9ac`). Plumbing, telegram, and a-eyes run from Pacific paths.*
+
+---
+
+## Mainland stream receiver (staged 2026-10-02)
+
+`scripts/rr_db_stream_receive.py` — SSH stdin NDJSON → Database allowlist including `System/metrics/ml1|ml2/`. Denies Energy/EcoFlow. Docs: `docs/MAINLAND-SYSMON-INTAKE.md`. Not installed as forced-command yet.
