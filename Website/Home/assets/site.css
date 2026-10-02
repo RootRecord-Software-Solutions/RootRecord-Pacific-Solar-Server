@@ -2016,3 +2016,28 @@ body.broadcast #chart-output .bar-fill { fill: #7dd3fc; }
   font-size: 14px;
 }
 
+body.yt-broadcast .skip { display: none; }
+
+body.yt-broadcast .b-onair {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+body.yt-broadcast .b-onair-k {
+  color: #ff5a6a;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  font-size: 14px;
+}
+
+body.yt-broadcast #b-program {
+  font-size: 18px;
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 520px;
+}
+
