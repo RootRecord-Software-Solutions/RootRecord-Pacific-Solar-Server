@@ -88,4 +88,19 @@ if [[ -f "$river" && -f "$delta" && "$delta" -ot "$river" ]]; then  # info: if
 elif [[ ! -f "$delta" && -f "$river" ]]; then  # info: elif
   pick="delta2"  # info: set pick
 fi  # info: fi
-exec bash "$ROOT/${pick}-read.sh"  # info: exec
+other="delta2"  # info: set other
+if [[ "$pick" == "delta2" ]]; then  # info: if
+  other="river2pro"  # info: set other
+fi  # info: fi
+set +e  # info: set
+bash "$ROOT/${pick}-read.sh"  # info: bash the older pack
+code=$?  # info: set code
+if [[ "$code" -ne 0 ]]; then  # info: if the older pack was not read
+  bash "$ROOT/${other}-read.sh"  # info: bash the other pack
+  if [[ "$?" -eq 0 ]]; then  # info: if
+    code=0  # info: set code
+  fi  # info: fi
+fi  # info: fi
+set -e  # info: set
+python3 "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Communications/telegram/scripts/desk-live.py"  # info: rewrite the agent desk from the last files
+exit "$code"  # info: exit

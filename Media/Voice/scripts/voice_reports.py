@@ -355,6 +355,26 @@ def sfp_today() -> tuple[str | None, str | None]:  # info: def sfp_today
 # What it does: Today high and tonight low for Honolulu, Lihue, Kahului, Hilo, and Kailua-Kona. Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
+def _forecast_labels(now: datetime | None = None) -> tuple[tuple[str, ...], tuple[str, ...]]:  # info: def _forecast_labels
+    """High and low period names for this Hawaii day. NWS uses the weekday after midnight, and Today or Tonight earlier."""  # info: docstring
+    clock = now or datetime.now().astimezone()  # info: set clock
+    day = clock.strftime("%A").upper()  # info: set day
+    highs = (day, "TODAY")  # info: set highs
+    if clock.hour < 6:  # info: if clock . hour < 6
+        lows = ("REST OF TONIGHT", "TONIGHT", f"{day} NIGHT")  # info: set lows
+    else:  # info: else
+        lows = (f"{day} NIGHT", "TONIGHT", "REST OF TONIGHT")  # info: set lows
+    return highs, lows  # info: return highs , lows
+
+
+def _period_body(block: str, labels: tuple[str, ...]) -> str:  # info: def _period_body
+    for label in labels:  # info: for label in labels
+        hit = re.search(rf"(?ms)^\.{re.escape(label)}\.\.\.(.+?)(?=^\.[A-Z]|\Z)", block)  # info: set hit
+        if hit:  # info: if hit
+            return hit.group(1)  # info: return hit . group ( 1 )
+    return ""  # info: return ""
+
+
 def zfp_temps() -> list[dict]:  # info: def zfp_temps
     """Today high and tonight low from the HFO zone forecast. Shore number when a zone also lists elevation. Does not send."""  # info: """Today high and tonight low from the HFO zone forecast. Does not send."""
     places = (("Honolulu Metro", "Honolulu"), ("Kauai East", "Lihue"), ("Maui Central Valley North", "Kahului"),  # info: set places
@@ -363,6 +383,7 @@ def zfp_temps() -> list[dict]:  # info: def zfp_temps
         txt = ZFP.read_text(encoding="utf-8")  # info: set txt
     except OSError:  # info: except OSError :
         return []  # info: return [ ]
+    high_labels, low_labels = _forecast_labels()  # info: high_labels , low_labels = _forecast_labels ( )
     found = {}  # info: set found
     for block in re.split(r"(?m)^HIZ\d+", txt):  # info: for block in re . split
         name_m = re.search(r"(?m)^([A-Za-z][A-Za-z ]+)-\s*$", block)  # info: set name_m
@@ -372,11 +393,9 @@ def zfp_temps() -> list[dict]:  # info: def zfp_temps
         if key in found or key not in {zone for zone, _ in places}:  # info: if key in found or key not in zones
             continue  # info: continue
         row = {"place": dict(places)[key], "high": None, "low": None}  # info: set row
-        for label, word, field in (("TODAY", "Highs", "high"), ("TONIGHT", "Lows", "low")):  # info: for label , word , field
-            hit = re.search(rf"(?ms)^\.{label}\.\.\.(.+?)(?=^\.[A-Z]|\Z)", block)  # info: set hit
-            if not hit:  # info: if not hit :
-                continue  # info: continue
-            deg = re.search(rf"\b{word}\s+(.+?)(?:\.|$)", _flat(hit.group(1)))  # info: set deg
+        for labels, word, field in ((high_labels, "Highs", "high"), (low_labels, "Lows", "low")):  # info: for labels , word , field
+            body = _period_body(block, labels)  # info: set body
+            deg = re.search(rf"\b{word}\s+(.+?)(?:\.|$)", _flat(body)) if body else None  # info: set deg
             if deg:  # info: if deg :
                 row[field] = _shore(deg.group(1))  # info: row [ field ] = _shore
         if row["high"] or row["low"]:  # info: if row [ "high" ] or row [ "low" ]

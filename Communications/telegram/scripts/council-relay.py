@@ -561,7 +561,7 @@ def only_for_a_person(text, voices) -> bool:  # info: def only_for_a_person
 
 # ====================================================
 # SECTION: function forecast_excerpt
-# What it does: Tonight and Thursday from the NWS state forecast on file. Does not send.
+# What it does: The current Hawaii day and night from the NWS state forecast, including the highs and lows. Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def forecast_excerpt() -> str:  # info: def forecast_excerpt
@@ -569,8 +569,20 @@ def forecast_excerpt() -> str:  # info: def forecast_excerpt
         txt = SFP.read_text(encoding="utf-8")  # info: set txt
     except OSError:  # info: except OSError
         return ""  # info: return ""
-    found = re.findall(r"^\.(TONIGHT|THURSDAY)\.\.\.(.+?)(?=^\.[A-Z]|```|\Z)", txt, re.M | re.S)  # info: set found
-    lines = [f"{name.title()}: {' '.join(body.split())[:280]}" for name, body in found[:2]]  # info: set lines
+    clock = datetime.now().astimezone()  # info: set clock
+    day = clock.strftime("%A").upper()  # info: set day
+    if clock.hour < 6:  # info: if clock . hour < 6
+        wanted = ("REST OF TONIGHT", "TONIGHT", day, "TODAY", f"{day} NIGHT")  # info: set wanted
+    else:  # info: else
+        wanted = (day, "TODAY", f"{day} NIGHT", "TONIGHT", "REST OF TONIGHT")  # info: set wanted
+    lines = []  # info: set lines
+    for name in wanted:  # info: for name in wanted
+        hit = re.search(rf"(?ms)^\.{re.escape(name)}\.\.\.(.+?)(?=^\.[A-Z]|```|\Z)", txt)  # info: set hit
+        if not hit:  # info: if not hit
+            continue  # info: continue
+        lines.append(f"{name.title()}: {' '.join(hit.group(1).split())[:280]}")  # info: lines . append
+        if len(lines) == 3:  # info: if len ( lines ) == 3
+            break  # info: break
     return "\n".join(lines)  # info: return "\n" . join ( lines )
 
 # ====================================================

@@ -262,7 +262,7 @@ def stage_on_air(report: str) -> dict:
     The full spoken clock chime does not.
     """
     import status_cue
-    if report not in status_cue.TYPES:
+    if report not in status_cue.CUES:
         return {"ok": True, "skipped": True, "detail": "no_stage_type", "report": report}
     hour, minute = air_slot()
     phase = "staged_half" if minute == 30 else "staged_hour"

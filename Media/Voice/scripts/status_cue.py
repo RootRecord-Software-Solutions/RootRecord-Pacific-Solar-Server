@@ -32,6 +32,10 @@ TYPES = {
     "current_report": ("Ava", "Current"),
 }
 
+# News is not part of the :12 / :42 stack. Its cues still play, and a send still stages it.
+CUES = dict(TYPES)
+CUES["news_update"] = ("Ava", "News")
+
 PHASES = (
     ("starting", "{label} report is about to generate."),
     ("transit", "{label} report has been generated and is in transit."),
@@ -48,7 +52,7 @@ STAGED = (
 
 def catalog_rows() -> list[dict]:
     rows = []
-    for report, (persona, label) in TYPES.items():
+    for report, (persona, label) in CUES.items():
         for phase, template in PHASES + STAGED:
             rows.append({
                 "persona": persona,
@@ -117,7 +121,7 @@ def note_sent(report: str, when: datetime | None = None) -> dict | None:
 
 
 def clip_path(report: str, phase: str) -> Path | None:
-    row = TYPES.get(report)
+    row = CUES.get(report)
     if row is None:
         return None
     persona, _label = row

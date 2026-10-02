@@ -347,6 +347,11 @@ def _join(parts: list[Path], built: dict) -> dict:  # info: def _join
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def render_update(built: dict) -> dict:  # info: def render_update
+    voice_dir = str(PACIFIC / "Media" / "Voice" / "scripts")  # info: set voice_dir
+    if voice_dir not in sys.path:  # info: if voice_dir not in sys . path :
+        sys.path.insert(0, voice_dir)  # info: sys . path . insert ( 0 , voice_dir )
+    import status_cue  # info: import status_cue
+    status_cue.play("news_update", "starting")  # info: status cue before the news render
     folder = Path(tempfile.mkdtemp(prefix="news-hour-"))  # info: set folder
     gap = folder / "gap.wav"  # info: set gap
     has_gap = _gap(gap)  # info: set has_gap
@@ -368,13 +373,13 @@ def render_update(built: dict) -> dict:  # info: def render_update
         return joined  # info: return joined
     if os.environ.get("RR_RADIO_PUSH", "1") == "0":  # info: if os . environ . get ( "RR_RADIO_PUSH" , "1" ) == "0" :
         return {"ok": True, "detail": "rendered", "wav": joined["wav"], "voices": voices}  # info: return { "ok" : True , "detail" : "rendered" , "wav" : joined [ "wav" ] , "voices" : voices }
-    voice_dir = str(PACIFIC / "Media" / "Voice" / "scripts")  # info: set voice_dir
-    if voice_dir not in sys.path:  # info: if voice_dir not in sys . path :
-        sys.path.insert(0, voice_dir)  # info: sys . path . insert ( 0 , voice_dir )
     import radio_push  # info: import radio_push
+    status_cue.play("news_update", "transit")  # info: transit cue as the send starts
     pushed = radio_push.push_report("news_update")  # info: set pushed
     if not isinstance(pushed, dict):  # info: if not isinstance ( pushed , dict ) :
+        status_cue.play("news_update", "failed")  # info: failed cue when the send does not return
         return {"ok": False, "detail": "push_failed", "wav": joined["wav"]}  # info: return { "ok" : False , "detail" : "push_failed" , "wav" : joined [ "wav" ] }
+    pushed["status_send"] = status_cue.after_push("news_update", pushed)  # info: sent cue after Mainland One has the file
     pushed["voices"] = voices  # info: pushed [ "voices" ] = voices
     pushed["wav"] = joined["wav"]  # info: pushed [ "wav" ] = joined [ "wav" ]
     return pushed  # info: return pushed
