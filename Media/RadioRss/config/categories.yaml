@@ -31,7 +31,7 @@ categories:
     name: Artificial intelligence
     program: AI_BRIEF
     lead: "Artificial intelligence brief."
-    rank: 28
+    rank: 17
   - id: developer_ecosystem
     name: Developer ecosystem
     program: DEVELOPER_BRIEF
@@ -66,7 +66,22 @@ categories:
     name: Global news
     program: GLOBAL_NEWS_BRIEF
     lead: "Global news brief."
-    rank: 22
+    rank: 13
+  - id: chips
+    name: Tech and chips
+    program: CHIPS_BRIEF
+    lead: "Tech and chips brief."
+    rank: 13
+  - id: mainland_weather
+    name: U.S. mainland weather
+    program: MAINLAND_WEATHER_BRIEF
+    lead: "Mainland weather brief."
+    rank: 14
+  - id: mainland_politics
+    name: U.S. mainland politics
+    program: MAINLAND_POLITICS_BRIEF
+    lead: "Mainland politics brief."
+    rank: 15
   - id: markets
     name: Markets
     program: MARKETS_BRIEF

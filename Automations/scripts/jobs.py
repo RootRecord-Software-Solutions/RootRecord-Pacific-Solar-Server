@@ -407,7 +407,7 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
         # Uptime log (2026-09-29, migration-geology pass): G1 uptime-log port. OFF unless RR_UPTIME_LOG=1 at poller start.
         "id": "system_uptime_log",  # info: "id" : "system_uptime_log" ,
         "enabled": os.environ.get("RR_UPTIME_LOG", "0") == "1",  # info: "enabled" : os . environ . get (
-        "description": "Desk-up/down events (origin_start, heartbeat_gap, desk_up, boot) -> Database System/uptime/ (KEEP 400).",  # info: "description" : "Desk-up/down events (origin_start, heartbeat_gap, desk_up, boot) -> Database System/uptime/ (
+        "description": "Desk heartbeat plus offline and morning-return samples -> Database System/uptime/. Averages start from the first sample after recording begins.",  # info: "description" : "Desk heartbeat plus offline and morning-return samples -> Database System/uptime/. Averages start from the first sample after recording begins." ,
         "interval_sec": 60,  # info: "interval_sec" : 60 ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'python3 "{PACIFIC}/System/scripts/uptime_log.py" tick',  # info: "command" : f' python3 " { PACIFIC } /System/scripts/uptime_log.py" tick

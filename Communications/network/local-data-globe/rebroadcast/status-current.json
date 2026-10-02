@@ -1,11 +1,11 @@
 {
   "ok": true,
   "kind": "last-known",
-  "as_of": "Friday, October 2, 2026 \u00b7 02:11 Hawaiian Standard Time",
+  "as_of": "Friday, October 2, 2026 \u00b7 02:15 Hawaiian Standard Time",
   "power": {
     "resource": "power",
     "title": "Power / solar",
-    "as_of": "Friday, October 2, 2026 \u00b7 02:11 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 02:15 Hawaiian Standard Time",
     "devices": {
       "delta2": {
         "watts": {
@@ -26,16 +26,16 @@
       "river2pro": {
         "watts": {
           "solar_input_power": 0,
-          "ac_output_power": 37,
+          "ac_output_power": 43,
           "ac_input_power": 0,
           "usbc_output_power": 0,
-          "at": "2026-10-02T02:11:00-10:00",
+          "at": "2026-10-02T02:15:13-10:00",
           "source": "ble",
           "charge_source": "none"
         },
         "soc": {
-          "soc": 51.56,
-          "at": "2026-10-02T02:11:00-10:00",
+          "soc": 50.91,
+          "at": "2026-10-02T02:15:13-10:00",
           "source": "ble"
         }
       }
@@ -44,7 +44,7 @@
   "weather": {
     "resource": "weather",
     "title": "Weather",
-    "as_of": "Friday, October 2, 2026 \u00b7 02:11 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 02:15 Hawaiian Standard Time",
     "report": {
       "generated": "2026-10-02T02:07:25-10:00 HST",
       "sections": 35
@@ -53,7 +53,7 @@
   "kilauea": {
     "resource": "kilauea",
     "title": "K\u012blauea",
-    "as_of": "Friday, October 2, 2026 \u00b7 02:11 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 02:15 Hawaiian Standard Time",
     "status": {
       "at": "2026-10-02T02:11:14-10:00",
       "alert_level": "WATCH",
@@ -66,7 +66,7 @@
   "moon": {
     "resource": "moon",
     "title": "Current moon",
-    "as_of": "Friday, October 2, 2026 \u00b7 02:11 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 02:15 Hawaiian Standard Time",
     "status": {
       "phase": 0.7073,
       "phase_name": "Waning Gibbous",

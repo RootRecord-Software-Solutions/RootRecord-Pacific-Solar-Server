@@ -1603,11 +1603,19 @@ def b_current_report(t: datetime):  # info: def b_current_report
     md.append(f"- Memory {perf['mem_pct']}% used ({perf['mem_used_gb']} / {perf['mem_total_gb']} GB)")  # info: md . append memory line
     md.append(f"- Disk {perf['disk_pct']}% used ({perf['disk_used_gb']} / {perf['disk_total_gb']} GB)")  # info: md . append disk line
     md.append(f"- Uptime {up_h}h {up_m}m")  # info: md . append uptime line
+    conn, conn_say = system_perf.connectivity_lines(t)  # info: set conn , conn_say
+    if conn.get("last_online_at"):  # info: if conn . get ( "last_online_at" )
+        md.append(f"- Root server last online: {conn['last_online_at']}")  # info: md . append last online
+    if isinstance(conn.get("uptime_pct"), int):  # info: if isinstance
+        md.append(f"- Uptime percent: {conn['uptime_pct']}%")  # info: md . append uptime percent
+    if isinstance(conn.get("avg_offline_s"), int):  # info: if isinstance
+        md.append(f"- Average offline: {conn['avg_offline_s']} s")  # info: md . append average offline
     host_say = f"Host CPU {round(perf['cpu_pct'])}%, memory {round(perf['mem_pct'])}% used, disk {round(perf['disk_pct'])}% used."  # info: set host_say
     if perf.get("temp_c") is not None:  # info: if perf . get ( "temp_c" ) is not None :
         md.append(f"- Temperature {perf['temp_c']} C")  # info: md . append temp line
         host_say = host_say[:-1] + f", temperature {perf['temp_c']} degrees Celsius."  # info: set host_say
     sp.append(host_say)  # info: sp . append ( host_say )
+    sp.extend(conn_say)  # info: sp . extend connectivity lines
     say_change(sp, "system.cpu_pct", round(perf["cpu_pct"]), "CPU", t)  # info: say_change cpu
     say_change(sp, "system.mem_pct", round(perf["mem_pct"]), "Memory", t)  # info: say_change memory
     say_change(sp, "system.disk_pct", round(perf["disk_pct"]), "Disk", t)  # info: say_change disk

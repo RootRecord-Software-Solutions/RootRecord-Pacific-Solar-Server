@@ -9,7 +9,7 @@ fetch:
   max_bytes: 2000000
   user_agent: "RootRecord Radio RSS/1.0"
   max_redirects: 5
-  max_feeds_per_run: 12
+  max_feeds_per_run: 18
   max_items_per_feed: 20
   max_broadcast_age_hours: 36
   cluster_window_hours: 48
@@ -42,6 +42,8 @@ overlap_patterns:
 category_rules:
   - category: spacex
     patterns: ["spacex", "starship", "falcon 9", "falcon heavy"]
+  - category: chips
+    patterns: ["nvidia", "cuda", "geforce", "tensor core", "semiconductor", "chipmaker", "foundry", " wafer", "gpu ", " gpus", "hbm3", "hbm4", "blackwell gpu", "hopper gpu", "microsoft", "azure", "openai", "google cloud", "alphabet", "amazon web services", " aws ", "meta platforms", "apple silicon", "tsmc", "taiwan semiconductor", "samsung electronics", "intel ", "amd ", "broadcom", "qualcomm", "arm holdings"]
   - category: maritime
     patterns: ["coast guard", "maritime", "vessel", "shipping", "ship collision", "marine casualty", "imo "]
   - category: aviation
@@ -120,6 +122,34 @@ violence_patterns:
   - "fatal crash"
   - kidnapping
   - hostage
+
+
+# Whole items dropped on feeds marked centrist: true. Keeps mainland politics desks on official and measured wording.
+partisan_patterns:
+  - "radical left"
+  - "radical right"
+  - "far-left"
+  - "far-right"
+  - "far left"
+  - "far right"
+  - "libtard"
+  - "demonrat"
+  - "maga republican"
+  - "maga democrat"
+  - "deep state"
+  - "stolen election"
+  - "rigged election"
+  - "witch hunt"
+  - "fascist democrat"
+  - "fascist republican"
+  - "communist democrat"
+  - "communist republican"
+  - " Traitor Trump"
+  - " Traitor Biden"
+  - "lock her up"
+  - "lock him up"
+  - "own the libs"
+  - "own the conservatives"
 
 # Whole items dropped from every feed. Keeps sports out of news and radio reports.
 # Prefer /sports/ and league names. Do not use bare "sport" (matches transportation).
@@ -204,6 +234,18 @@ programs:
     report: economics_brief
     voice: af_heart
     lead: "Economics brief."
+  CHIPS_BRIEF:
+    report: chips_brief
+    voice: am_echo
+    lead: "Tech and chips brief."
+  MAINLAND_WEATHER_BRIEF:
+    report: mainland_weather_brief
+    voice: af_nova
+    lead: "Mainland weather brief."
+  MAINLAND_POLITICS_BRIEF:
+    report: mainland_politics_brief
+    voice: af_heart
+    lead: "Mainland politics brief."
   GLOBAL_NEWS_BRIEF:
     report: global_news_brief
     voice: af_heart
@@ -229,12 +271,14 @@ programs:
     voice: af_heart
     lead: "Hawaii brief."
 
-# One hourly bulletin. Four desks, then other news if the script is still short.
+# One hourly bulletin aimed at about ten spoken minutes (~150 words/min).
+# Freed former sports airtime goes to chips/NVIDIA, world news, U.S. mainland weather, and centrist mainland politics.
 # Voices leapfrog by the Hawaii hour: midnight Ava, 1 Bruce, 2 Carly, then the next desk takes the next voice.
+# Optional per-desk words override desk_words. Primary desks are polled by news-hour.
 news_update:
   report: news_update
-  target_words: 750
-  desk_words: 170
+  target_words: 1500
+  desk_words: 150
   fresh_hours: 18
   backfill_hours: 36
   roster: [ava, bruce, carly]
@@ -242,24 +286,48 @@ news_update:
     - id: markets
       name: Markets
       lead: "Markets."
+      words: 120
       categories: [markets, economics_finance, energy_market]
     - id: defence
       name: National security
       lead: "National security."
+      words: 120
       categories: [national_security]
     - id: spacex
       name: SpaceX
       lead: "SpaceX."
+      words: 100
       categories: [spacex]
     - id: hawaii
       name: Hawaii
       lead: "Hawaii."
+      words: 120
       categories: [hawaii]
+    - id: chips
+      name: Tech and chips
+      lead: "Tech and chips."
+      words: 280
+      categories: [chips, artificial_intelligence, developer_ecosystem]
+    - id: world
+      name: World
+      lead: "World."
+      words: 280
+      categories: [global_news]
+    - id: mainland_weather
+      name: Mainland weather
+      lead: "Mainland weather."
+      words: 240
+      categories: [mainland_weather]
+    - id: mainland_politics
+      name: Mainland politics
+      lead: "Mainland politics."
+      words: 240
+      categories: [mainland_politics]
     - id: also
       name: Also
       lead: "Also in the news."
       fill: true
-      categories: [space, cybersecurity, science, technology, aviation, global_news, artificial_intelligence]
+      categories: [space, cybersecurity, science, technology, aviation]
 
 publishers:
   NASA: "NASA"
@@ -305,3 +373,20 @@ publishers:
   "Office of the Governor of Hawaii": "the Office of the Governor of Hawaii"
   "Hawaii DBEDT": "the Hawaii Department of Business, Economic Development, and Tourism"
   "Hawaii Department of Health": "the Hawaii Department of Health"
+  Microsoft: "Microsoft"
+  "Associated Press": "the Associated Press"
+  Reuters: "Reuters"
+  "ABC News Australia": "ABC News Australia"
+  "Africa News": "Africanews"
+  "All Africa": "AllAfrica"
+  "South China Morning Post": "the South China Morning Post"
+  "Japan Times": "the Japan Times"
+  "Times of India": "the Times of India"
+  "Deutsche Welle": "Deutsche Welle"
+  "France 24": "France 24"
+  "Latin America Reports": "Latin America news desks"
+  NOAA: "the National Oceanic and Atmospheric Administration"
+  "National Hurricane Center": "the National Hurricane Center"
+  "Storm Prediction Center": "the Storm Prediction Center"
+  "Federal Register": "the Federal Register"
+  Congress: "Congress.gov"

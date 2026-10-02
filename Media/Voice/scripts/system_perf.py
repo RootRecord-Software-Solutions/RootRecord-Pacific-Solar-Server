@@ -135,6 +135,23 @@ def sample() -> dict:  # info: def sample
 
 
 # ====================================================
+# SECTION: function connectivity_lines
+# What it does: Last-online voice lines and the summary row. Empty when the uptime log cannot be read.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def connectivity_lines(now: datetime) -> tuple[dict, list[str]]:  # info: def connectivity_lines
+    """Last-online voice lines and the summary row. Empty when the uptime log cannot be read."""  # info: docstring
+    path = HERE.parents[2] / "System" / "scripts"  # info: set path
+    if str(path) not in sys.path:  # info: if str ( path ) not in sys . path
+        sys.path.insert(0, str(path))  # info: sys . path . insert
+    try:  # info: try
+        import uptime_log  # info: import uptime_log
+        return uptime_log.connectivity(now), uptime_log.sentences(now)  # info: return
+    except Exception:  # info: except Exception
+        return {}, []  # info: return
+
+
+# ====================================================
 # SECTION: function texts
 # What it does: texts.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -168,6 +185,16 @@ def texts(s: dict, now: datetime) -> tuple[str, str]:  # info: def texts
         spoken.append(f"Host battery {s['battery_pct']}%, {'on AC' if s['on_ac'] else 'on battery'}.")  # info: spoken . append ( f" Host battery { s
         spoken.extend(compare_span.sentences("system.battery_pct", s["battery_pct"], "Host battery", now))  # info: spoken . extend battery change
     spoken.append(f"Uptime {up_h} hour{'s' if up_h != 1 else ''} {up_m} minute{'s' if up_m != 1 else ''}.")  # info: spoken . append ( f" Uptime { up_h
+    conn, conn_say = connectivity_lines(now)  # info: set conn , conn_say
+    if conn:  # info: if conn
+        md += f"| Last online | {conn.get('last_online_at')} |\n"  # info: set md
+        if isinstance(conn.get("uptime_pct"), int):  # info: if isinstance
+            md += f"| Uptime percent | {conn['uptime_pct']}% |\n"  # info: set md
+        if isinstance(conn.get("avg_offline_s"), int):  # info: if isinstance
+            md += f"| Average offline | {conn['avg_offline_s']} s |\n"  # info: set md
+        if isinstance(conn.get("avg_return_hour"), int):  # info: if isinstance
+            md += f"| Average return | {conn['avg_return_hour']:02d}:{conn['avg_return_minute']:02d} HST |\n"  # info: set md
+        spoken.extend(conn_say)  # info: spoken . extend
     if s.get("temp_c") is not None:  # info: if s . get ( "temp_c" ) is not None
         src = f" ({s['temp_source']})" if s.get("temp_source") else ""  # info: set src
         md += f"| Temp | {s['temp_c']}°C{src} |\n"  # info: set md

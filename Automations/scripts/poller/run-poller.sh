@@ -46,6 +46,7 @@ export RR_GEOLOGY="${RR_GEOLOGY:-1}"  # info: export
 export RR_MOON="${RR_MOON:-1}"  # info: export
 export RR_SUN_TIMES="${RR_SUN_TIMES:-1}"  # info: export
 export RR_NET_SAMPLES="${RR_NET_SAMPLES:-1}"  # info: export
+export RR_UPTIME_LOG="${RR_UPTIME_LOG:-1}"  # info: export
 
 # ====================================================
 # SECTION: EXEC
