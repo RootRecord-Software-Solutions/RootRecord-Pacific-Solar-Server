@@ -1,41 +1,41 @@
 {
   "ok": true,
   "kind": "last-known",
-  "as_of": "Thursday, October 1, 2026 \u00b7 14:44 Hawaiian Standard Time",
+  "as_of": "Thursday, October 1, 2026 \u00b7 14:47 Hawaiian Standard Time",
   "power": {
     "resource": "power",
     "title": "Power / solar",
-    "as_of": "Thursday, October 1, 2026 \u00b7 14:44 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 14:47 Hawaiian Standard Time",
     "devices": {
       "delta2": {
         "watts": {
           "solar_input_power": 118.0,
-          "ac_output_power": 94.0,
+          "ac_output_power": 0.0,
           "ac_input_power": 0.0,
           "usbc_output_power": 27.0,
-          "at": "2026-10-01T14:43:11-10:00",
+          "at": "2026-10-01T14:45:45-10:00",
           "source": "cloud",
           "charge_source": "none"
         },
         "soc": {
           "soc": 10.28,
-          "at": "2026-10-01T14:43:11-10:00",
+          "at": "2026-10-01T14:45:45-10:00",
           "source": "cloud"
         }
       },
       "river2pro": {
         "watts": {
-          "solar_input_power": 101,
-          "ac_output_power": 63,
+          "solar_input_power": 82,
+          "ac_output_power": 61,
           "ac_input_power": 0,
-          "usbc_output_power": 32,
-          "at": "2026-10-01T14:43:26-10:00",
+          "usbc_output_power": 29,
+          "at": "2026-10-01T14:45:59-10:00",
           "source": "ble",
           "charge_source": "none"
         },
         "soc": {
-          "soc": 19.55,
-          "at": "2026-10-01T14:43:26-10:00",
+          "soc": 19.28,
+          "at": "2026-10-01T14:45:59-10:00",
           "source": "ble"
         }
       }
@@ -44,7 +44,7 @@
   "weather": {
     "resource": "weather",
     "title": "Weather",
-    "as_of": "Thursday, October 1, 2026 \u00b7 14:44 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 14:47 Hawaiian Standard Time",
     "report": {
       "generated": "2026-10-01T14:40:01-10:00 HST",
       "sections": 35
@@ -53,9 +53,9 @@
   "kilauea": {
     "resource": "kilauea",
     "title": "K\u012blauea",
-    "as_of": "Thursday, October 1, 2026 \u00b7 14:44 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 14:47 Hawaiian Standard Time",
     "status": {
-      "at": "2026-10-01T14:38:31-10:00",
+      "at": "2026-10-01T14:45:53-10:00",
       "alert_level": "WATCH",
       "color_code": "ORANGE",
       "headline": "WATCH \u2014 elevated unrest",
@@ -66,7 +66,7 @@
   "moon": {
     "resource": "moon",
     "title": "Current moon",
-    "as_of": "Thursday, October 1, 2026 \u00b7 14:44 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 14:47 Hawaiian Standard Time",
     "status": {
       "phase": 0.6904,
       "phase_name": "Waning Gibbous",
