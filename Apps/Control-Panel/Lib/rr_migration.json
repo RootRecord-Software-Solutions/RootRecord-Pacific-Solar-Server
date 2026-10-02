@@ -95,7 +95,7 @@
     },
     {
       "id": "mainland",
-      "name": "US-Mainland-Server (continuity node)",
+      "name": "US-Mainland-One (continuity node)",
       "wo": "WO-ECO-2026-09-27 · WO-GH-2026-09-27",
       "state": "BLOCKED",
       "note": "Mainland sync row stays disabled. Its catalog path is the archived G2 tree under Old repos deleted and merged, not a live desk. Stub only.",

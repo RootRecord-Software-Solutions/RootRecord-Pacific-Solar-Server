@@ -102,7 +102,8 @@ Council inference on this desk is NPU `llama3.2:3b`, on demand, context 4096. Th
 | **[RootRecord-Ecosystem](https://github.com/RootRecord-Software-Solutions/RootRecord-Ecosystem)** | Public umbrella and this desk's git root |
 | **[RootRecord-Library](https://github.com/RootRecord-Software-Solutions/RootRecord-Library)** | Durable docs, agent context & work orders |
 | **[RootRecord-Database](https://github.com/RootRecord-Software-Solutions/RootRecord-Database)** | Data, media & log layout |
-| **[US-Mainland-Server](https://github.com/rootrecordsoftwaresolutions/US-Mainland-Server)** | Continuity node |
+| **[US-Mainland-One](https://github.com/RootRecord-Software-Solutions/US-Mainland-One)** | Continuity node |
+| **[US-Mainland-Two](https://github.com/RootRecord-Software-Solutions/US-Mainland-Two)** | YouTube station |
 
 Work orders and migration status live in the Library under `Documentation/06-development/Work-Orders/`.
 

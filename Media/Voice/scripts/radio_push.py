@@ -33,7 +33,7 @@ REPORTS_REMOTE = os.environ.get(
 KEEP_REPORT = re.compile(r"^[a-z0-9]+(?:_[a-z0-9]+)*_current\.ogg$")
 MUSIC = Path(os.environ.get(
     "RR_RADIO_MUSIC",
-    "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/2 - RootRecord-US-Mainland-Server/communications/rootrecord-radio/audio/music",
+    "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/2 - RootRecord-US-Mainland-One/communications/rootrecord-radio/audio/music",
 ))
 REPORT_NAME = re.compile(r"^[a-z0-9_]+$")
 SSH = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20"]

@@ -14,7 +14,7 @@
 - Status check = `ssh -o BatchMode=yes -o ConnectTimeout=5 <alias> uptime` wrapped in `timeout 5` (read-only),
   run only when the button is pressed. Open = a terminal (ptyxis / gnome-terminal / x-terminal-emulator) running ssh.
 - Mainland: no Host alias exists on this desk (2026-09-29). The Library design doc 'GithubAI with Ava.md' carries an
-  EMPTY MAINLAND_SSH_HOST/PORT/USER template, and WO-ECO/WO-GH list US-Mainland-Server as a stub continuity node
+  EMPTY MAINLAND_SSH_HOST/PORT/USER template, and WO-ECO/WO-GH list US-Mainland-One as a stub continuity node
   with its sync disabled. Set settings.json "ssh_mainland_alias" once a Host block exists.
 """
 from __future__ import annotations  # info: from __future__ import annotations

@@ -325,8 +325,8 @@ class ExtraPages:  # info: class ExtraPages
             self.ssh_list.append(r)  # info: self . ssh_list . append ( r )
             self.ssh_rows[h["alias"]] = r  # info: self . ssh_rows [ h [ "alias" ]
         if not mainland or mainland not in {h["alias"] for h in hs}:  # info: if not mainland or mainland not in {
-            r = action_row("Mainland monitor / US-Mainland-Server  ·  placeholder",  # info: set r
-                           "No Host alias for Mainland in ~/.ssh/config. Library: WO-ECO lists US-Mainland-Server as a stub continuity "  # info: "No Host alias for Mainland in ~/.ssh/config. Library: WO-ECO lists US-Mainland-Server as a stub continuity "
+            r = action_row("Mainland monitor / US-Mainland-One  ·  placeholder",  # info: set r
+                           "No Host alias for Mainland in ~/.ssh/config. Library: WO-ECO lists US-Mainland-One as a stub continuity "  # info: "No Host alias for Mainland in ~/.ssh/config. Library: WO-ECO lists US-Mainland-One as a stub continuity "
                            "node; the design doc template has an empty MAINLAND_SSH_HOST/USER/PORT. Add a Host block and set "  # info: "node; the design doc template has an empty MAINLAND_SSH_HOST/USER/PORT. Add a Host block and set "
                            "settings.json ssh_mainland_alias to enable the buttons.", 4)  # info: "settings.json ssh_mainland_alias to enable the buttons." , 4 )
             self.ssh_list.append(r)  # info: self . ssh_list . append ( r )

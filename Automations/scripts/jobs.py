@@ -6,7 +6,7 @@
 # Data intake → /home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Intake/
 # Baks/logs  → /home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Github/
 # GitHub catalog: Github/scripts/repos.conf (same ids as G2; Ecosystem local_path).
-# Pacific .gitignore excludes us-mainland-server/ (own repo). No rclone / aws-sync.
+# Pacific .gitignore excludes us-mainland-one/ (own repo). No rclone / aws-sync.
 # Council relay (ensure-relay.sh): FLM llama3.2:3b on the NPU, RR_NPU_ONLY=1, no Ollama fallback, context 4096, on demand.
 # Other callers and flm-warmup.sh still default to llama3.2:1b on demand. That 1b default is not the council model.
 # Telegram council-relay: one getUpdates (Ava). Original council replies on (COUNCIL_REPLIES=1). Sandbox replies off (SANDBOX_REPLIES=0). Private DMs stay quiet (RR_RELAY_REPLIES default 0). Delivery dest is the original council (RR_TELEGRAM_DEST=council).
