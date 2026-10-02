@@ -1,11 +1,11 @@
 {
   "ok": true,
   "kind": "last-known",
-  "as_of": "Friday, October 2, 2026 \u00b7 04:05 Hawaiian Standard Time",
+  "as_of": "Friday, October 2, 2026 \u00b7 04:10 Hawaiian Standard Time",
   "power": {
     "resource": "power",
     "title": "Power / solar",
-    "as_of": "Friday, October 2, 2026 \u00b7 04:05 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 04:10 Hawaiian Standard Time",
     "devices": {
       "delta2": {
         "watts": {
@@ -13,29 +13,29 @@
           "ac_output_power": 0,
           "ac_input_power": 0,
           "usbc_output_power": 0,
-          "at": "2026-10-02T04:04:23-10:00",
+          "at": "2026-10-02T04:10:07-10:00",
           "source": "ble",
           "charge_source": "none"
         },
         "soc": {
           "soc": 2.67,
-          "at": "2026-10-02T04:04:23-10:00",
+          "at": "2026-10-02T04:10:07-10:00",
           "source": "ble"
         }
       },
       "river2pro": {
         "watts": {
           "solar_input_power": 0,
-          "ac_output_power": 44,
+          "ac_output_power": 42,
           "ac_input_power": 0,
           "usbc_output_power": 11,
-          "at": "2026-10-02T04:04:45-10:00",
+          "at": "2026-10-02T04:09:47-10:00",
           "source": "ble",
           "charge_source": "none"
         },
         "soc": {
-          "soc": 19.18,
-          "at": "2026-10-02T04:04:45-10:00",
+          "soc": 18.26,
+          "at": "2026-10-02T04:09:47-10:00",
           "source": "ble"
         }
       }
@@ -44,7 +44,7 @@
   "weather": {
     "resource": "weather",
     "title": "Weather",
-    "as_of": "Friday, October 2, 2026 \u00b7 04:05 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 04:10 Hawaiian Standard Time",
     "report": {
       "generated": "2026-10-02T04:02:50-10:00 HST",
       "sections": 36
@@ -53,7 +53,7 @@
   "kilauea": {
     "resource": "kilauea",
     "title": "K\u012blauea",
-    "as_of": "Friday, October 2, 2026 \u00b7 04:05 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 04:10 Hawaiian Standard Time",
     "status": {
       "at": "2026-10-02T03:41:31-10:00",
       "alert_level": "WATCH",
@@ -66,7 +66,7 @@
   "moon": {
     "resource": "moon",
     "title": "Current moon",
-    "as_of": "Friday, October 2, 2026 \u00b7 04:05 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 04:10 Hawaiian Standard Time",
     "status": {
       "phase": 0.7121,
       "phase_name": "Waning Gibbous",
