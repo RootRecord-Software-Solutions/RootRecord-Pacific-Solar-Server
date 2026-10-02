@@ -1745,6 +1745,8 @@ def main() -> int:  # info: def main
             import voice_deliver  # info: import voice_deliver
             res["deliver"] = voice_deliver.deliver(report, path, " ".join(spoken), KIND[report], report_text=md, who=who, remember_as=t.strftime("%Y-%m-%dT%H:%M"))  # info: res [ "deliver" ] = voice_deliver . deliver
     elif "--no-voice" not in sys.argv:  # info: elif "--no-voice" not in sys . argv :
+        import status_cue  # info: import status_cue
+        res["status_starting"] = status_cue.play(report, "starting")  # info: res [ "status_starting" ] = status_cue . play ( report , "starting" )
         res["voice"] = voice(report, spoken)  # info: res [ "voice" ] = voice ( report
         if report == "current_report":  # info: if report == "current_report" :
             keep_voice_text(report)  # info: call keep_voice_text
@@ -1761,7 +1763,9 @@ def main() -> int:  # info: def main
         voice_res = res.get("voice") or {}  # info: set voice_res
         if os.environ.get("RR_RADIO_PUSH", "1") == "1" and voice_res.get("ok") and not voice_res.get("skipped") and voice_res.get("rc") == 0 and voice_res.get("wav"):  # info: if os . environ . get ( "RR_RADIO_PUSH" , "1" ) == "1" and voice_res . get ( "ok" ) and not voice_res . get ( "skipped" ) and voice_res . get ( "rc" ) == 0 and voice_res . get ( "wav" )
             import radio_push  # info: import radio_push
+            res["status_transit"] = status_cue.play(report, "transit")  # info: res [ "status_transit" ] = status_cue . play ( report , "transit" )
             res["radio"] = radio_push.push_report(report)  # info: res [ "radio" ] = radio_push . push_report ( report )
+            res["status_send"] = status_cue.after_push(report, res["radio"])  # info: res [ "status_send" ] = status_cue . after_push ( report , res [ "radio" ] )
     print(json.dumps(res, ensure_ascii=False))  # info: call print
     return 0  # info: return 0
 

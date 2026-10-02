@@ -213,6 +213,8 @@ def main() -> int:  # info: def main
     write_md(md)  # info: call write_md
     res = {"ok": True, "report": REPORT, "md": str(MD), "cpu_pct": s["cpu_pct"], "mem_pct": s["mem_pct"]}  # info: set res
     if "--no-voice" not in sys.argv:  # info: if "--no-voice" not in sys . argv :
+        import status_cue  # info: import status_cue
+        res["status_starting"] = status_cue.play(REPORT, "starting")  # info: res [ "status_starting" ] = status_cue . play ( REPORT , "starting" )
         with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:  # info: with tempfile . NamedTemporaryFile ( "w" , suffix
             f.write(spoken)  # info: f . write ( spoken )
         try:  # info: try :
@@ -230,7 +232,9 @@ def main() -> int:  # info: def main
                 res["deliver"] = voice_deliver.deliver(REPORT, wav, spoken, "system", report_text=md)  # info: res [ "deliver" ] = voice_deliver . deliver
             if os.environ.get("RR_RADIO_PUSH", "1") == "1" and p.returncode == 0 and wav:  # info: if os . environ . get ( "RR_RADIO_PUSH" , "1" ) == "1" and p . returncode == 0 and wav
                 import radio_push  # info: import radio_push
+                res["status_transit"] = status_cue.play(REPORT, "transit")  # info: res [ "status_transit" ] = status_cue . play ( REPORT , "transit" )
                 res["radio"] = radio_push.push_report(REPORT)  # info: res [ "radio" ] = radio_push . push_report ( REPORT )
+                res["status_send"] = status_cue.after_push(REPORT, res["radio"])  # info: res [ "status_send" ] = status_cue . after_push ( REPORT , res [ "radio" ] )
         finally:  # info: finally :
             os.unlink(f.name)  # info: os . unlink ( f . name )
     print(json.dumps(res))  # info: call print

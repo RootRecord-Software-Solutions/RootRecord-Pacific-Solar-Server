@@ -99,6 +99,8 @@ def chime_text(hour: int, minute: int) -> str:  # info: def chime_text
 # ====================================================
 def catalog() -> list[dict]:  # info: def catalog
     out = [{"persona": p, "slug": s, "text": t, "kinds": k, "source": src} for p, s, t, k, src in _FIXED]  # info: set out
+    from status_cue import catalog_rows  # info: from status_cue import catalog_rows
+    out.extend(catalog_rows())  # info: out . extend ( catalog_rows ( ) )
     for name, resp, _note, *suffix in PROPOSED_PRONUNCIATION:  # info: for name , resp , _note , *
         slug = "proposed_" + name.lower().replace("ʻ", "").translate(str.maketrans("āēīōū", "aeiou")) + "".join(suffix)  # info: set slug
         out.append({"persona": "Ava", "slug": slug, "text": f"{name}.", "spoken": f"{resp}.", "kinds": [],  # info: out . append ( { "persona" : "Ava"

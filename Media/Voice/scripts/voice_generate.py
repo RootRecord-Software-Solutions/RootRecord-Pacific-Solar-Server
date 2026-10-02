@@ -571,6 +571,8 @@ def mode_clips(a) -> dict:  # info: def mode_clips
     for c in catalog():  # info: for c in catalog ( ) :
         if a.persona and c["persona"].lower() != a.persona.lower():  # info: if a . persona and c [ "persona"
             continue  # info: continue
+        if getattr(a, "slug", "") and c["slug"] != a.slug:  # info: if one slug was named , render only that clip
+            continue  # info: continue
         agent = c["persona"].lower()  # info: set agent
         voice, rate = speakers.AGENTS[agent]["kokoro"], speakers.AGENTS[agent]["speed"]  # info: voice , rate = speakers . AGENTS [
         key = f"{c['persona']}/{c['slug']}"  # info: set key
@@ -634,6 +636,7 @@ def main() -> int:  # info: def main
     p.add_argument("--catalog", action="store_true")  # info: p . add_argument ( "--catalog" , action =
     p.add_argument("--persona")  # info: p . add_argument ( "--persona" )
     p.add_argument("--only-missing", action="store_true")  # info: p . add_argument ( "--only-missing" , action =
+    p.add_argument("--slug", default="", help="clips: render this one slug")  # info: p . add_argument ( "--slug" , default = ""
     p.add_argument("--limit", type=int, default=0, help="asr: max clips to transcribe (0 = all)")  # info: p . add_argument ( "--limit" , type =
     a = p.parse_args()  # info: set a
     if a.text_file:  # info: if a . text_file :
