@@ -12,7 +12,7 @@
 
   python3 voice_reports.py <report> [--no-voice]
   reports: hourly_chime · nws_weather · remaining_tasks · morning_report · midday_report · late_report
-           · earthquake_report · hurricane_desk · kilauea_report · solar_desk · security_desk · bandwidth_desk
+           · earthquake_report · hurricane_desk · kilauea_report · kilauea_image_check · solar_desk · security_desk · bandwidth_desk
            · official_weather · boot_brief · current_report
 
 Each run writes Database Media/Audio/Voice/Reports/<report>_current.md (old copy -> Reports/Archive/
@@ -29,6 +29,9 @@ tracking/*/track.json (Pacific weather poller, NHC CurrentStorms, Hawaiʻi-relev
 RR_VOICE_HURRICANE=1. G1 global JTWC/RAMMB board, OBS and radio push stay NOT ported.
 kilauea_report = G1 hourly Kīlauea desk line (persona._kilauea_line) + the cached HVO-notice lead-in, from Database
 Geology/Volcanoes/{kilauea,mauna-loa}-last.json; job gated RR_VOICE_KILAUEA=1. G1 rr-kilauea Grok draft / Discord post NOT ported.
+kilauea_image_check = Carly every-15m USGS HVO still look via Geology/scripts/kilauea_look.py (Gemma stack shared with
+panel_look); speaks "Kilauea observation image was checked" plus measured fountaining/activity findings; job gated
+RR_VOICE_KILAUEA_IMAGE=1. Report-side only — not in LOCAL_DATA_POLL_JOBS.
 solar_desk = combined energy + solar product (Bruce): EcoFlow packs, sun times, newest ch1 still, and this hour's
 camera look (refreshes via panel_look.observe when the hour has no reading). The separate energy_report voice job
 is retired; content lives here. security_desk / bandwidth_desk = G1 hourly desks (Carly) from host_desks.py;
@@ -98,7 +101,7 @@ RIVER_GEN_W = 300  # info: River 2 Pro AC in above this is the generator
 # ====================================================
 KIND = {"hourly_chime": "chime", "nws_weather": "nws", "remaining_tasks": "remaining",  # info: set KIND
         "morning_report": "morning", "midday_report": "midday", "late_report": "late", "earthquake_report": "earthquake",  # info: "morning_report" : "morning" , "midday_report" : "midday" ,
-        "hurricane_desk": "hurricane", "kilauea_report": "kilauea",  # info: "hurricane_desk" : "hurricane" , "kilauea_report" : "kilauea" ,
+        "hurricane_desk": "hurricane", "kilauea_report": "kilauea", "kilauea_image_check": "kilauea",  # info: kilauea kinds -> Carly
         "solar_desk": "solar", "security_desk": "security", "bandwidth_desk": "bandwidth",  # info: "solar_desk" : "solar" , "security_desk" : "security" ,
         "official_weather": "official", "boot_brief": "boot", "current_report": "current"}  # info: "official_weather" : "official" , "boot_brief" : "boot" , "current_report" : "current"
 DEV_NOTE = "Automated Reports are in active development and is expected to change"  # info: set DEV_NOTE
@@ -1015,6 +1018,70 @@ def b_kilauea_report(t: datetime):  # info: def b_kilauea_report
 
 
 # ====================================================
+# SECTION: function b_kilauea_image_check
+# What it does: Carly 15-minute USGS HVO still look via kilauea_look (Gemma). Speaks check line plus measured findings.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def b_kilauea_image_check(t: datetime):  # info: def b_kilauea_image_check
+    """Carly Kīlauea observation image check from USGS HVO stills via Geology/scripts/kilauea_look.py."""  # info: docstring
+    geo = PACIFIC / "Geology" / "scripts"  # info: set geo
+    if str(geo) not in sys.path:  # info: if not on path
+        sys.path.insert(0, str(geo))  # info: insert path
+    row = {}  # info: set row
+    err = ""  # info: set err
+    try:  # info: try
+        import kilauea_look  # info: import kilauea_look
+        row = kilauea_look.observe(t) or {}  # info: set row
+    except Exception as exc:  # noqa: BLE001
+        err = type(exc).__name__  # info: set err
+        row = {}  # info: clear row
+    md = [f"# Kilauea image check — {t.isoformat()}", ""]  # info: set md
+    sp = ["Kilauea observation image was checked."]  # info: set sp
+    if err:  # info: if import/observe failed
+        md += [f"_Look failed: {err}_", ""]  # info: md error
+        sp.append(f"Vision look failed ({err}).")  # info: sp error
+    elif not row:  # info: elif empty
+        md += ["_No look row on file._", ""]  # info: md empty
+        sp.append("No look result on file.")  # info: sp empty
+    else:  # info: else measured
+        activity = str(row.get("activity") or "unclear")  # info: set activity
+        fountain = bool(row.get("fountaining"))  # info: set fountain
+        visible = str(row.get("visible") or "")  # info: set visible
+        cam = str(row.get("cam_title") or row.get("cam") or "USGS HVO webcam")  # info: set cam
+        finding = str(row.get("sentence") or "")  # info: set finding
+        # sentence_for already prefixes the check line; strip duplicate lead-in for spoken parts after the fixed opener
+        if finding.lower().startswith("kilauea observation image was checked."):  # info: if prefixed
+            rest = finding[len("Kilauea observation image was checked."):].strip()  # info: set rest
+            if rest:  # info: if rest
+                sp.append(rest)  # info: append measured
+        elif finding:  # info: elif raw finding
+            sp.append(finding)  # info: append finding
+        elif fountain or activity == "fountaining":  # info: elif fountain flag
+            sp.append(f"Measured finding: lava fountaining is visible on the {cam} still.")  # info: fountain line
+            if visible:  # info: if visible
+                sp.append(f"Visible: {visible}.")  # info: visible
+        elif activity and activity != "unclear":  # info: elif other activity
+            sp.append(f"Measured finding: {activity} on the {cam} still.")  # info: activity line
+            if visible:  # info: if visible
+                sp.append(f"Visible: {visible}.")  # info: visible
+        md += [  # info: md facts
+            f"- **Cam:** {cam} (`{row.get('image') or 'n/a'}`)",  # info: cam
+            f"- **Activity:** {activity}",  # info: activity
+            f"- **Fountaining:** `{fountain}`",  # info: fountain
+            f"- **Visible:** {visible or 'n/a'}",  # info: visible
+            f"- **Fetched live this check:** `{row.get('fetched_live')}`",  # info: fetched
+            f"- **Reference:** {row.get('reference') or 'none'}",  # info: reference
+            f"- **Model:** {row.get('model') or 'n/a'}",  # info: model
+            f"- **At:** {row.get('at') or t.isoformat()}",  # info: at
+            f"- **Error:** {row.get('error') or 'none'}",  # info: error
+            "", "## Spoken", "", " ".join(sp), "",  # info: spoken
+        ]  # info: ]
+        return "\n".join(md), sp  # info: return measured
+    md += ["", "## Spoken", "", " ".join(sp), ""]  # info: md spoken fallback
+    return "\n".join(md), sp  # info: return fallback
+
+
+# ====================================================
 # SECTION: function _analytics_pull_mod
 # What it does: Import Website/scripts/analytics_pull (desk mirror of ML2 daily analytics). Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -1809,7 +1876,7 @@ BUILD = {"hourly_chime": b_hourly_chime, "nws_weather": b_nws_weather,  # info: 
          "remaining_tasks": b_remaining_tasks, "morning_report": lambda t: _rollup(t, "morning"),  # info: remaining / morning
          "midday_report": lambda t: _rollup(t, "midday"), "late_report": lambda t: _rollup(t, "late"),  # info: "midday_report" : lambda t : _rollup ( t
          "earthquake_report": b_earthquake_report, "hurricane_desk": b_hurricane_desk,  # info: "earthquake_report" : b_earthquake_report , "hurricane_desk" : b_hurricane_desk ,
-         "kilauea_report": b_kilauea_report, "solar_desk": b_solar_desk, "security_desk": b_security_desk,  # info: "kilauea_report" : b_kilauea_report , "solar_desk" : b_solar_desk ,
+         "kilauea_report": b_kilauea_report, "kilauea_image_check": b_kilauea_image_check, "solar_desk": b_solar_desk, "security_desk": b_security_desk,  # info: kilauea + solar
          "bandwidth_desk": b_bandwidth_desk, "official_weather": b_official_weather, "boot_brief": b_boot_brief,  # info: "bandwidth_desk" : b_bandwidth_desk , "official_weather" : b_official_weather ,
          "current_report": b_current_report}  # info: "current_report" : b_current_report
 

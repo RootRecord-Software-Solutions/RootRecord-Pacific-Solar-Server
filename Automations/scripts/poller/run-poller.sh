@@ -30,6 +30,7 @@ export RR_VOICE_DELIVER="${RR_VOICE_DELIVER:-1}"  # info: export
 export RR_TELEGRAM_DEST="${RR_TELEGRAM_DEST:-council}"  # info: export
 export RR_VOICE_NWS="${RR_VOICE_NWS:-1}"  # info: export
 export RR_VOICE_KILAUEA="${RR_VOICE_KILAUEA:-1}"  # info: export
+export RR_VOICE_KILAUEA_IMAGE="${RR_VOICE_KILAUEA_IMAGE:-1}"  # info: export — overnight soak image check
 export RR_VOICE_SECURITY="${RR_VOICE_SECURITY:-1}"  # info: export
 export RR_VOICE_BANDWIDTH="${RR_VOICE_BANDWIDTH:-1}"  # info: export
 export RR_VOICE_SYSTEM_PERF="${RR_VOICE_SYSTEM_PERF:-1}"  # info: export

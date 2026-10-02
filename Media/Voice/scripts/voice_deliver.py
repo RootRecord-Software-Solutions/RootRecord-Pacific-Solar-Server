@@ -37,6 +37,7 @@ TOKEN_ENV = {"ava": "TELEGRAM_AVA_TOKEN", "bruce": "TELEGRAM_BRUCE_TOKEN", "carl
 TITLES = {  # info: set TITLES
     "nws_weather": "NWS Hawaiʻi",  # info: "nws_weather" : "NWS Hawaiʻi" ,
     "kilauea_report": "Kīlauea",  # info: "kilauea_report" : "Kīlauea" ,
+    "kilauea_image_check": "Kīlauea image",  # info: "kilauea_image_check" : "Kīlauea image" ,
     "security_desk": "Security",  # info: "security_desk" : "Security" ,
     "bandwidth_desk": "Bandwidth",  # info: "bandwidth_desk" : "Bandwidth" ,
     "remaining_tasks": "Remaining tasks",  # info: "remaining_tasks" : "Remaining tasks" ,

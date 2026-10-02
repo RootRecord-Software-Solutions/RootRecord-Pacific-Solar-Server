@@ -679,6 +679,21 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
         "cwd": f"{PACIFIC}/Website",  # info: cwd
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
+    {  # info: {
+        # Kilauea observation image check (2026-10-02, report-instructor): USGS HVO still + Gemma look (kilauea_look / panel_look stack).
+        # Carly voice every 15 minutes. OFF unless RR_VOICE_KILAUEA_IMAGE=1 at poller start. Report-side only — NOT in LOCAL_DATA_POLL_JOBS.
+        # Prefers Database Geology/Volcanoes/Cams/*-last.jpg; may fetch one live USGS still for the look. Does not replace geology_kilauea_cams.
+        "id": "voice_kilauea_image_check",  # info: "id" : "voice_kilauea_image_check" ,
+        "enabled": os.environ.get("RR_VOICE_KILAUEA_IMAGE", "0") == "1",  # info: soft gate
+        "description": "Carly Kilauea observation image check every 15 minutes: USGS HVO still through Gemma look; speaks checked line plus measured fountaining/activity. Voice note when RR_VOICE_DELIVER=1.",  # info: description
+        "interval_sec": 900,  # info: 15 minutes
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" kilauea_image_check',  # info: command
+        "timeout_sec": 300,  # info: gemma look budget
+        "needs_internet": True,  # info: may refresh one USGS still
+        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: cwd
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
     # --- TEMPLATE (EVERY_SECONDS) — copy from the next line through the closing brace, paste ABOVE this template, remove the leading # ---
     # {
     #     "id": "example_every_seconds",
