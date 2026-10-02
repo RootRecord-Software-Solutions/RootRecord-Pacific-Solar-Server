@@ -150,6 +150,22 @@
 </div>
 <p class="fine" id="globe-fallback" hidden>Planetary view is unavailable in this browser.</p>
 <audio id="radio-out" src="https://api.rootrecord.cloud/radio/live.mp3" autoplay playsinline preload="auto"></audio>
+<script>
+(function () {
+  var audio = document.getElementById("radio-out");
+  if (!audio) return;
+  audio.autoplay = true;
+  audio.muted = false;
+  audio.volume = 1;
+  function start() {
+    var pending = audio.play();
+    if (pending && pending.catch) pending.catch(function () {});
+  }
+  start();
+  audio.addEventListener("pause", start);
+  setInterval(function () { if (audio.paused) start(); }, 1000);
+})();
+</script>
 <script src="https://unpkg.com/globe.gl@2.46.2"></script>
 <script src="/assets/telemetry.js?v=20261001p"></script>
 <script src="/assets/charts.js"></script>
@@ -157,6 +173,6 @@
 <script src="/assets/live-desk.js?v=20261001p"></script>
 <script src="/assets/starfield.js"></script>
 <script src="/assets/home.js?v=20261001ac"></script>
-<script src="/assets/live-radio.js?v=20261001radio"></script>
+<script src="/assets/live-radio.js?v=20261001play"></script>
 </body>
 </html>

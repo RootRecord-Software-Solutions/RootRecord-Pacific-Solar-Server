@@ -38,16 +38,18 @@
   // Replacing the stream address is the cut. Do it only after a long gap
   // with no media at all, not when the buffer is merely refilling.
   setInterval(function () {
-    if (audio.readyState > 0) {
+    if (!audio.paused && audio.readyState > 0) {
       quiet = 0;
       return;
     }
+    if (audio.paused) resume();
+    if (audio.readyState > 0) return;
     quiet += 1;
     if (quiet < 15) return;
     quiet = 0;
     audio.src = BASE + "/live.mp3?t=" + Date.now();
     resume();
-  }, 2000);
+  }, 1000);
 
   pull();
   setInterval(pull, 5000);
