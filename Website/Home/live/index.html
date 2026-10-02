@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="Root Record">
 <meta name="theme-color" content="#000011">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/assets/site.css?v=20261001yt">
+<link rel="stylesheet" href="/assets/site.css?v=20261001radio">
 </head>
 <body class="broadcast">
 <a class="skip" href="#content">Skip to content</a>
@@ -24,6 +24,10 @@
     <div>
       <div class="b-brand"><span>ROOT RECORD</span> · live desk</div>
       <div class="b-live"><i class="led" id="net-dot" aria-hidden="true"></i><span id="net-status" data-live-label="LIVE">LOADING</span></div>
+    </div>
+    <div class="b-onair">
+      <span class="b-onair-k">ON AIR</span>
+      <span id="b-program">Radio</span>
     </div>
     <div class="b-clock">
       <div class="d" id="b-date">HST</div>
@@ -145,6 +149,7 @@
   </footer>
 </div>
 <p class="fine" id="globe-fallback" hidden>Planetary view is unavailable in this browser.</p>
+<audio id="radio-out" src="https://api.rootrecord.cloud/radio/live.mp3" autoplay playsinline preload="auto"></audio>
 <script src="https://unpkg.com/globe.gl@2.46.2"></script>
 <script src="/assets/telemetry.js?v=20261001p"></script>
 <script src="/assets/charts.js"></script>
@@ -152,6 +157,6 @@
 <script src="/assets/live-desk.js?v=20261001p"></script>
 <script src="/assets/starfield.js"></script>
 <script src="/assets/home.js?v=20261001ac"></script>
-<script src="/assets/broadcast-mode.js?v=20261001yt"></script>
+<script src="/assets/live-radio.js?v=20261001radio"></script>
 </body>
 </html>
