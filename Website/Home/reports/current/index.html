@@ -36,7 +36,7 @@
 <main class="page" id="content">
   <p class="eyebrow">Current</p>
   <h1>Current report</h1>
-  <p class="meta">2 Oct 2026 · 01:50 HST</p>
+  <p class="meta">2 Oct 2026 · 02:33 HST</p>
   <section class="sec">
     <h2>Readings</h2>
     <ul class="facts">
@@ -47,7 +47,7 @@
     <h2>Energy</h2>
     <table class="report-table">
       <tr><th scope="row">Delta 2</th><td>discharged and powered off, last 1%</td></tr>
-      <tr><th scope="row">River 2 Pro</th><td>SOC 55%, solar 0 W, AC out 40 W, USB-C out 20 W, age 0 min</td></tr>
+      <tr><th scope="row">River 2 Pro</th><td>SOC 46%, solar 0 W, AC out 53 W, USB-C out 47 W, age 0 min</td></tr>
     </table>
   </section>
   <section class="sec">
@@ -67,32 +67,35 @@
       <li>Kahului: high 82 to 88, low 71 to 76</li>
       <li>Hilo: high 78 to 84 at the shore, low around 71 at the shore</li>
       <li>Kailua-Kona: high around 86 at the shore, low 70 to 76 at the shore</li>
-      <li>Alerts updated: 2026-10-02T11:43:16+00:00</li>
+      <li>Alerts updated: 2026-10-02T12:31:34+00:00</li>
     </ul>
   </section>
   <section class="sec">
     <h2>Geology</h2>
     <table class="report-table">
-      <tr><th scope="row">Hawaii</th><td>0 magnitude 2.5 or greater in 24 h, sample age 6 min</td></tr>
-      <tr><th scope="row">Global</th><td>28 magnitude 2.5 or greater in 24 h, largest M5.3, sample age 6 min</td></tr>
-      <tr><th scope="row">Kilauea</th><td>WATCH / ORANGE, erupting True</td></tr>
-      <tr><th scope="row">Mauna Loa</th><td>NORMAL / GREEN</td></tr>
+      <tr><th scope="row">Hawaii earthquakes</th><td>not on file</td></tr>
+      <tr><th scope="row">Global earthquakes</th><td>not on file</td></tr>
+      <tr><th scope="row">Kilauea</th><td>not on file</td></tr>
     </table>
   </section>
   <section class="sec">
     <h2>Hurricanes</h2>
     <table class="report-table">
-      <tr><th scope="row">Tropical Storm Nolo</th><td>414 nm from Līhuʻe, bearing west</td></tr>
+      <tr><th scope="row">Tropical Storm Nolo</th><td>425 nm from Līhuʻe, bearing west</td></tr>
     </table>
   </section>
   <section class="sec">
     <h2>Host</h2>
     <ul class="facts">
-      <li>CPU 4.0%, load 1.71 / 2.13 / 2.21</li>
-      <li>Memory 42.8% used (6.1 / 14.2 GB)</li>
-      <li>Disk 35.5% used (178 / 502 GB)</li>
-      <li>Uptime 2h 45m</li>
-      <li>Temperature 56.0 C</li>
+      <li>CPU 8.5%, load 3.08 / 2.95 / 2.45</li>
+      <li>Memory 38.0% used (5.4 / 14.2 GB)</li>
+      <li>Disk 35.6% used (179 / 502 GB)</li>
+      <li>Uptime 3h 27m</li>
+      <li>Root server last online: 2026-10-02T02:20:17-10:00</li>
+      <li>Uptime percent: 0%</li>
+      <li>Average offline: 325 s</li>
+      <li>Temperature 64.0 C</li>
+      <li>Host power mode: performance</li>
     </ul>
   </section>
   <section class="sec">
@@ -100,7 +103,7 @@
     <table class="report-table">
       <tr><th scope="row">Firewall starts on boot</th><td>False</td></tr>
       <tr><th scope="row">SSH active</th><td>True</td></tr>
-      <tr><th scope="row">TCP listeners</th><td>60</td></tr>
+      <tr><th scope="row">TCP listeners</th><td>64</td></tr>
       <tr><th scope="row">Established connections</th><td>35</td></tr>
       <tr><th scope="row">Failed sign-ins, last hour / 24 h</th><td>0 / 0</td></tr>
     </table>
@@ -108,14 +111,25 @@
   <section class="sec">
     <h2>Bandwidth</h2>
     <table class="report-table">
-      <tr><th scope="row">Last hour</th><td>325764111 bytes down, 54104793 bytes up</td></tr>
-      <tr><th scope="row">Last 24 h</th><td>1068085817 bytes down, 216664074 bytes up</td></tr>
+      <tr><th scope="row">Last hour</th><td>345478100 bytes down, 54196759 bytes up</td></tr>
+      <tr><th scope="row">Last 24 h</th><td>1305495286 bytes down, 254389026 bytes up</td></tr>
+    </table>
+  </section>
+  <section class="sec">
+    <h2>Site traffic (Mainland analytics)</h2>
+    <table class="report-table">
+      <tr><th scope="row">Analytics day</th><td>2026-10-02 (Pacific/Honolulu), schema 1.0.0</td></tr>
+      <tr><th scope="row">API requests / unique visitors</th><td>19 / 8 (bots 7)</td></tr>
+      <tr><th scope="row">Home proxy (telemetry Referer www only)</th><td>12 requests, 6 visitors — not full www pageviews</td></tr>
+      <tr><th scope="row">Home pageviews</th><td>None</td></tr>
+      <tr><th scope="row">Radio listeners</th><td>max 1, avg 1.0, ~45.0 listen-minutes est (3 samples)</td></tr>
+      <tr><th scope="row">Note</th><td>www.rootrecord.cloud is Vercel-only; requests never reach ML2. Next step: Cloudflare GraphQL Analytics API or Vercel Web Analytics into this same daily schema under home.*</td></tr>
     </table>
   </section>
   <section class="sec">
     <h2>Camera</h2>
     <ul class="facts">
-      <li>Solar panel still age: 6 min</li>
+      <li>Solar panel still age: 10 min</li>
       <li>Security camera observations indicate dark conditions, with solar panels in flat position.</li>
     </ul>
   </section>
@@ -130,7 +144,7 @@
   <section class="sec">
     <h2>Official weather</h2>
     <ul class="facts">
-      <li>AFD, age 5.3 h</li>
+      <li>AFD, age 6.0 h</li>
     </ul>
   </section>
   <section class="sec">
