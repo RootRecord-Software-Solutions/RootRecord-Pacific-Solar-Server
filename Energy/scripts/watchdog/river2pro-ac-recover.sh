@@ -1,0 +1,218 @@
+# ==============================================================================
+# FILE: Energy/scripts/watchdog/river2pro-ac-recover.sh
+# What this file is: first-party Pacific source. Read the SECTION banner above
+# the function or list you need. Every code line ends with an # info: note.
+# How to edit: change the code, then change the # info: note on that same line
+# so it still says what the line does. Add a new function with the SECTION
+# banner from 5 - RootRecord-Library/prompts/How-To-Read-And-Edit-Code.md.
+# Kind: shell
+# ==============================================================================
+#!/usr/bin/env bash
+# Local River 2 Pro AC recover: when SOC is fresh and >= 5% but AC ports are
+# off, run river2pro-ac-on.sh so Starlink/net can return after a low-SOC cut.
+# Does not delete collectors, does not force AC off, and no-ops when AC is on.
+set -euo pipefail  # info: set
+
+SOC_MIN=5  # info: set SOC_MIN
+FRESH_SEC=300  # info: set FRESH_SEC
+COOLDOWN_SEC=120  # info: set COOLDOWN_SEC
+DB="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy"  # info: set DB
+SOC_FILE="$DB/soc/river2pro-last.json"  # info: set SOC_FILE
+PORTS_FILE="$DB/ports/river2pro-last.json"  # info: set PORTS_FILE
+SAMPLES_DIR="$DB/samples"  # info: set SAMPLES_DIR
+STATE_DIR="$DB/state"  # info: set STATE_DIR
+STAMP="$STATE_DIR/river2pro-ac-recover.last-attempt"  # info: set STAMP
+LOG="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Energy/river2pro-ac-recover.log"  # info: set LOG
+AC_ON="/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/actions/river2pro-ac-on.sh"  # info: set AC_ON
+DRY_RUN=0  # info: set DRY_RUN
+
+# ====================================================
+# SECTION: function usage
+# What it does: Print usage and exit. Does not touch AC or collectors.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+usage() {  # info: usage
+  echo "Usage: $0 [--dry-run]"  # info: echo
+  exit 2  # info: exit
+}  # info: usage
+
+# ====================================================
+# SECTION: function log_line
+# What it does: Append one light HST log line and echo it. Does not rotate or delete logs.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+log_line() {  # info: log_line
+  local msg="$1"  # info: set msg
+  local line  # info: set line
+  line="$(date '+%Y-%m-%dT%H:%M:%S%z') river2pro-ac-recover: $msg"  # info: set line
+  mkdir -p "$(dirname "$LOG")"  # info: mkdir
+  echo "$line" | tee -a "$LOG"  # info: echo tee
+}  # info: log_line
+
+# ====================================================
+# SECTION: function file_age_sec
+# What it does: Seconds since mtime; missing file returns a large stale age.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+file_age_sec() {  # info: file_age_sec
+  local path="$1"  # info: set path
+  if [[ ! -f "$path" ]]; then  # info: if
+    echo 999999  # info: echo
+    return 0  # info: return
+  fi  # info: fi
+  echo $(( $(date +%s) - $(stat -c %Y "$path") ))  # info: echo
+}  # info: file_age_sec
+
+# ====================================================
+# SECTION: function read_soc
+# What it does: Print SOC number from river2pro-last.json or empty on failure.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+read_soc() {  # info: read_soc
+  python3 - "$SOC_FILE" <<'PY'  # info: python3
+import json, sys
+path = sys.argv[1]
+try:
+    data = json.load(open(path, encoding="utf-8"))
+    soc = data.get("soc")
+    if soc is None:
+        sys.exit(0)
+    print(float(soc))
+except Exception:
+    sys.exit(0)
+PY
+}  # info: read_soc
+
+# ====================================================
+# SECTION: function latest_ac_snapshot
+# What it does: Pick newest ports last or read-river2pro sample; print path TAB ac_ports (true/false/null).
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+latest_ac_snapshot() {  # info: latest_ac_snapshot
+  python3 - "$PORTS_FILE" "$SAMPLES_DIR" <<'PY'  # info: python3
+import json, os, sys, glob
+ports = sys.argv[1]
+samples_dir = sys.argv[2]
+candidates = []
+if os.path.isfile(ports):
+    candidates.append(ports)
+candidates.extend(glob.glob(os.path.join(samples_dir, "read-river2pro-*.json")))
+if not candidates:
+    print("\tnull")
+    sys.exit(0)
+path = max(candidates, key=os.path.getmtime)
+try:
+    data = json.load(open(path, encoding="utf-8"))
+except Exception:
+    print(f"{path}\tnull")
+    sys.exit(0)
+fields = data.get("fields") if isinstance(data.get("fields"), dict) else data
+val = fields.get("ac_ports") if isinstance(fields, dict) else None
+if val is True:
+    flag = "true"
+elif val is False:
+    flag = "false"
+else:
+    flag = "null"
+print(f"{path}\t{flag}")
+PY
+}  # info: latest_ac_snapshot
+
+# ====================================================
+# SECTION: function in_cooldown
+# What it does: True when a prior AC-on attempt stamp is younger than COOLDOWN_SEC.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+in_cooldown() {  # info: in_cooldown
+  local age  # info: set age
+  age="$(file_age_sec "$STAMP")"  # info: set age
+  if (( age < COOLDOWN_SEC )); then  # info: if
+    return 0  # info: return
+  fi  # info: fi
+  return 1  # info: return
+}  # info: in_cooldown
+
+# ====================================================
+# SECTION: function mark_attempt
+# What it does: Refresh the cooldown stamp after an AC-on attempt. Does not clear collectors.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+mark_attempt() {  # info: mark_attempt
+  mkdir -p "$STATE_DIR"  # info: mkdir
+  date +%s >"$STAMP"  # info: date
+}  # info: mark_attempt
+
+# ====================================================
+# SECTION: function main
+# What it does: Decide whether to run river2pro-ac-on.sh; no-op when AC already on or SOC not ready.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+main() {  # info: main
+  if [[ "${1:-}" == "--dry-run" ]]; then  # info: if
+    DRY_RUN=1  # info: set DRY_RUN
+  elif [[ -n "${1:-}" ]]; then  # info: elif
+    usage  # info: usage
+  fi  # info: fi
+
+  if [[ ! -f "$SOC_FILE" ]]; then  # info: if
+    log_line "no-op missing_soc_file"  # info: log_line
+    return 0  # info: return
+  fi  # info: fi
+
+  local soc_age soc ac_path ac_flag  # info: set locals
+  soc_age="$(file_age_sec "$SOC_FILE")"  # info: set soc_age
+  if (( soc_age > FRESH_SEC )); then  # info: if
+    log_line "no-op stale_soc age=${soc_age}s limit=${FRESH_SEC}s"  # info: log_line
+    return 0  # info: return
+  fi  # info: fi
+
+  soc="$(read_soc || true)"  # info: set soc
+  if [[ -z "$soc" ]]; then  # info: if
+    log_line "no-op unreadable_soc"  # info: log_line
+    return 0  # info: return
+  fi  # info: fi
+
+  # bash numeric compare; SOC may be float like 28.8
+  if ! awk -v s="$soc" -v m="$SOC_MIN" 'BEGIN { exit !(s+0 >= m+0) }'; then  # info: if
+    log_line "no-op soc_below_min soc=${soc} min=${SOC_MIN} age=${soc_age}s"  # info: log_line
+    return 0  # info: return
+  fi  # info: fi
+
+  IFS=$'\t' read -r ac_path ac_flag < <(latest_ac_snapshot)  # info: read
+  if [[ "$ac_flag" == "true" ]]; then  # info: if
+    log_line "no-op ac_already_on soc=${soc} age=${soc_age}s src=$(basename "${ac_path:-none}")"  # info: log_line
+    return 0  # info: return
+  fi  # info: fi
+  if [[ "$ac_flag" != "false" ]]; then  # info: if
+    log_line "no-op ac_unknown soc=${soc} age=${soc_age}s flag=${ac_flag} src=$(basename "${ac_path:-none}")"  # info: log_line
+    return 0  # info: return
+  fi  # info: fi
+
+  if in_cooldown; then  # info: if
+    log_line "no-op cooldown soc=${soc} remaining_lt=${COOLDOWN_SEC}s"  # info: log_line
+    return 0  # info: return
+  fi  # info: fi
+
+  if [[ "$DRY_RUN" -eq 1 ]]; then  # info: if
+    log_line "dry-run WOULD_RUN_ac_on soc=${soc} age=${soc_age}s src=$(basename "${ac_path:-none}")"  # info: log_line
+    return 0  # info: return
+  fi  # info: fi
+
+  if [[ ! -x "$AC_ON" && ! -f "$AC_ON" ]]; then  # info: if
+    log_line "fail missing_ac_on_script path=$AC_ON"  # info: log_line
+    return 1  # info: return
+  fi  # info: fi
+
+  log_line "run ac_on soc=${soc} age=${soc_age}s src=$(basename "${ac_path:-none}")"  # info: log_line
+  mark_attempt  # info: mark_attempt
+  local rc=0  # info: set rc
+  bash "$AC_ON" || rc=$?  # info: bash AC_ON
+  if [[ "$rc" -eq 0 ]]; then  # info: if
+    log_line "ok ac_on_finished soc=${soc}"  # info: log_line
+    return 0  # info: return
+  fi  # info: fi
+  log_line "fail ac_on_exit=${rc} soc=${soc}"  # info: log_line
+  return 1  # info: return
+}  # info: main
+
+main "$@"  # info: main

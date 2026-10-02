@@ -8,7 +8,7 @@ counties:
   - key: hawaii
     display_name: "Hawaii County"
     same: HIC001
-    aliases: ["Hawaii County", "Hawai'i County", "Hawaiʻi County", "Big Island", "Hilo", "Kona"]
+    aliases: ["Hawaii County", "Hawai'i County", "Hawaiʻi County", "Big Island", "Hilo", "Kona", "Kailua-Kona", "Mountain View", "Volcano"]
   - key: maui
     display_name: "Maui County"
     same: HIC009
@@ -52,7 +52,7 @@ statewide_resource_ids:
 resource_routing:
   county_patterns:
     honolulu: ["honolulu", "oahu", "o_ahu"]
-    hawaii: ["hawaii", "hilo", "kona", "big_island"]
+    hawaii: ["hawaii", "hilo", "kona", "big_island", "kailua_kona", "mountain_view", "volcano"]
     maui: ["maui", "molokai", "lanai", "kahoolawe"]
     kauai: ["kauai", "niihau", "lihue"]
     kalawao: ["kalawao"]

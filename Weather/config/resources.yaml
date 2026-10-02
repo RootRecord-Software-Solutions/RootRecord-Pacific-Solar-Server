@@ -672,11 +672,9 @@ ndfd:
     method: json
     url_template: "https://api.weather.gov/points/{lat},{lon}"
     note: "Resolves a coordinate to its NDFD gridpoint forecast URL. Cache the result — do not re-resolve every poll (per plan's open item)."
-    # Coordinate list confirmed by user (session after nextagent.md's
-    # handoff): reuse the same four ICAO stations already polled elsewhere
-    # in this file (see e.g. clm_monthly_climate_summary's `stations` list
-    # above), rather than a Hawaii-wide grid. Airport reference-point
-    # coordinates, standard published values.
+    # Airport reference points (HNL/LIH/OGG/ITO) plus Big Island report towns
+    # (Mountain View, Volcano, Kailua-Kona). Town lat/lon match Geology
+    # config/global-locations.json staged Hawaii places used by the desk.
     points:
     - id: HNL
       lat: 21.3187
@@ -690,6 +688,18 @@ ndfd:
     - id: ITO
       lat: 19.7203
       lon: -155.0485
+    - id: Mountain_View
+      name: Mountain View
+      lat: 19.5558
+      lon: -155.1083
+    - id: Volcano
+      name: Volcano
+      lat: 19.4075
+      lon: -155.2140
+    - id: Kailua_Kona
+      name: Kailua-Kona
+      lat: 19.6406
+      lon: -155.9956
   reference_only:
     name: "NDFD home / background"
     url: "https://www.weather.gov/mdl/ndfd_home"

@@ -313,6 +313,50 @@ def _shore(phrase: str) -> str:  # info: def _shore
 
 
 # ====================================================
+# SECTION: function _elev
+# What it does: Keep the elevation temperature when a zone also lists the shore. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _elev(phrase: str) -> str:  # info: def _elev
+    raw = (phrase or "").strip(" ,")  # info: set raw
+    hit = re.search(  # info: set hit
+        r"(?:to\s+)?((?:around\s+)?\d+(?:\s+to\s+\d+)?)\s+(?:at|above|near)\s+(\d{3,})\s*feet",  # info: elevation band pattern
+        raw,  # info: raw ,
+        re.I,  # info: re . I ,
+    )  # info: )
+    if hit:  # info: if hit :
+        return f"{hit.group(1).strip()} at {hit.group(2)} feet"  # info: return elev reading
+    return ""  # info: return ""
+
+
+# ====================================================
+# SECTION: function _zone_range
+# What it does: Keep the shore-to-elevation temperature span when a zone lists both. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _zone_range(phrase: str) -> str:  # info: def _zone_range
+    raw = (phrase or "").strip(" ,")  # info: set raw
+    if re.search(r"near the shore|at \d{3,}\s*feet|above \d{3,}\s*feet|near \d{3,}\s*feet", raw, re.I):  # info: if zone lists shore or elev
+        return raw  # info: return raw
+    return _shore(raw)  # info: return _shore ( raw )
+
+
+# ====================================================
+# SECTION: function _band_temp
+# What it does: Apply shore, elev, or full-zone band to a Highs/Lows phrase. Does not send.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _band_temp(phrase: str, band: str) -> str:  # info: def _band_temp
+    if not phrase:  # info: if not phrase :
+        return ""  # info: return ""
+    if band == "shore":  # info: if band == "shore" :
+        return _shore(phrase)  # info: return _shore ( phrase )
+    if band == "elev":  # info: if band == "elev" :
+        return _elev(phrase) or _zone_range(phrase)  # info: return elev or full zone span
+    return _zone_range(phrase)  # info: return _zone_range ( phrase )
+
+
+# ====================================================
 # SECTION: function sfp_read
 # What it does: Issued stamp and island groups from the HFO state forecast. Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -359,7 +403,7 @@ def sfp_today() -> tuple[str | None, str | None]:  # info: def sfp_today
 
 # ====================================================
 # SECTION: function zfp_temps
-# What it does: Today high and tonight low for Honolulu, Lihue, Kahului, Hilo, and Kailua-Kona. Does not send.
+# What it does: Today high and tonight low for Honolulu, Lihue, Kahului, Hilo, Mountain View, Volcano, and Kailua-Kona. Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _forecast_labels(now: datetime | None = None) -> tuple[tuple[str, ...], tuple[str, ...]]:  # info: def _forecast_labels
@@ -383,31 +427,53 @@ def _period_body(block: str, labels: tuple[str, ...]) -> str:  # info: def _peri
 
 
 def zfp_temps() -> list[dict]:  # info: def zfp_temps
-    """Today high and tonight low from the HFO zone forecast. Shore number when a zone also lists elevation. Does not send."""  # info: """Today high and tonight low from the HFO zone forecast. Does not send."""
-    places = (("Honolulu Metro", "Honolulu"), ("Kauai East", "Lihue"), ("Maui Central Valley North", "Kahului"),  # info: set places
-              ("Big Island East", "Hilo"), ("Kona", "Kailua-Kona"))  # info: ( "Big Island East" , "Hilo" ) , ( "Kona" , "Kailua-Kona" )
+    """Today high and tonight low from the HFO zone forecast for report towns. Shore, elev, or full-zone band per place. Does not send."""  # info: docstring
+    # (NWS zone name, spoken place, band). Big Island East covers Hilo + Mountain View + Volcano.
+    places = (  # info: set places
+        ("Honolulu Metro", "Honolulu", "shore"),  # info: Honolulu shore
+        ("Kauai East", "Lihue", "shore"),  # info: Lihue shore
+        ("Maui Central Valley North", "Kahului", "shore"),  # info: Kahului shore
+        ("Big Island East", "Hilo", "shore"),  # info: Hilo shore
+        ("Big Island East", "Mountain View", "range"),  # info: Mountain View upcountry span
+        ("Big Island East", "Volcano", "elev"),  # info: Volcano ~4000 ft band
+        ("Kona", "Kailua-Kona", "shore"),  # info: Kailua-Kona shore
+    )  # info: )
     try:  # info: try :
         txt = ZFP.read_text(encoding="utf-8")  # info: set txt
     except OSError:  # info: except OSError :
         return []  # info: return [ ]
     high_labels, low_labels = _forecast_labels()  # info: high_labels , low_labels = _forecast_labels ( )
-    found = {}  # info: set found
+    zone_raw: dict[str, dict] = {}  # info: set zone_raw
+    wanted = {zone for zone, _, _ in places}  # info: set wanted
     for block in re.split(r"(?m)^HIZ\d+", txt):  # info: for block in re . split
         name_m = re.search(r"(?m)^([A-Za-z][A-Za-z ]+)-\s*$", block)  # info: set name_m
         if not name_m:  # info: if not name_m :
             continue  # info: continue
         key = name_m.group(1).strip()  # info: set key
-        if key in found or key not in {zone for zone, _ in places}:  # info: if key in found or key not in zones
+        if key in zone_raw or key not in wanted:  # info: if key in zone_raw or key not in wanted
             continue  # info: continue
-        row = {"place": dict(places)[key], "high": None, "low": None}  # info: set row
+        raw = {"high": None, "low": None}  # info: set raw
         for labels, word, field in ((high_labels, "Highs", "high"), (low_labels, "Lows", "low")):  # info: for labels , word , field
             body = _period_body(block, labels)  # info: set body
             deg = re.search(rf"\b{word}\s+(.+?)(?:\.|$)", _flat(body)) if body else None  # info: set deg
             if deg:  # info: if deg :
-                row[field] = _shore(deg.group(1))  # info: row [ field ] = _shore
+                raw[field] = deg.group(1)  # info: raw [ field ] = deg . group ( 1 )
+        if raw["high"] or raw["low"]:  # info: if raw [ "high" ] or raw [ "low" ]
+            zone_raw[key] = raw  # info: zone_raw [ key ] = raw
+    out: list[dict] = []  # info: set out
+    for zone, place, band in places:  # info: for zone , place , band in places
+        raw = zone_raw.get(zone)  # info: set raw
+        if not raw:  # info: if not raw :
+            continue  # info: continue
+        row = {"place": place, "high": None, "low": None}  # info: set row
+        for field in ("high", "low"):  # info: for field in ( "high" , "low" )
+            if raw.get(field):  # info: if raw . get ( field ) :
+                valued = _band_temp(raw[field], band)  # info: set valued
+                if valued:  # info: if valued :
+                    row[field] = valued  # info: row [ field ] = valued
         if row["high"] or row["low"]:  # info: if row [ "high" ] or row [ "low" ]
-            found[key] = row  # info: found [ key ] = row
-    return [found[zone] for zone, _ in places if zone in found]  # info: return rows in place order
+            out.append(row)  # info: out . append ( row )
+    return out  # info: return out
 
 
 # ====================================================

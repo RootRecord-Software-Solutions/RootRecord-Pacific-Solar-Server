@@ -455,7 +455,7 @@ def _current_conditions(base: Path) -> str:  # info: def _current_conditions
         ("PHLI", "Lihue"),  # info: call (
         ("PHOG", "Kahului"),  # info: call (
         ("PHTO", "Hilo"),  # info: call (
-        ("PHKO", "Kona"),  # info: call (
+        ("PHKO", "Kailua-Kona"),  # info: Kailua-Kona ASOS (PHKO); Mountain View/Volcano have no RWR ICAO row
     ]  # info: ]
     rows: list[str] = []  # info: set rows
     for icao, label in stations:  # info: for icao , label in stations :

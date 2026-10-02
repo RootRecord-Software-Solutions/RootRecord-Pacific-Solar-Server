@@ -1,0 +1,10 @@
+[Unit]
+Description=Recover River 2 Pro AC ports when SOC is back at or above 5 percent
+After=default.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/watchdog/river2pro-ac-recover.sh"
+WorkingDirectory=/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy
+TimeoutStartSec=120
+Nice=10
