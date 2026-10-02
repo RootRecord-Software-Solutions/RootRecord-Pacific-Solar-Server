@@ -6,6 +6,7 @@
   var musicEl = document.getElementById("radio-music");
   var blurbEl = document.getElementById("radio-blurb");
   var reportEl = document.getElementById("radio-report");
+  var listenBtn = document.getElementById("radio-listen");
   if (!audio || !stateEl || !musicEl || !reportEl) return;
 
   if (!audio.getAttribute("src")) audio.src = BASE + "/live.mp3";
@@ -27,7 +28,23 @@
 
   function start() {
     var pending = audio.play();
-    if (pending && pending.catch) pending.catch(function () {});
+    if (pending && pending.then) {
+      pending.then(function () {
+        if (listenBtn) listenBtn.hidden = true;
+        setState("ON AIR", true);
+      }).catch(function () {
+        if (listenBtn) listenBtn.hidden = false;
+        setState("TAP LISTEN", false);
+      });
+    }
+  }
+
+  if (listenBtn) {
+    listenBtn.addEventListener("click", function () {
+      audio.muted = false;
+      audio.volume = 1;
+      start();
+    });
   }
 
   function reopen() {
