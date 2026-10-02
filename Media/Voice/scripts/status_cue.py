@@ -35,7 +35,7 @@ PHASES = (
     ("sent", "{label} report was sent successfully."),
 )
 
-# The clock is the prebuilt chime. These lines only name the slot.
+# The slot is named in the line. The station plays the short notification sound before it.
 STAGED = (
     ("staged_hour", "{label} report has been staged for the hour."),
     ("staged_half", "{label} report has been staged for the half hour."),

@@ -247,7 +247,7 @@ def push_report(report: str) -> dict:
 
 
 def air_slot(when: datetime | None = None) -> tuple[int, int]:
-    """Next Hawaii :00 or :30. That is the chime the staged line is for."""
+    """Next Hawaii :00 or :30 the staged line is waiting for."""
     clock = hawaii_now() if when is None else when.astimezone(ZoneInfo("Pacific/Honolulu"))
     if clock.minute < 30:
         return clock.hour, 30
@@ -258,7 +258,8 @@ def stage_on_air(report: str) -> dict:
     """Upload the staged line if needed, then ask the station to speak it.
 
     The station plays it after the report that is speaking, or immediately
-    when the mixer is quiet. The clock is the prebuilt chime for that slot.
+    when the mixer is quiet. The short notification sound plays first.
+    The full spoken clock chime does not.
     """
     import status_cue
     if report not in status_cue.TYPES:
