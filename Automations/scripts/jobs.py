@@ -735,7 +735,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "id": "voice_system_perf",  # info: "id" : "voice_system_perf" ,
         "enabled": os.environ.get("RR_VOICE_SYSTEM_PERF", "0") == "1",  # info: "enabled" : os . environ . get (
         "description": "Bruce system report at :22 and :52, before the radio playlist snapshot. Host temperature is degrees Celsius. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Bruce system report at :22 and :52, before the radio playlist snapshot. Host temperature is degrees Celsius. Voice note when RR_VOICE_DELIVER=1." ,
-        "only_at_minutes": [22, 52],  # info: "only_at_minutes" : [ 22 , 52 ] ,
+        "only_at_minutes": [50],  # info: "only_at_minutes" : [ 22 , 52 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/system_perf.py"',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/system_perf.py"
         "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
@@ -760,7 +760,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "id": "voice_nws_weather",  # info: "id" : "voice_nws_weather" ,
         "enabled": os.environ.get("RR_VOICE_NWS", "0") == "1",  # info: "enabled" : os . environ . get (
         "description": "Ava NWS Hawaii report from Database Weather/, at :22 and :52 so the file is on the station before the chime. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Ava NWS Hawaii report from Database Weather/, at :22 and :52 so the file is on the station before the chime. Voice note when RR_VOICE_DELIVER=1." ,
-        "only_at_minutes": [22, 52],  # info: "only_at_minutes" : [ 22 , 52 ] ,
+        "only_at_minutes": [50],  # info: "only_at_minutes" : [ 22 , 52 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" nws_weather',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" nws_weather
         "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
@@ -771,7 +771,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "id": "voice_remaining_tasks",  # info: "id" : "voice_remaining_tasks" ,
         "enabled": os.environ.get("RR_VOICE_REMAINING", "0") == "1",  # info: "enabled" : os . environ . get (
         "description": "Bruce remaining tasks from the report board, at :22 and :52 before the radio snapshot. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Bruce remaining tasks from the report board, at :22 and :52 before the radio snapshot. Voice note when RR_VOICE_DELIVER=1." ,
-        "only_at_minutes": [22, 52],  # info: "only_at_minutes" : [ 22 , 52 ] ,
+        "only_at_minutes": [50],  # info: "only_at_minutes" : [ 22 , 52 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" remaining_tasks',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" remaining_tasks
         "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
@@ -784,7 +784,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "id": "voice_earthquake_report",  # info: "id" : "voice_earthquake_report" ,
         "enabled": os.environ.get("RR_VOICE_QUAKE", "0") == "1",  # info: "enabled" : os . environ . get (
         "description": "Carly USGS earthquake report at :22 and :52 from Database Geology/, before the radio snapshot. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Carly USGS earthquake report at :22 and :52 from Database Geology/, before the radio snapshot. Voice note when RR_VOICE_DELIVER=1." ,
-        "only_at_minutes": [22, 52],  # info: "only_at_minutes" : [ 22 , 52 ] ,
+        "only_at_minutes": [50],  # info: "only_at_minutes" : [ 22 , 52 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" earthquake_report',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" earthquake_report
         "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
@@ -798,7 +798,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "id": "voice_kilauea_report",  # info: "id" : "voice_kilauea_report" ,
         "enabled": os.environ.get("RR_VOICE_KILAUEA", "0") == "1",  # info: "enabled" : os . environ . get (
         "description": "Carly Kilauea report at :22 and :52 from the HVO notice, before the radio snapshot. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Carly Kilauea report at :22 and :52 from the HVO notice, before the radio snapshot. Voice note when RR_VOICE_DELIVER=1." ,
-        "only_at_minutes": [22, 52],  # info: "only_at_minutes" : [ 22 , 52 ] ,
+        "only_at_minutes": [50],  # info: "only_at_minutes" : [ 22 , 52 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" kilauea_report',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" kilauea_report
         "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
@@ -822,7 +822,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "id": "voice_solar_desk",  # info: "id" : "voice_solar_desk" ,
         "enabled": os.environ.get("RR_VOICE_SOLAR", "0") == "1",  # info: "enabled" : os . environ . get (
         "description": "Bruce combined energy+solar desk at :22 and :52: packs, sun times, newest channel-1 still, and this hour's camera look (refreshes when needed). Voice note when RR_VOICE_DELIVER=1.",  # info: solar desk description
-        "only_at_minutes": [22, 52],  # info: "only_at_minutes" : [ 22 , 52 ] ,
+        "only_at_minutes": [50],  # info: "only_at_minutes" : [ 22 , 52 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" solar_desk',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" solar_desk
         "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
@@ -833,7 +833,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "id": "voice_security_desk",  # info: "id" : "voice_security_desk" ,
         "enabled": os.environ.get("RR_VOICE_SECURITY", "0") == "1",  # info: "enabled" : os . environ . get (
         "description": "Carly security desk at :22 and :52 (firewall boot, ssh, listeners, failed sign-ins), before the radio snapshot. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Carly security desk at :22 and :52 (firewall boot, ssh, listeners, failed sign-ins), before the radio snapshot. Voice note when RR_VOICE_DELIVER=1." ,
-        "only_at_minutes": [22, 52],  # info: "only_at_minutes" : [ 22 , 52 ] ,
+        "only_at_minutes": [50],  # info: "only_at_minutes" : [ 22 , 52 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" security_desk',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" security_desk
         "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
@@ -844,7 +844,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "id": "voice_bandwidth_desk",  # info: "id" : "voice_bandwidth_desk" ,
         "enabled": os.environ.get("RR_VOICE_BANDWIDTH", "0") == "1",  # info: "enabled" : os . environ . get (
         "description": "Carly bandwidth desk at :22 and :52 from host byte samples plus Mainland Home/Radio analytics, before the radio snapshot. Voice note when RR_VOICE_DELIVER=1. Needs system_net_sample; analytics_pull optional.",  # info: bandwidth desk description
-        "only_at_minutes": [22, 52],  # info: "only_at_minutes" : [ 22 , 52 ] ,
+        "only_at_minutes": [50],  # info: "only_at_minutes" : [ 22 , 52 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" bandwidth_desk',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" bandwidth_desk
         "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
@@ -855,7 +855,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "id": "voice_current_report",  # info: "id" : "voice_current_report" ,
         "enabled": os.environ.get("RR_VOICE_CURRENT", "0") == "1",  # info: "enabled" : os . environ . get (
         "description": "Full current report at :22 and :52, after the other desks and before the radio snapshot. Heading is the slot time. Voice note when RR_VOICE_DELIVER=1.",  # info: "description" : "Full current report at :22 and :52, after the other desks and before the radio snapshot. Heading is the slot time. Voice note when RR_VOICE_DELIVER=1." ,
-        "only_at_minutes": [22, 52],  # info: "only_at_minutes" : [ 22 , 52 ] ,
+        "only_at_minutes": [50],  # info: "only_at_minutes" : [ 22 , 52 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" current_report',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" current_report
         "timeout_sec": 600,  # info: "timeout_sec" : 600 ,
@@ -1107,7 +1107,7 @@ ON_AT = [  # info: set ON_AT
     {  # info: {
         # G3 voice roll-ups (2026-09-29, g3-voice-reports2). OFF unless RR_VOICE_ROLLUPS=1 at poller start; LLM summary line only if RR_VOICE_ROLLUP_LLM=1 too (run-infer.sh). No delivery.
         "id": "voice_morning_report",  # info: "id" : "voice_morning_report" ,
-        "enabled": os.environ.get("RR_VOICE_ROLLUPS", "0") == "1",  # info: "enabled" : os . environ . get (
+        "enabled": False,  # off the hourly cycle
         "description": "Ava morning roll-up at 09:02, inside the morning window and before the 09:30 radio snapshot. No delivery.",  # info: "description" : "Ava morning roll-up at 09:02, inside the morning window and before the 09:30 radio snapshot. No delivery." ,
         "at_times": ["09:02"],  # info: "at_times" : [ "09:02" ] ,
         "builtin": "",  # info: "builtin" : "" ,
@@ -1118,7 +1118,7 @@ ON_AT = [  # info: set ON_AT
     },  # info: } ,
     {  # info: {
         "id": "voice_midday_report",  # info: "id" : "voice_midday_report" ,
-        "enabled": os.environ.get("RR_VOICE_ROLLUPS", "0") == "1",  # info: "enabled" : os . environ . get (
+        "enabled": False,  # off the hourly cycle
         "description": "Ava midday roll-up at 12:02, inside the midday window and before the 12:30 radio snapshot. No delivery.",  # info: "description" : "Ava midday roll-up at 12:02, inside the midday window and before the 12:30 radio snapshot. No delivery." ,
         "at_times": ["12:02"],  # info: "at_times" : [ "12:02" ] ,
         "builtin": "",  # info: "builtin" : "" ,
@@ -1129,7 +1129,7 @@ ON_AT = [  # info: set ON_AT
     },  # info: } ,
     {  # info: {
         "id": "voice_late_report",  # info: "id" : "voice_late_report" ,
-        "enabled": os.environ.get("RR_VOICE_ROLLUPS", "0") == "1",  # info: "enabled" : os . environ . get (
+        "enabled": False,  # off the hourly cycle
         "description": "Ava late roll-up at 21:02, inside the late window and before the 21:30 radio snapshot. No delivery.",  # info: "description" : "Ava late roll-up at 21:02, inside the late window and before the 21:30 radio snapshot. No delivery." ,
         "at_times": ["21:02"],  # info: "at_times" : [ "21:02" ] ,
         "builtin": "",  # info: "builtin" : "" ,
@@ -1143,7 +1143,7 @@ ON_AT = [  # info: set ON_AT
         # RR_VOICE_LATE_FINAL=1 at poller start. Text only. Skips when that slot is already done.
         # No delivery. Night-sleep skip is System/NightSleep when that Folder exists.
         "id": "voice_late_final_report",  # info: "id" : "voice_late_final_report" ,
-        "enabled": os.environ.get("RR_VOICE_LATE_FINAL", "0") == "1",  # info: "enabled" : os . environ . get (
+        "enabled": False,  # off the hourly cycle
         "description": "23:02 second chance for the optional late roll-up if that board slot is not done. Off the radio boundary. Text only. No delivery.",  # info: "description" : "23:02 second chance for the optional late roll-up if that board slot is not done. Off the radio boundary. Text only. No delivery." ,
         "at_times": ["23:02"],  # info: "at_times" : [ "23:02" ] ,
         "builtin": "",  # info: "builtin" : "" ,

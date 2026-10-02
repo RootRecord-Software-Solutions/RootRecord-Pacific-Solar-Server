@@ -335,9 +335,9 @@ def _gap(path: Path) -> bool:  # info: def _gap
 # What it does: Join the desk recordings into news_update_current.wav and retire the previous file.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def _join(parts: list[Path], built: dict) -> dict:  # info: def _join
+def _join(parts: list[Path], built: dict, name: str = "news_update") -> dict:  # info: def _join
     VOICE_DIR.mkdir(parents=True, exist_ok=True)  # info: VOICE_DIR . mkdir ( parents = True , exist_ok = True )
-    dest = VOICE_DIR / "news_update_current.wav"  # info: set dest
+    dest = VOICE_DIR / f"{name}_current.wav"  # info: set dest
     folder = Path(tempfile.mkdtemp(prefix="news-update-"))  # info: set folder
     try:  # info: try
         listing = folder / "join.txt"  # info: set listing
@@ -354,15 +354,15 @@ def _join(parts: list[Path], built: dict) -> dict:  # info: def _join
         if voice_dir not in sys.path:  # info: if voice_dir not in sys . path :
             sys.path.insert(0, voice_dir)  # info: sys . path . insert ( 0 , voice_dir )
         import speakers  # info: import speakers
-        same_disk = dest.with_name(".news_update_current.new.wav")  # info: set same_disk
+        same_disk = dest.with_name(f".{name}_current.new.wav")  # info: set same_disk
         shutil.copyfile(staged, same_disk)  # info: shutil . copyfile ( staged , same_disk )
         speakers.retire_current(dest)  # info: speakers . retire_current ( dest )
         os.replace(same_disk, dest)  # info: os . replace ( same_disk , dest )
     except (OSError, subprocess.TimeoutExpired) as exc:  # info: except ( OSError , subprocess . TimeoutExpired ) as exc
         return {"ok": False, "detail": type(exc).__name__}  # info: return { "ok" : False , "detail" : type ( exc ) . __name__ }
     REPORT_TEXT.mkdir(parents=True, exist_ok=True)  # info: REPORT_TEXT . mkdir ( parents = True , exist_ok = True )
-    (REPORT_TEXT / "news_update_current.read.txt").write_text(built["speak"].strip() + "\n", encoding="utf-8")  # info: ( REPORT_TEXT / "news_update_current.read.txt" ) . write_text ( built [ "speak" ] . strip ( ) + "\n" , encoding = "utf-8" )
-    (REPORT_TEXT / "news_update_current.speak.txt").write_text(built["speak"].strip() + "\n", encoding="utf-8")  # info: ( REPORT_TEXT / "news_update_current.speak.txt" ) . write_text ( built [ "speak" ] . strip ( ) + "\n" , encoding = "utf-8" )
+    (REPORT_TEXT / f"{name}_current.read.txt").write_text(built["speak"].strip() + "\n", encoding="utf-8")
+    (REPORT_TEXT / f"{name}_current.speak.txt").write_text(built["speak"].strip() + "\n", encoding="utf-8")
     return {"ok": True, "wav": str(dest)}  # info: return { "ok" : True , "wav" : str ( dest ) }
 
 
@@ -381,7 +381,7 @@ def render_update(built: dict) -> dict:  # info: def render_update
     folder = Path(tempfile.mkdtemp(prefix="news-hour-"))  # info: set folder
     gap = folder / "gap.wav"  # info: set gap
     has_gap = _gap(gap)  # info: set has_gap
-    parts = []  # info: set parts
+    section_wavs = []  # info: set section_wavs
     voices = []  # info: set voices
     for index, section in enumerate(built.get("sections") or []):  # info: for index , section in enumerate ( built . get ( "sections" ) or [ ] )
         wav = folder / f"part-{index}.wav"  # info: set wav
@@ -389,23 +389,44 @@ def render_update(built: dict) -> dict:  # info: def render_update
         rendered = _render_section(str(section.get("persona") or "ava"), spoken, wav, folder / f"part-{index}.txt")  # info: set rendered
         if not rendered.get("ok"):  # info: if not rendered . get ( "ok" ) :
             return rendered  # info: return rendered
-        if parts and has_gap:  # info: if parts and has_gap :
-            parts.append(gap)  # info: parts . append ( gap )
-        parts.append(wav)  # info: parts . append ( wav )
+        section_wavs.append(wav)  # info: section_wavs . append ( wav )
         voices.append(section.get("persona"))  # info: voices . append ( section . get ( "persona" ) )
-    if not parts:  # info: if not parts :
+    if not section_wavs:  # info: if not section_wavs :
         return {"ok": False, "detail": "empty"}  # info: return { "ok" : False , "detail" : "empty" }
-    joined = _join(parts, built)  # info: set joined
+
+    def with_gaps(wavs):  # info: def with_gaps
+        out = []  # info: set out
+        for index, wav in enumerate(wavs):  # info: for index , wav in enumerate ( wavs )
+            if index and has_gap:  # info: if index and has_gap :
+                out.append(gap)  # info: out . append ( gap )
+            out.append(wav)  # info: out . append ( wav )
+        return out  # info: return out
+
+    mid = max(1, len(section_wavs) // 2)  # info: set mid
+    first = section_wavs[:mid]  # info: set first
+    second = section_wavs[mid:]  # info: set second
+    joined = _join(with_gaps(first), built, "news_update_part1")  # info: set joined
     if not joined.get("ok"):  # info: if not joined . get ( "ok" ) :
         return joined  # info: return joined
+    joined_two = {"ok": True}  # info: set joined_two
+    if second:  # info: if second :
+        joined_two = _join(with_gaps(second), built, "news_update_part2")  # info: set joined_two
+        if not joined_two.get("ok"):  # info: if not joined_two . get ( "ok" ) :
+            return joined_two  # info: return joined_two
     if os.environ.get("RR_RADIO_PUSH", "1") == "0":  # info: if os . environ . get ( "RR_RADIO_PUSH" , "1" ) == "0" :
         return {"ok": True, "detail": "rendered", "wav": joined["wav"], "voices": voices}  # info: return { "ok" : True , "detail" : "rendered" , "wav" : joined [ "wav" ] , "voices" : voices }
     import radio_push  # info: import radio_push
     status_cue.play("news_update", "transit")  # info: transit cue as the send starts
-    pushed = radio_push.push_report("news_update")  # info: set pushed
-    if not isinstance(pushed, dict):  # info: if not isinstance ( pushed , dict ) :
+    pushed = radio_push.push_report("news_update_part1")  # info: set pushed
+    if not isinstance(pushed, dict) or not pushed.get("ok"):  # info: if not isinstance ( pushed , dict ) or not pushed . get ( "ok" ) :
         status_cue.play("news_update", "failed")  # info: failed cue when the send does not return
         return {"ok": False, "detail": "push_failed", "wav": joined["wav"]}  # info: return { "ok" : False , "detail" : "push_failed" , "wav" : joined [ "wav" ] }
+    if second:  # info: if second :
+        pushed_two = radio_push.push_report("news_update_part2")  # info: set pushed_two
+        if not isinstance(pushed_two, dict) or not pushed_two.get("ok"):  # info: if not isinstance ( pushed_two , dict ) or not pushed_two . get ( "ok" ) :
+            status_cue.play("news_update", "failed")  # info: failed cue when part two does not send
+            return {"ok": False, "detail": "push_failed_part2", "wav": joined_two.get("wav")}  # info: return { "ok" : False , "detail" : "push_failed_part2" }
+        pushed["part2"] = pushed_two  # info: pushed [ "part2" ] = pushed_two
     pushed["status_send"] = status_cue.after_push("news_update", pushed)  # info: sent cue after Mainland One has the file
     pushed["voices"] = voices  # info: pushed [ "voices" ] = voices
     pushed["wav"] = joined["wav"]  # info: pushed [ "wav" ] = joined [ "wav" ]
