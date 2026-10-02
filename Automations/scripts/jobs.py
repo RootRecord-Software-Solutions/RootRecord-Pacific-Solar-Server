@@ -863,14 +863,14 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
     {  # info: {
-        # Hourly RSS news update. Speaks about five minutes, rotates Ava, Bruce, and Carly, replaces news_update_current.
+        # Hourly RSS news update. About 20-25 spoken minutes (sports slot fill); solar desk stays 5-7. Ava/Bruce/Carly share airtime. Replaces news_update_current.
         "id": "radio_news_update",  # info: "id" : "radio_news_update" ,
         "enabled": os.environ.get("RR_RADIO_NEWS", "0") == "1",  # info: "enabled" : os . environ . get ( "RR_RADIO_NEWS" , "0" ) == "1" ,
-        "description": "Hourly news update at :36, before the :52 voice stack and the top-of-hour radio snapshot. Rotates Ava, Bruce, and Carly. Replaces news_update_current and uploads it to the reports playlist.",  # info: "description" : "Hourly news update at :36, before the :52 voice stack and the top-of-hour radio snapshot. Rotates Ava, Bruce, and Carly. Replaces news_update_current and uploads it to the reports playlist." ,
+        "description": "Hourly ~20-25 minute news update at :36 (universities, science, NVIDIA/big tech, world, mainland weather, centrist government/politics). Ava, Bruce, and Carly share airtime. Replaces news_update_current and uploads it to the reports playlist.",  # info: "description" : "Hourly ~20-25 minute news update at :36 (universities, science, NVIDIA/big tech, world, mainland weather, centrist government/politics). Ava, Bruce, and Carly share airtime. Replaces news_update_current and uploads it to the reports playlist." ,
         "only_at_minutes": [36],  # info: "only_at_minutes" : [ 36 ] ,
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/RadioRss/scripts/rss_radio.py" news-hour --speak',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/RadioRss/scripts/rss_radio.py" news-hour --speak ' ,
-        "timeout_sec": 1200,  # info: "timeout_sec" : 1200 ,
+        "timeout_sec": 2400,  # info: "timeout_sec" : 2400 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
         "cwd": f"{PACIFIC}/Media/RadioRss",  # info: "cwd" : f" { PACIFIC } /Media/RadioRss " ,
         "env": {},  # info: "env" : { } ,

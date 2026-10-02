@@ -3,7 +3,7 @@ Description=Local River 2 Pro AC recover watchdog every 90 seconds, persistent a
 
 [Timer]
 OnBootSec=45
-OnUnitActiveSec=90
+OnUnitActiveSec=45
 AccuracySec=5
 Persistent=true
 

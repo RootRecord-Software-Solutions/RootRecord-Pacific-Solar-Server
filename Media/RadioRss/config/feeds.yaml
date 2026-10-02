@@ -1727,6 +1727,33 @@ feeds:
     directory: https://www.npr.org/sections/politics/
     note: "Centrist mainland politics. Sports items are dropped. Partisan phrasing is dropped."
 
+  - id: doj_news
+    name: Department of Justice News
+    provider: Department of Justice
+    category: mainland_politics
+    type: rss
+    url: https://www.justice.gov/news/rss
+    enabled: true
+    priority: high
+    native_overlap: false
+    centrist: true
+    origin: external
+    directory: https://www.justice.gov/news/
+    note: "More government desk. Centrist framing. Sports items are dropped."
+
+  - id: defense_gov
+    name: U.S. Department of Defense News
+    provider: U.S. Department of Defense
+    category: national_security
+    type: rss
+    url: https://www.defense.gov/DesktopModules/ArticleCS/RSS.ashx?ContentType=1&Site=945&max=10
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.defense.gov/
+    note: "Official DoD releases. Sports airtime reweight 2026-10-02."
+
   # --- Universities and science breakthroughs (20-25 min airtime fill) ---
 
   - id: mit_news

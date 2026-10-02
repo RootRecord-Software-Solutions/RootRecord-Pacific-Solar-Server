@@ -10,6 +10,8 @@
 """Normalize, classify, score, and cluster external stories. Rules come from policy YAML."""
 from __future__ import annotations  # info: from __future__ import annotations
 
+import re  # info: import re
+
 from datetime import timedelta  # info: from datetime import timedelta
 
 from common import canonical_url, digest, iso, jaccard, parse_iso, plain, title_norm, tokens, utc_now  # info: from common import canonical_url , digest , iso , jaccard , parse_iso , plain , title_norm , tokens , utc_now
@@ -116,13 +118,38 @@ def partisan(feed: dict, item: dict, registry: dict) -> bool:  # info: def parti
 
 
 # ====================================================
+# SECTION: function _sports_hit
+# What it does: Match sports phrases without eating lookalikes. Short league codes and the word sports use word edges so conflict, influence, sunbathers, and sportswear stay. Paths like /sports/ still use substring match.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _sports_hit(text: str, patterns: list) -> bool:  # info: def _sports_hit
+    low = (text or "").lower()  # info: set low
+    for raw in patterns or []:  # info: for raw in patterns or []
+        pattern = str(raw).lower()  # info: set pattern
+        if not pattern:  # info: if not pattern :
+            continue  # info: continue
+        core = pattern.strip(" :.,")  # info: set core
+        if core == "sports" or pattern in {" sports", "sports ", "sports:", "sports,"}:  # info: if core == "sports" or pattern in { " sports" , "sports " , "sports:" , "sports," } :
+            if re.search(r"(?<![a-z0-9])sports(?![a-z0-9])", low):  # info: if re . search ( r"(?<![a-z0-9])sports(?![a-z0-9])" , low ) :
+                return True  # info: return True
+            continue  # info: continue
+        if re.search(r"[^a-z0-9]", pattern):  # info: if re . search ( r"[^a-z0-9]" , pattern ) :
+            if pattern in low:  # info: if pattern in low :
+                return True  # info: return True
+            continue  # info: continue
+        if re.search(rf"(?<![a-z0-9]){re.escape(pattern)}(?![a-z0-9])", low):  # info: if re . search ( rf"(?<![a-z0-9]){ re . escape ( pattern ) }(?![a-z0-9])" , low ) :
+            return True  # info: return True
+    return False  # info: return False
+
+
+# ====================================================
 # SECTION: function sports
-# What it does: Drop a sports item from every feed. League names and /sports/ URLs match. Bare "sport" is not used so transportation stays.
+# What it does: Drop a sports item from every feed. League names and /sports/ URLs match. Bare "sport" is not used so transportation stays. Word edges keep conflict/influence/sportswear.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def sports(feed: dict, item: dict, registry: dict) -> bool:  # info: def sports
     text = f"{item.get('title') or ''} {item.get('summary') or ''} {item.get('url') or ''} {item.get('guid') or ''} {item.get('canonical_url') or ''}"  # info: set text
-    return _hit(text, registry["policy"].get("sports_patterns") or [])  # info: return _hit ( text , registry [ "policy" ] . get ( "sports_patterns" ) or [ ] )
+    return _sports_hit(text, registry["policy"].get("sports_patterns") or [])  # info: return _sports_hit ( text , registry [ "policy" ] . get ( "sports_patterns" ) or [ ] )
 
 
 # ====================================================

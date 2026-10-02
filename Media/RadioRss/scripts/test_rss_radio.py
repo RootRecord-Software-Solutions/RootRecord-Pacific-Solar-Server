@@ -255,6 +255,12 @@ def test_news_update() -> None:  # info: def test_news_update
     assert normalize(hawaii, game, registry) is None  # info: assert normalize ( hawaii , game , registry ) is None
     transit = {"title": "Harbor ferry schedule", "summary": "Transportation brief for Honolulu Harbor.", "url": "https://news.test/transportation", "guid": "transit"}  # info: set transit
     assert sports(hawaii, transit, registry) is False  # info: assert sports ( hawaii , transit , registry ) is False
+    conflict = {"title": "SEC Charges Adviser for Failure to Disclose Conflict of Interest", "summary": "Inflation and influence concerns.", "url": "https://www.sec.gov/newsroom/press-releases/conflict", "guid": "conflict"}  # info: set conflict
+    assert sports(hawaii, conflict, registry) is False  # info: assert sports ( hawaii , conflict , registry ) is False
+    wear = {"title": "Nike sportswear outlook", "summary": "The sportswear brand cut guidance.", "url": "https://news.test/markets/nike", "guid": "nike"}  # info: set wear
+    assert sports(hawaii, wear, registry) is False  # info: assert sports ( hawaii , wear , registry ) is False
+    nfl = {"title": "NASA astronaut to join NFL fans", "summary": "Pre-game event in Baltimore.", "url": "https://www.nasa.gov/news-release/nasa-astronaut-reid-wiseman-to-join-nfl-fans-in-baltimore/", "guid": "nfl-1"}  # info: set nfl
+    assert sports(hawaii, nfl, registry) is True  # info: assert sports ( hawaii , nfl , registry ) is True
     politics = {"id": "pol", "centrist": True, "category": "mainland_politics", "provider": "NPR", "name": "NPR Politics", "priority": "high"}  # info: set politics
     rant = {"title": "Far-left radicals storm the capital", "summary": "A deep state witch hunt.", "url": "https://news.test/rant", "guid": "rant"}  # info: set rant
     assert partisan(politics, rant, registry) is True  # info: assert partisan ( politics , rant , registry ) is True

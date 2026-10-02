@@ -7,7 +7,7 @@
 # banner from 5 - RootRecord-Library/prompts/How-To-Read-And-Edit-Code.md.
 # Kind: python
 # ==============================================================================
-"""Hourly five-minute news update. Ava, Bruce, and Carly rotate by the Hawaii hour."""
+"""Hourly ~20-25 minute news update (sports airtime fill). Ava, Bruce, and Carly share the hour evenly."""
 from __future__ import annotations  # info: from __future__ import annotations
 
 import json  # info: import json

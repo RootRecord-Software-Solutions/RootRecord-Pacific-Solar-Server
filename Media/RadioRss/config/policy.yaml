@@ -161,36 +161,40 @@ partisan_patterns:
 # Whole items dropped from every feed. Keeps sports out of news and radio reports.
 # Prefer /sports/ and league names. Do not use bare "sport" (matches transportation).
 sports_patterns:
+  # Paths and hosts (substring). League codes and the word "sports" use word edges in stories._sports_hit.
   - "/sports/"
   - "/sport/"
   - "/sport?"
   - "bbc.co.uk/sport"
   - "espn.com"
   - "espn."
-  - "sports "
-  - " sports"
-  - "sports:"
-  - "sports,"
+  - "sports"
   - "nfl"
   - "nba"
   - "mlb"
   - "nhl"
   - "ncaa"
   - "wnba"
-  - " soccer"
-  - "soccer "
+  - "mls"
+  - "soccer"
   - "football"
   - "basketball"
   - "baseball"
   - "volleyball"
   - "hockey"
+  - "cricket"
+  - "rugby"
+  - "nascar"
+  - "formula 1"
+  - "formula one"
   - "scoreboard"
   - "super bowl"
   - "world cup"
   - "premier league"
   - "march madness"
+  - "asian games"
   - "olympics"
-  - "olympic "
+  - "olympic"
   - "boxing"
   - "ufc"
   - "pga tour"
@@ -285,13 +289,13 @@ programs:
 # One hourly bulletin aimed at about twenty to twenty-five spoken minutes (~150 words/min).
 # Solar desk uses about five to seven minutes; remaining airtime (~20-25 min) fills here instead of sports.
 # Weighting: tech/chips (NVIDIA, Microsoft, big tech), truly global world news (Asia, Australia, Africa,
-# Europe, Latin America, Middle East, North America), U.S. mainland weather, centrist mainland politics,
-# universities, and science breakthroughs — plus markets, security, SpaceX, and Hawaii.
+# Europe, Latin America, Middle East, North America), U.S. mainland weather, more centrist mainland
+# government/politics, universities, and science breakthroughs — plus markets, security, SpaceX, and Hawaii.
 # Voices: Ava, Bruce, and Carly share the hour with roughly equal airtime; Hawaii hour still picks the first preference.
 # Optional per-desk words override desk_words. Primary desks are polled by news-hour.
 news_update:
   report: news_update
-  target_words: 3500
+  target_words: 3600
   desk_words: 220
   fresh_hours: 18
   backfill_hours: 36
@@ -305,7 +309,7 @@ news_update:
     - id: defence
       name: National security
       lead: "National security."
-      words: 220
+      words: 260
       categories: [national_security]
     - id: spacex
       name: SpaceX
@@ -335,7 +339,7 @@ news_update:
     - id: mainland_politics
       name: Mainland politics
       lead: "Mainland politics."
-      words: 360
+      words: 450
       categories: [mainland_politics]
     - id: science
       name: Science
@@ -423,3 +427,5 @@ publishers:
   "Storm Prediction Center": "the Storm Prediction Center"
   "Federal Register": "the Federal Register"
   Congress: "Congress.gov"
+  "Department of Justice": "the Department of Justice"
+  "U.S. Department of Defense": "the U.S. Department of Defense"

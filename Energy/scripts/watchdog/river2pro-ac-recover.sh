@@ -9,13 +9,14 @@
 # ==============================================================================
 #!/usr/bin/env bash
 # Local River 2 Pro AC recover: when fresh SOC >= 5% OR fresh AC input power >= 50W
-# and AC ports are off, run river2pro-ac-on.sh so Starlink/net can return after a cut.
-# Does not delete collectors, does not force AC off, and no-ops when AC is on.
+# and AC ports are off, keep calling river2pro-ac-on.sh every timer tick until AC is on
+# (Starlink/net after a cut). No cooldown while off. Does not delete collectors, does not
+# force AC off, and no-ops when AC is already on.
 set -euo pipefail  # info: set
 
 SOC_MIN=5  # info: set SOC_MIN
 FRESH_SEC=300  # info: set FRESH_SEC
-COOLDOWN_SEC=120  # info: set COOLDOWN_SEC
+COOLDOWN_SEC=0  # info: set COOLDOWN_SEC (disabled: retry every tick while AC off)
 DB="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy"  # info: set DB
 SOC_FILE="$DB/soc/river2pro-last.json"  # info: set SOC_FILE
 PORTS_FILE="$DB/ports/river2pro-last.json"  # info: set PORTS_FILE
@@ -155,11 +156,14 @@ PY
 
 # ====================================================
 # SECTION: function in_cooldown
-# What it does: True when a prior AC-on attempt stamp is younger than COOLDOWN_SEC.
+# What it does: True only when COOLDOWN_SEC>0 and stamp younger than that. Default 0 = retry every tick while AC off.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 in_cooldown() {  # info: in_cooldown
   local age  # info: set age
+  if (( COOLDOWN_SEC <= 0 )); then  # info: if cooldown disabled
+    return 1  # info: return not in cooldown
+  fi  # info: fi
   age="$(file_age_sec "$STAMP")"  # info: set age
   if (( age < COOLDOWN_SEC )); then  # info: if
     return 0  # info: return
@@ -179,7 +183,7 @@ mark_attempt() {  # info: mark_attempt
 
 # ====================================================
 # SECTION: function main
-# What it does: Decide whether to run river2pro-ac-on.sh; no-op when AC is on, inputs are stale, or neither trigger is ready.
+# What it does: Decide whether to run river2pro-ac-on.sh; keep retrying while AC is off and a trigger is ready; no-op when AC is on or signals are stale.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 main() {  # info: main
