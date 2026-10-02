@@ -1,11 +1,11 @@
 {
   "ok": true,
   "kind": "last-known",
-  "as_of": "Thursday, October 1, 2026 \u00b7 20:58 Hawaiian Standard Time",
+  "as_of": "Thursday, October 1, 2026 \u00b7 21:15 Hawaiian Standard Time",
   "power": {
     "resource": "power",
     "title": "Power / solar",
-    "as_of": "Thursday, October 1, 2026 \u00b7 20:58 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 21:15 Hawaiian Standard Time",
     "devices": {
       "delta2": {
         "watts": {
@@ -44,16 +44,16 @@
   "weather": {
     "resource": "weather",
     "title": "Weather",
-    "as_of": "Thursday, October 1, 2026 \u00b7 20:58 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 21:15 Hawaiian Standard Time",
     "report": {
-      "generated": "2026-10-01T20:54:01-10:00 HST",
+      "generated": "2026-10-01T21:11:18-10:00 HST",
       "sections": 35
     }
   },
   "kilauea": {
     "resource": "kilauea",
     "title": "K\u012blauea",
-    "as_of": "Thursday, October 1, 2026 \u00b7 20:58 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 21:15 Hawaiian Standard Time",
     "status": {
       "at": "2026-10-01T20:58:37-10:00",
       "alert_level": "WATCH",
@@ -66,14 +66,14 @@
   "moon": {
     "resource": "moon",
     "title": "Current moon",
-    "as_of": "Thursday, October 1, 2026 \u00b7 20:58 Hawaiian Standard Time",
+    "as_of": "Thursday, October 1, 2026 \u00b7 21:15 Hawaiian Standard Time",
     "status": {
-      "phase": 0.6996,
+      "phase": 0.7014,
       "phase_name": "Waning Gibbous",
-      "illumination": 66,
+      "illumination": 65,
       "next_phase": "Last Quarter",
       "next_phase_date": "2026-10-03",
-      "fetched_at": "2026-10-01T20:06:43-10:00",
+      "fetched_at": "2026-10-01T21:15:35-10:00",
       "date": "2026-10-01"
     }
   }
