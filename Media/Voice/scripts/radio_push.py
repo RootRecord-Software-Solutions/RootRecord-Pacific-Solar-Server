@@ -2,10 +2,12 @@
 """Send a finished voice report to the Mainland radio library.
 
 Hawaii writes the WAV. This script encodes it and replaces that one
-<report>_current.opus over SSH. Older copies and any other name in the
-reports folder are removed. A report that is still .ogg stays until
-this report replaces it. It never downloads. Music is a separate
-one-way copy of the library that already sits on this desk.
+<report>_current.opus over SSH to the desk host ml1 (tunnel hostname
+ml1.rootrecord.cloud). The file lands in the runtime reports directory,
+outside the git checkout, so a pull cannot restore it. Older copies and
+any other name in the reports folder are removed. A report that is still
+.ogg stays until this report replaces it. It never downloads. The music
+bed arrives with the Mainland git pull.
 """
 from __future__ import annotations
 
@@ -21,7 +23,9 @@ from pathlib import Path
 
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))
 VOICE = DB / "Media" / "Audio" / "Voice"
-HOST = os.environ.get("RR_RADIO_SSH", "rr-aws-ip")
+# Desk SSH host name for the tunnel hostname ml1.rootrecord.cloud.
+# An address change must not retarget this push at the raw IP.
+HOST = os.environ.get("RR_RADIO_SSH", "ml1")
 REMOTE = os.environ.get(
     "RR_RADIO_REMOTE",
     "/home/ubuntu/US-Mainland-Server/communications/rootrecord-radio/audio",
