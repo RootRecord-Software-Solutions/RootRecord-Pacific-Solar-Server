@@ -37,7 +37,7 @@ class VoiceTimingTests(unittest.TestCase):
             rows,
             datetime(2026, 10, 1, 23, 50, tzinfo=ZoneInfo("Pacific/Honolulu")),
             [Path("automations_current.log")],
-            {"voice_current_report": "[12, 42]"},
+            {"voice_current_report": "[22, 52]"},
         )
         for heading in (
             "### Confirmed facts",
@@ -49,15 +49,15 @@ class VoiceTimingTests(unittest.TestCase):
         ):
             self.assertIn(heading, text)
         self.assertIn("**Model:** none", text)
-        self.assertIn("| `voice_current_report` | [12, 42] |", text)
+        self.assertIn("| `voice_current_report` | [22, 52] |", text)
         self.assertNotIn("llama", text.lower())
 
     def test_live_jobs_file_schedules_the_half_hour_set(self):
         if not v.JOBS.is_file():
             self.skipTest("jobs.py is not on this machine")
         sched = v.schedule(v.JOBS.read_text(encoding="utf-8"))
-        self.assertEqual(sched.get("voice_current_report"), "[12, 42]")
-        self.assertEqual(sched.get("voice_nws_weather"), "[12, 42]")
+        self.assertEqual(sched.get("voice_current_report"), "[22, 52]")
+        self.assertEqual(sched.get("voice_nws_weather"), "[22, 52]")
 
 
 if __name__ == "__main__":

@@ -76,7 +76,7 @@ class PublicReportTests(unittest.TestCase):  # info: class
             self.assertNotIn(stamp, jobs)  # info: assert gone
         self.assertIn('"at_times": ["00:00", "08:00", "16:00"]', jobs)  # info: assert 8h
         self.assertIn('"id": "discord_report_24h"', jobs)  # info: assert noon job
-        self.assertIn('"only_at_minutes": [12, 42]', jobs)  # info: assert voice lead
+        self.assertIn('"only_at_minutes": [22, 52]', jobs)  # info: assert voice lead
         self.assertIn('"only_at_minutes": [0, 30]', jobs)  # info: assert chime stays on the announcement
         self.assertIn('"at_times": ["09:02"]', jobs)  # info: assert morning inside window
         self.assertIn('"at_times": ["12:02"]', jobs)  # info: assert midday inside window

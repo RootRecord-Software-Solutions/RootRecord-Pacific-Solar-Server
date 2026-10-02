@@ -31,7 +31,7 @@ TYPES = {
     "current_report": ("Ava", "Current"),
 }
 
-# News is not part of the :12 / :42 stack. Its cues still play, and a send still stages it.
+# News is not part of the :22 / :52 stack. Its cues still play, and a send still stages it.
 CUES = dict(TYPES)
 CUES["news_update"] = ("Ava", "News")
 
@@ -72,13 +72,13 @@ def catalog_rows() -> list[dict]:
 
 
 def cycle_key(when: datetime) -> str:
-    """The :12 or :42 stack this clock still belongs to. A run past the hour stays on :42."""
-    if when.minute >= 42:
-        slot, stamp = 42, when
-    elif when.minute >= 12:
-        slot, stamp = 12, when
+    """The :22 or :52 stack this clock still belongs to. A run past the hour stays on :52."""
+    if when.minute >= 52:
+        slot, stamp = 52, when
+    elif when.minute >= 22:
+        slot, stamp = 22, when
     else:
-        slot, stamp = 42, when - timedelta(hours=1)
+        slot, stamp = 52, when - timedelta(hours=1)
     return stamp.strftime("%Y-%m-%dT%H") + f":{slot:02d}"
 
 

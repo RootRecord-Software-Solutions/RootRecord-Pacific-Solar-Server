@@ -10,12 +10,12 @@ os.environ["RR_VOICE_STACK_STATE"] = "/tmp/rr-stack-send-test.json"
 import status_cue
 
 HST = ZoneInfo("Pacific/Honolulu")
-WHEN = datetime(2026, 10, 2, 12, 20, tzinfo=HST)
+WHEN = datetime(2026, 10, 2, 12, 30, tzinfo=HST)
 
 
 def test_cycle_crosses_the_hour():
-    assert status_cue.cycle_key(datetime(2026, 10, 2, 12, 18, tzinfo=HST)) == "2026-10-02T12:12"
-    assert status_cue.cycle_key(datetime(2026, 10, 2, 0, 4, tzinfo=HST)) == "2026-10-01T23:42"
+    assert status_cue.cycle_key(datetime(2026, 10, 2, 12, 28, tzinfo=HST)) == "2026-10-02T12:22"
+    assert status_cue.cycle_key(datetime(2026, 10, 2, 0, 4, tzinfo=HST)) == "2026-10-01T23:52"
 
 
 def test_closer_waits_for_every_desk():
