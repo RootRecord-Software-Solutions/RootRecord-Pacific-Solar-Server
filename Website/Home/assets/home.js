@@ -639,7 +639,7 @@
       var controls = globe.controls();
       controls.enableZoom = false;
       controls.enablePan = false;
-      globe.pointOfView({ lat: 16, lng: -156, altitude: 1.075 });
+      globe.pointOfView({ lat: 16, lng: -156, altitude: 1.55 });
       var renderer = globe.renderer && globe.renderer();
       if (renderer && renderer.setPixelRatio) {
         var cap = window.innerWidth < 800 ? 1.15 : 1.5;
@@ -688,7 +688,7 @@
           fallbackControls.enableZoom = false;
           fallbackControls.autoRotate = !reduced();
           fallbackControls.autoRotateSpeed = document.body.classList.contains("broadcast") ? 1.05 : 0.35;
-          globe.pointOfView({ lat: 16, lng: -156, altitude: 1.075 });
+          globe.pointOfView({ lat: 16, lng: -156, altitude: 1.55 });
         }
         startQuakes();
         startStorms();

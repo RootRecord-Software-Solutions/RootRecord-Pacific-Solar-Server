@@ -134,6 +134,8 @@
     var parts = [];
     if (reading.soc !== null) parts.push(T.pct(reading.soc));
     if (reading.solar !== null) parts.push(T.watts(reading.solar) + " solar");
+    if (reading.chargeSource === "generator" && reading.acIn !== null) parts.push("generator " + T.watts(reading.acIn));
+    else if (reading.acIn !== null && reading.acIn > 5) parts.push(T.watts(reading.acIn) + " AC in");
     return parts.length ? parts.join(" · ") : "NO READING";
   }
 
@@ -142,6 +144,7 @@
       text(prefix + "-soc", "NO READING");
       text(prefix + "-solar", "NO READING");
       text(prefix + "-ac", "NO READING");
+      text(prefix + "-acin", "NO READING");
       text(prefix + "-usb", "NO READING");
       text(prefix + "-at", "—");
       text("st-" + prefix, "NO PUBLIC SIGNAL");
@@ -152,6 +155,12 @@
     text(prefix + "-soc", reading.soc === null ? "NO READING" : T.pct(reading.soc));
     text(prefix + "-solar", reading.solar === null ? "NO READING" : T.watts(reading.solar));
     text(prefix + "-ac", reading.acOut === null ? "NO READING" : T.watts(reading.acOut));
+    text(prefix + "-acin", reading.acIn === null ? "NO READING" : T.watts(reading.acIn));
+    var acInLabel = document.getElementById(prefix + "-acin-label");
+    if (acInLabel) {
+      var who = prefix === "river" ? "River" : "Delta";
+      acInLabel.textContent = reading.chargeSource === "generator" ? who + " generator" : who + " AC in";
+    }
     text(prefix + "-usb", reading.usbc === null ? "NO READING" : T.watts(reading.usbc));
     text(prefix + "-at", reading.at ? T.formatHst(reading.at, true) : "—");
     text("st-" + prefix, obsWord(reading.at, staleMs));
@@ -164,11 +173,10 @@
     return { name: name, value: value, text: textValue, at: at };
   }
 
-  // Continuous port ratings. Bar length is watts divided by that unit's rating.
-  // River 2 Pro: 220 W solar, 800 W AC. Delta 2: 500 W solar, 1800 W AC.
+  // Port ratings. Solar and AC out are the outlet limits. AC in uses the charge limit.
   var RATED = {
-    river: { solar: 220, ac: 800 },
-    delta: { solar: 500, ac: 1800 }
+    river: { solar: 220, ac: 800, acIn: 660 },
+    delta: { solar: 500, ac: 1800, acIn: 1200 }
   };
 
   function ratedWatts(value, max) {
@@ -204,13 +212,21 @@
         r.delta ? ratedBar("Delta", r.delta.solar, r.delta.at, RATED.delta.solar) : null
       ].filter(Boolean)
     });
+    var inputTitle = document.querySelector("#chart-output") && document.querySelector("#chart-output").closest("section");
+    var inputHeading = inputTitle ? inputTitle.querySelector(".b-k") : null;
+    var generatorOn = (r.river && r.river.chargeSource === "generator") || (r.delta && r.delta.chargeSource === "generator");
+    if (inputHeading) {
+      inputHeading.innerHTML = generatorOn
+        ? "AC input <span class=\"b-scale\">generator</span>"
+        : "AC input <span class=\"b-scale\">of charge limit</span>";
+    }
     window.RRCharts.bars(document.getElementById("chart-output"), {
-      label: "Current AC output",
-      question: "What AC output is each system reporting right now?",
+      label: "Current AC input",
+      question: "What AC input is each system reporting right now?",
       empty: "No public signal",
       bars: [
-        r.river ? ratedBar("River", r.river.acOut, r.river.at, RATED.river.ac) : null,
-        r.delta ? ratedBar("Delta", r.delta.acOut, r.delta.at, RATED.delta.ac) : null
+        r.river ? ratedBar("River", r.river.acIn, r.river.at, RATED.river.acIn) : null,
+        r.delta ? ratedBar("Delta", r.delta.acIn, r.delta.at, RATED.delta.acIn) : null
       ].filter(Boolean)
     });
   }

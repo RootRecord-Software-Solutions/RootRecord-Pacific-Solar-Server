@@ -23,7 +23,6 @@
     reportEl.textContent = (data && data.report) || "";
   }
 
-  var heard = 0;
   var quiet = 0;
 
   function start() {
@@ -33,7 +32,6 @@
 
   function reopen() {
     quiet = 0;
-    heard = 0;
     audio.src = BASE + "/live.mp3?t=" + Date.now();
     start();
   }
@@ -57,21 +55,15 @@
     setState("ON AIR", true);
     setTimeout(reopen, 1000);
   });
+  // A live MP3 playhead often sits still while the buffer refills.
+  // Replacing the src on that pause is the audible cut. Reopen only
+  // when the element has had no media at all.
   setInterval(function () {
-    if (audio.ended || audio.error) {
-      reopen();
-      return;
-    }
-    if (audio.paused) {
-      start();
-      return;
-    }
-    if (audio.currentTime > heard) {
-      heard = audio.currentTime;
+    if (audio.readyState > 0) {
       quiet = 0;
       return;
     }
     quiet += 1;
-    if (quiet >= 3) reopen();
+    if (quiet >= 8) reopen();
   }, 2000);
 })();
