@@ -1,5 +1,5 @@
 (function () {
-  var BASE = "https://api.rootrecord.cloud/radio";
+  var BASE = "https://radio.rootrecord.cloud/radio";
   var audio = document.getElementById("radio-out");
   var program = document.getElementById("b-program");
   if (!audio) return;

@@ -1,5 +1,5 @@
 (function () {
-  var BASE = document.body.getAttribute("data-radio-base") || "https://api.rootrecord.cloud/radio";
+  var BASE = document.body.getAttribute("data-radio-base") || "https://radio.rootrecord.cloud/radio";
   var audio = document.getElementById("radio-out");
   var stateEl = document.getElementById("radio-state");
   var led = document.getElementById("radio-led");

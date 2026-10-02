@@ -3,7 +3,7 @@
   if (params.get("broadcast") !== "1") return;
 
   document.body.classList.add("yt-broadcast");
-  var base = "https://api.rootrecord.cloud/radio";
+  var base = "https://radio.rootrecord.cloud/radio";
   var audio = document.createElement("audio");
   audio.id = "radio-out";
   audio.src = base + "/live.mp3";
