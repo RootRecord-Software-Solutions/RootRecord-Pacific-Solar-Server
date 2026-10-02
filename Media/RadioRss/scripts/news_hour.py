@@ -21,7 +21,7 @@ from pathlib import Path  # info: from pathlib import Path
 from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 from common import DB, PACIFIC, iso, parse_iso, utc_now  # info: from common import DB , PACIFIC , iso , parse_iso , utc_now
-from pipeline import _publisher, _summary, _when, poll_feed  # info: from pipeline import _publisher , _summary , _when , poll_feed
+from pipeline import _publisher, _summary, poll_feed  # info: from pipeline import _publisher , _summary , _when , poll_feed
 from registry import configured_on  # info: from registry import configured_on
 from stories import sports  # info: from stories import sports
 
@@ -94,7 +94,7 @@ def _recent(story: dict, now: datetime, hours: float) -> bool:  # info: def _rec
 
 # ====================================================
 # SECTION: function _line
-# What it does: One attributed sentence. The wording stays the publisher's account.
+# What it does: One attributed sentence. The date is said once in the opener, not on every story.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _line(story: dict, registry: dict) -> str:  # info: def _line
@@ -103,7 +103,6 @@ def _line(story: dict, registry: dict) -> str:  # info: def _line
     line = f"{spoken} reports that {story.get('title') or 'an update'}."  # info: set line
     if body:  # info: if body :
         line = f"{line} {body}"  # info: set line
-    line = f"{line} Published {_when(story.get('published_at') or '')}."  # info: set line
     return line  # info: return line
 
 
