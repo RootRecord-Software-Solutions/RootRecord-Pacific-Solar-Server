@@ -303,7 +303,7 @@ def write_if_changed(path: Path, text: str) -> bool:  # info: def write_if_chang
 
 # ====================================================
 # SECTION: function chrome
-# What it does: Shared page head, nav, and footer. No starfield. Public primary nav; Reports lives in footer on other pages and is omitted here as self.
+# What it does: Shared page head, nav, and footer. No starfield. Public primary nav with Reports as current (non-link); footer is Account/Terms/Privacy/Data deletion.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def chrome(title: str, description: str, canonical: str, main: str, wide: bool = False) -> str:  # info: def chrome
@@ -340,14 +340,15 @@ def chrome(title: str, description: str, canonical: str, main: str, wide: bool =
     <a href="/about">About</a>
     <a href="/security">Security</a>
     <a href="/status">Status</a>
+    <span aria-current="page">Reports</span>
     <a href="/radio">Radio</a>
+    <a href="/live">Live</a>
   </nav>
 </header>
 <main class="{width}" id="content">
 {main}
 </main>
 <footer class="site-foot">
-  <a href="/live">Live</a>
   <a href="/login">Account</a>
   <a href="/terms">Terms</a>
   <a href="/privacy">Privacy</a>

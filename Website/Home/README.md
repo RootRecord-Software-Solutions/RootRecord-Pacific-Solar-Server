@@ -27,7 +27,7 @@ Production is [https://www.rootrecord.cloud/](https://www.rootrecord.cloud/).
 | `/operations` | Public operations readings, including River and Delta charge, solar, and AC charts when the feed has them |
 | `/infrastructure` | Hawaiʻi, the Root Record Network, and the Mainland Server |
 
-Navigation is Home, Products, Services, Solutions, About, Security, Status, and Radio. Deeper pages stay available from status, reports, and the technology notes. Page footers link to Terms, Privacy, and Data deletion.
+Primary navigation (2026-10-02): Home, Products, Services, Solutions, About, Security, Status, Reports, Radio, Live. Omit the self-link on the current page. Page footers sitewide: Account, Terms, Privacy, and Data deletion. Report pages use the same primary nav. Ecosystem / Systems / Intelligence / Knowledge stay off primary nav.
 
 ## Reports
 
