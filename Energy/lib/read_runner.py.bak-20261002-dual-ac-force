@@ -301,14 +301,12 @@ async def _read_ble(alias: str):  # info: async def
         raise BleUnavailable("BLE auth timeout before fields")  # info: raise timeout
     if not getattr(state, "authenticated", False):  # info: if not authenticated
         kind = type(exc).__name__ if exc is not None else "none"  # info: exception class only, never the message
-        fields = _fields_from_ble(device)  # info: same field read Delta uses; do not drop a live heartbeat
-        if _has_data(fields):  # info: if heartbeats landed despite the auth flag
-            return device, fields  # info: BLE read, not a cloud substitute
         try:  # info: try disconnect
             await device.disconnect()  # info: disconnect after auth failure
         except Exception:  # info: except disconnect
             pass  # info: pass
-        raise BleUnavailable(f"BLE auth not completed state={state} exc={kind}")  # info: session auth failed; not a re-pair order
+        # NeedBindInstallFirst means the pack must be re-paired in the EcoFlow app. Do not invent a user id.
+        raise BleUnavailable(f"BLE auth not completed state={state} exc={kind}")  # info: raise named auth failure
     await asyncio.sleep(1.5)  # info: let the first heartbeat land after auth
     fields = _fields_from_ble(device)  # info: set fields
     if not _has_data(fields):  # info: if not _has_data ( fields ) :
@@ -491,12 +489,6 @@ def main() -> int:  # info: def main
             _zero_missing_inverter_watts(fields)  # info: call _zero_missing_inverter_watts
             _stamp_device_watts(device, fields)  # info: call _stamp_device_watts
 
-    # BLE-intended packs never take the cloud file as the reading. Last BLE sample stands.
-    if source == "none" and not _prefer_api(alias):  # info: prefer_api=0 means BLE is the source
-        print("WAITING")  # info: call print
-        print(f"No data — BLE: {ble_err or 'skipped'}; cloud not used")  # info: call print
-        print("STATUS=WAITING")  # info: call print
-        return 2  # info: return 2
     # 2) One scan miss keeps the last BLE file. Quota runs only after that file is older than BLE_HOLD_SEC.
     if source == "none" and _hold_last_ble(alias):  # info: if source == "none" and _hold_last_ble ( alias ) :
         print("WAITING")  # info: call print

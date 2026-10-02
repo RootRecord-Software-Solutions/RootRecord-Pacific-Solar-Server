@@ -11,8 +11,6 @@
 """Thin BLE connect helper. Honest when eflib/bleak missing."""  # info: """Thin BLE connect helper. Honest when eflib/bleak missing."""
 from __future__ import annotations  # info: from __future__ import annotations
 import asyncio  # info: import asyncio
-import json  # info: import json
-import time  # info: import time
 import os  # info: import os
 import sys  # info: import sys
 from pathlib import Path  # info: from pathlib import Path
@@ -21,7 +19,7 @@ HERE = Path(__file__).resolve().parent  # info: set HERE
 if str(HERE) not in sys.path:  # info: if str ( HERE ) not in sys
     sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 ,
 
-from paths import VENDOR, STATE_DIR, ensure_dirs  # noqa: E402
+from paths import VENDOR, ensure_dirs  # noqa: E402
 from config import device as device_cfg  # noqa: E402
 from envload import user_id, load_env  # noqa: E402
 
@@ -80,19 +78,6 @@ def eflib_ready() -> tuple[bool, str]:  # info: def eflib_ready
 # What it does:  scan.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-
-def note_sight(alias: str, seen: bool, detail: str) -> None:  # info: def note_sight
-    """Record that this MAC was or was not on the air. No credentials."""  # info: docstring
-    ensure_dirs()  # info: call ensure_dirs
-    path = STATE_DIR / f"ble-sight-{alias}.json"  # info: set path
-    path.write_text(json.dumps({  # info: path.write_text
-        "alias": alias,  # info: alias
-        "seen": bool(seen),  # info: seen
-        "detail": (detail or "")[:160],  # info: detail
-        "at_epoch": time.time(),  # info: at_epoch
-    }), encoding="utf-8")  # info: encoding
-
-
 async def _scan(mac: str, seconds: float = 10.0):  # info: async def
     from bleak import BleakScanner  # info: from bleak import BleakScanner
     want = mac.upper()  # info: set want
@@ -148,13 +133,9 @@ async def connect(alias: str):  # info: async def
         raise BleUnavailable(f"no eflib_module for {alias}")  # info: raise BleUnavailable ( f" no eflib_module for { alias }
     import importlib  # info: import importlib
     Device = importlib.import_module(mod).Device  # info: set Device
-    rec = await _scan(mac, 8.0)  # info: set rec
+    rec = await _scan(mac)  # info: set rec
     if not rec:  # info: if not rec :
-        rec = await _scan(mac, 8.0)  # info: one retry so a busy radio is not treated as gone
-    if not rec:  # info: if not rec :
-        note_sight(alias, False, "not_seen")  # info: pack not on the air
         raise BleUnavailable(f"device not seen in scan mac={mac}")  # info: raise BleUnavailable ( f" device not seen in scan mac= { mac }
-    note_sight(alias, True, "seen")  # info: advertisement seen; session may still fail auth
     ble, adv = rec  # info: ble , adv = rec
     device = Device(ble, adv, sn)  # info: set device
     await device.connect(user_id=uid, max_attempts=3)  # info: await device . connect ( user_id = uid
@@ -175,8 +156,8 @@ async def apply_bool(alias: str, method: str, want: bool) -> dict:  # info: asyn
         if not getattr(state, "authenticated", False):  # info: if not authenticated
             kind = type(exc).__name__ if exc is not None else "none"  # info: class name only, never secrets
             hint = ""  # info: set hint
-            if kind == "NeedBindInstallFirst":  # info: encrypted session rejected; reads may still land
-                hint = " (BLE session auth rejected; not a read failure and not a re-pair instruction)"  # info: do not order a re-pair
+            if kind == "NeedBindInstallFirst":  # info: official app must bind this pack
+                hint = " (re-pair this pack in the EcoFlow app; no credential is stored here)"  # info: human next step
             raise BleUnavailable(f"auth not completed: {state} exc={kind}{hint}")  # info: raise named auth failure
         await asyncio.sleep(1.0)  # info: await asyncio . sleep ( 1.0 )
         fn = getattr(device, method, None)  # info: set fn
