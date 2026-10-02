@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Radio — Root Record</title>
-<meta name="description" content="A continuous Root Record stream. Music stays on. Reports play through, one at a time.">
+<meta name="description" content="The active Root Record livestream.">
 <link rel="canonical" href="https://www.rootrecord.cloud/radio">
 <meta property="og:title" content="Radio — Root Record">
-<meta property="og:description" content="Music stays on. Reports play through, one at a time.">
+<meta property="og:description" content="The active Root Record livestream.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.rootrecord.cloud/radio">
 <meta property="og:site_name" content="Root Record">
@@ -15,7 +15,7 @@
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
-<body data-radio-base="https://radio.rootrecord.cloud/radio">
+<body>
 <a class="skip" href="#content">Skip to content</a>
 <header class="top">
   <a class="brand" href="/">Root Record</a>
@@ -36,18 +36,15 @@
 <main class="page" id="content">
   <p class="eyebrow">Stream</p>
   <h1>Radio</h1>
-  <p class="prose">One station is already on the air. Music plays through. A voice report comes in over it, the music sits at a quarter volume until that report ends, and the next report waits. At the hour and the half hour in Hawaii, a time announcement pauses the report, plays, and the report continues. This page only listens. It does not skip, and it does not start another copy.</p>
-  <p class="fine">The picture for a live stream is <a href="/live">the globe with the desk overlay</a>.</p>
-  <section class="sec" aria-label="On air">
-    <div class="status-line" aria-live="polite"><i class="led" id="radio-led" aria-hidden="true"></i><span id="radio-state">ON AIR</span></div>
-    <p><button type="button" id="radio-listen">Listen</button></p>
-    <p class="meta">Music</p>
-    <p class="reading" id="radio-music">On the air</p>
-    <p class="fine" id="radio-blurb"></p>
-    <p class="meta">Report</p>
-    <p class="reading" id="radio-report"></p>
-    <audio id="radio-out" src="https://radio.rootrecord.cloud/radio/live.mp3" autoplay playsinline preload="auto"></audio>
-  </section>
+  <p class="prose">This page plays the active livestream from the <a href="https://www.youtube.com/@rootmcnews">Root Record channel</a>. When a stream is on, it shows up here.</p>
+  <div class="radio-frame">
+    <iframe
+      src="https://www.youtube.com/embed/live_stream?channel=UC6M7U4fXAWuVYhgm_veKecA"
+      title="Root Record livestream"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+      referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  </div>
 </main>
 <footer class="site-foot">
   <a href="/login">Account</a>
@@ -56,6 +53,5 @@
   <a href="/data-deletion">Data deletion</a>
 </footer>
 <script src="/assets/shell.js"></script>
-<script src="/assets/radio.js?v=20261001listen"></script>
 </body>
 </html>
