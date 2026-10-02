@@ -122,6 +122,12 @@ def generated_at(t: datetime) -> str:  # info: def generated_at
     return f"Report generated at {clock(t)}.".replace("..", ".")  # info: return f" Report generated at { clock ( t ) } . " . replace ( ".." , "." )
 
 
+def say_change(sp: list, key: str, value, label: str, t: datetime) -> None:  # info: def say_change
+    """Append percent change for yesterday, last week, and last month. Skip a period with no earlier reading."""  # info: docstring
+    import compare_span  # info: import compare_span
+    sp.extend(compare_span.sentences(key, value, label, t))  # info: sp . extend ( compare_span . sentences ( key , value , label , t ) )
+
+
 # ====================================================
 # SECTION: function jload
 # What it does: jload.
@@ -151,7 +157,7 @@ def energy_facts(t: datetime) -> list[dict]:  # info: def energy_facts
             age = int((t - datetime.fromisoformat(soc["at"])).total_seconds() // 60)  # info: set age
         except (KeyError, ValueError):  # info: except ( KeyError , ValueError ) :
             age = None  # info: set age
-        row = {"name": name, "ok": True, "soc": round(float(soc["soc"])), "at": soc.get("at"), "age_min": age,  # info: set row
+        row = {"name": name, "key": key, "ok": True, "soc": round(float(soc["soc"])), "at": soc.get("at"), "age_min": age,  # info: set row
                "solar_w": watts.get("solar_input_power"), "ac_out_w": watts.get("ac_output_power"),  # info: "solar_w" : watts . get ( "solar_input_power" )
                "usbc_out_w": watts.get("usbc_output_power"), "ac_in_w": watts.get("ac_input_power"),  # info: "usbc_out_w" : watts . get ( "usbc_output_power" )
                "charge": watts.get("charge_source")}  # info: "charge" : watts . get ( "charge_source" )
@@ -499,11 +505,13 @@ def b_nws_weather(t: datetime):  # info: def b_nws_weather
           "- Temperatures: NWS HFO Zone Forecast (ZFP), today high and tonight low", "", "## Active alerts", ""]
     if rows:  # info: if rows :
         sp.append(f"{len(rows)} active alert{'s' if len(rows) != 1 else ''} for Hawaii.")  # info: sp . append ( f" { len (
+        say_change(sp, "nws.alerts", len(rows), "Active alerts", t)  # info: say_change alerts
         for r in rows[:3]:  # info: for r in rows [ : 3 ]
             sp.append(f"{r['event']} for {r['area']}.")  # info: sp . append ( f" { r [
         md += [f"- **{r['event']}** — {r['area']} (expires {r['expires']})" for r in rows]  # info: set md
     else:  # info: else :
         sp.append("No active HI alerts from the API sample.")  # info: sp . append ( "No active HI alerts from the API sample." )
+        say_change(sp, "nws.alerts", 0, "Active alerts", t)  # info: say_change alerts
         md.append("- none")  # info: md . append ( "- none" )
     md += ["", "## State forecast (first period)", "", today or "_not on file_", ""]
     if today:  # info: if today :
@@ -521,6 +529,11 @@ def b_nws_weather(t: datetime):  # info: def b_nws_weather
             md.append(f"- **{p['place']}** — " + ", ".join(bits))  # info: md . append
             spoken_places.append(f"{p['place']} " + ", ".join(bits))  # info: spoken_places . append
         sp.append("Temperatures. " + ". ".join(spoken_places) + ".")  # info: sp . append
+        for p in places:  # info: for p in places
+            if p.get("high"):  # info: if p . get ( "high" )
+                say_change(sp, f"nws.{p['place']}.high", p["high"], f"{p['place']} high", t)  # info: say_change high
+            if p.get("low"):  # info: if p . get ( "low" )
+                say_change(sp, f"nws.{p['place']}.low", p["low"], f"{p['place']} low", t)  # info: say_change low
     else:  # info: else :
         md.append("- _not on file_")  # info: md . append ( "- _not on file_" )
         sp.append("Temperatures are not on file.")  # info: sp . append
@@ -656,6 +669,7 @@ def speak_board(t: datetime, payload: dict | None):  # info: def speak_board
         sp.append("The report board is not on file.")  # info: sp . append ( "The report board is not on file." )
     else:  # info: else :
         sp.append(f"{len(hour)} item{'s' if len(hour) != 1 else ''} in the next hour.")  # info: sp . append ( f" { len ( hour ) } item { 's' if len ( hour ) != 1 else '' } in the next hour. " )
+        say_change(sp, "tasks.next_hour", len(hour), "Tasks in the next hour", t)  # info: say_change tasks
         for when, key, _status in hour:  # info: for when , key , _status in hour :
             sp.append(f"{clock(when)} {labels.get(key, key)}.")  # info: sp . append ( f" { clock ( when ) } { labels . get ( key , key ) } . " )
         if not hour:  # info: if not hour :
@@ -697,6 +711,11 @@ def b_energy_report(t: datetime):  # info: def b_energy_report
         if f["ac_out_w"] is not None or f["usbc_out_w"] is not None:  # info: if f [ "ac_out_w" ] is not None
             s += f", output {spoken_watts(out)}"  # info: set s
         sp.append(s + supply_clause(f) + reading_age_clause(f) + ".")  # info: sp . append ( s + supply_clause ( f ) + reading_age_clause ( f ) + "." )
+        say_change(sp, f"energy.{f['key']}.soc", f["soc"], f"{f['name']} state of charge", t)  # info: say_change soc
+        if f["solar_w"] is not None:  # info: if f [ "solar_w" ] is not None
+            say_change(sp, f"energy.{f['key']}.solar_w", f["solar_w"], f"{f['name']} solar input", t)  # info: say_change solar
+        if f["ac_out_w"] is not None or f["usbc_out_w"] is not None:  # info: if f [ "ac_out_w" ] is not None
+            say_change(sp, f"energy.{f['key']}.output_w", out, f"{f['name']} output", t)  # info: say_change output
         note = range_clause(f)  # info: set note
         if note:  # info: if note :
             sp.append(note)  # info: sp . append ( note )
@@ -760,6 +779,7 @@ def b_earthquake_report(t: datetime):  # info: def b_earthquake_report
         sp.append("No new local earthquakes since the last report.")  # info: sp . append ( "No new local earthquakes since the last report." )
     if hi is not None:  # info: if hi is not None :
         sp.append(f"Local last twenty four hours: {len(_m25(hi_ev))} magnitude 2.5 or greater.")  # info: sp . append ( f" Local last twenty four hours: { len
+        say_change(sp, "quake.hawaii.m25", len(_m25(hi_ev)), "Local magnitude 2.5 count", t)  # info: say_change local quakes
     if gl is None:  # info: if gl is None :
         sp.append("Global earthquake data is not on file.")  # info: sp . append ( "Global earthquake data is not on file." )
     elif fresh_gl:  # info: elif fresh_gl :
@@ -769,6 +789,7 @@ def b_earthquake_report(t: datetime):  # info: def b_earthquake_report
         sp.append("No new global earthquakes since the last report.")  # info: sp . append ( "No new global earthquakes since the last report." )
     if gl is not None:  # info: if gl is not None :
         sp.append(f"Global last twenty four hours: {len(_m25(gl_ev))} magnitude 2.5 or greater.")  # info: sp . append ( f" Global last twenty four hours: { len
+        say_change(sp, "quake.global.m25", len(_m25(gl_ev)), "Global magnitude 2.5 count", t)  # info: say_change global quakes
     for label, d in (("Hawaii", hi), ("global", gl)):  # info: for label , d in ( ( "Hawaii"
         if d and d.get("age_min") is not None and d["age_min"] > QUAKE_STALE_MIN:  # info: if d and d . get ( "age_min"
             sp.append(f"The {'local' if label == 'Hawaii' else label} United States Geological Survey data is {d['age_min']} minutes old.")  # info: sp . append ( f" The { 'local' if label == 'Hawaii' else label } United States Geological Survey data is { d [ 'age_min' ] } minutes old. " )
@@ -1090,6 +1111,15 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
         sp.append("EcoFlow is offline.")  # info: sp . append ( "EcoFlow is offline." )
     else:  # info: else :
         sp += [x + "." for x in spoken_lines]  # info: set sp
+        for f in facts:  # info: for f in facts
+            if not f.get("ok") or f.get("off") or not f.get("key"):  # info: if not f . get ( "ok" ) or f . get ( "off" ) or not f . get ( "key" )
+                continue  # info: continue
+            say_change(sp, f"energy.{f['key']}.soc", f["soc"], f"{f['name']} state of charge", t)  # info: say_change soc
+            if f.get("solar_w") is not None:  # info: if f . get ( "solar_w" ) is not None
+                say_change(sp, f"energy.{f['key']}.solar_w", f["solar_w"], f"{f['name']} solar input", t)  # info: say_change solar
+            out = sum(x for x in (f.get("ac_out_w"), f.get("usbc_out_w")) if isinstance(x, (int, float)))  # info: set out
+            if f.get("ac_out_w") is not None or f.get("usbc_out_w") is not None:  # info: if output watts are present
+                say_change(sp, f"energy.{f['key']}.output_w", out, f"{f['name']} output", t)  # info: say_change output
         for f in facts:  # info: for f in facts :
             note = range_clause(f)  # info: set note
             if note:  # info: if note :
@@ -1155,10 +1185,14 @@ def b_security_desk(t: datetime):  # info: def b_security_desk
         bits.append("OpenSSH service is not active.")  # info: bits . append ( "OpenSSH service is not active." )
     if row.get("listen_tcp") is not None:  # info: if row . get ( "listen_tcp" ) is
         bits.append(f"{row['listen_tcp']} TCP listeners.")  # info: bits . append ( f" { row [
+        say_change(bits, "security.listen_tcp", row["listen_tcp"], "TCP listeners", t)  # info: say_change listeners
     if row.get("established") is not None:  # info: if row . get ( "established" ) is
         bits.append(f"{row['established']} established connections.")  # info: bits . append ( f" { row [
+        say_change(bits, "security.established", row["established"], "Established connections", t)  # info: say_change connections
     if row.get("failed_1h") is not None:  # info: if row . get ( "failed_1h" ) is
         bits.append(f"Failed sign-ins: {row['failed_1h']} in the last hour, {row['failed_24h']} in the last twenty four hours.")  # info: bits . append ( f" Failed sign-ins: { row
+        say_change(bits, "security.failed_1h", row["failed_1h"], "Failed sign-ins in the last hour", t)  # info: say_change failed hour
+        say_change(bits, "security.failed_24h", row.get("failed_24h"), "Failed sign-ins in twenty four hours", t)  # info: say_change failed day
     else:  # info: else :
         bits.append("The sign-in log is not readable.")  # info: bits . append ( "The sign-in log is not readable." )
     if row.get("fail2ban"):  # info: if row . get ( "fail2ban" ) :
