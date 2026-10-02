@@ -246,6 +246,86 @@ def push_report(report: str) -> dict:
         tmp.unlink(missing_ok=True)
 
 
+def air_slot(when: datetime | None = None) -> tuple[int, int]:
+    """Next Hawaii :00 or :30. That is the chime the staged line is for."""
+    clock = hawaii_now() if when is None else when.astimezone(ZoneInfo("Pacific/Honolulu"))
+    if clock.minute < 30:
+        return clock.hour, 30
+    return (clock.hour + 1) % 24, 0
+
+
+def stage_on_air(report: str) -> dict:
+    """Upload the staged line if needed, then ask the station to speak it.
+
+    The station plays it after the report that is speaking, or immediately
+    when the mixer is quiet. The clock is the prebuilt chime for that slot.
+    """
+    import status_cue
+    if report not in status_cue.TYPES:
+        return {"ok": True, "skipped": True, "detail": "no_stage_type", "report": report}
+    hour, minute = air_slot()
+    phase = "staged_half" if minute == 30 else "staged_hour"
+    wav = status_cue.clip_path(report, phase)
+    if wav is None or not wav.is_file():
+        return {"ok": False, "detail": "no_cue", "report": report, "phase": phase}
+    audio = str(Path(REPORTS_REMOTE).parent)
+    runtime = str(Path(audio).parent)
+    cue_name = report + ("-half" if minute == 30 else "-hour") + ".opus"
+    remote_cue = audio.rstrip("/") + "/cues/" + cue_name
+    fd, tmp_name = tempfile.mkstemp(prefix=report + "-stage-", suffix=".opus")
+    os.close(fd)
+    tmp = Path(tmp_name)
+    try:
+        made = subprocess.run(
+            ["ffmpeg", "-y", "-i", str(wav), "-c:a", "libopus", "-b:a", "24k", "-application", "voip", "-ac", "1", str(tmp)],
+            capture_output=True,
+            timeout=60,
+        )
+        if made.returncode != 0 or tmp.stat().st_size < 64:
+            return {"ok": False, "detail": "encode_failed", "report": report}
+        folder = subprocess.run(
+            SSH + [HOST, "mkdir -p -- " + shlex.quote(audio.rstrip("/") + "/cues") + " " + shlex.quote(runtime.rstrip("/") + "/state/stage")],
+            capture_output=True,
+            text=True,
+            timeout=40,
+        )
+        if folder.returncode != 0:
+            return {"ok": False, "detail": "remote_dir", "report": report}
+        partial = remote_cue + ".partial"
+        sent = subprocess.run(
+            ["scp", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", str(tmp), f"{HOST}:{partial}"],
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        if sent.returncode != 0:
+            return {"ok": False, "detail": "send_failed", "report": report}
+        moved = subprocess.run(
+            SSH + [HOST, "mv -f -- " + shlex.quote(partial) + " " + shlex.quote(remote_cue) + " && chmod 644 -- " + shlex.quote(remote_cue)],
+            capture_output=True,
+            text=True,
+            timeout=40,
+        )
+        if moved.returncode != 0:
+            return {"ok": False, "detail": "replace_failed", "report": report}
+        note = json.dumps({"id": report, "hour": hour, "minute": minute})
+        stamp = f"{int(time.time())}-{report}"
+        remote_note = runtime.rstrip("/") + "/state/stage/" + stamp + ".json"
+        noted = subprocess.run(
+            SSH + [HOST, "printf %s " + shlex.quote(note) + " > " + shlex.quote(remote_note)],
+            capture_output=True,
+            text=True,
+            timeout=40,
+        )
+        if noted.returncode != 0:
+            return {"ok": False, "detail": "queue_failed", "report": report}
+        return {"ok": True, "report": report, "slot": f"{hour:02d}:{minute:02d}", "file": cue_name}
+    except (OSError, subprocess.TimeoutExpired):
+        return {"ok": False, "detail": "send_failed", "report": report}
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
 def push_music() -> dict:
     if not MUSIC.is_dir():
         return {"ok": False, "detail": "no_music"}
