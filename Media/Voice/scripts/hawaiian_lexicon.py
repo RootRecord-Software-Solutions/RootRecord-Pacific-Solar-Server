@@ -146,7 +146,8 @@ SPEAK_ENGLISH: dict[str, str] = {  # info: set SPEAK_ENGLISH
     "Hawaiʻi": "Hawaii",  # info: "Hawaiʻi" : "Hawaii" ,
     "Hawaiian": "Hawaiian",  # info: "Hawaiian" : "Hawaiian" ,
     "Oʻahu": "oh ah hoo",  # info: "Oʻahu" : "oh ah hoo" ,
-    "Maui": "mow ee",  # info: "Maui" : "mow ee" ,
+    # "mow ee" dropped the second syllable. Plain "Maui" is one smashed beat. "mao wee" is two.
+    "Maui": "mao wee",  # info: "Maui" : "mao wee" ,
     # "kah wah ee" — "cow ah ee" came out livestock + why + ee.
     "Kauaʻi": "kah wah ee",  # info: "Kauaʻi" : "kah wah ee" ,
     "Molokaʻi": "moh loh kah ee",  # info: "Molokaʻi" : "moh loh kah ee" ,
@@ -190,7 +191,8 @@ SPEAK_ENGLISH: dict[str, str] = {  # info: set SPEAK_ENGLISH
     "Kaʻū": "kah oo",  # info: "Kaʻū" : "kah oo" ,
     "Kohala": "koh hah lah",  # info: "Kohala" : "koh hah lah" ,
     "Hāmākua": "hah mah koo ah",  # info: "Hāmākua" : "hah mah koo ah" ,
-    "Honolulu": "hoh noh loo loo",  # info: "Honolulu" : "hoh noh loo loo" ,
+    # Spaced "hoh noh loo loo" dropped the first syllable and stressed the rest. The plain name is already hah-nuh-LOO-loo.
+    "Honolulu": "Honolulu",  # info: "Honolulu" : "Honolulu" ,
     "Waikīkī": "wye kee kee",  # info: "Waikīkī" : "wye kee kee" ,
     # Same name as in Kailua-Kona. Spaced "kye loo ah" was three stressed beats.
     "Kailua": "Kailua",  # info: "Kailua" : "Kailua" ,

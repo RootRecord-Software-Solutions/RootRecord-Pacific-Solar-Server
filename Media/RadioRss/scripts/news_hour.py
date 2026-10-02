@@ -351,6 +351,7 @@ def render_update(built: dict) -> dict:  # info: def render_update
     if voice_dir not in sys.path:  # info: if voice_dir not in sys . path :
         sys.path.insert(0, voice_dir)  # info: sys . path . insert ( 0 , voice_dir )
     import status_cue  # info: import status_cue
+    from hawaiian_lexicon import fold_place_spellings, pronounce_places  # info: from hawaiian_lexicon import fold_place_spellings , pronounce_places
     status_cue.play("news_update", "starting")  # info: status cue before the news render
     folder = Path(tempfile.mkdtemp(prefix="news-hour-"))  # info: set folder
     gap = folder / "gap.wav"  # info: set gap
@@ -359,7 +360,8 @@ def render_update(built: dict) -> dict:  # info: def render_update
     voices = []  # info: set voices
     for index, section in enumerate(built.get("sections") or []):  # info: for index , section in enumerate ( built . get ( "sections" ) or [ ] )
         wav = folder / f"part-{index}.wav"  # info: set wav
-        rendered = _render_section(str(section.get("persona") or "ava"), section.get("text") or "", wav, folder / f"part-{index}.txt")  # info: set rendered
+        spoken = pronounce_places(fold_place_spellings(section.get("text") or ""))  # info: set spoken
+        rendered = _render_section(str(section.get("persona") or "ava"), spoken, wav, folder / f"part-{index}.txt")  # info: set rendered
         if not rendered.get("ok"):  # info: if not rendered . get ( "ok" ) :
             return rendered  # info: return rendered
         if parts and has_gap:  # info: if parts and has_gap :

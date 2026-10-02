@@ -128,6 +128,12 @@ def test_pronounce_wraps_plain_names():  # info: def test_pronounce_wraps_plain_
     out = pronounce_places("Quake near Pahoa and Hilo.")  # info: set out
     assert "pah hoh ah" in out  # info: assert "pah hoh ah" in out
     assert "hee loh" in out  # info: assert "hee loh" in out
+    maui = pronounce_places("Showers on Maui today.")  # info: set maui
+    assert "mao wee" in maui  # info: assert "mao wee" in maui
+    assert "Maui" not in maui  # info: assert "Maui" not in maui
+    city = pronounce_places("Rain in Honolulu.")  # info: set city
+    assert "Honolulu" in city  # info: assert "Honolulu" in city
+    assert "hoh noh" not in city  # info: assert "hoh noh" not in city
 
 
 # ====================================================
