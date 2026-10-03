@@ -1740,7 +1740,7 @@ feeds:
     centrist: true
     origin: external
     directory: https://www.justice.gov/news/
-    note: "More government desk. Centrist framing. Sports items are dropped."
+    note: "Justice releases. FOIA calendar deadlines under /oip/event/ are dropped."
 
   - id: defense_gov
     name: U.S. Department of Defense News

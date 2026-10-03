@@ -129,6 +129,16 @@ def barred(feed: dict, item: dict, registry: dict) -> bool:  # info: def barred
     return _hit(text, registry["policy"].get("blocked_sources") or [])  # info: return _hit
 
 
+# ====================================================
+# SECTION: function deadline
+# What it does: Drop a calendar deadline. Justice FOIA "report due" items are not news.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def deadline(feed: dict, item: dict, registry: dict) -> bool:  # info: def deadline
+    text = f"{item.get('title') or ''} {item.get('summary') or ''} {item.get('url') or ''} {item.get('canonical_url') or ''} {item.get('guid') or ''}"  # info: set text
+    return _hit(text, registry["policy"].get("calendar_patterns") or [])  # info: return _hit
+
+
 
 
 # ====================================================
@@ -193,7 +203,7 @@ def _required(feed: dict, item: dict) -> bool:  # info: def _required
 
 # ====================================================
 # SECTION: function normalize
-# What it does: Turn one feed item into the story object. Empty titles, overlap, violence, sports, partisan items, and blocked publishers are dropped.
+# What it does: Turn one feed item into the story object. Empty titles, overlap, violence, sports, partisan items, blocked publishers, and calendar deadlines are dropped.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def normalize(feed: dict, item: dict, registry: dict) -> dict | None:  # info: def normalize
@@ -204,7 +214,7 @@ def normalize(feed: dict, item: dict, registry: dict) -> dict | None:  # info: d
     guid = (item.get("guid") or "").strip()  # info: set guid
     if not url and not guid:  # info: if not url and not guid :
         return None  # info: return None
-    if blocked(feed, item, registry) or violent(feed, item, registry) or sports(feed, item, registry) or partisan(feed, item, registry) or barred(feed, item, registry):  # info: if blocked or violent or sports or partisan or barred :
+    if blocked(feed, item, registry) or violent(feed, item, registry) or sports(feed, item, registry) or partisan(feed, item, registry) or barred(feed, item, registry) or deadline(feed, item, registry):  # info: if blocked or violent or sports or partisan or barred or deadline :
         return None  # info: return None
     if not _required(feed, item):  # info: if not _required ( feed , item ) :
         return None  # info: return None

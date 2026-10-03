@@ -114,6 +114,13 @@ blocked_sources:
   - bbc.co.uk
   - "bbc"
 
+# Calendar deadlines, not news. The Justice FOIA board was read as a stack of "report due" lines.
+calendar_patterns:
+  - "/oip/event/"
+  - "report due"
+  - "reports due"
+  - "data due"
+
 # Whole news items dropped on every feed. Not a Hawaii opt-in. Measured weather desks are separate.
 violence_patterns:
   - homicide

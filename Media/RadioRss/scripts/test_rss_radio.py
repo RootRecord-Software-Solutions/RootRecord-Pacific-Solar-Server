@@ -23,7 +23,7 @@ sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 , str ( HERE ) )
 
 from datetime import datetime, timezone  # info: from datetime import datetime , timezone
 from parse_feed import parse_document  # info: from parse_feed import parse_document
-from stories import barred, normalize, partisan, sports, violent  # info: from stories import barred , normalize , partisan , sports , violent
+from stories import barred, deadline, normalize, partisan, sports, violent  # info: from stories import barred , deadline , normalize , partisan , sports , violent
 from news_hour import balance_personas, build_update, persona_for  # info: from news_hour import build_update , persona_for
 from pipeline import handoff, health_report, nhc_spoken, poll, trace  # info: from pipeline import handoff , health_report , nhc_spoken , poll , trace
 from registry import load_registry  # info: from registry import load_registry
@@ -253,8 +253,8 @@ def test_news_update() -> None:  # info: def test_news_update
     world = {"id": "world", "category": "global_news", "provider": "France 24", "name": "France 24", "priority": "medium"}  # info: set world
     gang = {"title": "Gang fight downtown", "summary": "Police reported the fight.", "url": "https://news.test/gang", "guid": "gang"}  # info: set gang
     assert violent(world, gang, registry) is True  # info: assert violent ( world , gang , registry ) is True
-    deadline = {"title": "Launch deadline moved", "summary": "The deadlock on the budget ended.", "url": "https://news.test/deadline", "guid": "deadline"}  # info: set deadline
-    assert violent(world, deadline, registry) is False  # info: assert violent ( world , deadline , registry ) is False
+    budget_end = {"title": "Launch deadline moved", "summary": "The deadlock on the budget ended.", "url": "https://news.test/deadline", "guid": "deadline"}  # info: set budget_end
+    assert violent(world, budget_end, registry) is False  # info: assert violent ( world , budget_end , registry ) is False
     bodies = {"title": "Men trying to end violence against women", "summary": "The discovery of 12 women's bodies near Johannesburg.", "url": "https://www.bbc.com/news/bodies", "guid": "bodies"}  # info: set bodies
     assert violent(world, bodies, registry) is True  # info: assert violent ( world , bodies , registry ) is True
     skirt = {"title": "Women given shorts to prevent upskirting", "summary": "Voyeuristic videos on social media.", "url": "https://www.bbc.com/news/skirt", "guid": "skirt"}  # info: set skirt
@@ -269,6 +269,20 @@ def test_news_update() -> None:  # info: def test_news_update
     assert barred(bbc, diesel, registry) is True  # info: assert barred ( bbc , diesel , registry ) is True
     assert normalize(bbc, diesel, registry) is None  # info: assert normalize ( bbc , diesel , registry ) is None
     assert all(not feed.get("enabled") for feed in registry["feeds"] if str(feed.get("id") or "").startswith("bbc_"))  # info: assert every bbc feed is off
+    advisory = "LOCATION...19.3N 111.1W ABOUT 260 MI...420 KM SSW OF THE SOUTHERN TIP OF BAJA CALIFORNIA MAXIMUM SUSTAINED WINDS...105 MPH...165 KM/H PRESENT MOVEMENT...W OR 265 DEGREES AT 5 MPH...7 KM/H ...RACHEL CONTINUES LASHING SOCORRO ISLAND AS IT MOVES SLOWLY WESTWARD..."  # info: set advisory
+    said = nhc_spoken("Hurricane Rachel Public Advisory Number 23", advisory)  # info: set said
+    assert "260 miles south-southwest" in said and "socorro island" in said.lower()  # info: assert place and headline
+    assert "19.3" not in said and "latitude" not in said.lower() and "longitude" not in said.lower()  # info: assert no coordinates
+    assert nhc_spoken("Hurricane Rachel Wind Speed Probabilities Number 23", "LATITUDE 19.3 NORTH...LONGITUDE 111.1 WEST") == ""  # info: assert probability table is silent
+    assert nhc_spoken("Hurricane Rachel Forecast Discussion Number 23", "000 WTPZ43 KNHC") == ""  # info: assert discussion is silent
+    assert nhc_spoken("There are no tropical cyclones at this time", "No tropical cyclones as of Sat") == "There are no tropical cyclones in that basin."  # info: assert quiet basin
+    doj = {"id": "doj", "category": "mainland_politics", "provider": "Department of Justice", "name": "Department of Justice News", "priority": "high", "centrist": True}  # info: set doj
+    due = {"title": "FY27 Q4 Report Due", "summary": "", "url": "https://www.justice.gov/oip/event/fy27-q4-report-due", "guid": "due"}  # info: set due
+    charge = {"title": "Final two defendants sentenced in an auto theft conspiracy", "summary": "A court sentenced the last two defendants.", "url": "https://www.justice.gov/opa/pr/sentenced", "guid": "charge"}  # info: set charge
+    assert deadline(doj, due, registry) is True  # info: assert deadline ( doj , due , registry ) is True
+    assert normalize(doj, due, registry) is None  # info: assert normalize ( doj , due , registry ) is None
+    assert deadline(doj, charge, registry) is False  # info: assert deadline ( doj , charge , registry ) is False
+    assert normalize(doj, charge, registry) is not None  # info: assert normalize ( doj , charge , registry ) is not None
     from pipeline import speak_body  # info: from pipeline import speak_body
     body = speak_body("Harbor ferry schedule", "Harbor ferry schedule. The state published a new timetable.", registry["policy"])  # info: set body
     assert body.lower().count("harbor ferry schedule") == 0  # info: assert headline not repeated
