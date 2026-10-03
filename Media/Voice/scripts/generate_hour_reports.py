@@ -514,8 +514,8 @@ def finalize_archive(report_ids: list[str]) -> dict:
     errors: list[str] = []
 
     for report in report_ids:
-        if report in {"hourly_chime", "official_weather"}:
-            # Chimes stay on voice_hourly_chime; official_weather is not part of this batch.
+        if report == "hourly_chime":
+            # Chimes stay on voice_hourly_chime (:00/:30), never this batch.
             continue
         src = OUT_DIR / f"{report}_current.ogg"
         if not src.is_file():

@@ -49,7 +49,6 @@ TITLES = {  # info: set TITLES
     "morning_report": "Morning report",  # info: "morning_report" : "Morning report" ,
     "midday_report": "Midday report",  # info: "midday_report" : "Midday report" ,
     "late_report": "Late report",  # info: "late_report" : "Late report" ,
-    "official_weather": "Official weather",  # info: "official_weather" : "Official weather" ,
     "boot_brief": "Boot brief",  # info: "boot_brief" : "Boot brief" ,
 }  # info: }
 NOTE_CAPTION = "Reply to this with notes if the report should be better."  # info: set NOTE_CAPTION

@@ -13,7 +13,7 @@
   python3 voice_reports.py <report> [--no-voice]
   reports: hourly_chime · nws_weather · remaining_tasks · morning_report · midday_report · late_report
            · earthquake_report · hurricane_desk · kilauea_report · kilauea_image_check · solar_desk · security_desk · bandwidth_desk
-           · official_weather · boot_brief · current_report
+           · boot_brief · current_report
 
 Each run writes Database Media/Audio/Voice/Reports/<report>_current.md (old copy -> Reports/Archive/
 <report>_YYYYMMDDTHHMM.md) and a stitched WAV Media/Audio/Voice/<report>_current.wav via voice-render.sh
@@ -38,9 +38,7 @@ is retired; content lives here. security_desk / bandwidth_desk = G1 hourly desks
 bandwidth_desk also folds Mainland site analytics (Home proxy + Radio listeners) from
 Database Logs/Website/analytics/daily (Website/scripts/analytics_pull.py / pull-from-api.sh).
 Gates: RR_VOICE_SOLAR / RR_VOICE_SECURITY / RR_VOICE_BANDWIDTH (jobs.py).
-official_weather = G1 official-weather-media spoken statement (Ava): HLS (Pacific Weather/scripts/official_statement.py ->
-Database Weather/Hawai'i/official/) or HWO / AFD (weather poller text products). boot_brief = G1 boot-prelims Boot Report
-(file-only, no Grok) as a template brief (Ava). Both PROPOSED (RR_VOICE_OFFICIAL / RR_VOICE_BOOT), not in jobs.py.
+boot_brief = G1 boot-prelims Boot Report (file-only, no Grok) as a template brief (Ava). PROPOSED (RR_VOICE_BOOT), not in jobs.py.
 Roll-ups append an LLM summary via run-infer.sh only when RR_VOICE_ROLLUP_LLM=1 (off by default). The off state is not written into the report.
 Scheduling: jobs.py, one env gate per report (read at poller start). Added 2026-09-29 (g3-voice-reports2).
 current_report summarizes the same measured desks. Spoken time and headings are the clock when the text is built.
@@ -103,7 +101,7 @@ KIND = {"hourly_chime": "chime", "nws_weather": "nws", "remaining_tasks": "remai
         "morning_report": "morning", "midday_report": "midday", "late_report": "late", "earthquake_report": "earthquake",  # info: "morning_report" : "morning" , "midday_report" : "midday" ,
         "hurricane_desk": "hurricane", "kilauea_report": "kilauea", "kilauea_image_check": "kilauea",  # info: kilauea kinds -> Carly
         "solar_desk": "solar", "security_desk": "security", "bandwidth_desk": "bandwidth",  # info: "solar_desk" : "solar" , "security_desk" : "security" ,
-        "official_weather": "official", "boot_brief": "boot", "current_report": "current"}  # info: "official_weather" : "official" , "boot_brief" : "boot" , "current_report" : "current"
+        "boot_brief": "boot", "current_report": "current"}  # info: "boot_brief" : "boot" , "current_report" : "current"
 DEV_NOTE = "Automated Reports are in active development and is expected to change"  # info: set DEV_NOTE
 
 
@@ -1731,34 +1729,6 @@ def official_products(t: datetime) -> list[dict]:  # info: def official_products
 
 
 # ====================================================
-# SECTION: function b_official_weather
-# What it does: G1 official_weather_media._official_statement spoken text: HLS, else HWO, else AFD; 4500-char cap (G1).
-# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
-# ====================================================
-def b_official_weather(t: datetime):  # info: def b_official_weather
-    """G1 official_weather_media._official_statement spoken text: HLS, else HWO, else AFD; 4500-char cap (G1)."""  # info: """G1 official_weather_media._official_statement spoken text: HLS, else HWO, else AFD; 4500-char cap (G1)."""
-    prods = official_products(t)  # info: set prods
-    fresh = [p for p in prods if p["age_h"] is not None and p["age_h"] <= OFFICIAL_MAX_H and _speech_product(p["text"])]  # info: set fresh
-    md = [f"# Official weather statement — {t.isoformat()}", "", "| Product | Issued / fetched | Age h | Used |",
-          "| --- | --- | --- | --- |"]  # info: "| --- | --- | --- | --- |" ]
-    pick = fresh[0] if fresh else None  # info: set pick
-    for p in prods:  # info: for p in prods :
-        md.append(f"| {p['type']} | {p['issued'] or 'n/a'} | {p['age_h'] if p['age_h'] is not None else 'n/a'} | "  # info: md . append ( f" | { p
-                  f"{'yes' if p is pick else ''} |")  # info: f" { 'yes' if p is pick else
-    if pick is None:  # info: if pick is None :
-        spoken = "Honolulu National Weather Service has no local hurricane statement in effect."  # G1 fallback wording
-    else:  # info: else :
-        spoken = _speech_product(pick["text"])  # info: set spoken
-        if len(spoken) > 4500:  # info: if len ( spoken ) > 4500 :
-            spoken = spoken[:4500].rsplit(" ", 1)[0] + "."  # info: set spoken
-    sp = [generated_at(t), f"Official NWS Honolulu statement. {spoken}"]  # info: set sp
-    md += ["", "## Spoken", "", sp[0], "",
-           "_Sources: Database `Weather/Hawai'i/official/HLS_current.txt` (official_statement.py) + "  # info: "_Sources: Database `Weather/Hawai'i/official/HLS_current.txt` (official_statement.py) + "
-           "`Weather/Hawai'i/hfo/api.weather.gov/products/types/{HWO,AFD}/locations/HFO/HFO_current.txt` (weather poller)._", ""]  # info: "`Weather/Hawai'i/hfo/api.weather.gov/products/types/{HWO,AFD}/locations/HFO/HFO_current.txt` (weather poller)
-    return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
-
-
-# ====================================================
 # SECTION: function _uptime
 # What it does:  uptime.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -2056,7 +2026,7 @@ BUILD = {"hourly_chime": b_hourly_chime, "nws_weather": b_nws_weather,  # info: 
          "remaining_tasks": b_remaining_tasks,  # info: remaining tasks
          "earthquake_report": b_earthquake_report, "hurricane_desk": b_hurricane_desk,  # info: "earthquake_report" : b_earthquake_report , "hurricane_desk" : b_hurricane_desk ,
          "kilauea_report": b_kilauea_report, "kilauea_image_check": b_kilauea_image_check, "solar_desk": b_solar_desk, "security_desk": b_security_desk,  # info: kilauea + solar
-         "bandwidth_desk": b_bandwidth_desk, "official_weather": b_official_weather, "boot_brief": b_boot_brief,  # info: "bandwidth_desk" : b_bandwidth_desk , "official_weather" : b_official_weather ,
+         "bandwidth_desk": b_bandwidth_desk, "boot_brief": b_boot_brief,  # info: "bandwidth_desk" : b_bandwidth_desk , "boot_brief" : b_boot_brief ,
          "current_report": b_current_report}  # info: "current_report" : b_current_report
 
 

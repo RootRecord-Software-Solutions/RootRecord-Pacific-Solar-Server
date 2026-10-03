@@ -33,7 +33,7 @@ VOICE = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Medi
 CURRENT_MD = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Media/Audio/Voice/Reports/current_report_current.md")  # info: set CURRENT_MD
 AREAS = (  # info: set AREAS
     ("Current", ("current_report",)),  # info: current
-    ("Field", ("nws_weather", "official_weather", "hurricane_desk", "kilauea_report", "earthquake_report")),  # info: field
+    ("Field", ("nws_weather", "hurricane_desk", "kilauea_report", "earthquake_report")),  # info: field
     ("Energy", ("solar_desk",)),  # info: energy (combined solar desk)
     ("Operations", ("system_perf", "security_desk", "bandwidth_desk", "remaining_tasks", "boot_brief", "morning_report", "midday_report", "late_report")),  # info: operations
 )  # info: )

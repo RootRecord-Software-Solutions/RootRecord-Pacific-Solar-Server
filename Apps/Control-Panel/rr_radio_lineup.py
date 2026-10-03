@@ -14,7 +14,6 @@ DAYPARTS = ("morning_report", "midday_report", "late_report")
 SLOT_SEC = 30 * 60
 TITLES = {
     "nws_weather": "NWS Hawaiʻi",
-    "official_weather": "Official weather",
     "hurricane_desk": "Hurricane",
     "kilauea_report": "Kīlauea",
     "kilauea_image_check": "Kīlauea image",
