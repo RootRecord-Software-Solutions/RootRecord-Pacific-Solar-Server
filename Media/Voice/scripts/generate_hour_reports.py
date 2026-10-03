@@ -32,7 +32,6 @@ import os
 import statistics
 import subprocess
 import sys
-import tempfile
 import time
 import zipfile
 from datetime import datetime
@@ -82,7 +81,6 @@ PUSH_MINUTE = int(os.environ.get("RR_VOICE_HOUR_PUSH_MINUTE", "55"))
 # Hour batch for :55 radio_push (no chime — that stays :00/:30).
 HOUR_REPORTS: list[tuple[str, str, str]] = [
     ("boot_brief", "ava", "voice_reports"),
-    ("official_weather", "ava", "voice_reports"),
     ("nws_weather", "ava", "voice_reports"),
     ("current_report", "ava", "voice_reports"),
     ("solar_desk", "bruce", "voice_reports"),
@@ -171,54 +169,6 @@ def run_system_perf() -> dict:
     return res
 
 
-def run_chime() -> dict:
-    sys.path.insert(0, str(HERE))
-    from datetime import datetime
-    from zoneinfo import ZoneInfo
-
-    try:
-        from hourly_chimes import persona_for, wav_path
-    except Exception as exc:
-        return {"ok": False, "detail": f"hourly_chimes: {exc}"}
-
-    t = datetime.now(ZoneInfo("Pacific/Honolulu"))
-    who = persona_for(t.hour)
-    pre = wav_path(t.hour, 0 if t.minute < 30 else 30)
-    if pre.is_file() and pre.stat().st_size > 64:
-        return {"ok": True, "mode": "prebuilt", "wav": str(pre), "agent": who}
-
-    line = f"Root Record hourly chime test for {who}."
-    with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:
-        f.write(line)
-        text_path = f.name
-    try:
-        cmd = [
-            "bash",
-            str(HERE / "voice-render.sh"),
-            "stitch",
-            "--report",
-            "hourly_chime",
-            "--kind",
-            "chime",
-            "--text-file",
-            text_path,
-            "--no-gate",
-        ]
-        env = {**os.environ, **ENV_BASE}
-        p = subprocess.run(cmd, cwd=str(HERE), capture_output=True, text=True, timeout=600, env=env)
-        last = (p.stdout.strip().splitlines() or ["{}"])[-1]
-        try:
-            res = json.loads(last)
-        except ValueError:
-            res = {"ok": False, "detail": "bad_json", "stdout": p.stdout[-500:]}
-        res["rc"] = p.returncode
-        res["agent"] = who
-        res["mode"] = "stitched_test"
-        return res
-    finally:
-        os.unlink(text_path)
-
-
 def one(report: str, agent: str, how: str) -> dict:
     started = time.time()
     row: dict = {"report": report, "agent": agent, "how": how}
@@ -227,8 +177,6 @@ def one(report: str, agent: str, how: str) -> dict:
             gen = run_voice_reports(report)
         elif how == "system_perf":
             gen = run_system_perf()
-        elif how == "chime":
-            gen = run_chime()
         else:
             return {**row, "ok": False, "detail": f"unknown how={how}"}
         row["generate"] = {
@@ -566,6 +514,9 @@ def finalize_archive(report_ids: list[str]) -> dict:
     errors: list[str] = []
 
     for report in report_ids:
+        if report in {"hourly_chime", "official_weather"}:
+            # Chimes stay on voice_hourly_chime; official_weather is not part of this batch.
+            continue
         src = OUT_DIR / f"{report}_current.ogg"
         if not src.is_file():
             missing.append(report)
@@ -624,15 +575,14 @@ def finalize_archive(report_ids: list[str]) -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", default="", help="comma-separated report ids")
-    ap.add_argument("--include-chime", action="store_true", help="also render hourly_chime (not used by :42 job)")
     ap.add_argument("--no-push", action="store_true", help="skip ML1 radio_push after generate")
     ap.add_argument("--keep-wav", action="store_true", help="keep local .wav/.txt after push")
     args = ap.parse_args()
     only = {x.strip() for x in args.only.split(",") if x.strip()}
-    catalog = list(HOUR_REPORTS)
-    if args.include_chime or (only and "hourly_chime" in only):
-        catalog.append(CHIME_REPORT)
-    jobs = [r for r in catalog if not only or r[0] in only]
+    if "hourly_chime" in only:
+        print(json.dumps({"ok": False, "detail": "hourly_chime stays on voice_hourly_chime, not this batch"}))
+        return 2
+    jobs = [r for r in HOUR_REPORTS if not only or r[0] in only]
     if not jobs:
         print(json.dumps({"ok": False, "detail": "no reports selected"}))
         return 2
