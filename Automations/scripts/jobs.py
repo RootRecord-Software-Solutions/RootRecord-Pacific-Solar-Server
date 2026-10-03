@@ -2229,7 +2229,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_RADIO_PUSH", "1") == "1",
         "at_minute": 55,  # info: "at_minute" : 55 ,
         "at_second": 0,  # info: "at_second" : 0 ,
-        "description": "At :55, encode every finished hour-desk WAV and SCP the set to ML1 in one send window. Desks do not push as they finish.",  # info: "description"
+        "description": "At :55, encode every finished hour-desk WAV and send to ML1 (SSH remote, or desk rootrecord-radio/ when RR_RADIO_MODE=local/auto and host is down).",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"python3 \"{PACIFIC}/Media/Voice/scripts/radio_push.py\" --all",  # info: "command"
         "timeout_sec": 600,  # info: "timeout_sec" : 600 ,
