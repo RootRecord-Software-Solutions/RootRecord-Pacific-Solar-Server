@@ -7,7 +7,7 @@
 # banner from 5 - RootRecord-Library/prompts/How-To-Read-And-Edit-Code.md.
 # Kind: python
 # ==============================================================================
-"""JSON snapshot of the closed hour, day, week, and month EcoFlow buckets."""  # info: docstring
+"""JSON snapshot of EcoFlow averages for the current hour, day, week, month, and year."""  # info: docstring
 from __future__ import annotations  # info: from __future__ import annotations
 
 import json  # info: import json
@@ -15,10 +15,11 @@ import os  # info: import os
 from datetime import datetime, timezone  # info: from datetime import datetime , timezone
 from pathlib import Path  # info: from pathlib import Path
 
-from Energy.db.store import DEFAULT_DB_PATH, LAYERS_DIR, connect, layer_db_path  # info: from Energy . db . store import DEFAULT_DB_PATH
+from Energy.db.aggregate import _energy, _iso, period_bounds  # info: from Energy . db . aggregate import _energy
+from Energy.db.store import DEFAULT_DB_PATH, LAYERS_DIR, connect  # info: from Energy . db . store import DEFAULT_DB_PATH
 
 
-REPORT_WINDOWS = (("hour", "1hour"), ("day", "day"), ("week", "7days"), ("month", "month"))  # info: set REPORT_WINDOWS
+REPORT_WINDOWS = (("hour", "1hour"), ("day", "day"), ("week", "7days"), ("month", "month"), ("year", "year"))  # info: set REPORT_WINDOWS
 REPORT_JSON = Path(os.environ.get("ROOTRECORD_ENERGY_PERIODS", str(LAYERS_DIR / "periods.json")))  # info: set REPORT_JSON
 
 
