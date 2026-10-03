@@ -94,7 +94,7 @@ should_skip() {  # info: should_skip
     */RootRecord-Ecosystem-SNAPSHOT-CLEAN/*|*/RootRecord-Ecosystem-SNAPSHOT-CLEAN) return 0 ;;  # info: command
     */.config/*|*/.config) return 0 ;;  # info: command
     */Media/Images/*|*/Media/Images|*/Media/Timelapses/*|*/Media/Timelapses) return 0 ;;  # info: command
-    */Energy/samples/*|*/Energy/samples|*/System/samples/*|*/System/samples|*/System/layers/*|*/System/layers) return 0 ;;  # info: command
+    */Energy/samples/*|*/Energy/samples|*/Energy/layers/*|*/Energy/layers|*/System/samples/*|*/System/samples|*/System/layers/*|*/System/layers) return 0 ;;  # info: command
   esac  # info: esac
   return 1  # info: return
 }  # info: command
@@ -137,6 +137,7 @@ find_changed() {  # info: find_changed
       -path "$HOME_ROOT/RootRecord-Ecosystem/2 - RootRecord-Database/Media/Timelapses" -o \
       -path "$HOME_ROOT/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/samples" -o \
       -path "$HOME_ROOT/RootRecord-Ecosystem/2 - RootRecord-Database/System/samples" -o \
+      -path "$HOME_ROOT/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/layers" -o \
       -path "$HOME_ROOT/RootRecord-Ecosystem/2 - RootRecord-Database/System/layers" -o \
       -path "$HOME_ROOT/RootRecord-Ecosystem/2 - RootRecord-Database/Logs" \
     \) -prune -o \

@@ -27,7 +27,7 @@ Legacy JSON remains a compatibility/output layer during migration.
 
 Target production path:
 
-`/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/RootRecord/rootrecord.db` (env `ROOTRECORD_DB`; layers `ROOTRECORD_LAYERS_DIR`; git-ignored)
+`/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/RootRecord/rootrecord.db` (env `ROOTRECORD_DB`). EcoFlow reporting layers live in `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/layers` (env `ROOTRECORD_LAYERS_DIR`; git-ignored).
 
 Importing modules does not create telemetry. Live ingestion explicitly initializes the schema on first persistence.
 

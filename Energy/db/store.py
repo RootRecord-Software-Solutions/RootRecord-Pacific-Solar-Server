@@ -61,7 +61,7 @@ def initialize_schema(conn: sqlite3.Connection) -> None:  # info: def initialize
     conn.commit()  # info: conn . commit ( )
 
 
-LAYERS_DIR = Path(os.environ.get("ROOTRECORD_LAYERS_DIR", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/RootRecord/layers"))  # info: set LAYERS_DIR
+LAYERS_DIR = Path(os.environ.get("ROOTRECORD_LAYERS_DIR", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/layers"))  # info: set LAYERS_DIR
 LAYER_SCHEMA_PATH = Path(__file__).with_name("schema_layers.sql")  # info: set LAYER_SCHEMA_PATH
 
 
