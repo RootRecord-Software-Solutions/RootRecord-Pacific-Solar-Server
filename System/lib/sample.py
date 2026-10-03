@@ -14,7 +14,7 @@ from datetime import datetime, timezone  # info: from datetime import datetime ,
 from pathlib import Path  # info: from pathlib import Path
 from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
-from paths import CPU, LAST, LOAD, MEM, SAMPLES, ensure_dirs  # info: from paths import CPU , LAST , LOAD
+from paths import SYSTEM_DB, ensure_dirs  # info: from paths import SYSTEM_DB , ensure_dirs
 
 # db helpers (skill root on path)
 _SKILL = Path(__file__).resolve().parents[1]  # info: set _SKILL
@@ -118,45 +118,24 @@ def snapshot():  # info: def snapshot
     return {"alias": "host", "host": os.uname().nodename, "fields": fields, "at": at, "source": "proc"}  # info: return { "alias" : "host" , "host" :
 
 # ====================================================
-# SECTION: function _atomic_write
-# What it does:  atomic write.
-# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
-# ====================================================
-def _atomic_write(path, obj):  # info: def _atomic_write
-    path.parent.mkdir(parents=True, exist_ok=True)  # info: path . parent . mkdir ( parents =
-    tmp = path.with_suffix(path.suffix + ".tmp")  # info: set tmp
-    tmp.write_text(json.dumps(obj, indent=2) + "\n", encoding="utf-8")  # info: tmp . write_text ( json . dumps (
-    tmp.replace(path)  # info: tmp . replace ( path )
-
-# ====================================================
 # SECTION: function persist
-# What it does: persist.
+# What it does: Write the sample into System/system.db only. Layers and status come from the db.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def persist(snap):  # info: def persist
     ensure_dirs()  # info: call ensure_dirs
-    # 1) JSON dual-write (unchanged — website / AWS transmission)
-    sample_path = SAMPLES / f"sys-{_local_stamp()}.json"  # info: set sample_path
-    _atomic_write(sample_path, snap)  # info: call _atomic_write
-    f = snap["fields"]  # info: set f
-    _atomic_write(LAST / "host-last.json", snap)  # info: call _atomic_write
-    _atomic_write(CPU / "host-last.json", {"cpu_percent": f["cpu_percent"]["value"], "state": f["cpu_percent"]["state"], "at": snap["at"]})  # info: call _atomic_write
-    _atomic_write(LOAD / "host-last.json", {"load1": f["load1"]["value"], "load5": f["load5"]["value"], "load15": f["load15"]["value"], "state": f["load1"]["state"], "at": snap["at"]})  # info: call _atomic_write
-    _atomic_write(MEM / "host-last.json", {"mem_used_percent": f["mem_used_percent"]["value"], "mem_available_bytes": f["mem_available_bytes"]["value"], "mem_total_bytes": f["mem_total_bytes"]["value"], "state": f["mem_used_percent"]["state"], "at": snap["at"]})  # info: call _atomic_write
-
-    # 2) SQLite raw + condensation (new isolation path)
     db_ok = False  # info: set db_ok
     try:  # info: try :
         persist_snapshot(snap)  # info: call persist_snapshot
         from db.condense import ensure_layers  # info: from db . condense import ensure_layers
         ensure_layers()  # info: leave the layer files; consolidate.py owns the roll-up
         from status_json import write_status_json  # info: from status_json import write_status_json
-        write_status_json()  # info: call write_status_json
+        write_status_json()  # info: status json is built from system.db + layers/5min.db
         db_ok = True  # info: set db_ok
     except Exception as e:  # info: except Exception as e :
         print(f"DB_ERROR: {type(e).__name__}: {e}", file=sys.stderr)  # info: call print
 
-    return sample_path, db_ok  # info: return sample_path , db_ok
+    return SYSTEM_DB, db_ok  # info: return SYSTEM_DB , db_ok
 
 # ====================================================
 # SECTION: function summary_line
@@ -182,7 +161,7 @@ def main():  # info: def main
     snap = snapshot()  # info: set snap
     path, db_ok = persist(snap)  # info: path , db_ok = persist ( snap )
     print(summary_line(snap, db_ok))  # info: call print
-    print(f"OK wrote {path}" + ("" if db_ok else " (json-only; db failed)"))  # info: call print
+    print(f"OK wrote {path}" + ("" if db_ok else " (db write failed)"))  # info: call print
     return 0  # info: return 0
 
 if __name__ == "__main__":  # info: if __name__ == "__main__" :
