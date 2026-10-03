@@ -330,8 +330,8 @@ def snapshot() -> dict:  # info: def snapshot
         snap["services"] = service_rows()  # info: snap [ "services" ] = service_rows ( )
     except Exception as e:  # never die
         snap["services"], snap["error"] = [], f"services: {e}"  # info: snap [ "services" ] , snap [ "error"
-    b1 = read_json(ENERGY / "soc/river2pro-last.json") or {}  # info: set b1
-    b2 = read_json(ENERGY / "soc/delta2-last.json") or {}  # info: set b2
+    b1 = read_json(ENERGY / "soc/river2pro_current.json") or {}  # info: set b1
+    b2 = read_json(ENERGY / "soc/delta2_current.json") or {}  # info: set b2
     snap["b1"] = (b1.get("soc"), b1.get("at"))  # info: snap [ "b1" ] = ( b1 .
     snap["b2"] = (b2.get("soc"), b2.get("at"))  # info: snap [ "b2" ] = ( b2 .
     snap["laptop"] = laptop_battery()  # info: snap [ "laptop" ] = laptop_battery ( )

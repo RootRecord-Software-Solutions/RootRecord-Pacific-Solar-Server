@@ -100,7 +100,7 @@ def _range_line() -> str:  # info: def _range_line
             bits.append(f"scan_fail={type(exc).__name__}")  # info: append
     watts = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/watts")  # info: set watts
     stagnant = False  # info: set stagnant
-    for name in ("river2pro-last.json", "delta2-last.json"):  # info: for name
+    for name in ("river2pro_current.json", "delta2_current.json"):  # info: for name
         path = watts / name  # info: set path
         age = 999999 if not path.is_file() else max(0, int(now - path.stat().st_mtime))  # info: set age
         if age > 30 * 60:  # info: if the sample is past the speak threshold

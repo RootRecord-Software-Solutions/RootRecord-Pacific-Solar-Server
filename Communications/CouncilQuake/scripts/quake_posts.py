@@ -8,7 +8,7 @@
 # Kind: python
 # ==============================================================================
 #!/usr/bin/env python3
-"""Carly per-quake Telegram notices from hawaii-last.json and global-last.json.
+"""Carly per-quake Telegram notices from hawaii_current.json and global_current.json.
 
 Reads the existing Geology files. Does not fetch USGS. Dry-run by default:
 no Telegram, no Kokoro, no token load. Each feed seeds once and posts nothing
@@ -27,8 +27,8 @@ ROOT = Path(__file__).resolve().parents[1]  # info: set ROOT
 SCRIPTS = Path(__file__).resolve().parent  # info: set SCRIPTS
 PACIFIC = ROOT.parents[1]  # info: set PACIFIC
 DB = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database")  # info: set DB
-HAWAII = DB / "Geology" / "Earthquakes" / "hawaii-last.json"  # info: set HAWAII
-GLOBAL = DB / "Geology" / "Earthquakes" / "global-last.json"  # info: set GLOBAL
+HAWAII = DB / "Geology" / "Earthquakes" / "hawaii_current.json"  # info: set HAWAII
+GLOBAL = DB / "Geology" / "Earthquakes" / "global_current.json"  # info: set GLOBAL
 DATA = DB / "Communications" / "CouncilQuake"  # info: set DATA
 LOG_DIR = DB / "Logs" / "Communications" / "CouncilQuake"  # info: set LOG_DIR
 SEEN_NAME = "seen.json"  # info: set SEEN_NAME

@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parents[1]  # info: set ROOT
 SCRIPTS = Path(__file__).resolve().parent  # info: set SCRIPTS
 PACIFIC = ROOT.parents[1]  # info: set PACIFIC
 DB = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database")  # info: set DB
-HOST_LAST = DB / "System" / "last" / "host-last.json"  # info: set HOST_LAST
+HOST_LAST = DB / "System" / "last" / "host_current.json"  # info: set HOST_LAST
 ENERGY = DB / "Energy"  # info: set ENERGY
 DATA = DB / "Communications" / "BruceStats"  # info: set DATA
 LOG_DIR = DB / "Logs" / "Communications" / "BruceStats"  # info: set LOG_DIR
@@ -187,8 +187,8 @@ def ecoflow_line(energy: Path) -> str:  # info: def ecoflow_line
         parts.append(  # info: parts . append (
             pack_phrase(  # info: call pack_phrase
                 label,  # info: label ,
-                load_json(energy / "soc" / f"{alias}-last.json"),  # info: call load_json
-                load_json(energy / "watts" / f"{alias}-last.json"),  # info: call load_json
+                load_json(energy / "soc" / f"{alias}_current.json"),  # info: call load_json
+                load_json(energy / "watts" / f"{alias}_current.json"),  # info: call load_json
             )  # info: )
         )  # info: )
     return "EcoFlow: " + " | ".join(parts)  # info: return "EcoFlow: " + " | " . join ( parts
@@ -348,20 +348,20 @@ def self_test() -> int:  # info: def self_test
     when = datetime(2026, 9, 30, 7, 18, tzinfo=HST)  # info: set when
     with tempfile.TemporaryDirectory(prefix="bruce-stats-") as tmp:  # info: with tempfile . TemporaryDirectory ( prefix = "bruce-stats-"
         root = Path(tmp)  # info: set root
-        host_path = root / "host-last.json"  # info: set host_path
+        host_path = root / "host_current.json"  # info: set host_path
         energy = root / "Energy"  # info: set energy
         data = root / "data"  # info: set data
         log_path = root / "bruce-stats.jsonl"  # info: set log_path
         host_path.write_text(json.dumps(host), encoding="utf-8")  # info: host_path . write_text ( json . dumps (
         (energy / "soc").mkdir(parents=True)  # info: call (
         (energy / "watts").mkdir(parents=True)  # info: call (
-        (energy / "soc" / "delta2-last.json").write_text(  # info: call (
+        (energy / "soc" / "delta2_current.json").write_text(  # info: call (
             json.dumps({"soc": 4, "at": "2026-09-30T07:18:00-10:00"}), encoding="utf-8"  # info: json . dumps ( { "soc" : 4
         )  # info: )
-        (energy / "watts" / "delta2-last.json").write_text(  # info: call (
+        (energy / "watts" / "delta2_current.json").write_text(  # info: call (
             json.dumps({"ac_output_power": 69, "solar_input_power": 0}), encoding="utf-8"  # info: json . dumps ( { "ac_output_power" : 69
         )  # info: )
-        (energy / "soc" / "river2pro-last.json").write_text(  # info: call (
+        (energy / "soc" / "river2pro_current.json").write_text(  # info: call (
             json.dumps({"soc": 1, "at": "2026-09-30T07:18:00-10:00"}), encoding="utf-8"  # info: json . dumps ( { "soc" : 1
         )  # info: )
         first = run(host_path, energy, data, log_path, now=when)  # info: set first

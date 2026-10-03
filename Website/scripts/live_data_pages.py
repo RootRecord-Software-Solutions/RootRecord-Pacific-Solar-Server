@@ -36,7 +36,7 @@ ENERGY = DATABASE / "Energy"  # info: set ENERGY
 WEATHER_REPORT = DATABASE / "Weather" / "Hawai'i" / "reports" / "0 Level Processing" / "Hawaii_State_Weather_Report_current.md"  # info: set WEATHER_REPORT
 MOON = DATABASE / "Weather" / "moon" / "moon_current.json"  # info: moon under Weather
 MOON_LEGACY = DATABASE / "Energy" / "moon" / "moon-last.json"  # info: drain old path
-KILAUEA = DATABASE / "Geology" / "Volcanoes" / "Hawaii" / "kilauea-last.json"  # info: Hawaiʻi volcano bank
+KILAUEA = DATABASE / "Geology" / "Volcanoes" / "Hawaii" / "kilauea_current.json"  # info: Hawaiʻi volcano bank
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 POWER_FIELDS = (  # info: set POWER_FIELDS
     "solar_input_power",  # info: "solar_input_power" ,
@@ -95,8 +95,8 @@ def _pick(row: dict[str, Any], fields: tuple[str, ...]) -> dict[str, Any]:  # in
 def build_power() -> dict[str, Any]:  # info: def build_power
     devices: dict[str, Any] = {}  # info: set devices
     for name in ("delta2", "river2pro"):  # info: for name in ( "delta2" , "river2pro" )
-        watts = _pick(_read_json(ENERGY / "watts" / f"{name}-last.json"), POWER_FIELDS)  # info: set watts
-        soc = _pick(_read_json(ENERGY / "soc" / f"{name}-last.json"), ("soc", "at", "source"))  # info: set soc
+        watts = _pick(_read_json(ENERGY / "watts" / f"{name}_current.json"), POWER_FIELDS)  # info: set watts
+        soc = _pick(_read_json(ENERGY / "soc" / f"{name}_current.json"), ("soc", "at", "source"))  # info: set soc
         device: dict[str, Any] = {}  # info: set device
         if watts:  # info: if watts
             device["watts"] = watts  # info: device [ "watts" ] = watts
@@ -109,8 +109,8 @@ def build_power() -> dict[str, Any]:  # info: def build_power
         "title": "Power / solar",  # info: "title" : "Power / solar" ,
         "as_of": _now_line(),  # info: "as_of" : _now_line ( ) ,
         "source_paths": [  # info: domain authority, not Website/pages
-            "Energy/soc/*-last.json",  # info: soc path
-            "Energy/watts/*-last.json",  # info: watts path
+            "Energy/soc/*_current.json",  # info: soc path
+            "Energy/watts/*_current.json",  # info: watts path
         ],  # info: end source_paths
     }  # info: }
     if devices:  # info: if devices
@@ -155,7 +155,7 @@ def build_weather() -> dict[str, Any]:  # info: def build_weather
 
 # ====================================================
 # SECTION: function build_kilauea
-# What it does: Kīlauea block from Geology/Volcanoes/Hawaii/kilauea-last.json.
+# What it does: Kīlauea block from Geology/Volcanoes/Hawaii/kilauea_current.json.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def build_kilauea() -> dict[str, Any]:  # info: def build_kilauea
@@ -164,7 +164,7 @@ def build_kilauea() -> dict[str, Any]:  # info: def build_kilauea
         "resource": "kilauea",  # info: "resource" : "kilauea" ,
         "title": "Kīlauea",  # info: "title" : "Kīlauea" ,
         "as_of": _now_line(),  # info: "as_of" : _now_line ( ) ,
-        "source_paths": ["Geology/Volcanoes/Hawaii/kilauea-last.json"],  # info: domain authority
+        "source_paths": ["Geology/Volcanoes/Hawaii/kilauea_current.json"],  # info: domain authority
     }  # info: }
     if not raw:  # info: if not raw
         return page  # info: return page

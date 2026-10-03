@@ -1,6 +1,6 @@
 # PublicDraftQueue
 
-Queues a Kīlauea public draft from Database `Geology/Volcanoes/Hawaii/kilauea-last.json` when the HVO notice id or alert level changes.
+Queues a Kīlauea public draft from Database `Geology/Volcanoes/Hawaii/kilauea_current.json` when the HVO notice id or alert level changes.
 
 No HTTP. No Grok. No Discord, Slack, or Telegram send. Council publishes a queued file later.
 

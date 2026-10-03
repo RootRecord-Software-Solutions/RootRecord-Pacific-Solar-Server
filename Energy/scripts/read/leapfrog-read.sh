@@ -22,8 +22,8 @@ if ! flock -n 9; then  # info: if
   exit 0  # info: exit
 fi  # info: fi
 
-delta="$WATTS/delta2-last.json"  # info: set delta
-river="$WATTS/river2pro-last.json"  # info: set river
+delta="$WATTS/delta2_current.json"  # info: set delta
+river="$WATTS/river2pro_current.json"  # info: set river
 river_src=""  # info: set river_src
 if [[ -f "$river" ]]; then  # info: if
   river_src="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("source") or "")' "$river" 2>/dev/null || true)"  # info: set river_src

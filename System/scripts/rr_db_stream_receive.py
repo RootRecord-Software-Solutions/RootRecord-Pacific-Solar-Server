@@ -77,11 +77,11 @@ def atomic_write(dest: Path, data: bytes) -> None:
 
 
 def append_daily(path_rel: str, raw: bytes, meta: dict) -> None:
-    """For System/metrics/mlN/host-last.json also append JSONL under Daily/."""
-    if not path_rel.startswith("System/metrics/") or not path_rel.endswith("host-last.json"):
+    """For System/metrics/mlN/host_current.json also append JSONL under Daily/."""
+    if not path_rel.startswith("System/metrics/") or not path_rel.endswith("host_current.json"):
         return
     parts = path_rel.split("/")
-    # System/metrics/ml1/host-last.json → System/metrics/ml1/Daily/YYYY-MM-DD.jsonl
+    # System/metrics/ml1/host_current.json → System/metrics/ml1/Daily/YYYY-MM-DD.jsonl
     if len(parts) < 4:
         return
     day = datetime.now(timezone.utc).strftime("%Y-%m-%d")

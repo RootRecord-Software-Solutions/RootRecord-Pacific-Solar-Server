@@ -34,7 +34,7 @@ from pathlib import Path  # info: from pathlib import Path
 
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB
 FRAMES = DB / "Media" / "Images"  # info: set FRAMES
-SUN = DB / "Energy" / "sun" / "sun-times-last.json"  # info: set SUN
+SUN = DB / "Energy" / "sun" / "sun-times_current.json"  # info: set SUN
 WATTS = DB / "Energy" / "watts"  # info: set WATTS
 OUT = DB / "Energy" / "vision" / "ch1-look-last.json"  # info: set OUT
 LOW_SOLAR_W = 20  # info: combined solar input at or below this is low light

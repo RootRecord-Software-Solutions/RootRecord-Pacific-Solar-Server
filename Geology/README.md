@@ -12,7 +12,7 @@ Pacific **receives** Geology bank files into Database. Internet collect code is 
 | `scripts/kilauea_look.py` | Report-side vision on banked cams (Ollama/Gemma) |
 | `scripts/earthquakes_backfill.py` | On-demand local quake DB backfill |
 | `Earthquake-Discord/` | Format/send from Database last files (delivery) |
-| `PublicDraftQueue/` | Draft queue from `kilauea-last.json` (no HTTP) |
+| `PublicDraftQueue/` | Draft queue from `kilauea_current.json` (no HTTP) |
 
 ## Data
 

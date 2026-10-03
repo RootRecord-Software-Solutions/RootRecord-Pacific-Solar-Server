@@ -357,7 +357,7 @@ def poller(f: Facts) -> dict:  # info: def poller
 # ====================================================
 def host(f: Facts) -> dict:  # info: def host
     try:  # info: try :
-        d = json.loads(read(DB / "System" / "last" / "host-last.json"))  # info: set d
+        d = json.loads(read(DB / "System" / "last" / "host_current.json"))  # info: set d
         fl = d.get("fields", {})  # info: set fl
         obs = d.get("observed_at") or d.get("generated_at")  # info: set obs
         at = datetime.fromisoformat(obs.replace("Z", "+00:00")).astimezone() if obs else None  # info: set at
@@ -426,7 +426,7 @@ def subsystems(f: Facts, h: dict, en: list, pl: dict) -> list[tuple[str, str, st
     t = f.t  # info: set t
     rows = []  # info: set rows
     a = age_min(h["at"], t)  # info: set a
-    rows.append(("System / telemetry", state_by_age(a, 15, 360), f"`System/last/host-last.json` sample {hm(h['at'])} HST" if h["at"] else "no sample found"))  # info: rows . append ( ( "System / telemetry" , state_by_age
+    rows.append(("System / telemetry", state_by_age(a, 15, 360), f"`System/last/host_current.json` sample {hm(h['at'])} HST" if h["at"] else "no sample found"))  # info: rows . append ( ( "System / telemetry" , state_by_age
     wl = newest_mtime(DB / "Worklog", "worklog_current.md")  # info: set wl
     rows.append(("Worklog scan", state_by_age(age_min(wl, t), 30, 360), f"`Worklog/worklog_current.md` updated {hm(wl)} HST" if wl else "no worklog file"))  # info: rows . append ( ( "Worklog scan" , state_by_age
     try:  # info: try :

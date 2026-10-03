@@ -10,7 +10,7 @@
 #!/usr/bin/env python3
 """Format Database Geology earthquake files for Discord. Dry-run by default.
 
-Reads hawaii-last.json and global-last.json written by geology_collect.py.
+Reads hawaii_current.json and global_current.json written by geology_collect.py.
 Does not fetch USGS, attach audio, or play the speaker.
 
   python3 earthquake_discord_post.py           # print the message; write nothing
@@ -212,8 +212,8 @@ def handoff(text: str) -> str:  # info: def handoff
 # ====================================================
 def main() -> int:  # info: def main
     send = "--send" in sys.argv  # info: set send
-    hawaii = load_json(QUAKES / "hawaii-last.json")  # info: set hawaii
-    global_ = load_json(QUAKES / "global-last.json")  # info: set global_
+    hawaii = load_json(QUAKES / "hawaii_current.json")  # info: set hawaii
+    global_ = load_json(QUAKES / "global_current.json")  # info: set global_
     posted = load_json(POSTED)  # info: set posted
     snap = source_digest(hawaii, global_)  # info: set snap
     text = build_message(hawaii, global_, seen_ids(posted))  # info: set text

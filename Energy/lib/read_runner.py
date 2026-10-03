@@ -283,7 +283,7 @@ def _collect_other_ac_outs(exclude_alias: str) -> list[float]:  # info: def _col
                 continue  # info: continue
             if not cp.has_option(section, "sn"):  # info: if not cp . has_option ( section ,
                 continue  # info: continue
-            p = WATTS / f"{section}-last.json"  # info: set p
+            p = WATTS / f"{section}_current.json"  # info: set p
             if p.is_file():  # info: if p . is_file ( ) :
                 try:  # info: try :
                     data = json.loads(p.read_text(encoding="utf-8"))  # info: set data
@@ -471,7 +471,7 @@ def _cloud_throttled(alias: str) -> bool:  # info: def _cloud_throttled
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _hold_last_ble(alias: str) -> bool:  # info: def _hold_last_ble
-    path = WATTS / f"{alias}-last.json"  # info: set path
+    path = WATTS / f"{alias}_current.json"  # info: set path
     if not path.is_file():  # info: if not path . is_file ( ) :
         return False  # info: return False
     try:  # info: try :
@@ -519,7 +519,7 @@ def _write_json_from_db(alias: str, source: str, charge_source: str) -> dict | N
     fields = snap["fields"]  # info: set fields
     at = snap["at"]  # info: set at
     if fields.get("soc") is not None:  # info: if fields . get ( "soc" ) is not None
-        (SOC / f"{alias}-last.json").write_text(  # info: write soc last from db
+        (SOC / f"{alias}_current.json").write_text(  # info: write soc last from db
             json.dumps({"soc": fields["soc"], "at": at, "source": source}, indent=2),  # info: json payload
             encoding="utf-8",  # info: encoding
         )  # info: end write
@@ -529,7 +529,7 @@ def _write_json_from_db(alias: str, source: str, charge_source: str) -> dict | N
         if fields.get(key) is not None  # info: only measured
     }  # info: end watts
     if watts:  # info: if watts
-        (WATTS / f"{alias}-last.json").write_text(  # info: write watts last from db
+        (WATTS / f"{alias}_current.json").write_text(  # info: write watts last from db
             json.dumps({**watts, "at": at, "source": source, "charge_source": charge_source}, indent=2),  # info: json payload
             encoding="utf-8",  # info: encoding
         )  # info: end write

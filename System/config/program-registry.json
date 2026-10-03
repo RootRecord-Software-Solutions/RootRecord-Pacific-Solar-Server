@@ -105,7 +105,7 @@
       "agent_launchable": false,
       "agents_allowed": [],
       "requires_confirmation": true,
-      "inputs": ["Geology/Earthquakes/hawaii-last.json", "Geology/Earthquakes/global-last.json"],
+      "inputs": ["Geology/Earthquakes/hawaii_current.json", "Geology/Earthquakes/global_current.json"],
       "outputs": ["Telegram post only when send gate is on"],
       "side_effects": ["telegram_sendMessage"],
       "why_not": {
@@ -162,7 +162,7 @@
       "agent_launchable": false,
       "agents_allowed": [],
       "requires_confirmation": true,
-      "inputs": ["Energy/soc/*-last.json", "Energy/watts/*-last.json", "Energy/sun/sun-times-last.json", "Energy/vision/ch1-look-last.json", "Media/Images/ch1-*.jpg"],
+      "inputs": ["Energy/soc/*-last.json", "Energy/watts/*-last.json", "Energy/sun/sun-times_current.json", "Energy/vision/ch1-look-last.json", "Media/Images/ch1-*.jpg"],
       "outputs": ["voice report markdown", "wav", "telegram voice note when RR_VOICE_DELIVER=1 and RR_TELEGRAM_DEST names the chat"],
       "side_effects": ["writes_voice_files", "telegram_sendVoice"],
       "why_not": {

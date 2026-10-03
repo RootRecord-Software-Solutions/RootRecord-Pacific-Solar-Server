@@ -152,17 +152,17 @@ def _write_json_from_db() -> None:  # info: def _write_json_from_db
         return  # info: return
     fields = doc.get("fields") or {}  # info: set fields
     write_current_json(SAMPLES / "sys_current.json", doc)  # info: stable *_current — archive-on-replace, no stamp flood
-    _atomic_write(LAST / "host-last.json", doc)  # info: call _atomic_write
+    _atomic_write(LAST / "host_current.json", doc)  # info: call _atomic_write
     cpu = fields.get("cpu_percent") or {}  # info: set cpu
-    _atomic_write(CPU / "host-last.json", {"cpu_percent": cpu.get("value"), "state": cpu.get("state"), "at": doc.get("at")})  # info: call _atomic_write
-    _atomic_write(LOAD / "host-last.json", {  # info: call _atomic_write
+    _atomic_write(CPU / "host_current.json", {"cpu_percent": cpu.get("value"), "state": cpu.get("state"), "at": doc.get("at")})  # info: call _atomic_write
+    _atomic_write(LOAD / "host_current.json", {  # info: call _atomic_write
         "load1": (fields.get("load1") or {}).get("value"),  # info: "load1"
         "load5": (fields.get("load5") or {}).get("value"),  # info: "load5"
         "load15": (fields.get("load15") or {}).get("value"),  # info: "load15"
         "state": (fields.get("load1") or {}).get("state"),  # info: "state"
         "at": doc.get("at"),  # info: "at"
     })  # info: end load
-    _atomic_write(MEM / "host-last.json", {  # info: call _atomic_write
+    _atomic_write(MEM / "host_current.json", {  # info: call _atomic_write
         "mem_used_percent": (fields.get("mem_used_percent") or {}).get("value"),  # info: "mem_used_percent"
         "mem_available_bytes": (fields.get("mem_available_bytes") or {}).get("value"),  # info: "mem_available_bytes"
         "mem_total_bytes": (fields.get("mem_total_bytes") or {}).get("value"),  # info: "mem_total_bytes"

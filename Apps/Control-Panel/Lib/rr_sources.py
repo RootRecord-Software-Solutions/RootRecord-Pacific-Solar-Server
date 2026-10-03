@@ -65,7 +65,7 @@ class Paths:  # info: class Paths
 
     @property  # info: decorator property
     def system_last(self) -> Path:  # info: def system_last
-        return self.db / "System/last/host-last.json"  # info: return self . db / "System/last/host-last.json"
+        return self.db / "System/last/host_current.json"  # info: return self . db / "System/last/host_current.json"
 
     @property  # info: decorator property
     def system_status(self) -> Path:  # info: def system_status
@@ -223,8 +223,8 @@ def laptop_battery():  # info: def laptop_battery
 def energy(paths: Paths) -> dict:  # info: def energy
     out = {}  # info: set out
     for dev in ("river2pro", "delta2"):  # info: for dev in ( "river2pro" , "delta2" )
-        soc = read_json(paths.energy / f"soc/{dev}-last.json") or {}  # info: set soc
-        w = read_json(paths.energy / f"watts/{dev}-last.json") or {}  # info: set w
+        soc = read_json(paths.energy / f"soc/{dev}_current.json") or {}  # info: set soc
+        w = read_json(paths.energy / f"watts/{dev}_current.json") or {}  # info: set w
         out[dev] = {  # info: out [ dev ] = {
             "soc": soc.get("soc"), "at": soc.get("at"), "source": soc.get("source"),  # info: "soc" : soc . get ( "soc" )
             "age": age_s(soc.get("at")),  # info: "age" : age_s ( soc . get (

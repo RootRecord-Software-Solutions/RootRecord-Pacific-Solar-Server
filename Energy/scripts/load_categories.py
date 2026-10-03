@@ -20,7 +20,7 @@ night_charge_callout. Changed: G1 read EcoFlow cloud-quota keys (inv.*, mppt.*, 
 last-files only carry ac_output_power / ac_input_power / usbc_output_power / solar_input_power, so the adapter maps
 pv_w <- solar_input_power, ac_in_w <- ac_input_power, ac_out_w <- ac_output_power, dc_out_w <- usbc_output_power,
 car_w = 0 (no 12 V / car field in G3), discharge_w = ac_out + usbc. device_role(sn) -> label match ("Delta" / "River").
-Sun: G1 sun_times.facts() after_sunset / before_sunrise -> computed from Database Energy/sun/sun-times-last.json.
+Sun: G1 sun_times.facts() after_sunset / before_sunrise -> computed from Database Energy/sun/sun-times_current.json.
 NOT ported: append_history (it deleted load logs older than 14 days) and history_averages. On demand; writes nothing.
 """
 from __future__ import annotations  # info: from __future__ import annotations
@@ -398,7 +398,7 @@ def sun_facts(t: datetime | None = None) -> dict:  # info: def sun_facts
     """G1 sun_times.facts() subset from the G3 sun file: after_sunset / before_sunrise for today."""  # info: """G1 sun_times.facts() subset from the G3 sun file: after_sunset / before_sunrise for today."""
     t = t or datetime.now()  # info: set t
     try:  # info: try :
-        s = json.loads((ENERGY / "sun" / "sun-times-last.json").read_text(encoding="utf-8"))  # info: set s
+        s = json.loads((ENERGY / "sun" / "sun-times_current.json").read_text(encoding="utf-8"))  # info: set s
     except (OSError, ValueError):  # info: except ( OSError , ValueError ) :
         return {}  # info: return { }
     if s.get("date") != t.date().isoformat():  # info: if s . get ( "date" ) !=
@@ -417,7 +417,7 @@ def g3_devices() -> list[dict]:  # info: def g3_devices
     out = []  # info: set out
     for key, label in DEVICES:  # info: for key , label in DEVICES :
         try:  # info: try :
-            w = json.loads((ENERGY / "watts" / f"{key}-last.json").read_text(encoding="utf-8"))  # info: set w
+            w = json.loads((ENERGY / "watts" / f"{key}_current.json").read_text(encoding="utf-8"))  # info: set w
         except (OSError, ValueError):  # info: except ( OSError , ValueError ) :
             continue  # info: continue
         ac_out, usbc = watts(w.get("ac_output_power")), watts(w.get("usbc_output_power"))  # info: ac_out , usbc = watts ( w .

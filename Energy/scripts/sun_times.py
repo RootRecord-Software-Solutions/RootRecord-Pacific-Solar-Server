@@ -15,7 +15,7 @@
 Stdlib port: same Open-Meteo query (19.43, -155.23 — Volcano / Puna, "same patch as the weather desk"), same payload
 keys (date, sunrise, sunset, *_iso, next_*), same refresh-if-stale rule (one fetch per HST day unless --force) and the
 same facts() fields (after_sunset / before_sunrise). State file moved from G1 STATE_DIR/sun-times.json to Database
-Energy/sun/sun-times-last.json (solar context for the Energy desk). A failed fetch keeps the stored file.
+Energy/sun/sun-times_current.json (solar context for the Energy desk). A failed fetch keeps the stored file.
 Light: one HTTP call, 10 s timeout. Schedule: hourly is plenty (jobs.py, on unless RR_SUN_TIMES=0). Live numbers only.
 """
 from __future__ import annotations  # info: from __future__ import annotations
@@ -31,7 +31,7 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 LAT, LON = 19.43, -155.23  # info: LAT , LON = 19.43 , - 155.23
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB
-PATH = DB / "Energy" / "sun" / "sun-times-last.json"  # info: set PATH
+PATH = DB / "Energy" / "sun" / "sun-times_current.json"  # info: set PATH
 OPEN_METEO = ("https://api.open-meteo.com/v1/forecast"  # info: set OPEN_METEO
               f"?latitude={LAT}&longitude={LON}&daily=sunrise,sunset&timezone=Pacific/Honolulu&forecast_days=2")  # info: f" ?latitude= { LAT } &longitude= { LON
 UA = "RootRecord-Pacific-Energy/1.0 (+https://rootrecord.cloud)"  # info: set UA

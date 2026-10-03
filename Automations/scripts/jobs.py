@@ -1385,6 +1385,18 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "cwd": f"{ML2}",  # info: "cwd"
         "env": {"RR_DATABASE_ROOT": DATABASE},  # info: bank into Pacific Database
     },  # info: } ,
+    {  # info: {
+        "id": "hawaii_to_ml2",  # info: "id" : "hawaii_to_ml2" ,
+        "enabled": os.environ.get("RR_HUB_HAWAII", "1") == "1",
+        "every_seconds": 300,  # info: "every_seconds" : 300 ,
+        "description": "Hub inbound: Database Geology/Weather/RadioRss/Discord → ML2 var/bank (SSH). Desk paths when RR_HUB_MODE=local. Voice air stays radio_push → ML1 only.",  # info: "description"
+        "builtin": "",  # info: "builtin"
+        "command": f'bash "{ML2}/scripts/hawaii-to-ml2.sh"',  # info: "command"
+        "timeout_sec": 180,  # info: "timeout_sec" : 180 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{ML2}",  # info: "cwd"
+        "env": {"RR_DATABASE_ROOT": DATABASE, "RR_HUB_MODE": os.environ.get("RR_HUB_MODE", "auto")},  # info: "env"
+    },  # info: } ,
     # --- 33:40–33:44 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     {  # info: {
@@ -1393,7 +1405,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_KILAUEA_DRAFT", "0") == "1",
         "at_minute": 33,  # info: "at_minute" : 33 ,
         "at_second": 40,  # info: "at_second" : 40 ,
-        "description": "Queue a Kilauea public draft from Geology/Volcanoes/Hawaii/kilauea-last.json when the HVO notice id or alert level changes. No send.",  # info: "description"
+        "description": "Queue a Kilauea public draft from Geology/Volcanoes/Hawaii/kilauea_current.json when the HVO notice id or alert level changes. No send.",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"nice -n 10 python3 \"{PACIFIC}/Geology/PublicDraftQueue/scripts/queue_draft.py\"",  # info: "command"
         "timeout_sec": 5,  # info: "timeout_sec" : 5 ,
@@ -2275,7 +2287,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_COUNCIL_QUAKE", "0") == "1",
         "at_minute": 55,  # info: "at_minute" : 55 ,
         "at_second": 15,  # info: "at_second" : 15 ,
-        "description": "Carly per-quake notice from Database Geology/Earthquakes/hawaii-last.json. Dry-run unless RR_COUNCIL_QUAKE_SEND=1.",  # info: "description"
+        "description": "Carly per-quake notice from Database Geology/Earthquakes/hawaii_current.json. Dry-run unless RR_COUNCIL_QUAKE_SEND=1.",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"nice -n 10 python3 \"{PACIFIC}/Communications/CouncilQuake/scripts/quake_posts.py\"",  # info: "command"
         "timeout_sec": 5,  # info: "timeout_sec" : 5 ,
@@ -2672,7 +2684,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_US_STATES", "0") == "1",  # info: "enabled" : os . environ . get (,
         "at_minute": 59,  # info: "at_minute" : 59 ,
         "at_second": 55,  # info: "at_second" : 55 ,
-        "description": "Fail-safe: ML2 weather_us_states → Database Weather/US-States/us-last.json (ML2 tree only).",  # info: "description"
+        "description": "Fail-safe: ML2 weather_us_states → Database Weather/US-States/us_current.json (ML2 tree only).",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f'bash "{ML2}/scripts/run-local-bank.sh" --only weather_us_states',  # info: ML2 canonical
         "timeout_sec": 900,  # info: "timeout_sec" : 900 ,
@@ -2686,7 +2698,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_SMART_DEVICES", "0") == "1",
         "at_minute": 59,  # info: "at_minute" : 59 ,
         "at_second": 55,  # info: "at_second" : 55 ,
-        "description": "WiZ bulb + Tuya plug state -> Database Energy/Smart-Devices/{wiz,plugs,collector}-last.json.",  # info: "description"
+        "description": "WiZ bulb + Tuya plug state -> Database Energy/Smart-Devices/{wiz,plugs,collector}_current.json.",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"nice -n 10 python3 \"{PACIFIC}/Energy/Smart-Devices/scripts/smart_devices_collect.py\"",  # info: "command"
         "timeout_sec": 5,  # info: "timeout_sec" : 5 ,

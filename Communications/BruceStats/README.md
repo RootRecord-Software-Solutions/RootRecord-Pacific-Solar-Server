@@ -10,7 +10,7 @@ Folder name, used in all three places: `BruceStats` (inside Communications).
 | Database data | `2 - RootRecord-Database/Communications/BruceStats/` |
 | Database logs | `2 - RootRecord-Database/Logs/Communications/BruceStats/` |
 
-`scripts/bruce_stats.py` reads `2 - RootRecord-Database/System/last/host-last.json` and `2 - RootRecord-Database/Energy/soc/` plus `Energy/watts/` for Delta 2 and River 2 Pro. It does not replace the host sampler or the EcoFlow poller.
+`scripts/bruce_stats.py` reads `2 - RootRecord-Database/System/last/host_current.json` and `2 - RootRecord-Database/Energy/soc/` plus `Energy/watts/` for Delta 2 and River 2 Pro. It does not replace the host sampler or the EcoFlow poller.
 
 The job fires at 07:18, 15:18, and 21:18 HST, once per hour slot. A missing file is `DOWN`. Watts that are not in the last file are left out.
 

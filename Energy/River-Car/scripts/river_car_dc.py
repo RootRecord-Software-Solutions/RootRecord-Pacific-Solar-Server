@@ -143,7 +143,7 @@ def _dc_from_payload(raw: dict[str, Any]) -> bool | None:  # info: def _dc_from_
 def last_car_on() -> bool | None:  # info: def last_car_on
     """Last stored River 2 Pro dc_12v_port. Does not poll BLE or the cloud."""  # info: """Last stored River 2 Pro dc_12v_port. Does not poll BLE or the cloud."""
     candidates: list[Path] = []  # info: set candidates
-    port = PORTS / "river2pro-last.json"  # info: set port
+    port = PORTS / "river2pro_current.json"  # info: set port
     if port.is_file():  # info: if port . is_file ( ) :
         candidates.append(port)  # info: candidates . append ( port )
     current = SAMPLES / "read-river2pro_current.json"  # info: stable *_current bank

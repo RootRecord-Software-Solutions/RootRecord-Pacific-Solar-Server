@@ -162,7 +162,7 @@ def apply_zip(zpath: Path) -> int:
             if archived:
                 print(f"archived prior _current -> {archived}")
             # daily append for host-last
-            if path_rel.endswith("host-last.json") and path_rel.startswith("System/metrics/"):
+            if path_rel.endswith("host_current.json") and path_rel.startswith("System/metrics/"):
                 day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
                 daily = DB / Path(path_rel).parent / "Daily" / f"{day}.jsonl"
                 daily.parent.mkdir(parents=True, exist_ok=True)

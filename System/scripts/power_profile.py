@@ -25,7 +25,7 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB
 DIR = DB / "System" / "power-profile"  # info: set DIR
-STATE = DIR / "mode-last.json"  # info: set STATE
+STATE = DIR / "mode_current.json"  # info: set STATE
 SEGMENTS = DIR / "mode-segments.jsonl"  # info: set SEGMENTS
 DAILY = DIR / "mode-use.json"  # info: set DAILY
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST

@@ -465,7 +465,7 @@ class Panel(ExtraPages, AwsFallbackPage, AutomationsPage, SchedulerPage, Telemet
 
     # ----------------------------------------------------------- system
     def b_system(self, box):  # info: def b_system
-        o, i = section("Host (System/last/host-last.json)")  # info: o , i = section ( "Host (System/last/host-last.json)" )
+        o, i = section("Host (System/last/host_current.json)")  # info: o , i = section ( "Host (System/last/host_current.json)" )
         self.bar_cpu = BarRow(i, "CPU", "", scale="usage")  # info: self . bar_cpu = BarRow ( i ,
         self.bar_mem = BarRow(i, "RAM", "", scale="usage")  # info: self . bar_mem = BarRow ( i ,
         i.append(lbl("Green under 50% · amber from 50% · red at 80% and above.", "dim-label"))

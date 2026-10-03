@@ -17,7 +17,7 @@
 Prefers Cams `*_current` (ML2 bank) → `*-last.jpg` → live USGS GET.
 Current images are used when they are no older than RR_KILAUEA_LOOK_STALE_MIN (default 12);
 otherwise one live USGS HVO still is fetched (V3 lava lake first). Writes
-Geology/Volcanoes/Hawaii/Cams/kilauea-look-last.json.
+Geology/Volcanoes/Hawaii/Cams/kilauea-look_current.json.
 Optional public-domain USGS fountain reference under Cams/references/ for compare.
 Report-side only — not a LOCAL_DATA_POLL collector. Soft-gated via voice_kilauea_image_check.
 """
@@ -38,7 +38,7 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB
 CAMS = DB / "Geology" / "Volcanoes" / "Hawaii" / "Cams"  # info: Hawaiʻi HVO cams bank
-OUT = CAMS / "kilauea-look-last.json"  # info: set OUT
+OUT = CAMS / "kilauea-look_current.json"  # info: set OUT
 REF_DIR = CAMS / "references"  # info: set REF_DIR
 REF_PATH = REF_DIR / "lava-fountain-ref.jpg"  # info: set REF_PATH
 LOCK = Path("/tmp/kilauea-look.lock")  # info: set LOCK
@@ -161,7 +161,7 @@ def ensure_reference() -> Path | None:  # info: def ensure_reference
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def fetch_still(file_stem: str, url: str) -> Path | None:  # info: def fetch_still
-    dest = CAMS / f"{file_stem}-last.jpg"  # info: set dest
+    dest = CAMS / f"{file_stem}_current.jpg"  # info: set dest
     hdr = {"User-Agent": UA, "Accept": "image/jpeg,image/*;q=0.8"}  # info: set hdr
     prev = {}  # info: set prev
     for catalog_name in ("cams_current.json", "cams-last.json"):  # info: prefer ML2 catalog
@@ -244,7 +244,7 @@ def pick_still(t: datetime, force_fetch: bool = False) -> tuple[Path | None, str
     best_meta = ("", "")  # info: set best last metadata
     best_age = None  # info: set best last age
     for stem, title, _url in CAM_STILLS:  # info: for last cam
-        path = CAMS / f"{stem}-last.jpg"  # info: set last path
+        path = CAMS / f"{stem}_current.jpg"  # info: set last path
         if not path.is_file():  # info: if last missing
             continue  # info: continue
         age = max(0.0, (t.timestamp() - path.stat().st_mtime) / 60.0)  # info: set last age

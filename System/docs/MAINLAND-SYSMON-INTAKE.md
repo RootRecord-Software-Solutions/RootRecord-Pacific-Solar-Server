@@ -13,7 +13,7 @@ Staged 2026-10-02. Receiver and pickup units are **not installed** by this work.
 
 | Path | Role |
 | --- | --- |
-| `System/metrics/ml1/host-last.json` | Latest ML1 host snapshot (overwrite) |
+| `System/metrics/ml1/host_current.json` | Latest ML1 host snapshot (overwrite) |
 | `System/metrics/ml1/Daily/YYYY-MM-DD.jsonl` | Pacific long-term bank (append) |
 | `System/metrics/ml2/…` | Same for ML2 |
 | `Network/datapacks/inbox/` | Brief download staging |

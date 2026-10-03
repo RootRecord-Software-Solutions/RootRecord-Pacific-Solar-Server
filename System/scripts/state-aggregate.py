@@ -246,17 +246,17 @@ def host_block() -> dict:  # info: def host_block
 def power_block() -> dict:  # info: def power_block
     packs = {}  # info: set packs
     for key, name in (("delta2", "Delta 2"), ("river2pro", "River 2 Pro")):  # info: for key , name in ( ( "delta2" , "Delta 2" ) , ( "river2pro" , "River 2 Pro" ) )
-        soc = load_json(ENERGY / "soc" / f"{key}-last.json")  # info: set soc
-        watts = load_json(ENERGY / "watts" / f"{key}-last.json")  # info: set watts
+        soc = load_json(ENERGY / "soc" / f"{key}_current.json")  # info: set soc
+        watts = load_json(ENERGY / "watts" / f"{key}_current.json")  # info: set watts
         if not isinstance(soc, dict) or "soc" not in soc:  # info: if not isinstance ( soc , dict ) or "soc" not in soc
-            packs[key] = obs(None, f"Energy/soc/{key}-last.json", "unknown", name=name, why_not=why("unknown", "unavailable", "SOC file missing", "", ""))  # info: packs [ key ] = obs
+            packs[key] = obs(None, f"Energy/soc/{key}_current.json", "unknown", name=name, why_not=why("unknown", "unavailable", "SOC file missing", "", ""))  # info: packs [ key ] = obs
             continue  # info: continue
         watt_keep = {}  # info: set watt_keep
         if isinstance(watts, dict):  # info: if isinstance ( watts , dict )
             for src in ("solar_input_power", "ac_output_power", "ac_input_power", "usbc_output_power", "charge_source"):  # info: for src in ( "solar_input_power" , "ac_output_power"
                 if src in watts:  # info: if src in watts :
                     watt_keep[src] = watts.get(src)  # info: watt_keep [ src ] = watts . get ( src )
-        packs[key] = obs({"name": name, "soc_percent": soc.get("soc"), "at": soc.get("at"), "watts": watt_keep}, f"Energy/soc/{key}-last.json", "recent")  # info: packs [ key ] = obs
+        packs[key] = obs({"name": name, "soc_percent": soc.get("soc"), "at": soc.get("at"), "watts": watt_keep}, f"Energy/soc/{key}_current.json", "recent")  # info: packs [ key ] = obs
     return packs  # info: return packs
 
 # ====================================================

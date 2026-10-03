@@ -4,9 +4,9 @@
 # ------------------------------------------------------------------------------
 # 2026-09-29. Reads WiZ bulbs (UDP 38899, stdlib) + Tuya BSD01 plugs (tinytuya, venv)
 # and writes Database Energy/Smart-Devices/*-last.json:
-#   wiz-last.json        every known/discovered bulb: ip, mac, module, state, dimming, temp
-#   plugs-last.json      every configured plug: ip, version, on/off or BLOCKED (never keys)
-#   collector-last.json  summary (ok, at, counts, per-source ms/errors)
+#   wiz_current.json        every known/discovered bulb: ip, mac, module, state, dimming, temp
+#   plugs_current.json      every configured plug: ip, version, on/off or BLOCKED (never keys)
+#   collector_current.json  summary (ok, at, counts, per-source ms/errors)
 # NEVER switches anything. Wi-Fi only — does not touch BLE (ble-owner.py owns hci0).
 #
 # Usage:
@@ -166,14 +166,14 @@ def main(argv: list[str]) -> int:  # info: def main
     dry = "--dry-run" in argv  # info: set dry
     w = collect_wiz("--discover" in argv)  # info: set w
     p = collect_plugs()  # info: set p
-    write_json(OUT / "wiz-last.json", w, dry)  # info: call write_json
-    write_json(OUT / "plugs-last.json", p, dry)  # info: call write_json
+    write_json(OUT / "wiz_current.json", w, dry)  # info: call write_json
+    write_json(OUT / "plugs_current.json", p, dry)  # info: call write_json
     summary = {"ok": True, "at": now(), "dry_run": dry,  # info: set summary
                "gate": "RR_SMART_DEVICES", "gate_on": os.environ.get("RR_SMART_DEVICES", "0") == "1",  # info: "gate" : "RR_SMART_DEVICES" , "gate_on" : os .
                "sources": {k: {"state": v["state"], "count": v["count"], "ms": v["ms"],  # info: "sources" : { k : { "state" :
                                "errors": v["errors"][:5]} for k, v in (("wiz", w), ("plugs", p))},  # info: "errors" : v [ "errors" ] [ :
-               "files": ["wiz-last.json", "plugs-last.json"]}  # info: "files" : [ "wiz-last.json" , "plugs-last.json" ] }
-    write_json(OUT / "collector-last.json", summary, dry)  # info: call write_json
+               "files": ["wiz_current.json", "plugs_current.json"]}  # info: "files" : [ "wiz_current.json" , "plugs_current.json" ] }
+    write_json(OUT / "collector_current.json", summary, dry)  # info: call write_json
     print(json.dumps({"ok": True, "wiz": w["state"], "wiz_count": w["count"],  # info: call print
                       "plugs": p["state"], "plugs_count": p["count"], "out": str(OUT)}))  # info: "plugs" : p [ "state" ] , "plugs_count"
     return 0  # info: return 0

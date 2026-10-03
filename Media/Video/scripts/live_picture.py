@@ -233,7 +233,7 @@ def _ble_pack(alias: str) -> dict:  # info: def _ble_pack
         fields = got  # info: set fields
         best_at = str(row.get("at") or "")  # info: set best_at
         break  # info: break
-    for kind, path in (("soc", ENERGY / "soc" / f"{alias}-last.json"), ("watts", ENERGY / "watts" / f"{alias}-last.json")):  # info: for kind , path
+    for kind, path in (("soc", ENERGY / "soc" / f"{alias}_current.json"), ("watts", ENERGY / "watts" / f"{alias}_current.json")):  # info: for kind , path
         try:  # info: try
             row = json.loads(path.read_text(encoding="utf-8"))  # info: set row
         except (OSError, ValueError):  # info: except

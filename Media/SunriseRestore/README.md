@@ -5,7 +5,7 @@ Playback request after night sleep. Package name `SunriseRestore`.
 - Code: `scripts/sunrise_restore.py`
 - Pending flag: Database `Media/SunriseRestore/pending.json` (runtime, not committed). Night sleep writes `pending: true`. This script only clears it.
 - Logs: Database `Logs/Media/SunriseRestore/sunrise-restore.log`
-- Sunrise clock: Database `Energy/sun/sun-times-last.json` (read only)
+- Sunrise clock: Database `Energy/sun/sun-times_current.json` (read only)
 - Player: `Media/Playback/scripts/play.py` (Report playback). If that Folder is missing, each clip is skipped with `player_missing`. This desk does not play audio and does not call `aplay`.
 - Clips, in order: `battery_reconnect` (no spoken line in the old source), then `boot_all_systems_running` ("All systems running.").
 

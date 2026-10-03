@@ -11,7 +11,7 @@
 """Daily economy brief markdown (G1 economy-brief).
 
 Writes Database Reports/Economy-Brief/economy-brief-YYYY-MM-DD.md from a
-MySQL desk-facts snapshot plus Geology Volcanoes/Hawaii/kilauea-last.json.
+MySQL desk-facts snapshot plus Geology Volcanoes/Hawaii/kilauea_current.json.
 Gold stays in-game. The file never uses a dollar sign.
 
 Council persona prompts are not used. This script does not build that Folder.
@@ -42,7 +42,7 @@ DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosys
 OUT_DIR = DB / "Reports" / "Economy-Brief"  # info: set OUT_DIR
 LAST = OUT_DIR / "last.json"  # info: set LAST
 LOG = DB / "Logs" / "Reports" / "Economy-Brief" / "economy-brief.jsonl"  # info: set LOG
-KILA = DB / "Geology" / "Volcanoes" / "Hawaii" / "kilauea-last.json"  # info: Hawaiʻi volcano bank
+KILA = DB / "Geology" / "Volcanoes" / "Hawaii" / "kilauea_current.json"  # info: Hawaiʻi volcano bank
 FACTS_LAST = DB / "System" / "MysqlDesk" / "facts-last.json"  # info: set FACTS_LAST
 MYSQL = PACIFIC / "System" / "MysqlDesk" / "scripts" / "mysql_desk.py"  # info: set MYSQL
 GATE = PACIFIC / "System" / "NightSleep" / "scripts" / "night_sleep.py"  # info: set GATE

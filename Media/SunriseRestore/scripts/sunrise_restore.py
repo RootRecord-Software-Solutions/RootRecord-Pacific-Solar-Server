@@ -34,7 +34,7 @@ PACIFIC = Path(os.environ.get(  # info: set PACIFIC
     "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server",  # info: "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server" ,
 ))  # info: ) )
 PENDING = DB / "Media" / "SunriseRestore" / "pending.json"  # info: set PENDING
-SUN = DB / "Energy" / "sun" / "sun-times-last.json"  # info: set SUN
+SUN = DB / "Energy" / "sun" / "sun-times_current.json"  # info: set SUN
 LOG = DB / "Logs" / "Media" / "SunriseRestore" / "sunrise-restore.log"  # info: set LOG
 PLAY = PACIFIC / "Media" / "Playback" / "scripts" / "play.py"  # info: set PLAY
 CLIPS = ("battery_reconnect", "boot_all_systems_running")  # info: set CLIPS

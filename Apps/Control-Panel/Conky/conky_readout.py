@@ -15,7 +15,7 @@ Usage (called by conky ${execi}/${execibar}):
   conky_readout.py soctext river2pro|delta2 -> "12.0% · 3m05s ago"
   conky_readout.py laptop                 -> number 0-100
   conky_readout.py laptoptext             -> "100% Full AC"
-  conky_readout.py cpu | mem              -> number from System/last/host-last.json
+  conky_readout.py cpu | mem              -> number from System/last/host_current.json
   conky_readout.py npu                    -> one-line NPU / FLM / lock state
   conky_readout.py poller                 -> PASS/WARN/FAIL (proc count)
 Read-only: JSON files, sysfs, /proc only. Never runs npu-status.sh (keeps the widget cheap).
@@ -40,7 +40,7 @@ def main() -> None:  # info: def main
     what = sys.argv[1] if len(sys.argv) > 1 else ""  # info: set what
     arg = sys.argv[2] if len(sys.argv) > 2 else ""  # info: set arg
     if what in ("soc", "soctext"):  # info: if what in ( "soc" , "soctext" )
-        d = src.read_json(p.energy / f"soc/{arg}-last.json") or {}  # info: set d
+        d = src.read_json(p.energy / f"soc/{arg}_current.json") or {}  # info: set d
         v = d.get("soc")  # info: set v
         if what == "soc":  # info: if what == "soc" :
             print(int(v) if isinstance(v, (int, float)) else 0)  # info: call print

@@ -10,7 +10,7 @@ Folder name, used in all three places: `CouncilQuake` (inside Communications).
 | Database data | `2 - RootRecord-Database/Communications/CouncilQuake/` |
 | Database logs | `2 - RootRecord-Database/Logs/Communications/CouncilQuake/` |
 
-`scripts/quake_posts.py` reads `2 - RootRecord-Database/Geology/Earthquakes/hawaii-last.json`. It does not fetch USGS and it does not replace `geology_collect.py`.
+`scripts/quake_posts.py` reads `2 - RootRecord-Database/Geology/Earthquakes/hawaii_current.json`. It does not fetch USGS and it does not replace `geology_collect.py`.
 
 The live job seeds once (marks current M≥2 ids seen, prints nothing) and later prepares at most four new notices. `--feed` skips that seed so a fixture with an empty seen list prints the notice. `RR_COUNCIL_QUAKE_SEND` and `RR_COUNCIL_QUAKE_WAV` stay off. The token name is `TELEGRAM_CARLY_TOKEN`. The script does not load it unless the send flag is on, and it never prints the value.
 

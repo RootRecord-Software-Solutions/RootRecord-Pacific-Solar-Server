@@ -19,7 +19,7 @@
     ["Should I rotate the Telegram bot token?", "rr-security", "carly"],
     ["Who has access to the master key file?", "rr-security", "carly"],
     ["Write a bash loop that renames every jpg to include the date.", "rr-exec", "bruce"],
-    ["Print the JSON keys in host-last.json.", "rr-exec", "bruce"],
+    ["Print the JSON keys in host_current.json.", "rr-exec", "bruce"],
     ["Is it better to buy a second battery or more panels?", "rr-reason", "ava"],
     ["Explain why single-flight matters on a box this small.", "rr-reason", "bruce"],
     ["Give me a catchy tagline for the public status page.", "rr-council-ava", "ava"],

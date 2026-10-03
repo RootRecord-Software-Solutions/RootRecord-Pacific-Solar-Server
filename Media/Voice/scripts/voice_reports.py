@@ -156,7 +156,7 @@ def jload(p: Path):  # info: def jload
 def energy_facts(t: datetime) -> list[dict]:  # info: def energy_facts
     out = []  # info: set out
     for key, name in DEVICES:  # info: for key , name in DEVICES :
-        soc, watts = jload(ENERGY / "soc" / f"{key}-last.json"), jload(ENERGY / "watts" / f"{key}-last.json") or {}  # info: soc , watts = jload ( ENERGY /
+        soc, watts = jload(ENERGY / "soc" / f"{key}_current.json"), jload(ENERGY / "watts" / f"{key}_current.json") or {}  # info: soc , watts = jload ( ENERGY /
         if not soc or "soc" not in soc:  # info: if not soc or "soc" not in soc
             out.append({"name": name, "ok": False})  # info: out . append ( { "name" : name
             continue  # info: continue
@@ -519,7 +519,7 @@ def quake_facts(t: datetime) -> dict:  # info: def quake_facts
     """Database Geology/Earthquakes last files (written by ML2 geology collector)."""  # info: ML2 geology → Database
     out = {}  # info: set out
     for key in ("hawaii", "global"):  # info: for key in ( "hawaii" , "global" )
-        d = jload(QUAKES / f"{key}-last.json")  # info: set d
+        d = jload(QUAKES / f"{key}_current.json")  # info: set d
         if not isinstance(d, dict) or not isinstance(d.get("events"), list):  # info: if not isinstance ( d , dict )
             out[key] = None  # info: out [ key ] = None
             continue  # info: continue
@@ -1046,7 +1046,7 @@ def kilauea_photo_summary() -> str:  # info: def kilauea_photo_summary
         if any(key in data for key in ("image", "activity", "visible", "sentence", "fountaining")):  # info: if look-shaped data
             current_look = data  # info: set current look data
             break  # info: stop current look scan
-    look = current_look or jload(cams_dir / "kilauea-look-last.json") or {}  # info: choose current or last look
+    look = current_look or jload(cams_dir / "kilauea-look_current.json") or {}  # info: choose current or last look
     cams_current = jload(cams_dir / "cams_current.json") or {}  # info: load current cams metadata
     viewed = None  # info: set viewed unknown
     if isinstance(cams_current.get("photo_viewed"), bool):  # info: if bank photo flag
@@ -1079,12 +1079,12 @@ def kilauea_photo_summary() -> str:  # info: def kilauea_photo_summary
 # ====================================================
 def b_kilauea_report(t: datetime):  # info: def b_kilauea_report
     """G1 hourly Kīlauea desk (persona._kilauea_line wording) + HVO notice excerpt, from Database Geology/Volcanoes/Hawaii/."""  # info: Hawaiʻi volcano bank
-    k, ml = jload(VOLCANOES / "kilauea-last.json"), jload(VOLCANOES / "mauna-loa-last.json")  # info: k , ml = jload ( VOLCANOES /
-    hi = jload(QUAKES / "hawaii-last.json") or {}  # info: set hi
+    k, ml = jload(VOLCANOES / "kilauea_current.json"), jload(VOLCANOES / "mauna-loa_current.json")  # info: k , ml = jload ( VOLCANOES /
+    hi = jload(QUAKES / "hawaii_current.json") or {}  # info: set hi
     photo_line = kilauea_photo_summary()  # info: set photo line
     md = [f"# Kilauea report — {t.isoformat()}", ""]
     if not isinstance(k, dict) or not k.get("alert_level"):  # info: if not isinstance ( k , dict )
-        md += ["_No HVO data on file (Database Geology/Volcanoes/Hawaii/kilauea-last.json missing). Run geology_collect.py._", f"- **Photo:** {photo_line}", "", "## Spoken", "", photo_line, ""]  # info: set md
+        md += ["_No HVO data on file (Database Geology/Volcanoes/Hawaii/kilauea_current.json missing). Run geology_collect.py._", f"- **Photo:** {photo_line}", "", "## Spoken", "", photo_line, ""]  # info: set md
         return "\n".join(md), ["Kilauea: DOWN.", photo_line]  # info: return "\n" . join ( md ) ,
     level = str(k.get("alert_level") or "unknown").strip().lower()  # info: set level
     erupting = k.get("erupting")  # info: set erupting
@@ -1394,7 +1394,7 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
     """Combined energy+solar desk: packs, sun times, newest ch1 still, and this hour's camera look (refreshes when needed)."""  # info: docstring
     wake_stale_packs(t)  # info: wake a stagnant pack before the desk speaks
     facts = energy_facts(t)  # info: set facts
-    sun = jload(ENERGY / "sun" / "sun-times-last.json") or {}  # info: set sun
+    sun = jload(ENERGY / "sun" / "sun-times_current.json") or {}  # info: set sun
     sp = ["Solar desk.", generated_at(t)]  # info: set sp
     lines, spoken_lines = [], []  # info: lines , spoken_lines = [ ] , [
     for f in facts:  # info: for f in facts :
@@ -1498,7 +1498,7 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
     md = [f"# Solar desk — {t.isoformat()}", ""] + [f"- {x}" for x in lines] + [
         f"- Sun: {sun.get('sunrise', 'n/a')} / {sun.get('sunset', 'n/a')} ({sun.get('date', 'n/a')}, Open-Meteo)",  # info: f" - Sun: { sun . get ( 'sunrise'
     ] + extra + ["", "## Spoken", "", " ".join(sp), "",  # info: ] + extra + [ "" , "## Spoken" , "" , " " . join ( sp ) , "" ,
-        "_Source: Database Energy/soc + Energy/watts (EcoFlow BLE), Energy/layers/periods.json (hour, day, week, month), Energy/sun/sun-times-last.json, the newest ch1 still, and Energy/vision/ch1-look-last.json (refreshed this hour when needed)._", ""]  # info: source footer
+        "_Source: Database Energy/soc + Energy/watts (EcoFlow BLE), Energy/layers/periods.json (hour, day, week, month), Energy/sun/sun-times_current.json, the newest ch1 still, and Energy/vision/ch1-look-last.json (refreshed this hour when needed)._", ""]  # info: source footer
     return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
@@ -1710,7 +1710,7 @@ def _speech_product(text: str) -> str:  # info: def _speech_product
 def official_products(t: datetime) -> list[dict]:  # info: def official_products
     """[{type, text, issued, age_h}] newest-first candidates: HLS (official/), HWO, AFD (poller)."""  # info: """[{type, text, issued, age_h}] newest-first candidates: HLS (official/), HWO, AFD (poller)."""
     out = []  # info: set out
-    st = jload(OFFICIAL / "official-last.json") or {}  # info: set st
+    st = jload(OFFICIAL / "official_current.json") or jload(OFFICIAL / "official-last.json") or {}  # info: set st
     hls = OFFICIAL / "HLS_current.txt"  # info: set hls
     issued = ((st.get("hls") or {}).get("issued")) if isinstance(st, dict) else None  # info: set issued
     if hls.is_file():  # info: if hls . is_file ( ) :
@@ -1779,7 +1779,7 @@ def b_boot_brief(t: datetime):  # info: def b_boot_brief
     kind = "morning" if t.hour < 12 else "midday"  # G1 desk_report_kind
     boot_at, up_min = _uptime()  # info: boot_at , up_min = _uptime ( )
     facts, (rows, _), h = energy_facts(t), alerts(), host()  # info: call facts
-    k = jload(VOLCANOES / "kilauea-last.json") or {}  # info: set k
+    k = jload(VOLCANOES / "kilauea_current.json") or {}  # info: set k
     storms = [x for x in hurricane_facts(t) if x.get("active")]  # info: set storms
     b = datetime.fromisoformat(boot_at)  # info: set b
     sp = [f"Boot report, {kind} edition.", generated_at(t),  # info: set sp
@@ -1823,14 +1823,14 @@ def b_boot_brief(t: datetime):  # info: def b_boot_brief
 def b_current_report(t: datetime):  # info: def b_current_report
     """Full current summary of every measured desk. The heading is the clock when the text is built."""  # info: docstring
     facts = energy_facts(t)  # info: set facts
-    sun = jload(ENERGY / "sun" / "sun-times-last.json") or {}  # info: set sun
+    sun = jload(ENERGY / "sun" / "sun-times_current.json") or {}  # info: set sun
     moon = jload(DB / "Weather" / "moon" / "moon_current.json") or jload(ENERGY / "moon" / "moon-last.json") or {}  # info: Weather first
     rows, upd = alerts()  # info: rows , upd = alerts ( )
     issued, groups = sfp_read()  # info: issued , groups = sfp_read ( )
     places = zfp_temps()  # info: set places
     quakes = quake_facts(t)  # info: set quakes
-    kilauea = jload(VOLCANOES / "kilauea-last.json") or {}  # info: set kilauea
-    mauna = jload(VOLCANOES / "mauna-loa-last.json") or {}  # info: set mauna
+    kilauea = jload(VOLCANOES / "kilauea_current.json") or {}  # info: set kilauea
+    mauna = jload(VOLCANOES / "mauna-loa_current.json") or {}  # info: set mauna
     storms = [s for s in hurricane_facts(t) if s.get("active")]  # info: set storms
     import system_perf  # info: import system_perf
     perf = system_perf.sample()  # info: set perf

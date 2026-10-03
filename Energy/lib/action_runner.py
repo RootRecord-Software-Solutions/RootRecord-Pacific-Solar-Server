@@ -52,7 +52,7 @@ def _write_sample(kind: str, payload: dict) -> Path:  # info: def _write_sample
     ensure_dirs()  # info: call ensure_dirs
     path = SAMPLES / f"{kind}_current.json"  # info: stable *_current — no stamp flood
     write_current_json(path, payload)  # info: archive prior _current then write
-    (PORTS / f"{payload.get('alias', 'dev')}-last.json").write_text(  # info: call (
+    (PORTS / f"{payload.get('alias', 'dev')}_current.json").write_text(  # info: call (
         json.dumps(payload, indent=2), encoding="utf-8"  # info: json . dumps ( payload , indent =
     )  # info: )
     return path  # info: return path

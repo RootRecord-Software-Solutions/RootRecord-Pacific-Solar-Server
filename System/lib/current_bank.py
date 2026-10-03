@@ -92,3 +92,36 @@ def write_current_json(dest: Path, obj: Any) -> Path:  # info: def write_current
     """Archive-on-replace then write one JSON object to a *_current path."""  # info: docstring
     raw = (json.dumps(obj, indent=2, ensure_ascii=False) + "\n").encode("utf-8")  # info: set raw
     return write_current_bytes(dest, raw)  # info: return write_current_bytes
+
+
+# ====================================================
+# SECTION: function bank_candidates
+# What it does: Prefer *_current; also try sibling *-last during drain.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def bank_candidates(path: Path) -> list[Path]:  # info: def bank_candidates
+    """Ordered candidates: *_current first, then legacy *-last."""  # info: docstring
+    name = path.name  # info: set name
+    out: list[Path] = []  # info: set out
+    if "_current." in name:  # info: if current name
+        out.append(path)  # info: prefer current
+        out.append(path.with_name(name.replace("_current.", "-last.", 1)))  # info: legacy sibling
+    elif "-last." in name:  # info: if legacy name
+        out.append(path.with_name(name.replace("-last.", "_current.", 1)))  # info: prefer current
+        out.append(path)  # info: then legacy
+    else:  # info: else
+        out.append(path)  # info: unchanged
+    return out  # info: return out
+
+
+# ====================================================
+# SECTION: function resolve_current
+# What it does: Return the first existing bank candidate path, or None.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def resolve_current(path: Path) -> Path | None:  # info: def resolve_current
+    """First existing *_current (or legacy *-last) path."""  # info: docstring
+    for cand in bank_candidates(path):  # info: for cand
+        if cand.is_file():  # info: if cand . is_file
+            return cand  # info: return cand
+    return None  # info: return None

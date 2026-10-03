@@ -262,10 +262,10 @@ def build_energy_snapshot() -> dict:  # info: def build_energy_snapshot
     sqlite = _sqlite_board()  # info: set sqlite
     delta_sql = (sqlite or {}).get("delta2") if isinstance(sqlite, dict) else None  # info: set delta_sql
     river_sql = (sqlite or {}).get("river2pro") if isinstance(sqlite, dict) else None  # info: set river_sql
-    delta_soc = _read_energy_json("soc/delta2-last.json")  # info: set delta_soc
-    river_soc = _read_energy_json("soc/river2pro-last.json")  # info: set river_soc
-    delta_w = _read_energy_json("watts/delta2-last.json")  # info: set delta_w
-    river_w = _read_energy_json("watts/river2pro-last.json")  # info: set river_w
+    delta_soc = _read_energy_json("soc/delta2_current.json")  # info: set delta_soc
+    river_soc = _read_energy_json("soc/river2pro_current.json")  # info: set river_soc
+    delta_w = _read_energy_json("watts/delta2_current.json")  # info: set delta_w
+    river_w = _read_energy_json("watts/river2pro_current.json")  # info: set river_w
 
     def soc_of(sql_row, json_blob):  # info: def soc_of
         if isinstance(sql_row, dict) and sql_row.get("soc") is not None:  # info: if isinstance ( sql_row , dict ) and
@@ -340,8 +340,8 @@ def build_energy_snapshot() -> dict:  # info: def build_energy_snapshot
 # ====================================================
 def _energy_log_line() -> str:  # info: def _energy_log_line
     snap = build_energy_snapshot()  # info: set snap
-    delta_off = _discharged_off(_read_energy_json("soc/delta2-last.json"))  # info: set delta_off
-    river_off = _discharged_off(_read_energy_json("soc/river2pro-last.json"))  # info: set river_off
+    delta_off = _discharged_off(_read_energy_json("soc/delta2_current.json"))  # info: set delta_off
+    river_off = _discharged_off(_read_energy_json("soc/river2pro_current.json"))  # info: set river_off
     status = "powered_off" if delta_off and river_off else snap.get("status")  # info: set status
     parts = [f"status={status}", f"B2={'off' if delta_off else snap.get('deltaSoc')}", f"B1={'off' if river_off else snap.get('riverSoc')}",  # info: set parts
              f"solar={snap.get('solarInW')}", f"ac={snap.get('acOut')}", f"usbc={snap.get('usbC')}", f"src={snap.get('source')}"]  # info: f" solar= { snap . get ( 'solarInW'

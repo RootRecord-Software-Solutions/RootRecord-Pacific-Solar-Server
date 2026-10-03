@@ -95,10 +95,10 @@ def _metric(status, name):
 
 
 def _power() -> dict:
-    delta_soc = _read_json(ENERGY / "soc" / "delta2-last.json")
-    river_soc = _read_json(ENERGY / "soc" / "river2pro-last.json")
-    delta_w = _read_json(ENERGY / "watts" / "delta2-last.json")
-    river_w = _read_json(ENERGY / "watts" / "river2pro-last.json")
+    delta_soc = _read_json(ENERGY / "soc" / "delta2_current.json")
+    river_soc = _read_json(ENERGY / "soc" / "river2pro_current.json")
+    delta_w = _read_json(ENERGY / "watts" / "delta2_current.json")
+    river_w = _read_json(ENERGY / "watts" / "river2pro_current.json")
     d_soc = _num(delta_soc, "soc")
     r_soc = _num(river_soc, "soc")
     devices = []
@@ -196,9 +196,9 @@ def _host() -> dict:
 
 
 def _volcano() -> dict:
-    kilauea = _read_json(GEOLOGY / "Volcanoes" / "Hawaii" / "kilauea-last.json")
-    mauna = _read_json(GEOLOGY / "Volcanoes" / "Hawaii" / "mauna-loa-last.json")
-    quakes = _read_json(GEOLOGY / "Earthquakes" / "hawaii-last.json")
+    kilauea = _read_json(GEOLOGY / "Volcanoes" / "Hawaii" / "kilauea_current.json")
+    mauna = _read_json(GEOLOGY / "Volcanoes" / "Hawaii" / "mauna-loa_current.json")
+    quakes = _read_json(GEOLOGY / "Earthquakes" / "hawaii_current.json")
     if not isinstance(kilauea, dict):
         return {"ok": False}
     notice = kilauea.get("latest_notice") if isinstance(kilauea.get("latest_notice"), dict) else {}
@@ -250,8 +250,8 @@ def _epoch_ms(stamp):
 
 
 def _quakes() -> dict:
-    hawaii = _read_json(GEOLOGY / "Earthquakes" / "hawaii-last.json")
-    globe = _read_json(GEOLOGY / "Earthquakes" / "global-last.json")
+    hawaii = _read_json(GEOLOGY / "Earthquakes" / "hawaii_current.json")
+    globe = _read_json(GEOLOGY / "Earthquakes" / "global_current.json")
     if not isinstance(hawaii, dict) and not isinstance(globe, dict):
         return {"global": [], "island": []}
     fetched = None

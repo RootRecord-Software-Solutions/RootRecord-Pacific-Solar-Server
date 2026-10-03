@@ -18,7 +18,7 @@ import paths  # info: import paths
 
 # ====================================================
 # SECTION: function latest_snapshot
-# What it does: Return the newest observation in the same shape as the old host-last.json.
+# What it does: Return the newest observation in the same shape as the old host_current.json.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def latest_snapshot(db_path: Path | None = None) -> dict | None:  # info: def latest_snapshot

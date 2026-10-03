@@ -62,8 +62,8 @@ def age_min(stamp: str, now: datetime):  # info: def age_min
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def pack_lines(key: str, name: str, now: datetime) -> list[str]:  # info: def pack_lines
-    soc = load_json(ENERGY / "soc" / f"{key}-last.json")  # info: set soc
-    watts = load_json(ENERGY / "watts" / f"{key}-last.json") or {}  # info: set watts
+    soc = load_json(ENERGY / "soc" / f"{key}_current.json")  # info: set soc
+    watts = load_json(ENERGY / "watts" / f"{key}_current.json") or {}  # info: set watts
     if not isinstance(soc, dict) or "soc" not in soc:  # info: if not isinstance ( soc , dict ) or
         return [f"{name} SOC_percent=No data"]  # info: return [ f" { name } SOC_percent=No data" ]
     age = age_min(soc.get("at"), now)  # info: set age
