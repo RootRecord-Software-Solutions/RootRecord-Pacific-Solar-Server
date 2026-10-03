@@ -108,6 +108,13 @@ _tunnel_proc: subprocess.Popen | None = None  # info: set _tunnel_proc
 _internet_ok = False  # info: set _internet_ok
 _internet_last_log = 0.0  # info: set _internet_last_log
 _tunnel_start_attempts = 0  # info: set _tunnel_start_attempts
+# Survives poller restarts so :55 radio / :36 voice catch-up do not double-fire after a bounce.
+_HOUR_DONE_PATH = Path(  # info: set _HOUR_DONE_PATH
+    os.environ.get(  # info: os . environ . get (
+        "RR_HOUR_WORKFLOW_DONE",  # info: "RR_HOUR_WORKFLOW_DONE" ,
+        "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Automations/hour_workflow_done.json",  # info: default path
+    )  # info: )
+)  # info: )
 # One-script hour lane: news banks at :35, generate_hour_reports at :36, radio_push catch-up at :55.
 HOUR_WORKFLOW = frozenset({"news_cycle", "voice_hour_batch", "radio_push_hour"})  # info: set HOUR_WORKFLOW
 # Camera / BLE / hawaii must not sit in front of the hour workflow on the same :00 tick.
@@ -117,8 +124,133 @@ STACK_DEFER = frozenset(  # info: set STACK_DEFER
         "delta2_read",  # info: "delta2_read" ,
         "river2pro_read",  # info: "river2pro_read" ,
         "hawaii_to_ml2",  # info: "hawaii_to_ml2" ,
+        "geology_kilauea_cams",  # info: long-ish; never ahead of :35/:36
+        "energy_consolidate_minutes",  # info: defer while hour lane starts
+        "energy_consolidate_hours",  # info: defer while hour lane starts
+        "system_consolidate_minutes",  # info: defer while hour lane starts
+        "system_consolidate_hours",  # info: defer while hour lane starts
     }  # info: }
 )  # info: )
+# Real generate_hour_reports argv only — never match shells/sandbox that merely mention the path.
+_GEN_HOUR_PS_MARK = "Media/Voice/scripts/generate_hour_reports.py"  # info: set _GEN_HOUR_PS_MARK
+
+
+# ====================================================
+# SECTION: function _load_hour_workflow_done
+# What it does: Restore today's hour-workflow done keys from disk (and seed voice_hour_batch from Timing if this hour already finished).
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _load_hour_workflow_done() -> None:  # info: def _load_hour_workflow_done
+    global _hour_workflow_done  # info: global _hour_workflow_done
+    day = datetime.now().astimezone().date().isoformat()  # info: set day
+    keys: set[str] = set()  # info: set keys
+    try:  # info: try
+        if _HOUR_DONE_PATH.is_file():  # info: if file exists
+            doc = json.loads(_HOUR_DONE_PATH.read_text(encoding="utf-8"))  # info: set doc
+            raw = doc.get("done") if isinstance(doc, dict) else None  # info: set raw
+            if isinstance(raw, list):  # info: if isinstance ( raw , list )
+                keys = {str(x) for x in raw if isinstance(x, str) and f"|{day}|" in x}  # info: today only
+    except Exception:  # info: except Exception
+        keys = set()  # info: set keys
+    wall = datetime.now().astimezone()  # info: set wall
+    # Seed voice/radio done when Timing shows a successful batch already this clock hour.
+    try:  # info: try
+        sched = Path(  # info: set sched
+            "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Media/Audio/Voice/Timing/hour_batch_schedule.json"  # info: path
+        )  # info: )
+        if sched.is_file():  # info: if sched . is_file ( )
+            doc = json.loads(sched.read_text(encoding="utf-8"))  # info: set doc
+            at = str(doc.get("at") or "")  # info: set at
+            if at and doc.get("job_id") == "voice_hour_batch":  # info: if this hour's batch stamp
+                stamp = datetime.fromisoformat(at)  # info: set stamp
+                if stamp.date() == wall.date() and stamp.hour == wall.hour:  # info: same clock hour
+                    keys.add(f"voice_hour_batch|{day}|{wall.hour:02d}")  # info: keys . add
+                    keys.add(f"radio_push_hour|{day}|{wall.hour:02d}")  # info: early push already covered :55
+    except Exception:  # info: except Exception
+        pass  # info: pass
+    # Seed news done when this hour already banked a fresh news_update WAV.
+    try:  # info: try
+        news = Path(  # info: set news
+            "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Media/Audio/Voice/news_update_current.wav"  # info: path
+        )  # info: )
+        if news.is_file() and news.stat().st_size > 64:  # info: if news present
+            mtime = datetime.fromtimestamp(news.stat().st_mtime).astimezone()  # info: set mtime
+            gate = wall.replace(minute=35, second=0, microsecond=0)  # info: set gate
+            if mtime >= gate and mtime.date() == wall.date() and mtime.hour == wall.hour:  # info: this hour's :35+
+                keys.add(f"news_cycle|{day}|{wall.hour:02d}")  # info: keys . add
+    except Exception:  # info: except Exception
+        pass  # info: pass
+    _hour_workflow_done = keys  # info: set _hour_workflow_done
+    if keys:  # info: if keys
+        log(f"{full_timestamp()}hour-lane  restored done={len(keys)}")  # info: call log
+
+
+# ====================================================
+# SECTION: function _save_hour_workflow_done
+# What it does: Persist today's hour-workflow done keys so a poller restart does not re-run catch-up.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _save_hour_workflow_done() -> None:  # info: def _save_hour_workflow_done
+    try:  # info: try
+        day = datetime.now().astimezone().date().isoformat()  # info: set day
+        keys = sorted(k for k in _hour_workflow_done if k.split("|")[1] == day)  # info: set keys
+        _HOUR_DONE_PATH.parent.mkdir(parents=True, exist_ok=True)  # info: ensure dir
+        tmp = _HOUR_DONE_PATH.with_suffix(".tmp")  # info: set tmp
+        tmp.write_text(json.dumps({"at": datetime.now().astimezone().isoformat(), "done": keys}, indent=2) + "\n", encoding="utf-8")  # info: write tmp
+        os.replace(tmp, _HOUR_DONE_PATH)  # info: atomic replace
+    except Exception:  # info: except Exception
+        pass  # info: pass
+
+
+# ====================================================
+# SECTION: function _mark_hour_workflow_done
+# What it does: Record one hour-workflow job as done for this clock hour (memory + disk).
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _mark_hour_workflow_done(key: str) -> None:  # info: def _mark_hour_workflow_done
+    if not key:  # info: if not key
+        return  # info: return
+    _hour_workflow_done.add(key)  # info: _hour_workflow_done . add ( key )
+    _save_hour_workflow_done()  # info: call _save_hour_workflow_done
+
+
+# ====================================================
+# SECTION: function _generate_hour_reports_running
+# What it does: True only when a live python3 process is running generate_hour_reports.py (not bash/sandbox cmdlines that quote the path).
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _generate_hour_reports_running() -> bool:  # info: def _generate_hour_reports_running
+    try:  # info: try
+        proc = subprocess.run(  # info: set proc
+            ["ps", "-eo", "pid=,args="],  # info: pid + full args; avoid pgrep -f false positives
+            capture_output=True,  # info: capture_output = True
+            text=True,  # info: text = True
+            timeout=2,  # info: timeout = 2
+        )  # info: )
+    except Exception:  # info: except Exception
+        return False  # info: return False
+    for raw in (proc.stdout or "").splitlines():  # info: for raw in lines
+        line = raw.strip()  # info: set line
+        if _GEN_HOUR_PS_MARK not in line and "generate_hour_reports.py" not in line:  # info: if path not in line
+            continue  # info: continue
+        # Drop shells / Cursor sandbox / our own probes that only mention the script.
+        low = line.lower()  # info: set low
+        if "cursorsandbox" in low or "/bin/bash" in low or low.startswith("bash "):  # info: if wrapper shell
+            continue  # info: continue
+        if "pgrep" in low or " rg " in f" {low} " or low.startswith("rg "):  # info: if probe tools
+            continue  # info: continue
+        # argv0 must be a python interpreter (nice already replaced itself).
+        parts = line.split(None, 1)  # info: set parts
+        if len(parts) < 2:  # info: if len ( parts ) < 2
+            continue  # info: continue
+        args = parts[1]  # info: set args
+        head = args.split(None, 1)[0]  # info: set head
+        base = Path(head).name  # info: set base
+        if not base.startswith("python"):  # info: if not a python binary
+            continue  # info: continue
+        if "generate_hour_reports.py" in args:  # info: if script is an arg of that python
+            return True  # info: return True
+    return False  # info: return False
 
 
 # ====================================================
@@ -855,7 +987,13 @@ def run_job(job: dict) -> bool:  # info: def run_job — True when work started
                 _camera_busy.release()  # info: _camera_busy . release ( )
         threading.Thread(target=_camera_work, name="security-camera", daemon=True).start()  # info: start side thread
         return True  # info: return True
-    # Hour workflow owns the air clock. News may overlap the :36 batch.
+    if jid == "voice_kilauea_image_check":  # info: if jid == "voice_kilauea_image_check"
+        # Same Kokoro lock as news + hour batch. A :45 fire mid-batch skips a desk WAV (rc 75).
+        minute = datetime.now().astimezone().minute  # info: set minute
+        if 35 <= minute <= 54 or _generate_hour_reports_running():  # info: hour window or batch already up
+            log(f"{full_timestamp()}job:{jid} SKIP — hour voice lane owns the Kokoro lock")  # info: call log
+            return False  # info: return False — next quarter-hour can try
+    # Hour workflow owns the air clock. News TTS must finish before desk TTS (same lock).
     if jid == "news_cycle":  # info: if jid == "news_cycle"
         if not _news_busy.acquire(blocking=False):  # info: if not _news_busy . acquire ( blocking = False )
             log(f"{full_timestamp()}job:{jid} SKIP — news_cycle already running")  # info: call log
@@ -869,24 +1007,15 @@ def run_job(job: dict) -> bool:  # info: def run_job — True when work started
         return True  # info: return True
     if jid in ("voice_hour_batch", "radio_push_hour"):  # info: if jid in ( "voice_hour_batch" , "radio_push_hour" )
         if jid == "voice_hour_batch":  # info: if jid == "voice_hour_batch"
-            try:  # info: try
-                probe = subprocess.run(  # info: set probe
-                    ["pgrep", "-f", "python3.*generate_hour_reports.py"],  # info: pgrep the one script
-                    capture_output=True,  # info: capture_output = True
-                    text=True,  # info: text = True
-                    timeout=2,  # info: timeout = 2
-                )  # info: )
-                if probe.returncode == 0 and (probe.stdout or "").strip():  # info: if already running
-                    log(f"{full_timestamp()}job:{jid} SKIP — generate_hour_reports already running")  # info: call log
-                    # Count as done this hour so catch-up / watchdog do not keep retrying.
-                    try:  # info: try
-                        wall = datetime.now().astimezone()  # info: set wall
-                        _hour_workflow_done.add(_workflow_hour_key(jid, wall))  # info: mark hour done
-                    except Exception:  # info: except Exception
-                        pass  # info: pass
-                    return True  # info: return True — hour is covered; do not retry
-            except Exception:  # info: except Exception
-                pass  # info: pass
+            if _generate_hour_reports_running():  # info: real python running the script only
+                log(f"{full_timestamp()}job:{jid} SKIP — generate_hour_reports already running")  # info: call log
+                # Count as done this hour so catch-up / watchdog do not keep retrying.
+                try:  # info: try
+                    wall = datetime.now().astimezone()  # info: set wall
+                    _mark_hour_workflow_done(_workflow_hour_key(jid, wall))  # info: mark hour done
+                except Exception:  # info: except Exception
+                    pass  # info: pass
+                return True  # info: return True — hour is covered; do not retry
         if not _hour_batch_busy.acquire(blocking=False):  # info: if not _hour_batch_busy . acquire ( blocking = False )
             log(f"{full_timestamp()}job:{jid} SKIP — hour batch already running")  # info: call log
             return False  # info: return False — keep catch-up open
@@ -978,7 +1107,8 @@ def _workflow_catchup_due(job: dict, step) -> bool:  # info: def _workflow_catch
     at_m = int(job.get("at_minute") or 0)  # info: set at_m
     # news :35 only; voice from scheduled/base minute through :54; radio_push :55→:59
     if jid == "news_cycle":  # info: if jid == "news_cycle"
-        return step.minute == at_m  # info: return step . minute == at_m
+        # :35 exact; keep trying a few minutes so a late/blocked :35:00 still banks before fold-in.
+        return at_m <= step.minute <= min(at_m + 4, 39)  # info: return at_m .. :39
     if jid == "voice_hour_batch":  # info: if jid == "voice_hour_batch"
         # Always open the window from env base (:36) even if a stale job dict still says :42.
         base = int(os.environ.get("RR_VOICE_HOUR_BASE_MINUTE", "36"))  # info: set base
@@ -1014,21 +1144,11 @@ def _kick_hour_batch_watchdog(wall: datetime) -> None:  # info: def _kick_hour_b
         _watchdog_last_minute = minute  # info: set _watchdog_last_minute
         return  # info: return
     # External manual run still counts — do not stack a second generate_hour_reports.
-    try:  # info: try
-        import subprocess as _sp  # info: import subprocess as _sp
-        probe = _sp.run(  # info: set probe
-            ["pgrep", "-f", "python3.*generate_hour_reports.py"],  # info: pgrep the one script
-            capture_output=True,  # info: capture_output = True
-            text=True,  # info: text = True
-            timeout=2,  # info: timeout = 2
-        )  # info: )
-        if probe.returncode == 0 and (probe.stdout or "").strip():  # info: if already running
-            log(f"{full_timestamp()}watchdog  voice_hour_batch already running externally — mark hour done")  # info: call log
-            _hour_workflow_done.add(key)  # info: _hour_workflow_done . add ( key )
-            _watchdog_last_minute = minute  # info: set _watchdog_last_minute
-            return  # info: return
-    except Exception:  # info: except Exception
-        pass  # info: pass
+    if _generate_hour_reports_running():  # info: real python running the script only
+        log(f"{full_timestamp()}watchdog  voice_hour_batch already running externally — mark hour done")  # info: call log
+        _mark_hour_workflow_done(key)  # info: mark hour done
+        _watchdog_last_minute = minute  # info: set _watchdog_last_minute
+        return  # info: return
     job = None  # info: set job
     for j in _scheduled_jobs():  # info: for j in _scheduled_jobs ( )
         if isinstance(j, dict) and j.get("id") == "voice_hour_batch":  # info: if voice hour batch
@@ -1043,7 +1163,7 @@ def _kick_hour_batch_watchdog(wall: datetime) -> None:  # info: def _kick_hour_b
         f"{full_timestamp()}watchdog  START voice_hour_batch  window={start:02d}-54  clock={wall.strftime('%H:%M:%S')}  at_minute={at_m}"  # info: f" ... "
     )  # info: )
     if run_job(job):  # info: if run_job ( job )
-        _hour_workflow_done.add(key)  # info: _hour_workflow_done . add ( key )
+        _mark_hour_workflow_done(key)  # info: mark hour done
         log(f"{full_timestamp()}watchdog  voice_hour_batch launched")  # info: call log
     else:  # info: else
         log(f"{full_timestamp()}watchdog  voice_hour_batch launch failed — will retry next minute")  # info: call log
@@ -1090,7 +1210,7 @@ def _fire_exact_step(exact_jobs: list, step, fired_exact: set) -> None:  # info:
             continue  # info: continue — offline / busy; catch-up may retry
         fired_exact.add(key)  # info: fired_exact . add ( key )
         if jid in HOUR_WORKFLOW:  # info: if jid in HOUR_WORKFLOW
-            _hour_workflow_done.add(_workflow_hour_key(jid, step))  # info: mark hour done for catch-up
+            _mark_hour_workflow_done(_workflow_hour_key(jid, step))  # info: mark hour done for catch-up
 
 
 # ====================================================
@@ -1313,6 +1433,7 @@ def scheduler_loop() -> None:  # info: def scheduler_loop
     last_slot: datetime | None = None  # info: set last_slot
     last_five: datetime | None = None  # info: set last_five
     fired_exact: set[str] = set()  # info: set fired_exact
+    _load_hour_workflow_done()  # info: restore catch-up marks across restarts
     log(f"{full_timestamp()}scheduler  MODE=jobs.py exact_time={len(exact_jobs)}")  # info: call log
     now = datetime.now().astimezone().replace(microsecond=0)  # info: set now
     opened = now.replace(second=0) - timedelta(seconds=1)  # info: include this minute's :00
@@ -1370,9 +1491,12 @@ def scheduler_loop() -> None:  # info: def scheduler_loop
                 if fired_exact:  # info: if fired_exact
                     fired_exact = {k for k in fired_exact if f"|{day}|" in k}  # info: set fired_exact
                 # Drop yesterday's hour-workflow done marks.
+                before = len(_hour_workflow_done)  # info: set before
                 _hour_workflow_done.intersection_update(  # info: _hour_workflow_done . intersection_update
                     {k for k in _hour_workflow_done if k.split("|")[1] == day}  # info: keep today only
                 )  # info: )
+                if len(_hour_workflow_done) != before:  # info: if pruned
+                    _save_hour_workflow_done()  # info: persist prune
         _kick_hour_batch_watchdog(wall)  # info: belt-and-suspenders for generate_hour_reports
         _stop.wait(0.25)  # info: _stop . wait ( 0.25 )
 

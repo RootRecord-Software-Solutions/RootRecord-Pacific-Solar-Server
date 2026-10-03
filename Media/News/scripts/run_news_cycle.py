@@ -6,7 +6,7 @@
 # ==============================================================================
 """One news cycle at :35: poll → lane scripts → numbered TTS → Pacific stitch WAV.
 
-Push is off by default in the jobs env (`RR_RADIO_PUSH=0`). The :42 hour batch
+Push is off by default in the jobs env (`RR_RADIO_PUSH=0`). The :36 hour batch
 folds `news_update_current.wav` after the desk reports into `report_current`.
 """
 from __future__ import annotations

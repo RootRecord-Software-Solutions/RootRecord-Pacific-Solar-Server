@@ -17,6 +17,7 @@ import shutil  # info: import shutil
 import subprocess  # info: import subprocess
 import sys  # info: import sys
 import tempfile  # info: import tempfile
+import time  # info: import time
 from datetime import datetime, timedelta, timezone  # info: from datetime import datetime , timedelta , timezone
 from pathlib import Path  # info: from pathlib import Path
 from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
@@ -423,11 +424,16 @@ def _render_section(persona: str, text: str, wav: Path, text_path: Path) -> dict
     text_path.write_text(text + "\n", encoding="utf-8")  # info: text_path . write_text ( text + "\n" , encoding = "utf-8" )
     script = PACIFIC / "Media" / "Voice" / "scripts" / "voice-render.sh"  # info: set script
     cmd = ["bash", str(script), "stitch", "--report", "news_update", "--kind", persona, "--text-file", str(text_path), "--out", str(wav)]  # info: set cmd
-    try:  # info: try
-        ran = subprocess.run(cmd, capture_output=True, text=True, timeout=240)  # info: set ran
-    except (OSError, subprocess.TimeoutExpired) as exc:  # info: except ( OSError , subprocess . TimeoutExpired ) as exc
-        return {"ok": False, "detail": type(exc).__name__, "persona": persona}  # info: return { "ok" : False , "detail" : type ( exc ) . __name__ , "persona" : persona }
-    if ran.returncode == 75:  # info: if ran . returncode == 75 :
+    ran = None  # info: set ran
+    for attempt in range(8):  # info: retry when Kokoro lock is briefly held
+        try:  # info: try
+            ran = subprocess.run(cmd, capture_output=True, text=True, timeout=240)  # info: set ran
+        except (OSError, subprocess.TimeoutExpired) as exc:  # info: except ( OSError , subprocess . TimeoutExpired ) as exc
+            return {"ok": False, "detail": type(exc).__name__, "persona": persona}  # info: return { "ok" : False , "detail" : type ( exc ) . __name__ , "persona" : persona }
+        if ran.returncode != 75:  # info: if not lock busy
+            break  # info: break
+        time.sleep(15)  # info: wait for the other voice job to release
+    if ran is None or ran.returncode == 75:  # info: if still busy
         return {"ok": False, "detail": "lock_busy", "persona": persona}  # info: return { "ok" : False , "detail" : "lock_busy" , "persona" : persona }
     if ran.returncode != 0 or not wav.is_file():  # info: if ran . returncode != 0 or not wav . is_file ( ) :
         return {"ok": False, "detail": "speak_failed", "code": ran.returncode, "persona": persona}  # info: return { "ok" : False , "detail" : "speak_failed" , "code" : ran . returncode , "persona" : persona }

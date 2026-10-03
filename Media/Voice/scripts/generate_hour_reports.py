@@ -149,6 +149,163 @@ def find_wav(report: str) -> Path | None:
     return None
 
 
+def _news_cycle_running() -> bool:
+    """True when a live python is running run_news_cycle.py (not a shell that only mentions it)."""
+    try:
+        proc = subprocess.run(
+            ["ps", "-eo", "pid=,args="],
+            capture_output=True,
+            text=True,
+            timeout=2,
+        )
+    except Exception:
+        return False
+    for raw in (proc.stdout or "").splitlines():
+        line = raw.strip()
+        if "run_news_cycle.py" not in line:
+            continue
+        low = line.lower()
+        if "cursorsandbox" in low or "/bin/bash" in low or low.startswith("bash "):
+            continue
+        parts = line.split(None, 1)
+        if len(parts) < 2:
+            continue
+        head = parts[1].split(None, 1)[0]
+        if not Path(head).name.startswith("python"):
+            continue
+        return True
+    return False
+
+
+def _news_wav_fresh(wav: Path) -> bool:
+    """True when news_update WAV was written at/after this clock hour's :35 (not a prior-hour leftover)."""
+    try:
+        mtime = datetime.fromtimestamp(wav.stat().st_mtime, tz=HST)
+    except OSError:
+        return False
+    now = datetime.now(HST)
+    gate = now.replace(minute=35, second=0, microsecond=0)
+    if now.minute < 35:
+        # Batch running before :35 (manual/catch-up) — accept wav from this hour onward.
+        gate = now.replace(minute=0, second=0, microsecond=0)
+    return mtime >= gate
+
+
+def wait_for_news_tts() -> dict:
+    """Kokoro is single-flight (rc 75 skips the WAV). Let :35 news finish TTS before any desk.
+
+    News and desks both call voice-render.sh. Overlap drops whichever side loses the lock.
+    RR_HOUR_NEWS_TTS_WAIT_SEC=0 skips. Default 600s.
+    """
+    max_wait = int(os.environ.get("RR_HOUR_NEWS_TTS_WAIT_SEC", "600"))
+    if max_wait <= 0:
+        return {"ok": True, "skipped": True, "detail": "RR_HOUR_NEWS_TTS_WAIT_SEC=0"}
+    started = time.time()
+    grace_until = started + 25
+    while time.time() < grace_until and not _news_cycle_running():
+        time.sleep(2)
+    if not _news_cycle_running():
+        return {
+            "ok": True,
+            "waited_sec": round(time.time() - started, 1),
+            "detail": "news_not_running",
+            "news_cycle_running": False,
+        }
+    last_log = 0.0
+    while _news_cycle_running() and (time.time() - started) < max_wait:
+        now = time.time()
+        if now - last_log >= 30:
+            print(
+                json.dumps(
+                    {
+                        "ok": True,
+                        "phase": "news_tts_wait",
+                        "elapsed": round(now - started, 1),
+                        "left": round(max_wait - (now - started), 1),
+                    }
+                ),
+                flush=True,
+            )
+            last_log = now
+        time.sleep(5)
+    running = _news_cycle_running()
+    return {
+        "ok": not running,
+        "waited_sec": round(time.time() - started, 1),
+        "news_cycle_running": running,
+        "detail": "timeout" if running else "news_finished",
+    }
+
+
+def wait_for_news_update() -> dict:
+    """After desks finish, give :35 news_cycle time to bank news_update_current.wav before stitch.
+
+    News often needs ~8 minutes; desks are similar. Without a wait, stitch races and drops news.
+    RR_HOUR_NEWS_WAIT_SEC=0 skips the wait. Default 240s.
+    Ignores a leftover WAV from an earlier hour.
+    """
+    wait_sec = int(os.environ.get("RR_HOUR_NEWS_WAIT_SEC", "240"))
+    if wait_sec <= 0:
+        wav = find_wav(NEWS_PART)
+        fresh = bool(wav and _news_wav_fresh(wav))
+        return {
+            "ok": fresh,
+            "skipped": True,
+            "detail": "RR_HOUR_NEWS_WAIT_SEC=0",
+            "present": fresh,
+            "path": str(wav) if fresh else None,
+            "stale": bool(wav and not fresh),
+        }
+    deadline = time.time() + wait_sec
+    started = time.time()
+    last_log = 0.0
+    while True:
+        wav = find_wav(NEWS_PART)
+        if wav is not None and _news_wav_fresh(wav):
+            return {
+                "ok": True,
+                "present": True,
+                "waited_sec": round(time.time() - started, 1),
+                "path": str(wav),
+                "bytes": wav.stat().st_size,
+            }
+        now = time.time()
+        running = _news_cycle_running()
+        # If news is still rendering, keep waiting until deadline; if it already exited with no WAV, stop early.
+        if now >= deadline:
+            return {
+                "ok": False,
+                "present": False,
+                "waited_sec": round(now - started, 1),
+                "detail": "timeout",
+                "news_cycle_running": running,
+            }
+        if not running and (now - started) >= 15:
+            # Give a short grace after desks in case news finished between polls.
+            return {
+                "ok": False,
+                "present": False,
+                "waited_sec": round(now - started, 1),
+                "detail": "news_cycle_not_running",
+                "news_cycle_running": False,
+            }
+        if now - last_log >= 30:
+            print(
+                json.dumps(
+                    {
+                        "ok": True,
+                        "phase": "news_wait",
+                        "elapsed": round(now - started, 1),
+                        "left": round(deadline - now, 1),
+                        "news_cycle_running": running,
+                    }
+                ),
+                flush=True,
+            )
+            last_log = now
+        time.sleep(5)
+
+
 def run_voice_reports(report: str) -> dict:
     env = {**os.environ, **ENV_BASE}
     cmd = [str(VOICE_PY if VOICE_PY.is_file() else sys.executable), str(HERE / "voice_reports.py"), report]
@@ -493,7 +650,7 @@ def stitch_combined(report_ids: list[str]) -> dict:
         included.append(rid)
     news = find_wav(NEWS_PART)
     news_included = False
-    if news is not None:
+    if news is not None and _news_wav_fresh(news):
         parts.append(news)
         included.append(NEWS_PART)
         news_included = True
@@ -702,7 +859,16 @@ def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     results = []
     t0 = time.time()
+    news_tts_wait: dict | None = None
     print(json.dumps({"ok": True, "phase": "start", "out": str(OUT_DIR), "count": len(jobs)}), flush=True)
+    # News TTS must finish first — same Kokoro lock, refuse-if-busy.
+    if not only:
+        print(json.dumps({"ok": True, "phase": "news_tts_wait_begin"}), flush=True)
+        news_tts_wait = wait_for_news_tts()
+        print(
+            json.dumps({"ok": True, "phase": "news_tts_wait_done", **news_tts_wait}, ensure_ascii=False),
+            flush=True,
+        )
     for report, agent, how in jobs:
         print(json.dumps({"ok": True, "phase": "begin", "report": report, "agent": agent}), flush=True)
         row = one(report, agent, how)
@@ -716,9 +882,14 @@ def main() -> int:
         "failed": sum(1 for r in results if not r.get("ok")),
         "results": results,
     }
+    if news_tts_wait is not None:
+        summary["news_tts_wait"] = news_tts_wait
 
     # Desks then news → one report_current for air + archive.
     desk_ids = [r["report"] for r in results if r.get("ok") and r.get("report")]
+    print(json.dumps({"ok": True, "phase": "news_wait_begin"}), flush=True)
+    summary["news_wait"] = wait_for_news_update()
+    print(json.dumps({"ok": True, "phase": "news_wait_done", **summary["news_wait"]}, ensure_ascii=False), flush=True)
     print(
         json.dumps({"ok": True, "phase": "stitch_begin", "desks": len(desk_ids), "news": NEWS_PART}),
         flush=True,

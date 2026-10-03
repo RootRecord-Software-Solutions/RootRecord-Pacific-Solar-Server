@@ -674,6 +674,15 @@ def push_all() -> dict:
             sent += 1
         elif not one.get("ok") and not one.get("skipped"):
             ok = False
+    if sent == 0 and all(r.get("skipped") for r in results):
+        # Normal after voice_hour_batch already pushed + cleaned intermediates.
+        return {
+            "ok": True,
+            "sent": 0,
+            "pushed": [],
+            "mode": "noop",
+            "detail": "no_local_wav — early batch push already cleaned, or batch not run yet",
+        }
     return {"ok": ok, "sent": sent, "pushed": results, "mode": "legacy"}
 
 
