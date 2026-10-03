@@ -52,7 +52,6 @@ def write_cloud_snapshot(snap: dict | None = None, alias: str | None = None) -> 
     if not row:  # info: if not row
         return None  # info: return None
     CLOUD_QUOTA.mkdir(parents=True, exist_ok=True)  # info: CLOUD_QUOTA . mkdir
-    CLOUD_QUOTA_LOG.mkdir(parents=True, exist_ok=True)  # info: CLOUD_QUOTA_LOG . mkdir
     stamp = datetime.now(HST).strftime("%Y%m%d-%H%M%S")  # info: set stamp
     path = CLOUD_QUOTA / f"read-{name}-{stamp}.json"  # info: set path
     source = (snap or {}).get("source") or "cloud"  # info: set source
@@ -64,6 +63,6 @@ def write_cloud_snapshot(snap: dict | None = None, alias: str | None = None) -> 
     }  # info: end payload
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")  # info: path . write_text
     line = f"{payload['at']} alias={name} source={source} soc={payload['fields'].get('soc')}\n"  # info: set line
-    with (CLOUD_QUOTA_LOG / "quota.log").open("a", encoding="utf-8") as fh:  # info: with quota.log
+    with (CLOUD_QUOTA_LOG / "quota.log").open("a", encoding="utf-8") as fh:  # info: quota.log next to Cloud-Quota JSON
         fh.write(line)  # info: fh . write
     return path  # info: return path

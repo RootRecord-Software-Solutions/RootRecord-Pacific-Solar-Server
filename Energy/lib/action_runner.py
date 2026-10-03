@@ -34,7 +34,7 @@ HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _log(msg: str) -> None:  # info: def _log
-    ensure_dirs()  # info: call ensure_dirs
+    BLE_LOG.parent.mkdir(parents=True, exist_ok=True)  # info: create Energy/logs only when an action actually logs
     line = f"{datetime.now(HST).isoformat(timespec='seconds')} action: {msg}\n"  # info: set line
     with BLE_LOG.open("a", encoding="utf-8") as f:  # info: with BLE_LOG . open ( "a" , encoding
         f.write(line)  # info: f . write ( line )

@@ -22,19 +22,20 @@ PORTS = ENERGY_DATA / "ports"  # info: set PORTS
 SOC = ENERGY_DATA / "soc"  # info: set SOC
 WATTS = ENERGY_DATA / "watts"  # info: set WATTS
 
-LOG_DIR = DATABASE_ROOT / "Logs" / "Energy"  # info: set LOG_DIR
+# Energy logs live under Database/Energy/logs — never force-create Database/Logs/Energy.
+LOG_DIR = ENERGY_DATA / "logs"  # info: set LOG_DIR
 BLE_LOG = LOG_DIR / "ecoflow-ble.log"  # info: set BLE_LOG
 STATE_DIR = ENERGY_DATA / "state"  # info: set STATE_DIR
 # Cloud quota snapshots. Created only when a signed-off cloud read writes.
 CLOUD_QUOTA = ENERGY_DATA / "Cloud-Quota"  # info: set CLOUD_QUOTA
-CLOUD_QUOTA_LOG = LOG_DIR / "Cloud-Quota"  # info: set CLOUD_QUOTA_LOG
+CLOUD_QUOTA_LOG = CLOUD_QUOTA  # info: quota.log sits next to the Cloud-Quota JSON files
 
 
 # ====================================================
 # SECTION: function ensure_dirs
-# What it does: ensure dirs.
+# What it does: Create measured Energy data dirs only. Log dirs are created by the writer that needs them.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def ensure_dirs() -> None:  # info: def ensure_dirs
-    for p in (SAMPLES, PORTS, SOC, WATTS, LOG_DIR, STATE_DIR, ENERGY_DATA / "buckets"):  # info: for p in ( SAMPLES , PORTS ,
+    for p in (SAMPLES, PORTS, SOC, WATTS, STATE_DIR, ENERGY_DATA / "buckets"):  # info: measured data only; no Logs/Energy
         p.mkdir(parents=True, exist_ok=True)  # info: p . mkdir ( parents = True ,

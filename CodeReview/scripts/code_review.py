@@ -43,7 +43,7 @@ SKIP = ("password", "api_key", "token=", "secret", "sk-", "bot")  # info: set SK
 # ====================================================
 LOG_ALLOW = (  # info: set LOG_ALLOW
     "Logs/Automations/automations_current.log",  # info: "Logs/Automations/automations_current.log" ,
-    "Logs/Energy/ava-ecoflow-ble.log",  # info: "Logs/Energy/ava-ecoflow-ble.log" ,
+    "Energy/logs/ava-ecoflow-ble.log",  # info: "Energy/logs/ava-ecoflow-ble.log" ,
     "Logs/Communications/council-relay.log",  # info: "Logs/Communications/council-relay.log" ,
 )  # info: )
 

@@ -12,9 +12,9 @@ ROOT="/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-S
 DB="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy"
 SIGHT="$DB/state/ble-sight-${ALIAS}.json"
 SAMPLES="$DB/samples"
-LOG="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Energy/${ALIAS}-ac-force.log"
+LOG="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/logs/${ALIAS}-ac-force.log"
 if [[ "$ALIAS" == "river2pro" ]]; then
-  LOG="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Energy/river2pro-ac-recover.log"
+  LOG="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/logs/river2pro-ac-recover.log"
 fi
 mkdir -p "$(dirname "$LOG")"
 AC_ON="$ROOT/scripts/actions/${ALIAS}-ac-on.sh"

@@ -29,7 +29,7 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 # Pacific copy: log/pid live under the canonical RootRecord Database (2026-09-29); override via env.
-LOG = Path(os.environ.get("ENERGY_BLE_LOG", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Energy/ava-ecoflow-ble.log"))  # info: set LOG
+LOG = Path(os.environ.get("ENERGY_BLE_LOG", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/logs/ava-ecoflow-ble.log"))  # info: set LOG
 PID = Path(os.environ.get("ENERGY_BLE_PID", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/state/ava-ecoflow-ble.pid"))  # info: set PID
 INTERVAL = float(os.environ.get("ENERGY_BLE_OWNER_INTERVAL_S", "30"))  # info: set INTERVAL
 _stop = False  # info: set _stop
