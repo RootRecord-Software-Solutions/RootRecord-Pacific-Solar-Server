@@ -40,6 +40,8 @@ PACKS = ("river2pro", "delta2")  # info: set PACKS
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 DISCHARGE_SOC = 5.0  # info: set DISCHARGE_SOC
 DISCHARGE_AGE_S = 30 * 60  # info: set DISCHARGE_AGE_S
+# Live board on ML1: BLE only, and not older than this (cloud is never shown).
+LIVE_MAX_AGE_S = float(os.environ.get("RR_ENERGY_ML1_LIVE_MAX_S", "180"))  # info: set LIVE_MAX_AGE_S
 
 
 # ====================================================
@@ -72,7 +74,7 @@ def _age_s(rel: str) -> float:  # info: def _age_s
 
 # ====================================================
 # SECTION: function _pack
-# What it does: One pack row from soc + watts current files, with discharged flag.
+# What it does: One pack row from BLE current files only. Cloud / stale → WAITING, not a live number.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _pack(alias: str) -> dict:  # info: def _pack
@@ -81,28 +83,51 @@ def _pack(alias: str) -> dict:  # info: def _pack
     soc = _read(soc_rel)  # info: set soc
     watts = _read(watt_rel)  # info: set watts
     age = min(_age_s(soc_rel), _age_s(watt_rel))  # info: freshest of the pair
-    charge = soc.get("soc")  # info: set charge
+    raw_src = str(watts.get("source") or soc.get("source") or "")  # info: set raw_src
+    ble = raw_src.startswith("ble")  # info: cloud / empty is not a live board
+    charge = soc.get("soc") if ble else None  # info: ignore cloud charge
     try:  # info: try
         charge_f = float(charge) if charge is not None else None  # info: set charge_f
     except (TypeError, ValueError):  # info: except
         charge_f = None  # info: set charge_f
     discharged = (  # info: set discharged
-        charge_f is not None  # info: have a percent
+        ble  # info: only from a BLE last
+        and charge_f is not None  # info: have a percent
         and charge_f <= DISCHARGE_SOC  # info: at or under 5%
         and age > DISCHARGE_AGE_S  # info: quiet longer than 30 minutes
     )  # info: )
+    live = ble and not discharged and age <= LIVE_MAX_AGE_S and charge_f is not None  # info: fresh BLE only
+    empty = {  # info: set empty
+        "alias": alias,  # info: "alias" : alias ,
+        "soc": None,  # info: "soc" : None ,
+        "source": "WAITING" if not ble else ("powered_off" if discharged else "stale"),  # info: status
+        "at": max(str(soc.get("at") or ""), str(watts.get("at") or "")),  # info: file stamp only
+        "age_s": round(age, 1) if age < 1e11 else None,  # info: None when no file
+        "discharged_powered_off": discharged,  # info: "discharged_powered_off" : discharged ,
+        "ac_output_power": None,  # info: "ac_output_power" : None ,
+        "ac_input_power": None,  # info: "ac_input_power" : None ,
+        "solar_input_power": None,  # info: "solar_input_power" : None ,
+        "usbc_output_power": None,  # info: "usbc_output_power" : None ,
+        "charge_source": None,  # info: "charge_source" : None ,
+        "file_source": raw_src or None,  # info: what the disk said (cloud stays labeled)
+    }  # info: }
+    if not live:  # info: if not live
+        if discharged:  # info: powered off pack
+            empty["soc"] = charge_f  # info: keep the last BLE percent for off labeling
+        return empty  # info: return empty
     return {  # info: return {
         "alias": alias,  # info: "alias" : alias ,
         "soc": charge_f,  # info: "soc" : charge_f ,
-        "source": watts.get("source") or soc.get("source"),  # info: prefer watt source
+        "source": raw_src,  # info: ble or ble+cloud
         "at": max(str(soc.get("at") or ""), str(watts.get("at") or "")),  # info: freshest stamp
-        "age_s": round(age, 1) if age < 1e11 else None,  # info: None when no file
-        "discharged_powered_off": discharged,  # info: "discharged_powered_off" : discharged ,
+        "age_s": round(age, 1),  # info: age
+        "discharged_powered_off": False,  # info: "discharged_powered_off" : False ,
         "ac_output_power": watts.get("ac_output_power"),  # info: "ac_output_power" : watts . get (
         "ac_input_power": watts.get("ac_input_power"),  # info: "ac_input_power" : watts . get (
         "solar_input_power": watts.get("solar_input_power"),  # info: "solar_input_power" : watts . get (
         "usbc_output_power": watts.get("usbc_output_power"),  # info: "usbc_output_power" : watts . get (
         "charge_source": watts.get("charge_source"),  # info: "charge_source" : watts . get (
+        "file_source": raw_src,  # info: "file_source" : raw_src ,
     }  # info: }
 
 
@@ -117,12 +142,23 @@ def build() -> dict:  # info: def build
     delta = packs["delta2"]  # info: set delta
     now = datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")  # info: set now
     hst = datetime.now(HST).isoformat(timespec="seconds")  # info: set hst
+    def _cell(pack: dict) -> str:  # info: def _cell
+        if pack.get("discharged_powered_off"):  # info: if pack . get ( "discharged_powered_off" )
+            return "off"  # info: return "off"
+        if pack.get("soc") is None:  # info: if pack . get ( "soc" ) is None
+            return "WAITING"  # info: return "WAITING"
+        return str(pack.get("soc"))  # info: return str ( pack . get ( "soc" )
+
+    def _w(pack: dict, key: str) -> str:  # info: def _w
+        val = pack.get(key)  # info: set val
+        return "—" if val is None else str(val)  # info: em-dash when not live BLE
+
     line = (  # info: set line
         "ENERGY  "  # info: ENERGY prefix
-        + f"B1={'off' if river.get('discharged_powered_off') else river.get('soc')} "  # info: River
-        + f"B2={'off' if delta.get('discharged_powered_off') else delta.get('soc')} "  # info: Delta
-        + f"ac={river.get('ac_output_power')} "  # info: River AC out (live pack)
-        + f"solar_r={river.get('solar_input_power')} solar_d={delta.get('solar_input_power')} "  # info: solar
+        + f"B1={_cell(river)} "  # info: River
+        + f"B2={_cell(delta)} "  # info: Delta
+        + f"ac={_w(river, 'ac_output_power')} "  # info: River AC out only when live BLE
+        + f"solar_r={_w(river, 'solar_input_power')} solar_d={_w(delta, 'solar_input_power')} "  # info: solar
         + f"src_r={river.get('source')} src_d={delta.get('source')}"  # info: sources
     )  # info: )
     return {  # info: return {
@@ -131,7 +167,7 @@ def build() -> dict:  # info: def build
         "hst": hst,  # info: "hst" : hst ,
         "line": line.strip(),  # info: "line" : line . strip ( ) ,
         "packs": packs,  # info: "packs" : packs ,
-        "note": "Pacific BLE/watt current files over SSH. Cloud not used.",  # info: note
+        "note": "BLE only over SSH. Cloud and stale files become WAITING — never shown as live.",  # info: note
     }  # info: }
 
 

@@ -272,25 +272,21 @@ def _ble_pack(alias: str) -> dict:  # info: def _ble_pack
     elif not _ble_complete(fields) and _ble_complete(merged):  # info: fall back when sample was sparse
         fields = merged  # info: set fields
     if _ble_complete(fields):  # info: live BLE won
-        return {"soc": {"soc": fields.get("soc")}, "watts": fields}  # info: return pack
-    # River often stays NeedBindInstallFirst — show cloud board so the still is not blank.
-    cloud: dict = {}  # info: set cloud
-    for kind, path in (("soc", ENERGY / "soc" / f"{alias}_current.json"), ("watts", ENERGY / "watts" / f"{alias}_current.json")):  # info: for kind , path
+        # Reject quiet/discharged or ancient BLE so the still does not show a dead pack as live.
+        age_paths = [ENERGY / "soc" / f"{alias}_current.json", ENERGY / "watts" / f"{alias}_current.json"]  # info: set age_paths
+        ages = [time.time() - p.stat().st_mtime for p in age_paths if p.is_file()]  # info: set ages
+        age = min(ages) if ages else 1e12  # info: set age
         try:  # info: try
-            row = json.loads(path.read_text(encoding="utf-8"))  # info: set row
-        except (OSError, ValueError):  # info: except
-            continue  # info: continue
-        if str(row.get("source") or "") != "cloud":  # info: cloud only here
-            continue  # info: continue
-        if kind == "soc" and row.get("soc") is not None:  # info: charge
-            cloud["soc"] = row.get("soc")  # info: set soc
-        if kind == "watts":  # info: watts
-            for key in ("solar_input_power", "ac_output_power", "usbc_output_power"):  # info: for key
-                if row.get(key) is not None:  # info: if present
-                    cloud[key] = row.get(key)  # info: set
-    if cloud.get("soc") is not None:  # info: if cloud charge
-        return {"soc": {"soc": cloud.get("soc")}, "watts": cloud}  # info: return cloud pack
-    return {"soc": {"soc": fields.get("soc")}, "watts": fields}  # info: return pack
+            soc_f = float(fields.get("soc"))  # info: set soc_f
+        except (TypeError, ValueError):  # info: except
+            soc_f = None  # info: set soc_f
+        if soc_f is not None and soc_f <= 5.0 and age > 30 * 60:  # info: discharged + quiet
+            return {"soc": {}, "watts": {}}  # info: blank gauge
+        if age > 180:  # info: older than the 3-minute live hold
+            return {"soc": {}, "watts": {}}  # info: blank — do not paint stale BLE
+        return {"soc": {"soc": fields.get("soc")}, "watts": fields}  # info: return pack
+    # Cloud is not a live reading (Alexander 2026-10-03). Blank beats a false board.
+    return {"soc": {}, "watts": {}}  # info: return empty
 
 
 # ====================================================

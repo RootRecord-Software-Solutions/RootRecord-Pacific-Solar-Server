@@ -1397,6 +1397,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "id": "voice_kilauea_image_check",  # info: "id" : "voice_kilauea_image_check" ,
         "enabled": os.environ.get("RR_VOICE_KILAUEA_IMAGE", "0") == "1",
         "every_seconds": 900,  # info: every 15 minutes
+        "at_second": 30,  # info: 30s after geology_kilauea_cams on the same quarter-hour
         "description": "Carly Kīlauea observation image check: kilauea_look (Gemma) on Cams bank, then voice_reports kilauea_image_check. Report-side; not LOCAL_DATA_POLL.",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" kilauea_image_check',  # info: voice report
