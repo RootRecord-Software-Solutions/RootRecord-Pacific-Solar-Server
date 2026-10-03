@@ -1,0 +1,425 @@
+# Fetch, overlap, priority, and narration policy.
+# Change this file to retune the station. Do not hard-code these values in Python.
+
+fetch:
+  timeout_sec: 15
+  connect_timeout_sec: 5
+  retries: 3
+  backoff_sec: 1
+  max_bytes: 2000000
+  user_agent: "RootRecord Radio RSS/1.0"
+  max_redirects: 5
+  max_feeds_per_run: 24
+  max_items_per_feed: 20
+  max_broadcast_age_hours: 36
+  cluster_window_hours: 48
+  similarity: 0.62
+  unhealthy_after_failures: 5
+  intervals_minutes:
+    high: 10
+    medium: 30
+    low: 60
+
+# Applied only when a feed sets native_overlap: true.
+# Native RootRecord desks already cover weather, quakes, volcanoes, and site energy.
+overlap_patterns:
+  - earthquake
+  - "seismic"
+  - kilauea
+  - "hawaiian volcano observatory"
+  - "volcano alert"
+  - "marine forecast"
+  - "marine weather"
+  - "small craft advisory"
+  - "weather forecast"
+  - "nws honolulu"
+  - "gale warning"
+  - "storm warning"
+  - "tropical weather"
+  - "high surf advisory"
+
+# Item text that moves a story into another configured category.
+category_rules:
+  - category: spacex
+    patterns: ["spacex", "starship", "falcon 9", "falcon heavy"]
+  - category: universities
+    patterns: ["university", "universities", "college research", "campus", "peer-reviewed study", "academic journal"]
+  - category: chips
+    patterns: ["nvidia", "cuda", "geforce", "tensor core", "semiconductor", "chipmaker", "foundry", " wafer", "gpu ", " gpus", "hbm3", "hbm4", "blackwell gpu", "hopper gpu", "microsoft", "azure", "openai", "google cloud", "alphabet", "amazon web services", " aws ", "meta platforms", "apple silicon", "tsmc", "taiwan semiconductor", "samsung electronics", "intel ", "amd ", "broadcom", "qualcomm", "arm holdings"]
+  - category: maritime
+    patterns: ["coast guard", "maritime", "vessel", "shipping", "ship collision", "marine casualty", "imo "]
+  - category: aviation
+    patterns: ["aircraft", "airliner", "faa", "runway", "aviation"]
+  - category: cybersecurity
+    patterns: ["cve-", "ransomware", "zero-day", "vulnerability"]
+
+priority_floor:
+  high: high
+  medium: normal
+  low: low
+
+priority_signals:
+  urgent:
+    - "emergency directive"
+    - "actively exploited"
+    - "known exploited"
+    - "major outage"
+  high:
+    - "breakthrough"
+    - "peer-reviewed"
+    - "nature journal"
+    - "science journal"
+    - "university study"
+    - "launch"
+    - "artemis"
+    - "vulnerability"
+    - "zero-day"
+    - "cve-"
+    - "investigation"
+    - "aircraft accident"
+    - "marine casualty"
+    - "discovery"
+    - "fomc"
+    - "rate decision"
+    - "press release"
+  low: []
+
+# science_offbeat stays under alerts, launches, and security items.
+category_priority_cap:
+  science_offbeat: normal
+
+political_patterns:
+  - election
+  - candidate
+  - parliament
+  - congress
+  - senator
+  - "white house"
+  - "prime minister"
+  - ballot
+  - "political party"
+  - campaign
+
+# Sentences matching these are left out of the spoken script.
+drop_sentence_patterns:
+  - "vote for"
+  - "you should vote"
+  - "cast your ballot"
+
+# Whole items dropped when the feed sets nonviolent: true. Hawaii uses this.
+violence_patterns:
+  - homicide
+  - murder
+  - manslaughter
+  - shooting
+  - "shot dead"
+  - "shot and"
+  - stabbed
+  - stabbing
+  - "sexual assault"
+  - rape
+  - robbery
+  - gunman
+  - gunfire
+  - "domestic violence"
+  - assault
+  - killed
+  - killing
+  - deadly
+  - "fatal crash"
+  - kidnapping
+  - hostage
+
+
+# Whole items dropped on feeds marked centrist: true. Keeps mainland politics desks on official and measured wording.
+partisan_patterns:
+  - "radical left"
+  - "radical right"
+  - "far-left"
+  - "far-right"
+  - "far left"
+  - "far right"
+  - "libtard"
+  - "demonrat"
+  - "maga republican"
+  - "maga democrat"
+  - "deep state"
+  - "stolen election"
+  - "rigged election"
+  - "witch hunt"
+  - "fascist democrat"
+  - "fascist republican"
+  - "communist democrat"
+  - "communist republican"
+  - " Traitor Trump"
+  - " Traitor Biden"
+  - "lock her up"
+  - "lock him up"
+  - "own the libs"
+  - "own the conservatives"
+
+# Whole items dropped from every feed. Keeps sports out of news and radio reports.
+# Prefer /sports/ and league names. Do not use bare "sport" (matches transportation).
+sports_patterns:
+  - "/sports/"
+  - "/sport/"
+  - "/sport?"
+  - "bbc.co.uk/sport"
+  - "espn.com"
+  - "espn."
+  - "sports "
+  - " sports"
+  - "sports:"
+  - "sports,"
+  - "nfl"
+  - "nba"
+  - "mlb"
+  - "nhl"
+  - "ncaa"
+  - "wnba"
+  - " soccer"
+  - "soccer "
+  - "football"
+  - "basketball"
+  - "baseball"
+  - "volleyball"
+  - "hockey"
+  - "scoreboard"
+  - "super bowl"
+  - "world cup"
+  - "premier league"
+  - "march madness"
+  - "olympics"
+  - "olympic "
+  - "boxing"
+  - "ufc"
+  - "pga tour"
+  - "touchdown"
+  - "home run"
+  - "prep football"
+  - "tennis"
+  - "golf tournament"
+
+programs:
+  NEWS_BRIEF:
+    report: news_brief
+    voice: af_heart
+    lead: "News brief."
+  SCIENCE_BRIEF:
+    report: science_brief
+    voice: af_heart
+    lead: "Science brief."
+  SPACE_BRIEF:
+    report: space_brief
+    voice: am_echo
+    lead: "Space brief."
+  TECH_BRIEF:
+    report: tech_brief
+    voice: am_echo
+    lead: "Technology brief."
+  AI_BRIEF:
+    report: ai_brief
+    voice: af_heart
+    lead: "Artificial intelligence brief."
+  CYBER_BRIEF:
+    report: cyber_brief
+    voice: af_nova
+    lead: "Cybersecurity brief."
+  DEVELOPER_BRIEF:
+    report: developer_brief
+    voice: am_echo
+    lead: "Developer brief."
+  AVIATION_BRIEF:
+    report: aviation_brief
+    voice: af_nova
+    lead: "Transportation brief."
+  ENERGY_BRIEF:
+    report: energy_brief
+    voice: am_echo
+    lead: "Energy markets brief."
+  ECONOMICS_BRIEF:
+    report: economics_brief
+    voice: af_heart
+    lead: "Economics brief."
+  CHIPS_BRIEF:
+    report: chips_brief
+    voice: am_echo
+    lead: "Tech and chips brief."
+  UNIVERSITIES_BRIEF:
+    report: universities_brief
+    voice: af_heart
+    lead: "Universities brief."
+  MAINLAND_WEATHER_BRIEF:
+    report: mainland_weather_brief
+    voice: af_nova
+    lead: "Mainland weather brief."
+  MAINLAND_POLITICS_BRIEF:
+    report: mainland_politics_brief
+    voice: af_heart
+    lead: "Mainland politics brief."
+  GLOBAL_NEWS_BRIEF:
+    report: global_news_brief
+    voice: af_heart
+    lead: "Global news brief."
+  OFFBEAT_BRIEF:
+    report: offbeat_brief
+    voice: af_nova
+    lead: "Science notebook."
+  MARKETS_BRIEF:
+    report: markets_brief
+    voice: am_echo
+    lead: "Market report."
+  DEFENCE_BRIEF:
+    report: defence_brief
+    voice: af_nova
+    lead: "National security brief."
+  SPACEX_BRIEF:
+    report: spacex_brief
+    voice: am_echo
+    lead: "SpaceX brief."
+  HAWAII_BRIEF:
+    report: hawaii_brief
+    voice: af_heart
+    lead: "Hawaii brief."
+
+# One hourly bulletin aimed at about twenty to twenty-five spoken minutes (~150 words/min).
+# Solar desk uses about five to seven minutes; remaining airtime (~20-25 min) fills here instead of sports.
+# Weighting: tech/chips (NVIDIA, Microsoft, big tech), truly global world news (Asia, Australia, Africa,
+# Europe, Latin America, Middle East, North America), U.S. mainland weather, centrist mainland politics,
+# universities, and science breakthroughs — plus markets, security, SpaceX, and Hawaii.
+# Voices: Ava, Bruce, and Carly share the hour with roughly equal airtime; Hawaii hour still picks the first preference.
+# Optional per-desk words override desk_words. Primary desks are polled by news-hour.
+news_update:
+  report: news_update
+  target_words: 3500
+  desk_words: 220
+  fresh_hours: 18
+  backfill_hours: 36
+  roster: [ava, bruce, carly]
+  desks:
+    - id: markets
+      name: Markets
+      lead: "Markets."
+      words: 220
+      categories: [markets, economics_finance, energy_market]
+    - id: defence
+      name: National security
+      lead: "National security."
+      words: 220
+      categories: [national_security]
+    - id: spacex
+      name: SpaceX
+      lead: "SpaceX."
+      words: 180
+      categories: [spacex]
+    - id: hawaii
+      name: Hawaii
+      lead: "Hawaii."
+      words: 220
+      categories: [hawaii]
+    - id: chips
+      name: Tech and chips
+      lead: "Tech and chips."
+      words: 420
+      categories: [chips, artificial_intelligence, developer_ecosystem]
+    - id: world
+      name: World
+      lead: "World."
+      words: 520
+      categories: [global_news]
+    - id: mainland_weather
+      name: Mainland weather
+      lead: "Mainland weather."
+      words: 360
+      categories: [mainland_weather]
+    - id: mainland_politics
+      name: Mainland politics
+      lead: "Mainland politics."
+      words: 360
+      categories: [mainland_politics]
+    - id: science
+      name: Science
+      lead: "Science."
+      words: 400
+      categories: [science, research, science_offbeat]
+    - id: universities
+      name: Universities
+      lead: "Universities."
+      words: 340
+      categories: [universities]
+    - id: also
+      name: Also
+      lead: "Also in the news."
+      fill: true
+      words: 280
+      categories: [space, cybersecurity, technology, aviation]
+
+publishers:
+  NASA: "NASA"
+  "NASA JPL": "NASA's Jet Propulsion Laboratory"
+  ESA: "the European Space Agency"
+  NSF: "the National Science Foundation"
+  NIST: "the National Institute of Standards and Technology"
+  "Ars Technica": "Ars Technica"
+  "The Register": "The Register"
+  WIRED: "WIRED"
+  NVIDIA: "NVIDIA"
+  GitHub: "GitHub"
+  NTSB: "the National Transportation Safety Board"
+  EIA: "the Energy Information Administration"
+  "Federal Reserve": "the Federal Reserve"
+  NPR: "NPR"
+  "The Guardian": "The Guardian"
+  "Al Jazeera": "Al Jazeera"
+  Docker: "Docker"
+  Cloudflare: "Cloudflare"
+  "Linux Kernel": "the Linux kernel archive"
+  Microsoft: "Microsoft"
+  Google: "Google"
+  ScienceDaily: "ScienceDaily"
+  "Bureau of Labor Statistics": "the Bureau of Labor Statistics"
+  "Bureau of Economic Analysis": "the Bureau of Economic Analysis"
+  SEC: "the Securities and Exchange Commission"
+  CFTC: "the Commodity Futures Trading Commission"
+  MarketWatch: "MarketWatch"
+  BBC: "the BBC"
+  NASASpaceflight: "NASASpaceflight"
+  CNBC: "CNBC"
+  "USNI News": "U.S. Naval Institute News"
+  "Breaking Defense": "Breaking Defense"
+  "Defense News": "Defense News"
+  "UK Ministry of Defence": "the U.K. Ministry of Defence"
+  "Space.com": "Space dot com"
+  SpaceNews: "SpaceNews"
+  "Spaceflight Now": "Spaceflight Now"
+  "Honolulu Civil Beat": "Honolulu Civil Beat"
+  "Honolulu Star-Advertiser": "the Honolulu Star-Advertiser"
+  "Hawaii News Now": "Hawaii News Now"
+  "Office of the Governor of Hawaii": "the Office of the Governor of Hawaii"
+  "Hawaii DBEDT": "the Hawaii Department of Business, Economic Development, and Tourism"
+  "Hawaii Department of Health": "the Hawaii Department of Health"
+  Microsoft: "Microsoft"
+  "Associated Press": "the Associated Press"
+  Reuters: "Reuters"
+  "ABC News Australia": "ABC News Australia"
+  "Africa News": "Africanews"
+  "All Africa": "AllAfrica"
+  "South China Morning Post": "the South China Morning Post"
+  "Japan Times": "the Japan Times"
+  "Times of India": "the Times of India"
+  "Deutsche Welle": "Deutsche Welle"
+  "France 24": "France 24"
+  "Latin America Reports": "Latin America news desks"
+  "White House": "the White House"
+  "United Nations": "the United Nations"
+  Nature: "Nature"
+  "MIT News": "MIT News"
+  "Stanford News": "Stanford News"
+  "Harvard Gazette": "the Harvard Gazette"
+  "UC Berkeley": "UC Berkeley"
+  "Phys.org": "Phys.org"
+  NOAA: "the National Oceanic and Atmospheric Administration"
+  "National Hurricane Center": "the National Hurricane Center"
+  "Storm Prediction Center": "the Storm Prediction Center"
+  "Federal Register": "the Federal Register"
+  Congress: "Congress.gov"

@@ -1,0 +1,1816 @@
+# External RSS registry. Add or remove a feed here. No Python change is required.
+# Every url below was copied from the publisher's page on 2026-10-01, or left blank
+# when that page did not expose a stable RSS or Atom endpoint.
+# origin: external | overlapping | unavailable
+feeds:
+  - id: nasa_news
+    name: NASA News Releases
+    provider: NASA
+    category: space
+    type: rss
+    url: https://www.nasa.gov/news-release/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.nasa.gov/rss-feeds/
+
+  - id: nasa_recent
+    name: NASA Recently Published Content
+    provider: NASA
+    category: space
+    type: rss
+    url: https://www.nasa.gov/feed/
+    enabled: true
+    priority: high
+    native_overlap: true
+    origin: overlapping
+    directory: https://www.nasa.gov/rss-feeds/
+    note: "Site-wide feed. Weather, quake, and volcano items are dropped."
+
+  - id: nasa_technology
+    name: NASA Technology
+    provider: NASA
+    category: space
+    type: rss
+    url: https://www.nasa.gov/technology/feed/
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.nasa.gov/rss-feeds/
+
+  - id: nasa_aeronautics
+    name: NASA Aeronautics
+    provider: NASA
+    category: space
+    type: rss
+    url: https://www.nasa.gov/aeronautics/feed/
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.nasa.gov/rss-feeds/
+
+  - id: nasa_station
+    name: NASA Space Station
+    provider: NASA
+    category: space
+    type: rss
+    url: https://www.nasa.gov/missions/station/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.nasa.gov/rss-feeds/
+
+  - id: nasa_artemis
+    name: NASA Artemis
+    provider: NASA
+    category: space
+    type: rss
+    url: https://www.nasa.gov/missions/artemis/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.nasa.gov/rss-feeds/
+
+  - id: nasa_goddard
+    name: NASA Goddard
+    provider: NASA
+    category: space
+    type: rss
+    url: https://www.nasa.gov/centers-and-facilities/goddard/feed/
+    enabled: true
+    priority: medium
+    native_overlap: true
+    origin: overlapping
+    directory: https://www.nasa.gov/rss-feeds/
+    note: "Goddard also publishes Earth science. Overlap filter stays on."
+
+  - id: nasa_kennedy
+    name: NASA Kennedy
+    provider: NASA
+    category: space
+    type: rss
+    url: https://www.nasa.gov/centers-and-facilities/kennedy/feed/
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.nasa.gov/rss-feeds/
+
+  - id: nasa_marshall
+    name: NASA Marshall
+    provider: NASA
+    category: space
+    type: rss
+    url: https://www.nasa.gov/centers-and-facilities/marshall/feed/
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.nasa.gov/rss-feeds/
+
+  - id: nasa_jpl
+    name: NASA JPL Center Feed
+    provider: NASA JPL
+    category: space
+    type: rss
+    url: https://www.nasa.gov/centers-and-facilities/jpl/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.nasa.gov/rss-feeds/
+
+  - id: jpl_news
+    name: NASA JPL News
+    provider: NASA JPL
+    category: space
+    type: rss
+    url: https://www.jpl.nasa.gov/feeds/news/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.jpl.nasa.gov/feeds/news/
+    note: "Official JPL news feed. This desk received HTTP 403 on 2026-10-01. Failure policy can mark it unhealthy. The source stays in the registry."
+
+  - id: jpl_podcasts
+    name: NASA JPL Podcasts
+    provider: NASA JPL
+    category: space
+    type: rss
+    url: https://www.jpl.nasa.gov/feeds/podcasts/
+    enabled: false
+    priority: low
+    native_overlap: false
+    origin: external
+    directory: https://www.jpl.nasa.gov/feeds/podcasts/
+    note: "Optional podcast feed. Left off so the news feed is the JPL brief."
+
+  - id: cneos_feed
+    name: NASA CNEOS
+    provider: NASA JPL
+    category: space
+    type: rss
+    url: ""
+    enabled: false
+    priority: medium
+    native_overlap: false
+    origin: unavailable
+    directory: https://cneos.jpl.nasa.gov/
+    note: "The CNEOS homepage linked /feed/ on 2026-10-01. That URL returned HTML, not RSS or Atom. No second official feed was listed. RootRecord has no NEO desk, and this source stays unavailable until a real feed is published."
+
+  - id: esa_top_news
+    name: ESA Top News
+    provider: ESA
+    category: space
+    type: rss
+    url: https://www.esa.int/rssfeed/Our_Activities/Space_News
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.esa.int/Services/RSS_Feeds
+
+  - id: esa_space_science
+    name: ESA Space Science
+    provider: ESA
+    category: space
+    type: rss
+    url: https://www.esa.int/rssfeed/Our_Activities/Space_Science
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.esa.int/Services/RSS_Feeds
+
+  - id: esa_human_spaceflight
+    name: ESA Human Spaceflight
+    provider: ESA
+    category: space
+    type: rss
+    url: https://www.esa.int/rssfeed/Our_Activities/Human_Spaceflight
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.esa.int/Services/RSS_Feeds
+
+  - id: esa_earth_observation
+    name: ESA Earth Observation
+    provider: ESA
+    category: space
+    type: rss
+    url: https://www.esa.int/rssfeed/Our_Activities/Observing_the_Earth
+    enabled: true
+    priority: medium
+    native_overlap: true
+    origin: overlapping
+    directory: https://www.esa.int/Services/RSS_Feeds
+    note: "Earth-observation science stays. Forecast and warning items are dropped."
+
+  - id: esa_technology
+    name: ESA Technology
+    provider: ESA
+    category: space
+    type: rss
+    url: https://www.esa.int/rssfeed/Our_Activities/Space_Engineering_Technology
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.esa.int/Services/RSS_Feeds
+
+  - id: esa_exploration
+    name: ESA Exploration
+    provider: ESA
+    category: space
+    type: rss
+    url: ""
+    enabled: false
+    priority: medium
+    native_overlap: false
+    origin: unavailable
+    directory: https://www.esa.int/Services/RSS_Feeds
+    note: "The ESA RSS directory on 2026-10-01 did not list an Exploration feed."
+
+  - id: nsf_news
+    name: NSF News
+    provider: NSF
+    category: science
+    type: rss
+    url: https://www.nsf.gov/rss/rss_www_news.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.nsf.gov/rss
+
+  - id: nsf_events
+    name: NSF Events
+    provider: NSF
+    category: science
+    type: rss
+    url: https://www.nsf.gov/rss/rss_www_events.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.nsf.gov/rss
+
+  - id: nsf_statistics
+    name: NSF Statistics
+    provider: NSF
+    category: research
+    type: rss
+    url: https://ncses.nsf.gov/rss
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.nsf.gov/rss
+
+  - id: nist_news
+    name: NIST News
+    provider: NIST
+    category: science
+    type: rss
+    url: https://www.nist.gov/news-events/news/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.nist.gov/coo/nist-rss-feeds
+
+  - id: nist_cybersecurity
+    name: NIST Cybersecurity
+    provider: NIST
+    category: cybersecurity
+    type: rss
+    url: https://www.nist.gov/news-events/cybersecurity/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.nist.gov/coo/nist-rss-feeds
+
+  - id: nist_cyber_insights
+    name: NIST Cybersecurity Insights Blog
+    provider: NIST
+    category: cybersecurity
+    type: rss
+    url: https://www.nist.gov/blogs/cybersecurity-insights/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.nist.gov/coo/nist-rss-feeds
+
+  - id: nist_it
+    name: NIST Information Technology
+    provider: NIST
+    category: cybersecurity
+    type: rss
+    url: https://www.nist.gov/news-events/information%20technology/rss.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.nist.gov/coo/nist-rss-feeds
+
+  - id: nist_physics
+    name: NIST Physics
+    provider: NIST
+    category: science
+    type: rss
+    url: https://www.nist.gov/news-events/physics/rss.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.nist.gov/coo/nist-rss-feeds
+
+  - id: nist_materials
+    name: NIST Materials
+    provider: NIST
+    category: science
+    type: rss
+    url: https://www.nist.gov/news-events/materials/rss.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.nist.gov/coo/nist-rss-feeds
+
+  - id: nist_nanotechnology
+    name: NIST Nanotechnology
+    provider: NIST
+    category: science
+    type: rss
+    url: https://www.nist.gov/news-events/nanotechnology/rss.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.nist.gov/coo/nist-rss-feeds
+
+  - id: nist_electronics
+    name: NIST Electronics
+    provider: NIST
+    category: technology
+    type: rss
+    url: https://www.nist.gov/news-events/electronics/rss.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.nist.gov/coo/nist-rss-feeds
+
+  - id: nist_communications
+    name: NIST Advanced Communications
+    provider: NIST
+    category: technology
+    type: rss
+    url: https://www.nist.gov/news-events/Advanced%20communications/rss.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.nist.gov/coo/nist-rss-feeds
+
+  - id: nist_manufacturing
+    name: NIST Manufacturing
+    provider: NIST
+    category: technology
+    type: rss
+    url: https://www.nist.gov/news-events/manufacturing/rss.xml
+    enabled: true
+    priority: low
+    native_overlap: false
+    origin: external
+    directory: https://www.nist.gov/coo/nist-rss-feeds
+
+  - id: nist_standards
+    name: NIST Standards
+    provider: NIST
+    category: research
+    type: rss
+    url: https://www.nist.gov/news-events/standards/rss.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.nist.gov/coo/nist-rss-feeds
+
+  - id: nist_resilience
+    name: NIST Resilience
+    provider: NIST
+    category: science
+    type: rss
+    url: https://www.nist.gov/news-events/resilience/rss.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.nist.gov/coo/nist-rss-feeds
+
+  - id: nist_transportation
+    name: NIST Transportation
+    provider: NIST
+    category: transportation
+    type: rss
+    url: https://www.nist.gov/news-events/transportation/rss.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.nist.gov/coo/nist-rss-feeds
+
+  - id: ars_technology
+    name: Ars Technica Technology Lab
+    provider: Ars Technica
+    category: technology
+    type: rss
+    url: https://feeds.arstechnica.com/arstechnica/technology-lab
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://arstechnica.com/rss-feeds/
+
+  - id: ars_gadgets
+    name: Ars Technica Gear and Gadgets
+    provider: Ars Technica
+    category: technology
+    type: rss
+    url: https://feeds.arstechnica.com/arstechnica/gadgets
+    enabled: true
+    priority: low
+    native_overlap: false
+    origin: external
+    directory: https://arstechnica.com/rss-feeds/
+
+  - id: ars_cars
+    name: Ars Technica Cars
+    provider: Ars Technica
+    category: technology
+    type: rss
+    url: https://feeds.arstechnica.com/arstechnica/cars
+    enabled: true
+    priority: low
+    native_overlap: false
+    origin: external
+    directory: https://arstechnica.com/rss-feeds/
+
+  - id: ars_science
+    name: Ars Technica The Scientific Method
+    provider: Ars Technica
+    category: science_offbeat
+    type: rss
+    url: https://feeds.arstechnica.com/arstechnica/science
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://arstechnica.com/rss-feeds/
+
+  - id: ars_all
+    name: Ars Technica All News
+    provider: Ars Technica
+    category: technology
+    type: rss
+    url: https://feeds.arstechnica.com/arstechnica/index
+    enabled: false
+    priority: low
+    native_overlap: false
+    origin: external
+    directory: https://arstechnica.com/rss-feeds/
+    note: "Official all-news feed. Left off because the section feeds already cover technology, gadgets, cars, and science."
+
+  - id: register_security
+    name: The Register Security
+    provider: The Register
+    category: cybersecurity
+    type: rss
+    url: "https://api.theregister.com/api/v1/article?query=tag:security&orderBy=published&site_id=2&remapper=rss&limit=25"
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.theregister.com/design/page/feeds
+
+  - id: register_on_prem
+    name: The Register On-Prem
+    provider: The Register
+    category: technology
+    type: rss
+    url: "https://api.theregister.com/api/v1/article?query=tag:on_prem&orderBy=published&site_id=2&remapper=rss&limit=25"
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.theregister.com/design/page/feeds
+
+  - id: register_off_prem
+    name: The Register Off-Prem
+    provider: The Register
+    category: technology
+    type: rss
+    url: "https://api.theregister.com/api/v1/article?query=tag:off_prem&orderBy=published&site_id=2&remapper=rss&limit=25"
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.theregister.com/design/page/feeds
+
+  - id: register_software
+    name: The Register Software
+    provider: The Register
+    category: technology
+    type: rss
+    url: "https://api.theregister.com/api/v1/article?query=tag:software&orderBy=published&site_id=2&remapper=rss&limit=25"
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.theregister.com/design/page/feeds
+
+  - id: register_science
+    name: The Register Science
+    provider: The Register
+    category: science_offbeat
+    type: rss
+    url: "https://api.theregister.com/api/v1/article?query=tag:science&orderBy=published&site_id=2&remapper=rss&limit=25"
+    enabled: true
+    priority: low
+    native_overlap: false
+    origin: external
+    directory: https://www.theregister.com/design/page/feeds
+
+  - id: wired_ai
+    name: WIRED AI
+    provider: WIRED
+    category: artificial_intelligence
+    type: rss
+    url: https://www.wired.com/feed/tag/ai/latest/rss
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.wired.com/about/rss-feeds/
+
+  - id: wired_science
+    name: WIRED Science
+    provider: WIRED
+    category: science
+    type: rss
+    url: https://www.wired.com/feed/category/science/latest/rss
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.wired.com/about/rss-feeds/
+
+  - id: wired_security
+    name: WIRED Security
+    provider: WIRED
+    category: cybersecurity
+    type: rss
+    url: https://www.wired.com/feed/category/security/latest/rss
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.wired.com/about/rss-feeds/
+
+  - id: wired_business
+    name: WIRED Business
+    provider: WIRED
+    category: technology
+    type: rss
+    url: https://www.wired.com/feed/category/business/latest/rss
+    enabled: true
+    priority: low
+    native_overlap: false
+    origin: external
+    directory: https://www.wired.com/about/rss-feeds/
+
+  - id: nvidia_blog
+    name: NVIDIA Blog
+    provider: NVIDIA
+    category: chips
+    type: rss
+    url: https://feeds.feedburner.com/nvidiablog
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.nvidia.com/en-us/about-nvidia/rss/
+
+  - id: nvidia_developer
+    name: NVIDIA Developer Blog
+    provider: NVIDIA
+    category: chips
+    type: atom
+    url: https://developer.nvidia.com/blog/feed
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.nvidia.com/en-us/about-nvidia/rss/
+
+  - id: nvidia_press
+    name: NVIDIA Press Room
+    provider: NVIDIA
+    category: chips
+    type: rss
+    url: https://nvidianews.nvidia.com/releases.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.nvidia.com/en-us/about-nvidia/rss/
+    note: "The NVIDIA RSS page listed the blog, the developer blog, and the press room. It did not link the category newsroom feeds, so those were not added."
+
+  - id: openai_news
+    name: OpenAI
+    provider: OpenAI
+    category: artificial_intelligence
+    type: rss
+    url: ""
+    enabled: false
+    priority: medium
+    native_overlap: false
+    origin: unavailable
+    directory: https://openai.com/news/
+    note: "openai.com/news returned HTTP 403 on 2026-10-01. No official RSS URL was verified."
+
+  - id: anthropic_news
+    name: Anthropic
+    provider: Anthropic
+    category: artificial_intelligence
+    type: rss
+    url: ""
+    enabled: false
+    priority: medium
+    native_overlap: false
+    origin: unavailable
+    directory: https://www.anthropic.com/news
+    note: "anthropic.com/news exposed no RSS or Atom link on 2026-10-01."
+
+  - id: google_ai
+    name: Google AI
+    provider: Google
+    category: artificial_intelligence
+    type: rss
+    url: https://blog.google/innovation-and-ai/technology/ai/rss/
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://blog.google/innovation-and-ai/technology/ai/
+
+  - id: cisa_advisories
+    name: CISA Cybersecurity Advisories
+    provider: CISA
+    category: cybersecurity
+    type: rss
+    url: ""
+    enabled: false
+    priority: high
+    native_overlap: false
+    origin: unavailable
+    directory: https://www.cisa.gov/news-events/cybersecurity-advisories
+    note: "The advisories page exposed an email subscribe link on 2026-10-01, not an RSS or Atom endpoint. Older URLs were not reused."
+
+  - id: cisa_news
+    name: CISA News
+    provider: CISA
+    category: cybersecurity
+    type: rss
+    url: https://www.cisa.gov/news.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.cisa.gov/news-events
+    note: "Official CISA news RSS verified 2026-10-02."
+
+  - id: cisa_alerts
+    name: CISA Alerts
+    provider: CISA
+    category: cybersecurity
+    type: rss
+    url: ""
+    enabled: false
+    priority: high
+    native_overlap: false
+    origin: unavailable
+    directory: https://www.cisa.gov/news-events/cybersecurity-advisories
+    note: "No separate official alerts feed was listed."
+
+  - id: github_changelog
+    name: GitHub Changelog
+    provider: GitHub
+    category: developer_ecosystem
+    type: rss
+    url: https://github.blog/changelog/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://github.blog/changelog/
+
+  - id: docker_blog
+    name: Docker Blog
+    provider: Docker
+    category: developer_ecosystem
+    type: rss
+    url: https://www.docker.com/feed/
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.docker.com/blog/
+
+  - id: kernel_releases
+    name: Linux Kernel
+    provider: Linux Kernel
+    category: developer_ecosystem
+    type: atom
+    url: https://www.kernel.org/feeds/all.atom.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.kernel.org/
+
+  - id: cloudflare_blog
+    name: Cloudflare Blog
+    provider: Cloudflare
+    category: developer_ecosystem
+    type: rss
+    url: https://blog.cloudflare.com/rss/
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://blog.cloudflare.com/
+
+  - id: azure_blog
+    name: Microsoft Azure Blog
+    provider: Microsoft
+    category: developer_ecosystem
+    type: rss
+    url: https://azure.microsoft.com/en-us/blog/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://azure.microsoft.com/en-us/blog/
+
+  - id: kubernetes_blog
+    name: Kubernetes
+    provider: Kubernetes
+    category: developer_ecosystem
+    type: rss
+    url: ""
+    enabled: false
+    priority: medium
+    native_overlap: false
+    origin: unavailable
+    directory: https://kubernetes.io/blog/
+    note: "kubernetes.io/blog exposed no RSS or Atom link on 2026-10-01."
+
+  - id: aws_whats_new
+    name: AWS What's New
+    provider: AWS
+    category: developer_ecosystem
+    type: rss
+    url: ""
+    enabled: false
+    priority: medium
+    native_overlap: false
+    origin: unavailable
+    directory: https://aws.amazon.com/new/
+    note: "The AWS What's New page did not expose an RSS alternate link on 2026-10-01."
+
+  - id: faa_news
+    name: FAA News
+    provider: FAA
+    category: aviation
+    type: rss
+    url: ""
+    enabled: false
+    priority: high
+    native_overlap: false
+    origin: unavailable
+    directory: https://www.faa.gov/newsroom
+    note: "faa.gov/newsroom exposed no news, press, safety, or commercial-space RSS link on 2026-10-01."
+
+  - id: faa_press
+    name: FAA Press Releases
+    provider: FAA
+    category: aviation
+    type: rss
+    url: ""
+    enabled: false
+    priority: high
+    native_overlap: false
+    origin: unavailable
+    directory: https://www.faa.gov/newsroom
+
+  - id: faa_safety
+    name: FAA Safety
+    provider: FAA
+    category: aviation
+    type: rss
+    url: ""
+    enabled: false
+    priority: high
+    native_overlap: false
+    origin: unavailable
+    directory: https://www.faa.gov/newsroom
+
+  - id: faa_commercial_space
+    name: FAA Commercial Space Transportation
+    provider: FAA
+    category: aviation
+    type: rss
+    url: ""
+    enabled: false
+    priority: medium
+    native_overlap: false
+    origin: unavailable
+    directory: https://www.faa.gov/newsroom
+
+  - id: faa_technology
+    name: FAA Aviation Technology
+    provider: FAA
+    category: aviation
+    type: rss
+    url: ""
+    enabled: false
+    priority: medium
+    native_overlap: false
+    origin: unavailable
+    directory: https://www.faa.gov/newsroom
+
+  - id: ntsb_press
+    name: NTSB Press Releases
+    provider: NTSB
+    category: aviation
+    type: rss
+    url: "https://www.ntsb.gov/_layouts/feed.aspx?xsl=1&web=%2F&page=674e62a9-4f3b-4058-846b-150bc1c21aa0&wp=5c78a16b-edcb-475c-8a9c-93c00783cd61&pageurl=%2FPages%2FRSS-Feed-Page.aspx"
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.ntsb.gov/Pages/RSS.aspx
+
+  - id: ntsb_investigations
+    name: NTSB Investigations
+    provider: NTSB
+    category: aviation
+    type: rss
+    url: "https://www.ntsb.gov/_layouts/feed.aspx?xsl=1&web=%2F&page=674e62a9-4f3b-4058-846b-150bc1c21aa0&wp=a19255e2-c8e3-41fd-8c99-f8bc0453cb58&pageurl=%2FPages%2FRSS-Feed-Page.aspx"
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.ntsb.gov/Pages/RSS.aspx
+    note: "Marine investigations in this feed are retagged to maritime by the category rules."
+
+  - id: ntsb_reports
+    name: NTSB Reports
+    provider: NTSB
+    category: aviation
+    type: rss
+    url: "https://www.ntsb.gov/_layouts/feed.aspx?xsl=1&web=%2F&page=674e62a9-4f3b-4058-846b-150bc1c21aa0&wp=4d4ae30f-92c9-4e6c-9c58-6bac99822531&pageurl=%2FPages%2FRSS-Feed-Page.aspx"
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.ntsb.gov/Pages/RSS.aspx
+
+  - id: ntsb_events
+    name: NTSB Events
+    provider: NTSB
+    category: aviation
+    type: rss
+    url: "https://www.ntsb.gov/_layouts/feed.aspx?xsl=1&web=%2F&page=674e62a9-4f3b-4058-846b-150bc1c21aa0&wp=33fbd3d5-1c2f-4aad-9f19-e5c431849561&pageurl=%2FPages%2FRSS-Feed-Page.aspx"
+    enabled: true
+    priority: low
+    native_overlap: false
+    origin: external
+    directory: https://www.ntsb.gov/Pages/RSS.aspx
+
+  - id: eia_today_in_energy
+    name: EIA Today in Energy
+    provider: EIA
+    category: energy_market
+    type: rss
+    url: https://www.eia.gov/rss/todayinenergy.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.eia.gov/tools/rssfeeds/
+
+  - id: eia_whats_new
+    name: EIA What's New
+    provider: EIA
+    category: energy_market
+    type: rss
+    url: https://www.eia.gov/about/new/WNtest3.php
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.eia.gov/tools/rssfeeds/
+    note: "This is the RSS href on EIA's official feeds page for What's New. The filename is the publisher's."
+
+  - id: eia_press
+    name: EIA Press Releases
+    provider: EIA
+    category: energy_market
+    type: rss
+    url: https://www.eia.gov/rss/press_rss.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.eia.gov/tools/rssfeeds/
+
+  - id: eia_fuel_update
+    name: EIA Gasoline and Diesel Fuel Update
+    provider: EIA
+    category: energy_market
+    type: rss
+    url: https://www.eia.gov/petroleum/gasdiesel/includes/gas_diesel_rss.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.eia.gov/tools/rssfeeds/
+
+  - id: eia_heating_oil
+    name: EIA Heating Oil and Propane Update
+    provider: EIA
+    category: energy_market
+    type: rss
+    url: https://www.eia.gov/petroleum/heatingoilpropane/includes/hopu_rss.xml
+    enabled: true
+    priority: low
+    native_overlap: false
+    origin: external
+    directory: https://www.eia.gov/tools/rssfeeds/
+
+  - id: fed_monetary
+    name: Federal Reserve Monetary Policy
+    provider: Federal Reserve
+    category: economics_finance
+    type: rss
+    url: https://www.federalreserve.gov/feeds/press_monetary.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.federalreserve.gov/feeds/feeds.htm
+
+  - id: fed_speeches
+    name: Federal Reserve Speeches
+    provider: Federal Reserve
+    category: economics_finance
+    type: rss
+    url: https://www.federalreserve.gov/feeds/speeches.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.federalreserve.gov/feeds/feeds.htm
+
+  - id: fed_supervision
+    name: Federal Reserve Supervision
+    provider: Federal Reserve
+    category: economics_finance
+    type: rss
+    url: https://www.federalreserve.gov/feeds/press_bcreg.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.federalreserve.gov/feeds/feeds.htm
+
+  - id: fed_banking_letters
+    name: Federal Reserve Supervision Letters
+    provider: Federal Reserve
+    category: economics_finance
+    type: rss
+    url: https://www.federalreserve.gov/feeds/bankinginfo-rss.xml
+    enabled: true
+    priority: low
+    native_overlap: false
+    origin: external
+    directory: https://www.federalreserve.gov/feeds/feeds.htm
+
+  - id: fed_working_papers
+    name: Federal Reserve Working Papers
+    provider: Federal Reserve
+    category: research
+    type: rss
+    url: https://www.federalreserve.gov/feeds/working_papers.xml
+    enabled: true
+    priority: low
+    native_overlap: false
+    origin: external
+    directory: https://www.federalreserve.gov/feeds/feeds.htm
+
+  - id: fed_press_all
+    name: Federal Reserve Press Releases
+    provider: Federal Reserve
+    category: economics_finance
+    type: rss
+    url: ""
+    enabled: false
+    priority: high
+    native_overlap: false
+    origin: unavailable
+    directory: https://www.federalreserve.gov/feeds/feeds.htm
+    note: "The feeds page lists /feeds/press_all.xml. A fetch on 2026-10-01 returned HTTP 404, so it is not enabled."
+
+  - id: npr_news
+    name: NPR News
+    provider: NPR
+    category: global_news
+    type: rss
+    url: https://feeds.npr.org/1001/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.npr.org/
+
+  - id: guardian_international
+    name: The Guardian International
+    provider: The Guardian
+    category: global_news
+    type: rss
+    url: https://www.theguardian.com/international/rss
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.theguardian.com/international
+
+  - id: aljazeera_all
+    name: Al Jazeera
+    provider: Al Jazeera
+    category: global_news
+    type: rss
+    url: https://www.aljazeera.com/xml/rss/all.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.aljazeera.com/
+    note: "Sports items are dropped."
+
+  - id: sciencedaily_all
+    name: ScienceDaily
+    provider: ScienceDaily
+    category: science
+    type: rss
+    url: https://www.sciencedaily.com/rss/all.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.sciencedaily.com/
+
+  - id: bls_latest
+    name: Bureau of Labor Statistics
+    provider: Bureau of Labor Statistics
+    category: markets
+    type: rss
+    url: https://www.bls.gov/feed/bls_latest.rss
+    enabled: false
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.bls.gov/feed/bls_latest.rss
+    note: "The station client received HTTP 403 on 2026-10-01. Left off until that fetch succeeds."
+
+  - id: bea_news
+    name: Bureau of Economic Analysis
+    provider: Bureau of Economic Analysis
+    category: markets
+    type: rss
+    url: https://www.bea.gov/rss/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.bea.gov/rss/rss.xml
+
+  - id: sec_press
+    name: SEC Press Releases
+    provider: SEC
+    category: markets
+    type: rss
+    url: https://www.sec.gov/news/pressreleases.rss
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.sec.gov/news/pressreleases.rss
+
+  - id: cftc_press
+    name: CFTC
+    provider: CFTC
+    category: markets
+    type: rss
+    url: https://www.cftc.gov/RSS/RSSGP/rssgp.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.cftc.gov/RSS/RSSGP/rssgp.xml
+
+  - id: marketwatch_top
+    name: MarketWatch Top Stories
+    provider: MarketWatch
+    category: markets
+    type: rss
+    url: https://feeds.marketwatch.com/marketwatch/topstories/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.marketwatch.com/
+
+  - id: bbc_business
+    name: BBC Business
+    provider: BBC
+    category: markets
+    type: rss
+    url: https://feeds.bbci.co.uk/news/business/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.bbc.com/news/business
+    note: "Sports URLs that leak into this feed are dropped."
+
+  - id: cnbc_markets
+    name: CNBC Markets
+    provider: CNBC
+    category: markets
+    type: rss
+    url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15839069"
+    enabled: false
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.cnbc.com/markets/
+    note: "The station robots check disallowed this URL on 2026-10-01."
+
+  - id: dod_news
+    name: Department of War News
+    provider: Department of War
+    category: national_security
+    type: rss
+    url: ""
+    enabled: false
+    priority: high
+    native_overlap: false
+    origin: unavailable
+    directory: https://www.war.gov/News/RSS/
+    note: "war.gov and defense.gov returned HTTP 403 on 2026-10-01. No official feed body was verified. The desk uses the publishers below until that page allows a fetch."
+
+  - id: usni_news
+    name: USNI News
+    provider: USNI News
+    category: national_security
+    type: rss
+    url: https://news.usni.org/feed
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://news.usni.org/
+
+  - id: breaking_defense
+    name: Breaking Defense
+    provider: Breaking Defense
+    category: national_security
+    type: rss
+    url: https://breakingdefense.com/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://breakingdefense.com/
+
+  - id: defense_news
+    name: Defense News
+    provider: Defense News
+    category: national_security
+    type: rss
+    url: "https://www.defensenews.com/arc/outboundfeeds/rss/?outputType=xml"
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.defensenews.com/
+
+  - id: uk_mod
+    name: UK Ministry of Defence
+    provider: UK Ministry of Defence
+    category: national_security
+    type: atom
+    url: https://www.gov.uk/government/organisations/ministry-of-defence.atom
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.gov.uk/government/organisations/ministry-of-defence.atom
+
+  - id: spacex_official
+    name: SpaceX
+    provider: SpaceX
+    category: spacex
+    type: rss
+    url: ""
+    enabled: false
+    priority: high
+    native_overlap: false
+    origin: unavailable
+    directory: https://www.spacex.com/
+    note: "spacex.com returned HTML on 2026-10-01 and did not expose an RSS or Atom link. Tag feeds from Space.com, SpaceNews, and Spaceflight Now cover the desk."
+
+  - id: spacecom_spacex
+    name: Space.com
+    provider: Space.com
+    category: spacex
+    type: rss
+    url: https://www.space.com/feeds/tag/spacex
+    enabled: false
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.space.com/news/spacex
+    note: "The tag feed returned an empty channel on 2026-10-01. NASASpaceflight, SpaceNews, and Spaceflight Now cover SpaceX items."
+
+  - id: nasaspaceflight
+    name: NASASpaceflight
+    provider: NASASpaceflight
+    category: spacex
+    type: rss
+    url: https://www.nasaspaceflight.com/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    require_patterns: ["spacex", "starship", "falcon 9", "falcon heavy"]
+    origin: external
+    directory: https://www.nasaspaceflight.com/
+
+  - id: spacenews_spacex
+    name: SpaceNews
+    provider: SpaceNews
+    category: spacex
+    type: rss
+    url: https://spacenews.com/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    require_patterns: ["spacex", "starship", "falcon 9", "falcon heavy"]
+    origin: external
+    directory: https://spacenews.com/
+
+  - id: spaceflightnow_spacex
+    name: Spaceflight Now
+    provider: Spaceflight Now
+    category: spacex
+    type: rss
+    url: https://spaceflightnow.com/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    require_patterns: ["spacex", "starship", "falcon 9", "falcon heavy"]
+    origin: external
+    directory: https://spaceflightnow.com/
+
+  - id: hawaii_governor
+    name: Hawaii Governor
+    provider: Office of the Governor of Hawaii
+    category: hawaii
+    type: rss
+    url: https://governor.hawaii.gov/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    nonviolent: true
+    origin: external
+    directory: https://governor.hawaii.gov/
+
+  - id: hawaii_dbedt
+    name: Hawaii DBEDT
+    provider: Hawaii DBEDT
+    category: hawaii
+    type: rss
+    url: https://dbedt.hawaii.gov/feed/
+    enabled: true
+    priority: medium
+    native_overlap: false
+    nonviolent: true
+    origin: external
+    directory: https://dbedt.hawaii.gov/
+
+  - id: hawaii_health
+    name: Hawaii Department of Health
+    provider: Hawaii Department of Health
+    category: hawaii
+    type: rss
+    url: https://health.hawaii.gov/news/feed/
+    enabled: true
+    priority: medium
+    native_overlap: false
+    nonviolent: true
+    origin: external
+    directory: https://health.hawaii.gov/news/
+
+  - id: civil_beat
+    name: Honolulu Civil Beat
+    provider: Honolulu Civil Beat
+    category: hawaii
+    type: rss
+    url: https://www.civilbeat.org/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    nonviolent: true
+    origin: external
+    directory: https://www.civilbeat.org/
+
+  - id: star_advertiser
+    name: Honolulu Star-Advertiser
+    provider: Honolulu Star-Advertiser
+    category: hawaii
+    type: rss
+    url: https://www.staradvertiser.com/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    nonviolent: true
+    origin: external
+    directory: https://www.staradvertiser.com/
+    note: "Sports items are dropped. Violent crime is dropped."
+
+  - id: hawaii_news_now
+    name: Hawaii News Now
+    provider: Hawaii News Now
+    category: hawaii
+    type: rss
+    url: https://www.hawaiinewsnow.com/arc/outboundfeeds/rss/
+    enabled: true
+    priority: medium
+    native_overlap: true
+    nonviolent: true
+    origin: overlapping
+    directory: https://www.hawaiinewsnow.com/
+    note: "Broadcast desk. Weather, quake, and volcano items are dropped. Violent crime is dropped. Sports items are dropped."
+
+  # --- Freed sports airtime: tech/chips, world (every continent), mainland weather, centrist mainland politics ---
+
+  - id: microsoft_news
+    name: Microsoft News
+    provider: Microsoft
+    category: chips
+    type: rss
+    url: https://news.microsoft.com/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://news.microsoft.com/
+    note: "Big-tech desk. Sports airtime reweight 2026-10-02."
+
+  - id: microsoft_blog
+    name: Microsoft Blog
+    provider: Microsoft
+    category: chips
+    type: rss
+    url: https://blogs.microsoft.com/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://blogs.microsoft.com/
+
+  - id: bbc_technology
+    name: BBC Technology
+    provider: BBC
+    category: chips
+    type: rss
+    url: https://feeds.bbci.co.uk/news/technology/rss.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.bbc.com/news/technology
+    note: "Chip and big-tech items. Sports URLs that leak in are dropped."
+
+  - id: bbc_world
+    name: BBC World
+    provider: BBC
+    category: global_news
+    type: rss
+    url: https://feeds.bbci.co.uk/news/world/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.bbc.com/news/world
+
+  - id: bbc_asia
+    name: BBC Asia
+    provider: BBC
+    category: global_news
+    type: rss
+    url: https://feeds.bbci.co.uk/news/world/asia/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.bbc.com/news/world/asia
+
+  - id: bbc_australia
+    name: BBC Australia
+    provider: BBC
+    category: global_news
+    type: rss
+    url: https://feeds.bbci.co.uk/news/world/australia/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.bbc.com/news/world/australia
+    note: "Australia spelling retained in desk copy and publisher notes."
+
+  - id: bbc_africa
+    name: BBC Africa
+    provider: BBC
+    category: global_news
+    type: rss
+    url: https://feeds.bbci.co.uk/news/world/africa/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.bbc.com/news/world/africa
+
+  - id: bbc_europe
+    name: BBC Europe
+    provider: BBC
+    category: global_news
+    type: rss
+    url: https://feeds.bbci.co.uk/news/world/europe/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.bbc.com/news/world/europe
+
+  - id: bbc_latin_america
+    name: BBC Latin America
+    provider: BBC
+    category: global_news
+    type: rss
+    url: https://feeds.bbci.co.uk/news/world/latin_america/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.bbc.com/news/world/latin_america
+
+  - id: bbc_middle_east
+    name: BBC Middle East
+    provider: BBC
+    category: global_news
+    type: rss
+    url: https://feeds.bbci.co.uk/news/world/middle_east/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.bbc.com/news/world/middle_east
+
+  - id: bbc_us_canada
+    name: BBC US and Canada
+    provider: BBC
+    category: global_news
+    type: rss
+    url: https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.bbc.com/news/world/us_and_canada
+    note: "North America world desk. Sports items are dropped."
+
+  - id: npr_world
+    name: NPR World
+    provider: NPR
+    category: global_news
+    type: rss
+    url: https://feeds.npr.org/1004/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.npr.org/sections/world/
+
+  - id: abc_australia_top
+    name: ABC News Australia Top Stories
+    provider: ABC News Australia
+    category: global_news
+    type: rss
+    url: https://www.abc.net.au/news/feed/45910/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.abc.net.au/news/
+    note: "Australia coverage. Spelling is Australia."
+
+  - id: japan_times
+    name: The Japan Times
+    provider: Japan Times
+    category: global_news
+    type: rss
+    url: https://www.japantimes.co.jp/feed/
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.japantimes.co.jp/
+
+  - id: dw_english
+    name: Deutsche Welle English
+    provider: Deutsche Welle
+    category: global_news
+    type: rss
+    url: https://rss.dw.com/xml/rss-en-all
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.dw.com/
+
+  - id: france24_en
+    name: France 24 English
+    provider: France 24
+    category: global_news
+    type: rss
+    url: https://www.france24.com/en/rss
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.france24.com/en/
+
+  - id: africanews
+    name: Africanews
+    provider: Africa News
+    category: global_news
+    type: rss
+    url: https://www.africanews.com/feed/
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.africanews.com/
+
+  - id: un_news
+    name: UN News
+    provider: United Nations
+    category: global_news
+    type: rss
+    url: https://news.un.org/feed/subscribe/en/news/all/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://news.un.org/
+
+  - id: noaa_news
+    name: NOAA News
+    provider: NOAA
+    category: mainland_weather
+    type: rss
+    url: https://www.noaa.gov/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: true
+    origin: overlapping
+    directory: https://www.noaa.gov/
+    note: "U.S. mainland and national weather science. Hawaii forecast overlap patterns still drop native desk duplicates."
+
+  - id: nhc_atlantic
+    name: NHC Atlantic
+    provider: National Hurricane Center
+    category: mainland_weather
+    type: rss
+    url: https://www.nhc.noaa.gov/index-at.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.nhc.noaa.gov/
+
+  - id: nhc_eastern_pacific
+    name: NHC Eastern North Pacific
+    provider: National Hurricane Center
+    category: mainland_weather
+    type: rss
+    url: https://www.nhc.noaa.gov/index-ep.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.nhc.noaa.gov/
+    note: "Eastern Pacific mainland-facing basin. Central Pacific Hawaii basin stays on the native weather desk."
+
+  - id: spc_forecast
+    name: Storm Prediction Center
+    provider: Storm Prediction Center
+    category: mainland_weather
+    type: rss
+    url: https://www.spc.noaa.gov/products/spcrss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.spc.noaa.gov/
+
+  - id: whitehouse_news
+    name: White House News
+    provider: White House
+    category: mainland_politics
+    type: rss
+    url: https://www.whitehouse.gov/news/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    centrist: true
+    origin: external
+    directory: https://www.whitehouse.gov/news/
+    note: "Centrist mainland politics desk. Partisan phrasing is dropped."
+
+  - id: federal_register
+    name: Federal Register
+    provider: Federal Register
+    category: mainland_politics
+    type: rss
+    url: https://www.federalregister.gov/api/v1/documents.rss
+    enabled: true
+    priority: medium
+    native_overlap: false
+    centrist: true
+    origin: external
+    directory: https://www.federalregister.gov/
+    note: "Official rulemaking. Centrist framing only."
+
+  - id: congress_bills
+    name: Congress Most-Viewed Bills
+    provider: Congress
+    category: mainland_politics
+    type: rss
+    url: https://www.congress.gov/rss/most-viewed-bills.xml
+    enabled: true
+    priority: medium
+    native_overlap: false
+    centrist: true
+    origin: external
+    directory: https://www.congress.gov/
+
+  - id: npr_national
+    name: NPR National
+    provider: NPR
+    category: mainland_politics
+    type: rss
+    url: https://feeds.npr.org/1003/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    centrist: true
+    origin: external
+    directory: https://www.npr.org/sections/national/
+    note: "Measured national desk. Partisan phrasing is dropped."
+
+  - id: npr_politics
+    name: NPR Politics
+    provider: NPR
+    category: mainland_politics
+    type: rss
+    url: https://feeds.npr.org/1014/rss.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    centrist: true
+    origin: external
+    directory: https://www.npr.org/sections/politics/
+    note: "Centrist mainland politics. Sports items are dropped. Partisan phrasing is dropped."
+
+  # --- Universities and science breakthroughs (20-25 min airtime fill) ---
+
+  - id: mit_news
+    name: MIT News
+    provider: MIT News
+    category: universities
+    type: rss
+    url: https://news.mit.edu/rss/feed
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://news.mit.edu/
+
+  - id: mit_research
+    name: MIT Research
+    provider: MIT News
+    category: universities
+    type: rss
+    url: https://news.mit.edu/rss/research
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://news.mit.edu/
+
+  - id: harvard_gazette
+    name: Harvard Gazette
+    provider: Harvard Gazette
+    category: universities
+    type: rss
+    url: https://news.harvard.edu/gazette/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://news.harvard.edu/gazette/
+
+  - id: berkeley_news
+    name: UC Berkeley News
+    provider: UC Berkeley
+    category: universities
+    type: rss
+    url: https://news.berkeley.edu/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://news.berkeley.edu/
+
+  - id: nature_news
+    name: Nature
+    provider: Nature
+    category: science
+    type: rss
+    url: https://www.nature.com/nature.rss
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.nature.com/
+    note: "Science breakthroughs and peer-reviewed research highlights."
+
+  - id: science_magazine
+    name: Science Magazine News
+    provider: Science
+    category: science
+    type: rss
+    url: https://www.science.org/rss/news_current.xml
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.science.org/
+
+  - id: phys_org
+    name: Phys.org
+    provider: Phys.org
+    category: science
+    type: rss
+    url: https://phys.org/rss-feed/
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://phys.org/
+
