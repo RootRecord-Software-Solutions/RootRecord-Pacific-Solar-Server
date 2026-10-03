@@ -357,7 +357,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": True,  # info: "enabled" : True ,
         "every_seconds": 60,  # info: "every_seconds" : 60 ,
         "at_second": 30,  # info: "at_second" : 30 ,
-        "description": "Every minute at :30, Energy/scripts/consolidate.py hours — roll closed EcoFlow buckets into the hour and above, then rewrite Energy/layers/periods.json.",  # info: "description"
+        "description": "Every minute at :30, Energy/scripts/consolidate.py hours — roll closed EcoFlow buckets into the hour and above, rewrite Energy/layers/periods.json, and at clock :30 archive automations_current.log into Logs/Automations/Archive.",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"nice -n 10 python3 \"{PACIFIC}/Energy/scripts/consolidate.py\" hours",  # info: "command"
         "timeout_sec": 120,  # info: "timeout_sec" : 120 ,
@@ -1171,12 +1171,12 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "env": {"RR_RADIO_PUSH": "0"},  # info: "env"
     },  # info: } ,
     {  # info: {
-        # Cut the automations log at :30 every hour.
+        # Cut moved into Energy/scripts/consolidate.py hours (minute == 30). Keep id for schedule JSON.
         "id": "automations_log_hourly_archive",  # info: "id" : "automations_log_hourly_archive" ,
-        "enabled": True,  # info: "enabled" : True,
+        "enabled": False,  # info: owned by Energy consolidate.py hours at :30
         "at_minute": 30,  # info: "at_minute" : 30 ,
         "at_second": 0,  # info: "at_second" : 0 ,
-        "description": "Cut and archive automations_current.log hourly into Database/Logs/Automations/Archive.",  # info: "description"
+        "description": "Retired — Energy/scripts/consolidate.py hours renames automations_current.log into Logs/Automations/Archive at :30.",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"bash \"{PACIFIC}/Automations/scripts/archive_automations_log_hourly.sh\"",  # info: "command"
         "timeout_sec": 120,  # info: "timeout_sec" : 120 ,
