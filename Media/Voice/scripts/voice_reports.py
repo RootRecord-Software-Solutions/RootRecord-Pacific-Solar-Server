@@ -28,7 +28,7 @@ hurricane_desk = G1 weather/hurricane-desk Hawaiʻi block (Carly), fed from Data
 tracking/*/track.json (Pacific weather poller, NHC CurrentStorms, Hawaiʻi-relevant storms only) + NWS HI alerts; job gated
 RR_VOICE_HURRICANE=1. G1 global JTWC/RAMMB board, OBS and radio push stay NOT ported.
 kilauea_report = G1 hourly Kīlauea desk line (persona._kilauea_line) + the cached HVO-notice lead-in, from Database
-Geology/Volcanoes/{kilauea,mauna-loa}-last.json; job gated RR_VOICE_KILAUEA=1. G1 rr-kilauea Grok draft / Discord post NOT ported.
+Geology/Volcanoes/Hawaii/{kilauea,mauna-loa}-last.json; job gated RR_VOICE_KILAUEA=1. G1 rr-kilauea Grok draft / Discord post NOT ported.
 kilauea_image_check = Carly every-15m USGS HVO still look via Geology/scripts/kilauea_look.py (Gemma stack shared with
 panel_look); speaks "Kilauea observation image was checked" plus measured fountaining/activity findings; job gated
 RR_VOICE_KILAUEA_IMAGE=1. Report-side only — not in LOCAL_DATA_POLL_JOBS.
@@ -75,7 +75,7 @@ ENERGY = DB / "Energy"  # info: set ENERGY
 QUAKES = DB / "Geology" / "Earthquakes"  # info: set QUAKES
 QUAKE_STATE = REPORTS / "earthquake_report_seen.json"  # G1 earthquake-hourly.json seen_ids (new since last report)
 QUAKE_STALE_MIN = 20  # info: set QUAKE_STALE_MIN
-VOLCANOES = DB / "Geology" / "Volcanoes"  # info: set VOLCANOES
+VOLCANOES = DB / "Geology" / "Volcanoes" / "Hawaii"  # info: Hawaiʻi volcano + cams bank
 ANALYTICS_DAILY = DB / "Logs" / "Website" / "analytics" / "daily"  # info: set ANALYTICS_DAILY
 HVO_STALE_MIN = 30  # info: set HVO_STALE_MIN
 _MAX_HI, _MAX_GLOBAL = 6, 8  # G1 spoken caps
@@ -1074,17 +1074,17 @@ def kilauea_photo_summary() -> str:  # info: def kilauea_photo_summary
 
 # ====================================================
 # SECTION: function b_kilauea_report
-# What it does: G1 hourly Kīlauea desk (persona._kilauea_line wording) + HVO notice excerpt, from Database Geology/Volcanoes/.
+# What it does: G1 hourly Kīlauea desk (persona._kilauea_line wording) + HVO notice excerpt, from Database Geology/Volcanoes/Hawaii/.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def b_kilauea_report(t: datetime):  # info: def b_kilauea_report
-    """G1 hourly Kīlauea desk (persona._kilauea_line wording) + HVO notice excerpt, from Database Geology/Volcanoes/."""  # info: """G1 hourly Kīlauea desk (persona._kilauea_line wording) + HVO notice excerpt, from Database Geology/Volcanoe
+    """G1 hourly Kīlauea desk (persona._kilauea_line wording) + HVO notice excerpt, from Database Geology/Volcanoes/Hawaii/."""  # info: Hawaiʻi volcano bank
     k, ml = jload(VOLCANOES / "kilauea-last.json"), jload(VOLCANOES / "mauna-loa-last.json")  # info: k , ml = jload ( VOLCANOES /
     hi = jload(QUAKES / "hawaii-last.json") or {}  # info: set hi
     photo_line = kilauea_photo_summary()  # info: set photo line
     md = [f"# Kilauea report — {t.isoformat()}", ""]
     if not isinstance(k, dict) or not k.get("alert_level"):  # info: if not isinstance ( k , dict )
-        md += ["_No HVO data on file (Database Geology/Volcanoes/kilauea-last.json missing). Run geology_collect.py._", f"- **Photo:** {photo_line}", "", "## Spoken", "", photo_line, ""]  # info: set md
+        md += ["_No HVO data on file (Database Geology/Volcanoes/Hawaii/kilauea-last.json missing). Run geology_collect.py._", f"- **Photo:** {photo_line}", "", "## Spoken", "", photo_line, ""]  # info: set md
         return "\n".join(md), ["Kilauea: DOWN.", photo_line]  # info: return "\n" . join ( md ) ,
     level = str(k.get("alert_level") or "unknown").strip().lower()  # info: set level
     erupting = k.get("erupting")  # info: set erupting

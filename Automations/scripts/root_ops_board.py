@@ -196,8 +196,8 @@ def _host() -> dict:
 
 
 def _volcano() -> dict:
-    kilauea = _read_json(GEOLOGY / "Volcanoes" / "kilauea-last.json")
-    mauna = _read_json(GEOLOGY / "Volcanoes" / "mauna-loa-last.json")
+    kilauea = _read_json(GEOLOGY / "Volcanoes" / "Hawaii" / "kilauea-last.json")
+    mauna = _read_json(GEOLOGY / "Volcanoes" / "Hawaii" / "mauna-loa-last.json")
     quakes = _read_json(GEOLOGY / "Earthquakes" / "hawaii-last.json")
     if not isinstance(kilauea, dict):
         return {"ok": False}

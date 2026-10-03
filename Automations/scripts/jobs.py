@@ -1360,7 +1360,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_KILAUEA_CAMS", "0") == "1",
         "at_minute": 33,  # info: "at_minute" : 33 ,
         "at_second": 35,  # info: "at_second" : 35 ,
-        "description": "USGS HVO V1/V2/V3 Halemaumau stills -> Database Geology/Volcanoes/Cams/*-last.jpg + cams-last.json (YouTube live ids).",  # info: "description"
+        "description": "USGS HVO V1/V2/V3 Halemaumau stills -> Database Geology/Volcanoes/Hawaii/Cams/*-last.jpg + cams-last.json (YouTube live ids).",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"nice -n 10 python3 \"{PACIFIC}/Geology/scripts/kilauea_cams.py\"",  # info: "command"
         "timeout_sec": 5,  # info: "timeout_sec" : 5 ,
@@ -1376,7 +1376,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_KILAUEA_DRAFT", "0") == "1",
         "at_minute": 33,  # info: "at_minute" : 33 ,
         "at_second": 40,  # info: "at_second" : 40 ,
-        "description": "Queue a Kilauea public draft from Geology/Volcanoes/kilauea-last.json when the HVO notice id or alert level changes. No send.",  # info: "description"
+        "description": "Queue a Kilauea public draft from Geology/Volcanoes/Hawaii/kilauea-last.json when the HVO notice id or alert level changes. No send.",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"nice -n 10 python3 \"{PACIFIC}/Geology/PublicDraftQueue/scripts/queue_draft.py\"",  # info: "command"
         "timeout_sec": 5,  # info: "timeout_sec" : 5 ,

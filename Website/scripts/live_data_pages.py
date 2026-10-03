@@ -36,7 +36,7 @@ ENERGY = DATABASE / "Energy"  # info: set ENERGY
 WEATHER_REPORT = DATABASE / "Weather" / "Hawai'i" / "reports" / "0 Level Processing" / "Hawaii_State_Weather_Report_current.md"  # info: set WEATHER_REPORT
 MOON = DATABASE / "Weather" / "moon" / "moon_current.json"  # info: moon under Weather
 MOON_LEGACY = DATABASE / "Energy" / "moon" / "moon-last.json"  # info: drain old path
-KILAUEA = DATABASE / "Geology" / "Volcanoes" / "kilauea-last.json"  # info: set KILAUEA
+KILAUEA = DATABASE / "Geology" / "Volcanoes" / "Hawaii" / "kilauea-last.json"  # info: Hawaiʻi volcano bank
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 POWER_FIELDS = (  # info: set POWER_FIELDS
     "solar_input_power",  # info: "solar_input_power" ,
@@ -155,7 +155,7 @@ def build_weather() -> dict[str, Any]:  # info: def build_weather
 
 # ====================================================
 # SECTION: function build_kilauea
-# What it does: Kīlauea block from Geology/Volcanoes/kilauea-last.json.
+# What it does: Kīlauea block from Geology/Volcanoes/Hawaii/kilauea-last.json.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def build_kilauea() -> dict[str, Any]:  # info: def build_kilauea
@@ -164,7 +164,7 @@ def build_kilauea() -> dict[str, Any]:  # info: def build_kilauea
         "resource": "kilauea",  # info: "resource" : "kilauea" ,
         "title": "Kīlauea",  # info: "title" : "Kīlauea" ,
         "as_of": _now_line(),  # info: "as_of" : _now_line ( ) ,
-        "source_paths": ["Geology/Volcanoes/kilauea-last.json"],  # info: domain authority
+        "source_paths": ["Geology/Volcanoes/Hawaii/kilauea-last.json"],  # info: domain authority
     }  # info: }
     if not raw:  # info: if not raw
         return page  # info: return page

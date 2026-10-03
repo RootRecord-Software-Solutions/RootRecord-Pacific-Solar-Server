@@ -8,7 +8,7 @@
 # Kind: python
 # ==============================================================================
 #!/usr/bin/env python3
-"""Queue a Kilauea public draft from Database Geology/Volcanoes/kilauea-last.json.
+"""Queue a Kilauea public draft from Database Geology/Volcanoes/Hawaii/kilauea-last.json.
 
 WO-MIG-24. Stdlib only. No HTTP, no Grok, no Discord, Slack, or Telegram.
 
@@ -30,7 +30,7 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB
-VOLCANO = DB / "Geology" / "Volcanoes" / "kilauea-last.json"  # info: set VOLCANO
+VOLCANO = DB / "Geology" / "Volcanoes" / "Hawaii" / "kilauea-last.json"  # info: Hawaiʻi volcano bank
 QUAKES = DB / "Geology" / "Earthquakes" / "hawaii-last.json"  # info: set QUAKES
 OUT = DB / "Geology" / "PublicDraftQueue"  # info: set OUT
 QUEUE = OUT / "queue"  # info: set QUEUE
