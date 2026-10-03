@@ -8,7 +8,7 @@
 # Kind: python
 # ==============================================================================
 #!/usr/bin/env python3
-"""Read live snapshot. BLE is the reading. Cloud quota fills only after BLE has been quiet."""  # info: """Read live snapshot. BLE is the reading. Cloud quota fills only after BLE has been quiet."""
+"""Read live snapshot. BLE first. Cloud quota fills after BLE has been quiet past the hold."""  # info: docstring
 from __future__ import annotations  # info: from __future__ import annotations
 
 import argparse  # info: import argparse
@@ -301,7 +301,9 @@ async def _read_ble(alias: str):  # info: async def
         raise BleUnavailable("BLE auth timeout before fields")  # info: raise timeout
     if not getattr(state, "authenticated", False):  # info: if not authenticated
         kind = type(exc).__name__ if exc is not None else "none"  # info: exception class only, never the message
-        await asyncio.sleep(2.5)  # info: heartbeats can land after the auth flag flips
+        # NeedBindInstallFirst often still delivers SOC; give it longer than a not_found miss.
+        grace = 5.0 if kind == "NeedBindInstallFirst" else 2.5  # info: set grace
+        await asyncio.sleep(grace)  # info: heartbeats can land after the auth flag flips
         fields = _fields_from_ble(device)  # info: same field read Delta uses; do not drop a live heartbeat
         if fields.get("soc") is not None:  # info: a charge percent means a real packet, not an empty default
             return device, fields  # info: BLE read, not a cloud substitute
@@ -492,12 +494,6 @@ def main() -> int:  # info: def main
             _zero_missing_inverter_watts(fields)  # info: call _zero_missing_inverter_watts
             _stamp_device_watts(device, fields)  # info: call _stamp_device_watts
 
-    # BLE-intended packs never take the cloud file as the reading. Last BLE sample stands.
-    if source == "none" and not _prefer_api(alias):  # info: prefer_api=0 means BLE is the source
-        print("WAITING")  # info: call print
-        print(f"No data — BLE: {ble_err or 'skipped'}; cloud not used")  # info: call print
-        print("STATUS=WAITING")  # info: call print
-        return 2  # info: return 2
     # 2) One scan miss keeps the last BLE file. Quota runs only after that file is older than BLE_HOLD_SEC.
     if source == "none" and _hold_last_ble(alias):  # info: if source == "none" and _hold_last_ble ( alias ) :
         print("WAITING")  # info: call print
@@ -505,7 +501,7 @@ def main() -> int:  # info: def main
         print("STATUS=WAITING")  # info: call print
         return 2  # info: return 2
 
-    # Cloud fallback when BLE has been quiet, or prefer_api. A ble+cloud fill is already a reading.
+    # Cloud fallback when BLE has been quiet past the hold, or prefer_api. Out-of-range must not leave STALE forever.
     if source == "none":  # info: if source == "none" :
         cached = _fresh_cloud_cache(alias)  # info: set cached
         if cached:  # info: if cached :

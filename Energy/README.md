@@ -6,6 +6,8 @@ Energy monitoring, EcoFlow device reads, and power subsystem ownership for the P
 
 ## Current (2026-10-02)
 
+2026-10-02 ~17:08–17:09 HST: BLE was still failing (Delta `error_not_found`, River `NeedBindInstallFirst`) and `read_runner` was printing `cloud not used`, so watt files stayed STALE. Restored API fallback after the 3-minute BLE hold; longer grace on NeedBindInstallFirst; one BLE connect retry after a fresh scan. Live cloud write: Delta ~81% SOC, River ~24% SOC / 32 W solar / 52 W AC out. Timer left running. No commit.
+
 2026-10-02 ~16:07–16:10 HST: `Energy/lib/read_runner.py` waits 2.5 s after an auth-flag miss and keeps the BLE sample when `soc` is present. `Energy/scripts/read/leapfrog-read.sh` reads Delta first then tries River when River’s last watt `source` is not `ble` or `ble+cloud`; when River already has live BLE it still leapfrogs the older watt file. Soft gate and live timers left as they were. No commit.
 
 2026-10-02 ~15:16 HST: `Energy/scripts/ble/ble-owner.py` may run `leapfrog-read.sh` once when a watt sample under Database `Energy/watts/` is older than 30 minutes and `/tmp/ecoflow-owner-wake` is past cooldown. It still does not hold a GATT session. Standing rule remains Library `2026-10-01-ecoflow-ble-reads.md`.

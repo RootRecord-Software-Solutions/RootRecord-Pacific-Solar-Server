@@ -160,10 +160,27 @@ async def connect(alias: str):  # info: async def
         note_sight(alias, False, "not_seen")  # info: pack not on the air
         raise BleUnavailable(f"device not seen in scan mac={mac}")  # info: raise BleUnavailable ( f" device not seen in scan mac= { mac }
     note_sight(alias, True, "seen")  # info: advertisement seen; session may still fail auth
-    ble, adv = rec  # info: ble , adv = rec
-    device = Device(ble, adv, sn)  # info: set device
-    await device.connect(user_id=uid, max_attempts=3)  # info: await device . connect ( user_id = uid
-    return device  # info: return device
+    last_err = None  # info: set last_err
+    for attempt in range(2):  # info: two connect tries; first sighting is often a stale advertisement
+        ble, adv = rec  # info: ble , adv = rec
+        device = Device(ble, adv, sn)  # info: set device
+        try:  # info: try
+            await device.connect(user_id=uid, max_attempts=3)  # info: await device . connect ( user_id = uid
+            return device  # info: return device
+        except Exception as exc:  # info: except Exception as exc
+            last_err = exc  # info: set last_err
+            try:  # info: try
+                await device.disconnect()  # info: await device . disconnect ( )
+            except Exception:  # info: except Exception
+                pass  # info: pass
+            if attempt == 0:  # info: if attempt == 0 :
+                await asyncio.sleep(0.8)  # info: brief gap before a fresh scan
+                rec = await _scan(mac, 8.0)  # info: set rec
+                if not rec:  # info: if not rec :
+                    note_sight(alias, False, "not_seen_retry")  # info: pack vanished on retry
+                    break  # info: break
+                note_sight(alias, True, "seen_retry")  # info: second sighting
+    raise BleUnavailable(f"connect failed after sight mac={mac} err={type(last_err).__name__ if last_err else 'none'}")  # info: raise after retries
 
 
 # ====================================================
