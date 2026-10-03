@@ -957,7 +957,7 @@ def hurricane_facts(t: datetime) -> list[dict]:  # info: def hurricane_facts
 
 # ====================================================
 # SECTION: function b_hurricane_desk
-# What it does: G1 hurricane_desk.hawaii_block + build spoken text, from G3 track.json + NWS HI alerts (never invents storms).
+# What it does: Spoken hurricane desk in sentences. Coordinates stay in the table, not on the air.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def b_hurricane_desk(t: datetime):  # info: def b_hurricane_desk
@@ -966,45 +966,43 @@ def b_hurricane_desk(t: datetime):  # info: def b_hurricane_desk
     active = [s for s in storms if s["active"]]  # info: set active
     rows, updated = alerts()  # info: rows , updated = alerts ( )
     trop = [r for r in rows if any(k in str(r["event"]).lower() for k in TROPICAL_EVENTS)]  # info: set trop
-    sp = ["Hurricane global desk, Pacific Root Server.", generated_at(t)]  # info: set sp
-    if trop:  # info: if trop :
-        watch = " NWS Honolulu: " + "; ".join(f"{r['event']} for {r['area'] or 'Hawaii'}" for r in trop) + "."  # info: set watch
-    elif updated is None:  # info: elif updated is None :
-        watch = " NWS Hawaii alert data is not on file."  # info: set watch
-    else:  # info: else :
-        watch = " No tropical watches or warnings for Hawaii in the last NWS pull."  # info: set watch
-    if not active:  # info: if not active :
-        sp.append("Nearest Hurricane from a Hawaiian island. No tropical system with a mapped position is on the board."  # info: sp . append ( "Nearest Hurricane from a Hawaiian island. No tropical system with a mapped position is on the b
-                  + watch)  # info: + watch )
-    else:  # info: else :
+    sp = ["Hurricane desk.", generated_at(t)]  # info: set sp
+    if trop:  # info: if trop
+        named = ", and ".join(f"{r['event']} for {r['area'] or 'Hawaii'}" for r in trop)  # info: set named
+        watch = f"NWS Honolulu has {named}."  # info: set watch
+    elif updated is None:  # info: elif updated is None
+        watch = "The Hawaii alert file is not on the desk."  # info: set watch
+    else:  # info: else
+        watch = "Honolulu has no tropical watch or warning."  # info: set watch
+    if not active:  # info: if not active
+        sp.append("No tropical system has a current position near the islands.")  # info: sp . append quiet
+        sp.append(watch)  # info: sp . append watch
+    else:  # info: else
         n = active[0]  # info: set n
         local = bool(trop) or n["nm"] < HAWAII_THREAT_NM  # info: set local
-        title = "Nearest Hurricane from a Hawaiian island" if local else "Pacific basin cyclone, not a Hawaii threat"  # info: set title
-        ns, ew = ("north" if n["lat"] >= 0 else "south"), ("east" if n["lon"] >= 0 else "west")  # info: ns , ew = ( "north" if n
-        move = ""  # info: set move
-        if n["movement_kt"] == 0:  # info: if n [ "movement_kt" ] == 0 :
-            move = " Nearly stationary."  # info: set move
-        elif n["movement_compass"]:  # info: elif n [ "movement_compass" ] :
-            vs = {"toward": "toward Hawaii", "away": "away from Hawaii",  # info: set vs
-                  "steady": "holding roughly steady relative to Hawaii"}.get(n["approach"] or "", "")  # info: "steady" : "holding roughly steady relative to Hawaii" } . get ( n
-            kt_s = f" at about {n['movement_kt']} knots" if n["movement_kt"] else ""  # info: set kt_s
-            move = f" Moving {n['movement_compass']}{kt_s}" + (f", {vs}." if vs else ".")  # info: set move
-        wind = f" Maximum sustained winds {n['knots']} knots." if n["knots"] else ""  # info: set wind
-        hint = ""  # info: set hint
-        if not local:  # info: if not local :
-            hint = " Do not treat this as a Hawaii local storm."  # info: set hint
-            if n["bearing"] == "west":  # info: if n [ "bearing" ] == "west" :
-                hint = " West of Kauai is toward Asia and Japan, not toward the islands." + hint  # info: set hint
-        sp.append(f"{title}. {n['label']} {n['name']} is about {n['nm']} nautical miles from {n['island']}."  # info: sp . append ( f" { title }
-                  f" Center {abs(n['lat']):.1f} {ns}, {abs(n['lon']):.1f} {ew}. It bears {n['bearing']} of {n['island']}."  # info: f" Center { abs ( n [ 'lat'
-                  f"{hint}{move}{wind}{watch}")  # info: f" { hint } { move } {
+        sp.append(f"{n['label']} {n['name']} is about {n['nm']} nautical miles from {n['island']}.")  # info: sp . append where
+        if not local:  # info: if not local
+            if n["bearing"] == "west":  # info: if west of the islands
+                sp.append("It is west of the islands, toward Asia, not toward Hawaii.")  # info: sp . append west
+            else:  # info: else
+                sp.append("It is not a threat to Hawaii.")  # info: sp . append not local
+        if n["movement_kt"] == 0:  # info: if stationary
+            sp.append("It is nearly stationary.")  # info: sp . append stationary
+        elif n["movement_compass"]:  # info: elif it is moving
+            vs = {"toward": "toward Hawaii", "away": "away from Hawaii", "steady": "holding steady relative to Hawaii"}.get(n["approach"] or "", "")  # info: set vs
+            speed = f" at about {n['movement_kt']} knots" if n["movement_kt"] else ""  # info: set speed
+            moving = f"It is moving {n['movement_compass']}{speed}"  # info: set moving
+            sp.append(moving + (f", {vs}." if vs else "."))  # info: sp . append moving
+        if n["knots"]:  # info: if winds
+            sp.append(f"Winds are about {n['knots']} knots.")  # info: sp . append winds
+        sp.append(watch)  # info: sp . append watch
         say_change(sp, f"hurricane.{n['name']}.nm", n["nm"], f"{n['name']} distance", t)  # info: say_change distance
         if n.get("knots"):  # info: if n . get ( "knots" )
             say_change(sp, f"hurricane.{n['name']}.knots", n["knots"], f"{n['name']} winds", t)  # info: say_change winds
-        if len(active) > 1:  # info: if len ( active ) > 1 :
-            others = "; ".join(f"{s['label']} {s['name']}, about {s['nm']} nautical miles from {s['island']}" for s in active[1:4])  # info: set others
-            sp.append(f"{len(active)} tropical systems are on the Hawaii tracking board. Also tracked: {others}.")  # info: sp . append ( f" { len (
-    sp.append("Stay with NWS Honolulu for watches and warnings.")  # info: sp . append ( "Stay with NWS Honolulu for watches and warnings." )
+        if len(active) > 1:  # info: if more storms
+            others = ". ".join(f"{s['label']} {s['name']} is about {s['nm']} nautical miles from {s['island']}" for s in active[1:4])  # info: set others
+            sp.append(f"{len(active)} systems are on the board. {others}.")  # info: sp . append others
+    sp.append("Watches and warnings stay with NWS Honolulu.")  # info: sp . append closer
     md = [f"# Hurricane desk — {t.isoformat()}", "", " ".join(sp), "", "## Tracked systems (G3 weather poller)", ""]
     md += ["| Storm | Class | Knots | Position | Nearest island | nm | Bearing | Movement | Last poll (HST) | On board |",  # info: set md
            "|---|---|---|---|---|---|---|---|---|---|"]  # info: "|---|---|---|---|---|---|---|---|---|---|" ]
