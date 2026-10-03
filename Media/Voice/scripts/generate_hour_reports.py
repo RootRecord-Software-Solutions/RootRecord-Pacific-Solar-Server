@@ -6,13 +6,14 @@ jobs.py starts this at :42 by default. When the batch finishes it:
   1. records wall + per-report seconds under Media/Audio/Voice/Timing/
   2. updates running averages, then recalculates next start minute (keeps :42 unless averages need earlier)
   3. radio_push --all to ML1 immediately
+  4. deletes local .wav / .txt / .tx intermediates (keeps .ogg + Timing JSON)
 
-:55 radio_push_hour remains a catch-up if this send missed.
+:55 radio_push_hour remains a catch-up if this send missed (WAV kept when push is skipped/failed).
 
 Writes under the single voice tree:
-  Media/Audio/Voice/<report>_current.wav
-  Media/Audio/Voice/<report>_current.ogg
+  Media/Audio/Voice/<report>_current.ogg  (kept)
   Media/Audio/Voice/Reports/<report>_current.md
+  (WAV + speak/read txt removed after a successful push)
 
 Hourly chimes stay on voice_hourly_chime (:00/:30) unless --include-chime.
 
