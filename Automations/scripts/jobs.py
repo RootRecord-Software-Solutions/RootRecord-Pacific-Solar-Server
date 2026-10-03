@@ -313,10 +313,10 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
     {  # info: {
-        # stacks on every 5s slot, all hour.
+        # Was every 5s — sync runs 60–300s and blocks the whole poller, so :35/:42/:55 voice slots get dropped.
         "id": "github_sync_all",  # info: "id" : "github_sync_all" ,
         "enabled": True,  # info: "enabled" : True,
-        "every_seconds": 5,  # info: "every_seconds" : 5 ,
+        "every_seconds": 300,  # info: every 5 min; never share the 5s stack with voice hour jobs
         "description": "Sync all repos.conf rows (pull/merge/push) via Pacific Github catalog.",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"bash \"{PACIFIC}/Github/scripts/sync-all.sh\"",  # info: "command"

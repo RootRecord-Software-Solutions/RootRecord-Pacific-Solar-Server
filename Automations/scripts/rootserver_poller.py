@@ -97,6 +97,7 @@ _lock = threading.Lock()  # info: set _lock
 _stop = threading.Event()  # info: set _stop
 _power_busy = threading.Lock()  # info: set _power_busy
 _service_busy = threading.Lock()  # info: set _service_busy
+_github_busy = threading.Lock()  # info: github_sync must not block :35/:42/:55 voice slots
 _tunnel_ready = threading.Event()  # info: set _tunnel_ready
 _tunnel_proc: subprocess.Popen | None = None  # info: set _tunnel_proc
 _internet_ok = False  # info: set _internet_ok
@@ -816,6 +817,18 @@ def run_job(job: dict) -> None:  # info: def run_job
     if builtin:  # info: if builtin :
         run_builtin(job)  # info: call run_builtin
         return  # info: return
+    jid = str(job.get("id") or "")  # info: set jid
+    # github_sync can run minutes; keep it off the scheduler thread so exact-time voice jobs still fire.
+    if jid == "github_sync_all":  # info: if jid == "github_sync_all"
+        if not _github_busy.acquire(blocking=False):  # info: if not _github_busy . acquire ( blocking = False )
+            return  # info: already syncing; skip this tick
+        def _github_work() -> None:  # info: def _github_work
+            try:  # info: try
+                run_command_job(job)  # info: call run_command_job
+            finally:  # info: finally
+                _github_busy.release()  # info: _github_busy . release ( )
+        threading.Thread(target=_github_work, name="github-sync", daemon=True).start()  # info: start side thread
+        return  # info: return
     run_command_job(job)  # info: call run_command_job
 
 
@@ -1133,7 +1146,7 @@ def scheduler_loop() -> None:  # info: def scheduler_loop
             last_hour, last_slot, last_five = hour, slot, five  # info: last_hour , last_slot , last_five = hour , slot , five
         else:  # info: else
             if last_five is not None and five > last_five:  # info: if last_five is not None and five > last_five
-                for step in crossed_seconds(last_five, five, cap=120):  # info: for step in crossed_seconds ( last_five , five , cap = 120 )
+                for step in crossed_seconds(last_five, five, cap=600):  # info: was 120 — too small when a long job delayed the loop
                     if step.second % 5 != 0:  # info: if step . second % 5 != 0
                         continue  # info: continue
                     for j in exact_jobs:  # info: for j in exact_jobs
