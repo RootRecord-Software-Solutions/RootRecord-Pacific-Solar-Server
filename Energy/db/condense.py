@@ -12,7 +12,7 @@ from __future__ import annotations  # info: from __future__ import annotations
 from datetime import datetime  # info: from datetime import datetime
 from pathlib import Path  # info: from pathlib import Path
 from Energy.db.store import connect, connect_layer, initialize_schema, DEFAULT_DB_PATH, LAYERS_DIR  # info: from Energy . db . store import connect
-from Energy.db.aggregate import aggregate_period, period_bounds, LAYERS, _iso  # info: from Energy . db . aggregate import aggregate_period
+from Energy.db.aggregate import aggregate_period, consolidate_period, period_bounds, LAYERS, BUCKET_SOURCE, _iso  # info: from Energy . db . aggregate import aggregate_period
 
 
 # ====================================================
@@ -51,7 +51,9 @@ def condense_closed_periods(db_path=None, layers_dir=None):  # info: def condens
         latest = datetime.fromisoformat(row[1].replace("Z", "+00:00"))  # info: set latest
 
         for layer in LAYERS:  # info: for layer in LAYERS :
+            source = BUCKET_SOURCE.get(layer)  # info: set source
             layer_conn = connect_layer(layer, raw_path, layers_dir)  # info: set layer_conn
+            child_conn = connect_layer(source, raw_path, layers_dir) if source else None  # info: set child_conn
             try:  # info: try :
                 start, _ = period_bounds(layer, earliest)  # info: start , _ = period_bounds ( layer ,
                 while True:  # info: while True :
@@ -63,10 +65,15 @@ def condense_closed_periods(db_path=None, layers_dir=None):  # info: def condens
                         "SELECT status FROM aggregation_run WHERE layer=? AND period_start=? AND period_end=?",  # info: "SELECT status FROM aggregation_run WHERE layer=? AND period_start=? AND period_end=?" ,
                         (layer, *key)).fetchone()  # info: call (
                     if not done or done[0] != "complete":  # info: if not done or done [ 0 ]
-                        total += aggregate_period(layer_conn, layer, start, end, "raw")  # info: set total
+                        if source:  # info: if source
+                            total += consolidate_period(layer_conn, child_conn, layer, start, end, source)  # info: roll the finer bucket
+                        else:  # info: else
+                            total += aggregate_period(layer_conn, layer, start, end, "raw")  # info: set total
                     start = end  # info: set start
             finally:  # info: finally :
                 layer_conn.close()  # info: layer_conn . close ( )
+                if child_conn is not None:  # info: if child_conn is not None
+                    child_conn.close()  # info: child_conn . close ( )
         return total  # info: return total
     finally:  # info: finally :
         raw_conn.close()  # info: raw_conn . close ( )

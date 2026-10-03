@@ -18,6 +18,8 @@ import math  # info: import math
 from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 LAYERS=("1sec","1min","5min","15min","1hour","day","7days","month","year")  # info: set LAYERS
+# Each bucket is filled from the finer one. 1sec is the only layer that reads raw samples.
+BUCKET_SOURCE={"1min":"1sec","5min":"1min","15min":"5min","1hour":"15min","day":"1hour","7days":"day","month":"day","year":"month"}  # info: set BUCKET_SOURCE
 SECONDS={"1sec":1,"1min":60,"5min":300,"15min":900,"1hour":3600,"7days":604800}  # info: set SECONDS
 LOCAL=ZoneInfo("Pacific/Honolulu")  # info: set LOCAL
 MAX_INTERPOLATION_GAP_S=60.0  # info: set MAX_INTERPOLATION_GAP_S
@@ -208,6 +210,77 @@ def aggregate_period(conn,layer,start,end,source_layer="raw"):  # info: def aggr
                  (now,watermark,count,run))  # info: call (
     conn.commit()  # info: conn . commit ( )
     return count  # info: return count
+
+# ====================================================
+# SECTION: function aggregate_at
+# What it does: aggregate at.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+# ====================================================
+# SECTION: function consolidate_period
+# What it does: Fill one closed bucket from the completed finer buckets inside it.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def consolidate_period(parent_conn, child_conn, layer, start, end, source_layer):  # info: def consolidate_period
+    if layer not in LAYERS or source_layer not in LAYERS:  # info: if layer not in LAYERS or source_layer not in LAYERS
+        raise ValueError(layer)  # info: raise ValueError ( layer )
+    period_start, period_end = _iso(start), _iso(end)  # info: set period_start , period_end
+    now = _iso(datetime.now(timezone.utc))  # info: set now
+    parent_conn.execute("""INSERT INTO aggregation_run(layer,period_start,period_end,source_layer,status,started_at)
+                    VALUES(?,?,?,?,?,?)
+                    ON CONFLICT(layer,period_start,period_end) DO UPDATE SET
+                    source_layer=excluded.source_layer,status='running',started_at=excluded.started_at,
+                    completed_at=NULL,row_count=NULL""",
+                 (layer, period_start, period_end, source_layer, "running", now))  # info: call (
+    run = parent_conn.execute("SELECT aggregation_run_id FROM aggregation_run WHERE layer=? AND period_start=? AND period_end=?",  # info: set run
+                     (layer, period_start, period_end)).fetchone()[0]  # info: call (
+    parent_conn.execute("DELETE FROM aggregate_measurement WHERE aggregation_run_id=?", (run,))  # info: parent_conn . execute ( "DELETE FROM aggregate_measurement WHERE aggregation_run_id=?" , ( run
+    rows = child_conn.execute("""SELECT am.subject_type, am.subject_id, am.metric_key, am.unit,
+                                        am.sample_count, am.valid_sample_count, am.coverage_pct,
+                                        am.observed_span_s, am.valid_duration_s, am.value_avg, am.value_min,
+                                        am.value_max, am.value_sum, am.value_delta, am.energy_wh, am.state
+                                 FROM aggregate_measurement am
+                                 JOIN aggregation_run ar ON ar.aggregation_run_id=am.aggregation_run_id
+                                 WHERE ar.layer=? AND ar.status='complete'
+                                   AND ar.period_start>=? AND ar.period_end<=?
+                                 ORDER BY ar.period_start""",
+                              (source_layer, period_start, period_end)).fetchall()  # info: call (
+    grouped = {}  # info: set grouped
+    for r in rows:  # info: for r in rows
+        grouped.setdefault((r["subject_type"], r["subject_id"], r["metric_key"], r["unit"]), []).append(r)  # info: grouped . setdefault
+    count = 0  # info: set count
+    for (stype, sid, metric, unit), kids in grouped.items():  # info: for ( stype , sid , metric , unit ) , kids in grouped . items ( )
+        valid = sum(int(k["valid_sample_count"] or 0) for k in kids)  # info: set valid
+        weighted = [(float(k["value_avg"]), int(k["valid_sample_count"] or 0)) for k in kids if k["value_avg"] is not None and int(k["valid_sample_count"] or 0) > 0]  # info: set weighted
+        weight = sum(n for _, n in weighted)  # info: set weight
+        mins = [float(k["value_min"]) for k in kids if k["value_min"] is not None]  # info: set mins
+        maxs = [float(k["value_max"]) for k in kids if k["value_max"] is not None]  # info: set maxs
+        sums = [float(k["value_sum"]) for k in kids if k["value_sum"] is not None]  # info: set sums
+        deltas = [float(k["value_delta"]) for k in kids if k["value_delta"] is not None]  # info: set deltas
+        energies = [float(k["energy_wh"]) for k in kids if k["energy_wh"] is not None]  # info: set energies
+        spans = [float(k["observed_span_s"]) for k in kids if k["observed_span_s"] is not None]  # info: set spans
+        durs = [float(k["valid_duration_s"]) for k in kids if k["valid_duration_s"] is not None]  # info: set durs
+        covers = [float(k["coverage_pct"]) for k in kids if k["coverage_pct"] is not None]  # info: set covers
+        states = {k["state"] for k in kids}  # info: set states
+        state = "measured" if "measured" in states else ("not_applicable" if states and states <= {"not_applicable"} else "missing")  # info: set state
+        parent_conn.execute("""INSERT INTO aggregate_measurement
+          (aggregation_run_id,subject_type,subject_id,metric_key,unit,sample_count,valid_sample_count,
+           expected_sample_count,coverage_pct,observed_span_s,valid_duration_s,value_avg,value_min,value_max,value_sum,value_delta,energy_wh,state)
+          VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+          (run, stype, sid, metric, unit,  # info: call (
+           sum(int(k["sample_count"] or 0) for k in kids), valid, len(kids),  # info: sum sample counts
+           (sum(covers) / len(covers)) if covers else 0.0,  # info: mean coverage
+           sum(spans) if spans else 0.0, sum(durs) if durs else None,  # info: span and duration
+           (sum(v * n for v, n in weighted) / weight) if weight else None,  # info: weighted average
+           min(mins) if mins else None, max(maxs) if maxs else None,  # info: min and max
+           sum(sums) if sums else None, sum(deltas) if deltas else None,  # info: sum and delta
+           sum(energies) if energies else None, state))  # info: energy and state
+        count += 1  # info: set count
+    parent_conn.execute("UPDATE aggregation_run SET status='complete',completed_at=?,source_watermark=?,row_count=? WHERE aggregation_run_id=?",  # info: parent_conn . execute
+                 (now, period_end, count, run))  # info: call (
+    parent_conn.commit()  # info: parent_conn . commit ( )
+    return count  # info: return count
+
 
 # ====================================================
 # SECTION: function aggregate_at
