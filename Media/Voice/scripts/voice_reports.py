@@ -2117,6 +2117,49 @@ def voice(report: str, spoken: list[str]) -> dict:  # info: def voice
 
 
 # ====================================================
+# SECTION: function _replace_spoken
+# What it does: Put the trimmed spoken lines back under the Spoken heading.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _replace_spoken(md: str, spoken: list[str]) -> str:  # info: def _replace_spoken
+    head = md.split("\n## Spoken", 1)[0].rstrip()  # info: set head
+    return head + "\n\n## Spoken\n\n" + " ".join(spoken) + "\n"  # info: return head + spoken
+
+
+# ====================================================
+# SECTION: function _trim_hurricane
+# What it does: Drop hurricane lines already spoken by the NWS desk. On failure the original lines stay.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _trim_hurricane(spoken: list[str]) -> list[str]:  # info: def _trim_hurricane
+    folder = str(PACIFIC / "Reports" / "pipeline")  # info: set folder
+    if folder not in sys.path:  # info: if folder not in sys . path
+        sys.path.insert(0, folder)  # info: sys . path . insert
+    try:  # info: try
+        import owners  # info: import owners
+        return owners.trim_hurricane(spoken)  # info: return owners . trim_hurricane
+    except Exception:  # info: except Exception
+        return spoken  # info: return spoken
+
+
+# ====================================================
+# SECTION: function _canonical_record
+# What it does: Save the report sidecar for this window. A store error does not erase the markdown or WAV.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _canonical_record(report: str, md: str, spoken: list, voice: dict, path: Path) -> dict:  # info: def _canonical_record
+    folder = str(PACIFIC / "Reports" / "pipeline")  # info: set folder
+    if folder not in sys.path:  # info: if folder not in sys . path
+        sys.path.insert(0, folder)  # info: sys . path . insert
+    try:  # info: try
+        import store as report_store  # info: import store as report_store
+        saved = report_store.record_voice(report, md, spoken, voice, path)  # info: set saved
+        return {"ok": True, "report_id": saved.get("report_id"), "status": saved.get("status")}  # info: return ok
+    except Exception as exc:  # info: except Exception as exc
+        return {"ok": False, "detail": type(exc).__name__}  # info: return failure
+
+
+# ====================================================
 # SECTION: function main
 # What it does: main.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -2130,6 +2173,9 @@ def main() -> int:  # info: def main
         print(json.dumps({"ok": True, "report": report, "skipped": True, "detail": "prebuilt chimes play at :00 and :30"}))  # info: call print
         return 0  # info: return 0
     md, spoken = BUILD[report](t)  # info: md , spoken = BUILD [ report ]
+    if report == "hurricane_desk":  # info: if report == "hurricane_desk"
+        spoken = _trim_hurricane(spoken)  # info: spoken = _trim_hurricane ( spoken )
+        md = _replace_spoken(md, spoken)  # info: md = _replace_spoken ( md , spoken )
     res = {"ok": True, "report": report, "md": str(write_md(report, md)), "sentences": len(spoken)}  # info: set res
     if "--no-voice" not in sys.argv and report == "hourly_chime":  # info: if "--no-voice" not in sys . argv and report == "hourly_chime" :
         from hourly_chimes import persona_for, wav_path  # info: from hourly_chimes import persona_for , wav_path
@@ -2161,6 +2207,7 @@ def main() -> int:  # info: def main
             res["status_transit"] = status_cue.play(report, "transit")  # info: res [ "status_transit" ] = status_cue . play ( report , "transit" )
             res["radio"] = radio_push.push_report(report)  # info: res [ "radio" ] = radio_push . push_report ( report )
             res["status_send"] = status_cue.after_push(report, res["radio"])  # info: res [ "status_send" ] = status_cue . after_push ( report , res [ "radio" ] )
+    res["canonical"] = _canonical_record(report, md, spoken, res.get("voice") or {}, Path(res["md"]))  # info: res [ "canonical" ] = _canonical_record
     print(json.dumps(res, ensure_ascii=False))  # info: call print
     return 0  # info: return 0
 

@@ -31,7 +31,7 @@ from store import (  # info: from store import (
     write_raw,  # info: write_raw ,
     write_story,  # info: write_story ,
 )  # info: )
-from stories import fresh, normalize, same_event, sports  # info: from stories import fresh , normalize , same_event , sports
+from stories import fresh, normalize, same_event, sports, violent  # info: from stories import fresh , normalize , same_event , sports , violent
 
 WEIGHT = {"urgent": 4, "high": 3, "normal": 2, "low": 1}  # info: set WEIGHT
 SENTENCE = re.compile(r"(?<=[.!?])\s+")  # info: set SENTENCE
@@ -250,6 +250,25 @@ def _publisher(provider: str, policy: dict) -> str:  # info: def _publisher
 
 
 # ====================================================
+# SECTION: function speak_body
+# What it does: Keep the summary and drop a sentence that repeats the headline.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def speak_body(title: str, summary: str, policy: dict) -> str:  # info: def speak_body
+    body = _summary(summary, policy)  # info: set body
+    title_key = (title or "").strip().lower().rstrip(".")  # info: set title_key
+    kept = []  # info: set kept
+    for sentence in body.split(". "):  # info: for sentence in body . split
+        piece = sentence.strip()  # info: set piece
+        key = piece.lower().rstrip(".")  # info: set key
+        if title_key and (key == title_key or key.startswith(title_key) or (title_key.startswith(key) and len(key) > 24)):  # info: if sentence repeats the title
+            continue  # info: continue
+        if piece:  # info: if piece
+            kept.append(piece if piece.endswith(".") else piece)  # info: kept . append
+    return " ".join(kept)  # info: return " " . join ( kept )
+
+
+# ====================================================
 # SECTION: function _summary
 # What it does: Keep the publisher summary and remove sentences that tell a listener how to vote.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -293,7 +312,7 @@ def script_for(cluster: dict, stories: list[dict], registry: dict) -> tuple[str,
         spoken = _publisher(story.get("provider") or "", policy)  # info: set spoken
         if spoken not in names:  # info: if spoken not in names :
             names.append(spoken)  # info: names . append ( spoken )
-        body = _summary(story.get("summary") or "", policy)  # info: set body
+        body = speak_body(story.get("title") or "", story.get("summary") or "", policy)  # info: set body
         sentence = f"{spoken} reports that {story['title']}."  # info: set sentence
         if body:  # info: if body
             sentence = f"{sentence} {body}"  # info: set sentence
@@ -324,8 +343,8 @@ def compose(registry: dict, conn, root: Path | None = None) -> list[str]:  # inf
     clusters = conn.execute("SELECT * FROM clusters WHERE status='new'").fetchall()  # info: set clusters
     for cluster in clusters:  # info: for cluster in clusters
         stories = [dict(row) for row in conn.execute("SELECT * FROM stories WHERE cluster_id=? AND status='new' ORDER BY published_at", (cluster["id"],))]  # info: set stories
-        kept = [row for row in stories if not sports({}, row, registry)]  # info: set kept
-        dropped = [row for row in stories if sports({}, row, registry)]  # info: set dropped
+        kept = [row for row in stories if not sports({}, row, registry) and not violent({}, row, registry)]  # info: set kept
+        dropped = [row for row in stories if sports({}, row, registry) or violent({}, row, registry)]  # info: set dropped
         if dropped:  # info: if dropped :
             stamp = iso(utc_now())  # info: set stamp
             for row in dropped:  # info: for row in dropped

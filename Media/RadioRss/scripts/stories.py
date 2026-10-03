@@ -81,26 +81,42 @@ def score(feed: dict, item: dict, category: str, registry: dict) -> str:  # info
 
 # ====================================================
 # SECTION: function blocked
-# What it does: Drop an item that repeats a RootRecord native desk. Only overlapping feeds use this.
+# What it does: Drop an item that repeats a RootRecord native desk. Every feed uses this.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def blocked(feed: dict, item: dict, registry: dict) -> bool:  # info: def blocked
-    if not feed.get("native_overlap"):  # info: if not feed . get ( "native_overlap" ) :
-        return False  # info: return False
     text = f"{item.get('title') or ''} {item.get('summary') or ''}"  # info: set text
     return _hit(text, registry["policy"].get("overlap_patterns") or [])  # info: return _hit ( text , registry [ "policy" ] . get ( "overlap_patterns" ) or [ ] )
 
 
 # ====================================================
+# SECTION: function _violence_hit
+# What it does: Match death and violence phrases. One-word terms use word edges so deadline and deadlock stay.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _violence_hit(text: str, patterns: list) -> bool:  # info: def _violence_hit
+    low = (text or "").lower()  # info: set low
+    for raw in patterns or []:  # info: for raw in patterns or []
+        pattern = str(raw).lower().strip()  # info: set pattern
+        if not pattern:  # info: if not pattern
+            continue  # info: continue
+        if " " in pattern or "-" in pattern:  # info: if phrase
+            if pattern in low:  # info: if pattern in low
+                return True  # info: return True
+            continue  # info: continue
+        if re.search(rf"(?<![a-z0-9]){re.escape(pattern)}(?![a-z0-9])", low):  # info: if word edge matches
+            return True  # info: return True
+    return False  # info: return False
+
+
+# ====================================================
 # SECTION: function violent
-# What it does: Drop a violent-crime item when the feed is marked nonviolent. Hawaii uses this.
+# What it does: Drop a death or violence item on every feed. Short words use word edges so deadline stays.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def violent(feed: dict, item: dict, registry: dict) -> bool:  # info: def violent
-    if not feed.get("nonviolent"):  # info: if not feed . get ( "nonviolent" ) :
-        return False  # info: return False
-    text = f"{item.get('title') or ''} {item.get('summary') or ''}"  # info: set text
-    return _hit(text, registry["policy"].get("violence_patterns") or [])  # info: return _hit ( text , registry [ "policy" ] . get ( "violence_patterns" ) or [ ] )
+    text = f"{item.get('title') or ''} {item.get('summary') or ''} {item.get('url') or ''}"  # info: set text
+    return _violence_hit(text, registry["policy"].get("violence_patterns") or [])  # info: return _violence_hit
 
 
 

@@ -24,6 +24,7 @@ import sys  # info: import sys
 import threading  # info: import threading
 import time  # info: import time
 import json  # info: import json
+import urllib.parse  # info: import urllib.parse
 from datetime import datetime, timedelta  # info: from datetime import datetime , timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer  # info: from http . server import BaseHTTPRequestHandler , ThreadingHTTPServer
 from pathlib import Path  # info: from pathlib import Path
@@ -452,7 +453,46 @@ class Handler(BaseHTTPRequestHandler):  # info: class Handler
             except Exception as e:  # info: except Exception as e :
                 self._send(500, json.dumps({"ok": False, "error": type(e).__name__}) + "\n", "application/json; charset=utf-8")  # info: self . _send ( 500 , json .
             return  # info: return
+        parsed = urllib.parse.urlparse(self.path)  # info: set parsed
+        if parsed.path == "/api/reports" or parsed.path.startswith("/api/reports/"):  # info: if reports api
+            self._send_reports(parsed)  # info: self . _send_reports ( parsed )
+            return  # info: return
         self._send(404, "not found\n")  # info: self . _send ( 404 , "not found\n" )
+
+
+# ====================================================
+# SECTION: function _send_reports
+# What it does: Answer GET /api/reports from canonical JSON. It does not generate a report.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+    def _send_reports(self, parsed) -> None:  # info: def _send_reports
+        folder = str(REPO_ROOT / "Reports" / "pipeline")  # info: set folder
+        if folder not in sys.path:  # info: if folder not in sys . path
+            sys.path.insert(0, folder)  # info: sys . path . insert
+        try:  # info: try
+            import store as report_store  # info: import store as report_store
+            query = urllib.parse.parse_qs(parsed.query)  # info: set query
+            parts = [part for part in parsed.path.split("/") if part]  # info: set parts
+            if len(parts) == 2:  # info: if list
+                rows = report_store.list_reports(  # info: set rows
+                    topic=(query.get("topic") or [""])[0],  # info: topic
+                    scope=(query.get("scope") or query.get("region") or [""])[0],  # info: scope
+                    status=(query.get("status") or [""])[0],  # info: status
+                    date=(query.get("date") or query.get("window") or [""])[0],  # info: date
+                )  # info: )
+                body = json.dumps({"ok": True, "reports": rows})  # info: set body
+            else:  # info: else
+                report = report_store.load(parts[2]) if len(parts) >= 3 else None  # info: set report
+                if report is None:  # info: if report is None
+                    self._send(404, json.dumps({"ok": False, "error": "not_found"}) + "\n", "application/json; charset=utf-8")  # info: self . _send 404
+                    return  # info: return
+                if len(parts) >= 4 and parts[3] == "assets":  # info: if assets
+                    body = json.dumps({"ok": True, "report_id": report["report_id"], "assets": report.get("assets") or []})  # info: set body
+                else:  # info: else
+                    body = json.dumps({"ok": True, "report": report})  # info: set body
+            self._send(200, body + "\n", "application/json; charset=utf-8")  # info: self . _send 200
+        except Exception as exc:  # info: except Exception as exc
+            self._send(500, json.dumps({"ok": False, "error": type(exc).__name__}) + "\n", "application/json; charset=utf-8")  # info: self . _send 500
 
 
     def do_POST(self) -> None:  # info: def do_POST

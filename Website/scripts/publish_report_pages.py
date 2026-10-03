@@ -69,6 +69,16 @@ def area_for(key: str) -> str:  # info: def area_for
 # ====================================================
 def report_markdown(key: str) -> str:  # info: def report_markdown
     path = CURRENT_MD if key == "current_report" else (VOICE / f"{key}_current.md")  # info: set path
+    sidecar = path.with_name(path.stem + ".report.json")  # info: set sidecar
+    if sidecar.is_file():  # info: if sidecar . is_file
+        try:  # info: try
+            report = json.loads(sidecar.read_text(encoding="utf-8"))  # info: set report
+            parts = [str(section.get("text") or "") for section in report.get("sections") or [] if isinstance(section, dict)]  # info: set parts
+            text = "\n\n".join(part for part in parts if part).strip()  # info: set text
+            if text:  # info: if text
+                return text + "\n"  # info: return text
+        except (OSError, json.JSONDecodeError):  # info: except
+            pass  # info: pass
     if not path.is_file():  # info: if not path . is_file
         return ""  # info: return empty
     return path.read_text(encoding="utf-8", errors="replace")  # info: return markdown

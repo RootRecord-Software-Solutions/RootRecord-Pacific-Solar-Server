@@ -21,9 +21,9 @@ from pathlib import Path  # info: from pathlib import Path
 from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 from common import DB, PACIFIC, iso, parse_iso, utc_now  # info: from common import DB , PACIFIC , iso , parse_iso , utc_now
-from pipeline import _publisher, _summary, poll_feed  # info: from pipeline import _publisher , _summary , _when , poll_feed
+from pipeline import _publisher, poll_feed, speak_body  # info: from pipeline import _publisher , poll_feed , speak_body
 from registry import configured_on  # info: from registry import configured_on
-from stories import sports  # info: from stories import sports
+from stories import sports, violent  # info: from stories import sports , violent
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 RANK = {"urgent": 4, "high": 3, "normal": 2, "low": 1}  # info: set RANK
@@ -99,7 +99,7 @@ def _recent(story: dict, now: datetime, hours: float) -> bool:  # info: def _rec
 # ====================================================
 def _line(story: dict, registry: dict) -> str:  # info: def _line
     spoken = _publisher(story.get("provider") or "", registry["policy"])  # info: set spoken
-    body = _summary(story.get("summary") or "", registry["policy"])  # info: set body
+    body = speak_body(story.get("title") or "", story.get("summary") or "", registry["policy"])  # info: set body
     line = f"{spoken} reports that {story.get('title') or 'an update'}."  # info: set line
     if body:  # info: if body :
         line = f"{line} {body}"  # info: set line
@@ -181,7 +181,7 @@ def build_update(stories: list[dict], registry: dict, when: datetime) -> dict:  
     backfill_hours = float(cfg.get("backfill_hours") or 36)  # info: set backfill_hours
     desk_words = int(cfg.get("desk_words") or 150)  # info: set desk_words
     target = int(cfg.get("target_words") or 3500)  # info: set target
-    stories = [story for story in stories if not sports({}, story, registry)]  # info: set stories
+    stories = [story for story in stories if not sports({}, story, registry) and not violent({}, story, registry)]  # info: set stories
     fresh = [story for story in stories if _recent(story, now, fresh_hours)]  # info: set fresh
     older = [story for story in stories if _recent(story, now, backfill_hours)]  # info: set older
     desks = [desk for desk in (cfg.get("desks") or []) if isinstance(desk, dict)]  # info: set desks
@@ -246,6 +246,7 @@ def build_update(stories: list[dict], registry: dict, when: datetime) -> dict:  
 # ====================================================
 def _source(story: dict) -> dict:  # info: def _source
     return {  # info: return {
+        "id": story.get("id") or "",  # info: "id" : story . get ( "id" ) or "" ,
         "publisher": story.get("provider") or "",  # info: "publisher" : story . get ( "provider" ) or "" ,
         "title": story.get("title") or "",  # info: "title" : story . get ( "title" ) or "" ,
         "url": story.get("url") or "",  # info: "url" : story . get ( "url" ) or "" ,
@@ -273,7 +274,7 @@ def _roundup_feeds(registry: dict) -> list[dict]:  # info: def _roundup_feeds
 # ====================================================
 def _load(conn, since: str) -> list[dict]:  # info: def _load
     rows = conn.execute(  # info: set rows
-        "SELECT * FROM stories WHERE status!='archived' AND (published_at>=? OR published_at='' OR first_seen_at>=?)",  # info: "SELECT * FROM stories WHERE status!='archived' AND (published_at>=? OR published_at='' OR first_seen_at>=?)" ,
+        "SELECT * FROM stories WHERE status='new' AND (published_at>=? OR published_at='' OR first_seen_at>=?)",  # info: "SELECT * FROM stories WHERE status='new' AND (published_at>=? OR published_at='' OR first_seen_at>=?)" ,
         (since, since),  # info: ( since , since ) ,
     ).fetchall()  # info: ) . fetchall ( )
     return [dict(row) for row in rows]  # info: return [ dict ( row ) for row in rows ]

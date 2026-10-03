@@ -294,6 +294,17 @@ def main() -> int:  # info: def main
                 res["status_send"] = status_cue.after_push(REPORT, res["radio"])  # info: res [ "status_send" ] = status_cue . after_push ( REPORT , res [ "radio" ] )
         finally:  # info: finally :
             os.unlink(f.name)  # info: os . unlink ( f . name )
+    folder = str(HERE.parents[2] / "Reports" / "pipeline")  # info: set folder
+    if folder not in sys.path:  # info: if folder not in sys . path
+        sys.path.insert(0, folder)  # info: sys . path . insert
+    try:  # info: try
+        import store as report_store  # info: import store as report_store
+        voice = res.get("voice") or {}  # info: set voice
+        voice.setdefault("rc", res.get("voice_rc"))  # info: voice . setdefault rc
+        saved = report_store.record_voice(REPORT, md, [spoken], voice, MD)  # info: set saved
+        res["canonical"] = {"ok": True, "report_id": saved.get("report_id"), "status": saved.get("status")}  # info: res [ "canonical" ]
+    except Exception as exc:  # info: except Exception as exc
+        res["canonical"] = {"ok": False, "detail": type(exc).__name__}  # info: res [ "canonical" ] = failure
     print(json.dumps(res))  # info: call print
     return 0  # info: return 0
 

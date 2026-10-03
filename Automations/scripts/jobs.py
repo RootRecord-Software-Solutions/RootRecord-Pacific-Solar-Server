@@ -886,6 +886,17 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "cwd": f"{PACIFIC}/Reports/Voice-Timing/scripts",  # info: "cwd" : f" { PACIFIC } /Reports/Voice-Timing/scripts "
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
+    {  # info: {
+        "id": "reports_pipeline_tick",  # info: "id" : "reports_pipeline_tick" ,
+        "enabled": os.environ.get("RR_REPORT_PIPELINE", "0") == "1",  # info: "enabled" : os . environ . get ( "RR_REPORT_PIPELINE" , "0" ) == "1" ,
+        "description": "Record due news-select windows and refresh the stream queue. Does not render audio or open YouTube.",  # info: description
+        "only_at_minutes": [],  # info: "only_at_minutes" : [ ] ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Reports/pipeline/run.py" tick',  # info: command
+        "timeout_sec": 120,  # info: "timeout_sec" : 120 ,
+        "cwd": f"{PACIFIC}/Reports/pipeline",  # info: "cwd"
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
     # --- TEMPLATE (EVERY_MINUTE) — copy from the next line through the closing brace, paste ABOVE this template, remove the leading # ---
     # {
     #     "id": "example_every_minute",

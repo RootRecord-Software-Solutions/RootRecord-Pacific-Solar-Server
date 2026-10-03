@@ -20,8 +20,7 @@ fetch:
     medium: 30
     low: 60
 
-# Applied only when a feed sets native_overlap: true.
-# Native RootRecord desks already cover weather, quakes, volcanoes, and site energy.
+# Applied to every news feed. Native desks already cover quakes, volcanoes, and marine weather.
 overlap_patterns:
   - earthquake
   - "seismic"
@@ -106,7 +105,7 @@ drop_sentence_patterns:
   - "you should vote"
   - "cast your ballot"
 
-# Whole items dropped when the feed sets nonviolent: true. Hawaii uses this.
+# Whole news items dropped on every feed. Not a Hawaii opt-in. Measured weather desks are separate.
 violence_patterns:
   - homicide
   - murder
@@ -126,6 +125,14 @@ violence_patterns:
   - killed
   - killing
   - deadly
+  - death
+  - deaths
+  - died
+  - dead
+  - fatality
+  - fatalities
+  - gang
+  - gangs
   - "fatal crash"
   - kidnapping
   - hostage
