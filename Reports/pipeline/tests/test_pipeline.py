@@ -80,13 +80,11 @@ class PipelineTests(unittest.TestCase):  # info: class PipelineTests
         self.assertEqual(report["stages"]["text"]["status"], "ready")  # info: assert text ready
         self.assertEqual(report["stages"]["audio"]["status"], "failed")  # info: assert audio failed
         self.assertEqual(report["status"], "generated")  # info: assert status generated
-        failed = store.mark_publication(report["report_id"], "failed", "youtube down") if False else None  # info: set failed
         store.save(report)  # info: call save
         marked = store.mark_publication(report["report_id"], "failed", "youtube down")  # info: set marked
         self.assertEqual(marked["status"], "generated")  # info: assert report remains
         self.assertEqual(marked["stages"]["text"]["status"], "ready")  # info: assert text remains
         self.assertEqual(marked["publication"]["status"], "failed")  # info: assert publication failed
-        self.assertIsNone(failed)  # info: assert unused
 
     def test_recover_current_window(self):  # info: def test_recover_current_window
         profile = {"id": "news-5m", "slug": "news_5m", "topic": "news", "scope": "hawaii", "cadence": "5m", "generator": "deterministic", "owns": [], "assets": {}}  # info: set profile

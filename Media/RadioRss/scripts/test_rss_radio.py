@@ -250,6 +250,14 @@ def test_news_update() -> None:  # info: def test_news_update
     calm = {"title": "Harbor ferry schedule", "summary": "The state published a new timetable.", "url": "https://news.test/ferry", "guid": "ferry", "published_at": "2026-10-01T18:00:00Z"}  # info: set calm
     assert violent(hawaii, crime, registry) is True  # info: assert violent ( hawaii , crime , registry ) is True
     assert normalize(hawaii, crime, registry) is None  # info: assert normalize ( hawaii , crime , registry ) is None
+    world = {"id": "world", "category": "global_news", "provider": "France 24", "name": "France 24", "priority": "medium"}  # info: set world
+    gang = {"title": "Gang fight downtown", "summary": "Police reported the fight.", "url": "https://news.test/gang", "guid": "gang"}  # info: set gang
+    assert violent(world, gang, registry) is True  # info: assert violent ( world , gang , registry ) is True
+    deadline = {"title": "Launch deadline moved", "summary": "The deadlock on the budget ended.", "url": "https://news.test/deadline", "guid": "deadline"}  # info: set deadline
+    assert violent(world, deadline, registry) is False  # info: assert violent ( world , deadline , registry ) is False
+    from pipeline import speak_body  # info: from pipeline import speak_body
+    body = speak_body("Harbor ferry schedule", "Harbor ferry schedule. The state published a new timetable.", registry["policy"])  # info: set body
+    assert body.lower().count("harbor ferry schedule") == 0  # info: assert headline not repeated
     game = {"title": "Prep football preview", "summary": "OIA playoff puzzle.", "url": "https://www.staradvertiser.com/2026/10/01/sports/hawaii-prep-world/prep-football/", "guid": "sports-1"}  # info: set game
     assert sports(hawaii, game, registry) is True  # info: assert sports ( hawaii , game , registry ) is True
     assert normalize(hawaii, game, registry) is None  # info: assert normalize ( hawaii , game , registry ) is None
