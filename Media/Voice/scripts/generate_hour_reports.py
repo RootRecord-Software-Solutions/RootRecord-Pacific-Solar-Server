@@ -6,7 +6,7 @@ jobs.py starts this at :42 by default. When the batch finishes it:
   1. records wall + per-report seconds under Media/Audio/Voice/Timing/
   2. updates running averages, then recalculates next start minute (keeps :42 unless averages need earlier)
   3. radio_push --all to ML1 immediately
-  4. deletes local .wav / .txt / .tx intermediates (keeps .ogg + Timing JSON)
+  4. deletes local .wav / .txt / .tx under Media/Audio/Voice/ (keeps .ogg + Timing JSON)
 
 :55 radio_push_hour remains a catch-up if this send missed (WAV kept when push is skipped/failed).
 
@@ -510,11 +510,51 @@ def push_to_ml1() -> dict:
         return {"ok": False, "detail": f"push_all: {type(exc).__name__}: {exc}"}
 
 
+def cleanup_intermediates() -> dict:
+    """After a successful ML1 push, drop .wav / .txt / .tx under Media/Audio/Voice/.
+
+    Keeps .ogg, Timing JSON, Chimes/, Clips/, Archive/, and Reports/*.md.
+    """
+    if os.environ.get("RR_VOICE_KEEP_WAV", "0") == "1":
+        return {"ok": True, "skipped": True, "detail": "RR_VOICE_KEEP_WAV=1"}
+    deleted: list[str] = []
+    errors: list[str] = []
+    skip_dirs = {"Chimes", "Clips", "Archive", "Timing"}
+    roots = [OUT_DIR]
+    reports = OUT_DIR / "Reports"
+    if reports.is_dir():
+        roots.append(reports)
+    for root in roots:
+        if not root.is_dir():
+            continue
+        for path in root.iterdir():
+            if not path.is_file():
+                continue
+            # Never walk into skip_dirs (iterdir is top-level only here).
+            if path.parent.name in skip_dirs:
+                continue
+            suf = path.suffix.lower()
+            if suf not in {".wav", ".txt", ".tx"}:
+                continue
+            try:
+                path.unlink()
+                deleted.append(str(path))
+            except OSError as exc:
+                errors.append(f"{path}: {exc}")
+    return {
+        "ok": not errors,
+        "deleted": len(deleted),
+        "paths": deleted,
+        "errors": errors,
+    }
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", default="", help="comma-separated report ids")
     ap.add_argument("--include-chime", action="store_true", help="also render hourly_chime (not used by :42 job)")
     ap.add_argument("--no-push", action="store_true", help="skip ML1 radio_push after generate")
+    ap.add_argument("--keep-wav", action="store_true", help="keep local .wav/.txt after push")
     args = ap.parse_args()
     only = {x.strip() for x in args.only.split(",") if x.strip()}
     catalog = list(HOUR_REPORTS)
@@ -559,6 +599,20 @@ def main() -> int:
         print(json.dumps({"ok": True, "phase": "push_done", **summary["radio"]}, ensure_ascii=False), flush=True)
         if not summary["radio"].get("ok") and not summary["radio"].get("skipped"):
             summary["ok"] = False
+
+    # Drop intermediates only after a real successful push (keep WAV for :55 catch-up otherwise).
+    if args.keep_wav:
+        summary["cleanup"] = {"ok": True, "skipped": True, "detail": "--keep-wav"}
+    elif summary.get("radio", {}).get("ok") and not summary.get("radio", {}).get("skipped"):
+        print(json.dumps({"ok": True, "phase": "cleanup_begin"}), flush=True)
+        summary["cleanup"] = cleanup_intermediates()
+        print(json.dumps({"ok": True, "phase": "cleanup_done", **summary["cleanup"]}, ensure_ascii=False), flush=True)
+    else:
+        summary["cleanup"] = {
+            "ok": True,
+            "skipped": True,
+            "detail": "kept_wav_for_catchup",
+        }
 
     summary_path = OUT_DIR / "generate_hour_reports_last.json"
     summary_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
