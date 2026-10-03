@@ -1,51 +1,39 @@
 # Weather (Pacific desk)
 
-Pacific-side **Weather domain**: Database-facing jobs and small standalone scripts. **Hawaiʻi internet fetch** runs on ML2 only (`vendor/Weather/` + `weather_hawaii` → `ml2_db_stream`).
+Pacific owns **Database bank maintenance** only (retention, RadarZip).  
+**All internet weather pollers** live under ML2:
+
+`1 - Servers/3 - RootRecord-US-Mainland-Two/`  
+(`collectors/weather_*` + `vendor/Weather/`)
 
 ---
 
-## Status (2026-10-02 HST)
+## Toggle
 
-| Item | State |
+| `RR_LOCAL_DATA_POLL` | Who collects |
 | --- | --- |
-| Hawaiʻi fetch / scheduler daemon | **ML2 only** — Pacific `run_poller.py`, ensure script, and duplicate `fetch/` + `scheduler/` tree **removed** 2026-10-02 |
-| Canonical collect code | `1 - Servers/3 - RootRecord-US-Mainland-Two/vendor/Weather/` |
-| Database tree | `2 - RootRecord-Database/Weather/` (git-ignored; stream + local jobs write here) |
-| ML2 → Pacific delivery | **OPEN** — see Desktop `Manual Audit Documentation/07-ml2-ssh-stream-needs-work.md` when tunnel is down |
+| `0` (live) | Remote ML2 host → SSH stream → Database |
+| `1` / unset | Pacific fail-safe runs **the same ML2 tree** via `ML2/scripts/run-local-bank.sh` (no Pacific poller copies) |
 
 ---
 
-## jobs.py (Pacific)
+## Pacific jobs (thin wrappers → ML2)
 
-| Job id | Script |
+| Job id | Command |
 | --- | --- |
-| `weather_radar_zip` | `Weather/RadarZip/scripts/radar_zip.py` |
-| `country_location_pollers` | `Weather/CountryLocations/scripts/poll_locations.py` (disabled; empty allowlist) |
-| `weather_us_states` | `Weather/US-States/scripts/fetch_us_states.py` (gated when ML2 owns US-States stream) |
-| `weather_retention` | `Weather/scripts/weather-retention.py --dry-run` (disabled) |
-| *(removed)* | `weather_poller` — 2026-10-02 |
-
-PROPOSED / gated ports (not in active ON_BOOT): `scripts/official_statement.py` (HLS), historical G1 hurricane board — implement on ML2 vendor or re-add Pacific scripts from git if needed.
+| `weather_poller` | `run-local-bank.sh --only weather_hawaii` |
+| `weather_us_states` | `run-local-bank.sh --only weather_us_states` |
+| `country_location_pollers` | `run-local-bank.sh --only weather_country_locations` |
+| `weather_radar_zip` | `Weather/RadarZip/scripts/radar_zip.py` (bank-side; not an ML2 poller) |
+| `weather_retention` | `Weather/scripts/weather-retention.py` (bank-side) |
 
 ---
 
-## Layout (Pacific repo)
+## Layout (Pacific)
 
 ```text
 Weather/
-  README.md
-  config/          # legacy YAML; Settings registry; ML2 vendor holds the live copy for fetch
-  scripts/
-    weather-retention.py
-    official_statement.py
-    sync-weather-database.sh
-  RadarZip/
-  CountryLocations/
-  US-States/
+  RadarZip/          # archive GIFs into Database zip
+  scripts/           # retention + helpers (no fetch daemon)
+  config/            # legacy YAML reference; live fetch config is ML2 vendor
 ```
-
----
-
-## Retention
-
-Policy and job: `scripts/weather-retention.py` (dry-run until Alexander reviews). See prior README history in git for growth tables and archive rules.

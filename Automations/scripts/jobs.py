@@ -59,6 +59,9 @@ DEFAULTS = {  # info: set DEFAULTS
 }  # info: }
 
 PACIFIC = "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server"  # info: set PACIFIC
+# Canonical internet collectors live here (not under Pacific/). Fail-safe = run-local-bank.sh.
+ML2 = "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/3 - RootRecord-US-Mainland-Two"  # info: set ML2
+DATABASE = "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"  # info: set DATABASE
 
 # Paths with spaces: always double-quote inside bash command strings.
 # ====================================================
@@ -182,13 +185,13 @@ ON_BOOT = [  # info: set ON_BOOT
         "id": "weather_poller",  # info: "id" : "weather_poller" ,
         "enabled": True,  # info: "enabled" : True ,
         "priority": 8,  # info: "priority" : 8 ,
-        "description": "Ensure the Pacific Weather/ scheduler daemon is running (Pacific venv; data under canonical Database WEATHER/). Enabled 2026-09-29.",  # info: "description" : "Ensure the Pacific Weather/ scheduler daemon is running (Pacific venv; data under canonical D
+        "description": "Fail-safe: one ML2 weather_hawaii collect → Database (ML2 tree only). Gated off when RR_LOCAL_DATA_POLL=0 (remote ML2 owns).",  # info: ML2 local-bank fail-safe
         "builtin": "",  # info: "builtin" : "" ,
-        "command": f'bash "{PACIFIC}/Weather/scripts/ensure-weather-poller.sh"',  # info: "command" : f' bash " { PACIFIC } /Weather/scripts/ensure-weather-poller.sh"
-        "timeout_sec": 30,  # info: "timeout_sec" : 30 ,
-        "needs_internet": False,  # info: "needs_internet" : False ,
-        "cwd": f"{PACIFIC}/Weather",  # info: "cwd" : f" { PACIFIC } /Weather "
-        "env": {},  # info: "env" : { } ,
+        "command": f'bash "{ML2}/scripts/run-local-bank.sh" --only weather_hawaii',  # info: ML2 canonical
+        "timeout_sec": 900,  # info: "timeout_sec" : 900 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{ML2}",  # info: "cwd" : ML2
+        "env": {"RR_DATABASE_ROOT": DATABASE},  # info: bank into Pacific Database
     },  # info: } ,
     {  # info: {
         "id": "network_globe_hawaii",  # info: "id" : "network_globe_hawaii" ,
@@ -1360,13 +1363,25 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_KILAUEA_CAMS", "0") == "1",
         "at_minute": 33,  # info: "at_minute" : 33 ,
         "at_second": 35,  # info: "at_second" : 35 ,
-        "description": "USGS HVO V1/V2/V3 Halemaumau stills -> Database Geology/Volcanoes/Hawaii/Cams/*-last.jpg + cams-last.json (YouTube live ids).",  # info: "description"
+        "description": "Fail-safe: ML2 geology_kilauea_cams → Database Volcanoes/Hawaii/Cams/*_current (ML2 tree only).",  # info: "description"
         "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Geology/scripts/kilauea_cams.py\"",  # info: "command"
-        "timeout_sec": 5,  # info: "timeout_sec" : 5 ,
+        "command": f'bash "{ML2}/scripts/run-local-bank.sh" --only geology_kilauea_cams',  # info: ML2 canonical
+        "timeout_sec": 120,  # info: "timeout_sec" : 120 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{PACIFIC}/Geology",  # info: "cwd"
-        "env": {},  # info: "env" : { } ,
+        "cwd": f"{ML2}",  # info: "cwd"
+        "env": {"RR_DATABASE_ROOT": DATABASE},  # info: bank into Pacific Database
+    },  # info: } ,
+    {  # info: {
+        "id": "geology_collect",  # info: "id" : "geology_collect" ,
+        "enabled": os.environ.get("RR_GEOLOGY", "0") == "1",
+        "every_seconds": 300,  # info: "every_seconds" : 300 ,
+        "description": "Fail-safe: ML2 geology (quakes + HVO) → Database Geology/ (ML2 tree only). Gated off when RR_LOCAL_DATA_POLL=0.",  # info: "description"
+        "builtin": "",  # info: "builtin"
+        "command": f'bash "{ML2}/scripts/run-local-bank.sh" --only geology',  # info: ML2 canonical
+        "timeout_sec": 120,  # info: "timeout_sec" : 120 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{ML2}",  # info: "cwd"
+        "env": {"RR_DATABASE_ROOT": DATABASE},  # info: bank into Pacific Database
     },  # info: } ,
     # --- 33:40–33:44 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
@@ -2320,13 +2335,13 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_RADIO_RSS", "0") == "1",
         "at_minute": 55,  # info: "at_minute" : 55 ,
         "at_second": 35,  # info: "at_second" : 35 ,
-        "description": "Once per hour at HH:05: poll the full RSS feed list into the Radio story queue. Does not speak or push audio.",  # info: "description"
+        "description": "Fail-safe: ML2 radio_rss poll → Database Media/RadioRss/ (ML2 tree only). Does not speak.",  # info: "description"
         "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/RadioRss/scripts/rss_radio.py\" poll",  # info: "command"
-        "timeout_sec": 5,  # info: "timeout_sec" : 5 ,
+        "command": f'bash "{ML2}/scripts/run-local-bank.sh" --only radio_rss',  # info: ML2 canonical
+        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{PACIFIC}/Media/RadioRss",  # info: "cwd"
-        "env": {},  # info: "env" : { } ,
+        "cwd": f"{ML2}",  # info: "cwd"
+        "env": {"RR_DATABASE_ROOT": DATABASE},  # info: bank into Pacific Database
     },  # info: } ,
     # --- 55:40–55:44 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
@@ -2338,11 +2353,11 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "at_second": 40,  # info: "at_second" : 40 ,
         "description": "Hourly ~20-25 minute news update at :08 (universities, science, NVIDIA/big tech, world, mainland weather, centrist government/politics). Ava, Bruce, and Carly share airtime. Writes news_update_part1 and news_update_part2, Uploads part 1 and part 2 only.",  # info: "description"
         "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/RadioRss/scripts/rss_radio.py\" news-hour --speak",  # info: "command"
+        "command": f"nice -n 10 python3 \"{ML2}/vendor/RadioRss/scripts/rss_radio.py\" news-hour --speak",  # info: ML2 vendor canonical
         "timeout_sec": 5,  # info: "timeout_sec" : 5 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{PACIFIC}/Media/RadioRss",  # info: "cwd"
-        "env": {},  # info: "env" : { } ,
+        "cwd": f"{ML2}/vendor/RadioRss",  # info: "cwd"
+        "env": {"RR_DATABASE_ROOT": DATABASE},  # info: Database bank
     },  # info: } ,
     # --- 55:45–55:49 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
@@ -2655,13 +2670,13 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_US_STATES", "0") == "1",  # info: "enabled" : os . environ . get (,
         "at_minute": 59,  # info: "at_minute" : 59 ,
         "at_second": 55,  # info: "at_second" : 55 ,
-        "description": "US state weather (Open-Meteo; NWS if NWS_USER_AGENT) -> Database Weather/US-States/us-last.json.",  # info: "description"
+        "description": "Fail-safe: ML2 weather_us_states → Database Weather/US-States/us-last.json (ML2 tree only).",  # info: "description"
         "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Weather/US-States/scripts/fetch_us_states.py\"",  # info: "command"
+        "command": f'bash "{ML2}/scripts/run-local-bank.sh" --only weather_us_states',  # info: ML2 canonical
         "timeout_sec": 900,  # info: "timeout_sec" : 900 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{PACIFIC}/Weather/US-States",  # info: "cwd"
-        "env": {},  # info: "env" : { } ,
+        "cwd": f"{ML2}",  # info: "cwd"
+        "env": {"RR_DATABASE_ROOT": DATABASE},  # info: bank into Pacific Database
     },  # info: } ,
     {  # info: {
         # hourly work at :30 or later.
@@ -2695,13 +2710,13 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": False,
         "at_minute": 59,  # info: "at_minute" : 59 ,
         "at_second": 55,  # info: "at_second" : 55 ,
-        "description": "Open-Meteo current conditions for CountryLocations allowlist -> Database Weather/CountryLocations/. Gate RR_COUNTRY_LOCATIONS stays unset.",  # info: "description"
+        "description": "Fail-safe: ML2 weather_country_locations → Database Weather/CountryLocations/ (ML2 tree only).",  # info: "description"
         "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Weather/CountryLocations/scripts/poll_locations.py\"",  # info: "command"
-        "timeout_sec": 5,  # info: "timeout_sec" : 5 ,
+        "command": f'bash "{ML2}/scripts/run-local-bank.sh" --only weather_country_locations',  # info: ML2 canonical
+        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{PACIFIC}/Weather/CountryLocations",  # info: "cwd"
-        "env": {},  # info: "env" : { } ,
+        "cwd": f"{ML2}",  # info: "cwd"
+        "env": {"RR_DATABASE_ROOT": DATABASE},  # info: bank into Pacific Database
     },  # info: } ,
     {  # info: {
         # hourly work at :30 or later.
