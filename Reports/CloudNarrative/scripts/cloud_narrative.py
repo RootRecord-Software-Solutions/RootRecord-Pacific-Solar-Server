@@ -127,8 +127,8 @@ def persona(kind: str) -> str:  # info: def persona
 
 
 # ====================================================
-# SECTION: function prompt_for
-# What it does: prompt for.
+# SECTION: function energy_windows
+# What it does: Hour, day, week, and month lines from Energy/layers/periods.json.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def energy_windows() -> str:  # info: def energy_windows
