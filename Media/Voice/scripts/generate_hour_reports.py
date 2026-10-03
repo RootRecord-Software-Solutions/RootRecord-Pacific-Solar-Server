@@ -75,6 +75,8 @@ VOICE_PY = Path(
         str(PACIFIC / "Media" / "Voice" / ".venv" / "bin" / "python"),
     )
 )
+# Set in main() so a leftover *_current.wav from an earlier job is not treated as this run.
+BATCH_STARTED = 0.0
 CUSHION_MINUTES = float(os.environ.get("RR_VOICE_HOUR_CUSHION_MIN", "3"))
 HISTORY_KEEP = int(os.environ.get("RR_VOICE_HOUR_HISTORY_KEEP", "200"))
 # Preferred start minute. Recalc may move earlier if averages need more lead before :55.
@@ -147,6 +149,16 @@ def find_wav(report: str) -> Path | None:
         if c.is_file() and c.stat().st_size > 64:
             return c
     return None
+
+
+def _from_this_run(path: Path) -> bool:
+    """False when the file was written before this batch started (leftover from an earlier job)."""
+    if BATCH_STARTED <= 0:
+        return True
+    try:
+        return path.stat().st_mtime + 1 >= BATCH_STARTED
+    except OSError:
+        return False
 
 
 def _news_cycle_running() -> bool:
@@ -420,8 +432,9 @@ def one(report: str, agent: str, how: str) -> dict:
         voice = gen.get("voice") or {}
         if wav is None and isinstance(voice.get("wav"), str):
             wav = Path(voice["wav"])
-        if wav is None or not wav.is_file():
-            wav = find_wav(report)
+        if wav is None or not wav.is_file() or not _from_this_run(wav):
+            found = find_wav(report)
+            wav = found if found is not None and _from_this_run(found) else None
         if wav is None or not wav.is_file():
             row["ok"] = False
             row["detail"] = "no_wav_after_generate"
@@ -913,6 +926,8 @@ def main() -> int:
         return 2
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    global BATCH_STARTED
+    BATCH_STARTED = time.time()
     results = []
     t0 = time.time()
     news_tts_wait: dict | None = None
