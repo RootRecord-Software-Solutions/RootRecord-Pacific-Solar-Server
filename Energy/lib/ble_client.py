@@ -205,10 +205,8 @@ async def await_session(device, timeout: float = 20):  # info: async def await_s
     state, exc = await asyncio.wait_for(device.wait_until_authenticated_or_error(return_exc=True), timeout=timeout)  # info: set state , exc
     kind = type(exc).__name__ if exc is not None else "none"  # info: set kind
     authed = bool(getattr(state, "authenticated", False))  # info: set authed
-    bind = kind == BIND_INSTALL  # info: set bind
-    if bind and not authed:  # info: if bind and not authed
-        await asyncio.sleep(5.0)  # info: heartbeats can land after the auth flag flips
-    return state, kind, authed or bind  # info: return state , kind , authed or bind
+    # NeedBindInstallFirst is a hard miss — pack will not send PD heartbeats. Do not proceed.
+    return state, kind, authed  # info: return state , kind , authed
 
 
 # ====================================================
