@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Ad-hoc wrapper around generate_hour_reports.py (includes chime by default).
 
-Production hour batch is generate_hour_reports.py (jobs.py voice_hour_batch at :43).
+Production hour batch is generate_hour_reports.py (jobs.py voice_hour_batch at :42).
 """
 from __future__ import annotations
 

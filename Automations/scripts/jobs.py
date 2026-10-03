@@ -258,7 +258,7 @@ ONCE_AT_START = [  # info: set ONCE_AT_START
 
 # ====================================================
 # SECTION: EXACT_TIME
-# What it does: :00–:29 is stats, github, and EcoFlow leapfrog. All other hourly work is :30 or later. Voice batch at :43; :55 SSH-sends all WAVs to ML1.
+# What it does: :00–:29 is stats, github, and EcoFlow leapfrog. All other hourly work is :30 or later. Voice batch at :42; :55 catch-up push to ML1.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 EXACT_TIME = [  # info: set EXACT_TIME
@@ -278,7 +278,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # },
     # --- end TEMPLATE (EXACT_TIME) ---
     # :00–:29 is only sys_stats, github_sync, and the EcoFlow leapfrog. Everything else is :30 or later.
-    # Voice hour batch at :43 (generate_hour_reports.py). :55 radio_push --all → ML1.
+    # Voice hour batch at :42 (generate_hour_reports.py → Timing + early ML1 push). :55 radio_push is catch-up.
     {  # info: {
         # stacks on every 5s slot, all hour.
         "id": "sys_stats_cycle",  # info: "id" : "sys_stats_cycle" ,
@@ -1783,12 +1783,13 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_VOICE_HOUR_BATCH", os.environ.get("RR_RADIO_PUSH", "1")) == "1",
         "at_minute": 43,  # info: "at_minute" : 43 ,
         "at_second": 0,  # info: "at_second" : 0 ,
-        "description": "Generate all hour-desk voice reports (Ava/Bruce/Carly) into Media/Audio/Voice/ via generate_hour_reports.py. No ML1 send — radio_push_hour at :55 owns that.",  # info: "description"
+        "description": "Generate all hour-desk voice reports into Media/Audio/Voice/, record Timing averages, then radio_push --all to ML1 as soon as the batch finishes. :55 radio_push_hour is catch-up only.",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/generate_hour_reports.py\"",  # info: "command"
         "timeout_sec": 900,  # info: "timeout_sec" : 900 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
         "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
-        "env": {"RR_RADIO_PUSH": "0", "RR_VOICE_DELIVER": "0", "RR_VOICE_STATUS": "0"},  # info: "env"
+        "env": {"RR_VOICE_DELIVER": "0", "RR_VOICE_STATUS": "0", "RR_HOUR_BATCH_PUSH": "1"},  # info: push after batch; child desks still skip mid-push
     },  # info: } ,
     # --- 43:05–43:09 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
@@ -2254,7 +2255,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_RADIO_PUSH", "1") == "1",
         "at_minute": 55,  # info: "at_minute" : 55 ,
         "at_second": 0,  # info: "at_second" : 0 ,
-        "description": "At :55, encode every finished hour-desk WAV from voice_hour_batch (:43) and send to ML1 (SSH remote, or desk rootrecord-radio/ when RR_RADIO_MODE=local/auto and host is down).",  # info: "description"
+        "description": "Catch-up at :55: encode/send any hour-desk WAVs still missing on ML1 after voice_hour_batch early push (SSH remote, or desk rootrecord-radio/ when RR_RADIO_MODE=local/auto).",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"python3 \"{PACIFIC}/Media/Voice/scripts/radio_push.py\" --all",  # info: "command"
         "timeout_sec": 600,  # info: "timeout_sec" : 600 ,

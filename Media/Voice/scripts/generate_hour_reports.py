@@ -2,7 +2,7 @@
 """Generate every hour-desk voice report into Database Media/Audio/Voice/.
 
 Measured batch wall time (2026-10-03): ~8.6 minutes for all desks.
-jobs.py starts this at :43 (8.6 + 3 minute cushion). When the batch finishes it:
+jobs.py starts this at :42. When the batch finishes it:
   1. records wall + per-report seconds under Media/Audio/Voice/Timing/
   2. updates running averages / suggested start minute before :55
   3. radio_push --all to ML1 immediately
@@ -315,19 +315,28 @@ def record_timing(summary: dict) -> dict:
         for r in summary.get("results") or []
         if isinstance(r.get("seconds"), (int, float))
     }
+    wall = summary.get("wall_seconds")
+    if not isinstance(wall, (int, float)) and per_report:
+        # Sequential batch: sum of per-report seconds when wall clock wasn't recorded.
+        wall = round(sum(float(v) for v in per_report.values()), 1)
+    count = len(summary.get("results") or [])
+    # Full hour batch only — --only smokes must not skew averages / start-minute suggestion.
+    full_batch = count >= len(HOUR_REPORTS)
     entry = {
         "at": now.isoformat(),
         "ok": bool(summary.get("ok")),
-        "wall_seconds": summary.get("wall_seconds"),
+        "wall_seconds": wall,
         "passed": summary.get("passed"),
         "failed": summary.get("failed"),
-        "count": len(summary.get("results") or []),
+        "count": count,
+        "full_batch": full_batch,
         "per_report_seconds": per_report,
     }
 
     history_path = TIMING_DIR / "hour_batch_history.jsonl"
-    with history_path.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    if full_batch and wall is not None:
+        with history_path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
     history = _load_history()
     # Keep file trimmed.
@@ -402,7 +411,7 @@ def push_to_ml1() -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", default="", help="comma-separated report ids")
-    ap.add_argument("--include-chime", action="store_true", help="also render hourly_chime (not used by :43 job)")
+    ap.add_argument("--include-chime", action="store_true", help="also render hourly_chime (not used by :42 job)")
     ap.add_argument("--no-push", action="store_true", help="skip ML1 radio_push after generate")
     args = ap.parse_args()
     only = {x.strip() for x in args.only.split(",") if x.strip()}
