@@ -1,11 +1,11 @@
 {
   "ok": true,
   "kind": "last-known",
-  "as_of": "Saturday, October 3, 2026 \u00b7 01:34 Hawaiian Standard Time",
+  "as_of": "Saturday, October 3, 2026 \u00b7 01:36 Hawaiian Standard Time",
   "power": {
     "resource": "power",
     "title": "Power / solar",
-    "as_of": "Saturday, October 3, 2026 \u00b7 01:34 Hawaiian Standard Time",
+    "as_of": "Saturday, October 3, 2026 \u00b7 01:36 Hawaiian Standard Time",
     "source_paths": [
       "Energy/soc/*_current.json",
       "Energy/watts/*_current.json"
@@ -14,16 +14,16 @@
       "delta2": {
         "watts": {
           "solar_input_power": 0.0,
-          "ac_output_power": 35.0,
+          "ac_output_power": 43.0,
           "ac_input_power": 0.0,
           "usbc_output_power": 23.0,
-          "at": "2026-10-03T11:34:27.443Z",
+          "at": "2026-10-03T11:36:08.683Z",
           "source": "ble",
           "charge_source": "none"
         },
         "soc": {
-          "soc": 13.78,
-          "at": "2026-10-03T11:34:27.443Z",
+          "soc": 13.47,
+          "at": "2026-10-03T11:36:08.683Z",
           "source": "ble"
         }
       },
@@ -33,13 +33,13 @@
           "ac_output_power": 0.0,
           "ac_input_power": 0.0,
           "usbc_output_power": 0.0,
-          "at": "2026-10-03T11:33:45.275Z",
+          "at": "2026-10-03T11:35:55.080Z",
           "source": "cloud",
           "charge_source": "none"
         },
         "soc": {
           "soc": 99.0,
-          "at": "2026-10-03T11:33:45.275Z",
+          "at": "2026-10-03T11:35:55.080Z",
           "source": "cloud"
         }
       }
@@ -48,7 +48,7 @@
   "weather": {
     "resource": "weather",
     "title": "Weather",
-    "as_of": "Saturday, October 3, 2026 \u00b7 01:34 Hawaiian Standard Time",
+    "as_of": "Saturday, October 3, 2026 \u00b7 01:36 Hawaiian Standard Time",
     "source_paths": [
       "Weather/Hawai'i/reports/0 Level Processing/Hawaii_State_Weather_Report_current.md",
       "Weather/moon/moon_current.json"
@@ -70,7 +70,7 @@
   "kilauea": {
     "resource": "kilauea",
     "title": "K\u012blauea",
-    "as_of": "Saturday, October 3, 2026 \u00b7 01:34 Hawaiian Standard Time",
+    "as_of": "Saturday, October 3, 2026 \u00b7 01:36 Hawaiian Standard Time",
     "source_paths": [
       "Geology/Volcanoes/Hawaii/kilauea_current.json"
     ],
