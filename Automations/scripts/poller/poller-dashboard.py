@@ -255,7 +255,7 @@ def build(snap, remaining: int, width: int, height: int) -> list[str]:  # info: 
     now = datetime.now(TZ)  # info: set now
     L = []  # info: set L
     title = " RootRecord · Pacific Solar Server — rootserver poller "  # info: set title
-    clock = now.strftime(" %a %d %b %Y  %H:%M:%S HST ")  # info: set clock
+    clock = now.strftime(" %A %d %b %Y  %H:%M:%S HST ")  # info: set clock
     pad = max(1, width - len(title) - len(clock))  # info: set pad
     L.append(f"{BG}{WHITE}{BOLD}{title}{' ' * pad}{CYAN}{clock}{RST}")  # info: L . append ( f" { BG }
     ref = "".join("■" if i < REFRESH - remaining else "□" for i in range(REFRESH))  # info: set ref

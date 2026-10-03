@@ -459,6 +459,8 @@ def speakable(text: str) -> str:  # info: def speakable
     out = re.sub(r"(?i)\bHI-res\b", "high-res", out)  # info: set out
     out = re.sub(r"(?i)\bH(?:\.|\s)*I\.?\b", "Hawaii", out)  # info: set out
     out = re.sub(r"(?i)\bHI alerts\b", "Hawaii alerts", out)  # info: set out
+    _days = {"mon": "Monday", "tue": "Tuesday", "wed": "Wednesday", "thu": "Thursday", "fri": "Friday", "sat": "Saturday"}  # info: short weekdays
+    out = re.sub(r"(?i)\b(mon|tue|wed|thu|fri|sat)\b", lambda m: _days[m.group(1).lower()], out)  # info: fri says Friday
     out = re.sub(r"(?i)\s*Not on the roof\.?", " ", out)  # info: set out
     out = re.sub(r"(?i)\bGround-mounted PV\b", "Ground-mounted solar", out)  # info: set out
     out = _REDUNDANT.sub(" ", out)  # info: set out

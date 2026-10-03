@@ -3,7 +3,7 @@
 # status_cue.py — four prebuilt local lines per desk. No chime. No Kokoro here.
 # starting plays before render. transit plays as the send starts.
 # failed plays when the send does not land. sent plays after Mainland One
-# has the file (radio_push ffprobe + mv). RR_VOICE_STATUS=0 skips playback.
+# has the file (radio_push ffprobe + mv). Local playback is off unless RR_VOICE_STATUS=1.
 # ==============================================================================
 from __future__ import annotations
 
@@ -131,7 +131,7 @@ def play_closer() -> dict:
     """Local line after every desk in the cycle has been received."""
     persona, slug, _text = CLOSER
     path = CLIPS / persona / f"{slug}.wav"
-    if os.environ.get("RR_VOICE_STATUS", "1") == "0":
+    if os.environ.get("RR_VOICE_STATUS", "0") == "0":
         return {"ok": True, "skipped": True, "detail": "status_off", "phase": "stack_all_sent"}
     if not path.is_file():
         return {"ok": False, "detail": "audio_missing", "phase": "stack_all_sent", "wav": str(path)}
@@ -144,7 +144,7 @@ def play_closer() -> dict:
 
 def play(report: str, phase: str) -> dict:
     """Play one prebuilt line. A missing file or a gated flag does not fail the report."""
-    if os.environ.get("RR_VOICE_STATUS", "1") == "0":
+    if os.environ.get("RR_VOICE_STATUS", "0") == "0":
         return {"ok": True, "skipped": True, "detail": "status_off", "phase": phase}
     path = clip_path(report, phase)
     if path is None:

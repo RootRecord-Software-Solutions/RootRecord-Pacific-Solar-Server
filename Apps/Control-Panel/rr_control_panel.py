@@ -104,7 +104,7 @@ button.rr-restart { min-width: 240px; min-height: 148px; font-size: 16pt; font-w
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def now_hst() -> str:  # info: def now_hst
-    return datetime.now(src.TZ).strftime("%a %d %b %Y  %H:%M:%S HST")  # info: return datetime . now ( src . TZ
+    return datetime.now(src.TZ).strftime("%A %d %b %Y  %H:%M:%S HST")  # info: return datetime . now ( src . TZ
 
 
 from rr_ui import TOGGLE_CSS, badge_css, esc, lbl, section, spawn, state_toggle, widget_texts  # noqa: E402

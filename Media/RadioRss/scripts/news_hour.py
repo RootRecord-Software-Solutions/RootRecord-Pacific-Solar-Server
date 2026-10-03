@@ -368,7 +368,7 @@ def _join(parts: list[Path], built: dict, name: str = "news_update") -> dict:  #
 
 # ====================================================
 # SECTION: function render_update
-# What it does: Speak each desk in its own voice, then replace news_update_current and push the reports file.
+# What it does: Speak each desk in its own voice, then push part 1 and part 2. No full-file copy.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def render_update(built: dict) -> dict:  # info: def render_update
@@ -405,9 +405,7 @@ def render_update(built: dict) -> dict:  # info: def render_update
     mid = max(1, len(section_wavs) // 2)  # info: set mid
     first = section_wavs[:mid]  # info: set first
     second = section_wavs[mid:]  # info: set second
-    joined_all = _join(with_gaps(section_wavs), built, "news_update")  # info: set joined_all
-    if not joined_all.get("ok"):  # info: if not joined_all . get ( "ok" ) :
-        return joined_all  # info: return joined_all
+    # The two halves are the show. The full file was a third copy of the same audio.
     joined = _join(with_gaps(first), built, "news_update_part1")  # info: set joined
     if not joined.get("ok"):  # info: if not joined . get ( "ok" ) :
         return joined  # info: return joined
@@ -420,10 +418,6 @@ def render_update(built: dict) -> dict:  # info: def render_update
         return {"ok": True, "detail": "rendered", "wav": joined["wav"], "voices": voices}  # info: return { "ok" : True , "detail" : "rendered" , "wav" : joined [ "wav" ] , "voices" : voices }
     import radio_push  # info: import radio_push
     status_cue.play("news_update", "transit")  # info: transit cue as the send starts
-    pushed_all = radio_push.push_report("news_update")  # info: set pushed_all
-    if not isinstance(pushed_all, dict) or not pushed_all.get("ok"):  # info: if the single file does not send
-        status_cue.play("news_update", "failed")  # info: failed cue
-        return {"ok": False, "detail": "push_failed", "wav": joined_all.get("wav")}  # info: return push failed
     pushed = radio_push.push_report("news_update_part1")  # info: set pushed
     if not isinstance(pushed, dict) or not pushed.get("ok"):  # info: if not isinstance ( pushed , dict ) or not pushed . get ( "ok" ) :
         status_cue.play("news_update", "failed")  # info: failed cue when the send does not return
@@ -436,7 +430,6 @@ def render_update(built: dict) -> dict:  # info: def render_update
         pushed["part2"] = pushed_two  # info: pushed [ "part2" ] = pushed_two
     pushed["status_send"] = status_cue.after_push("news_update", pushed)  # info: sent cue after Mainland One has the file
     pushed["voices"] = voices  # info: pushed [ "voices" ] = voices
-    pushed["full"] = pushed_all  # info: pushed [ "full" ] = pushed_all
     pushed["wav"] = joined["wav"]  # info: pushed [ "wav" ] = joined [ "wav" ]
     return pushed  # info: return pushed
 
