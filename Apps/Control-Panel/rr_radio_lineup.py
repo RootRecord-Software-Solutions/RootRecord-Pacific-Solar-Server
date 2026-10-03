@@ -29,6 +29,7 @@ TITLES = {
     "remaining_tasks": "Tasks",
     "boot_brief": "Boot",
     "current_report": "Current",
+    "custom_msg": "Custom message",
     "news_update": "News",
 }
 

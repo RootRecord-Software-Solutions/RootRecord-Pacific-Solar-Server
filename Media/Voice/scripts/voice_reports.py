@@ -13,7 +13,7 @@
   python3 voice_reports.py <report> [--no-voice]
   reports: hourly_chime · nws_weather · remaining_tasks · morning_report · midday_report · late_report
            · earthquake_report · hurricane_desk · kilauea_report · kilauea_image_check · solar_desk · security_desk · bandwidth_desk
-           · boot_brief · current_report
+           · boot_brief · current_report · custom_msg
 
 Each run writes Database Media/Audio/Voice/Reports/<report>_current.md (old copy -> Reports/Archive/
 <report>_YYYYMMDDTHHMM.md) and a stitched WAV Media/Audio/Voice/<report>_current.wav via voice-render.sh
@@ -39,6 +39,7 @@ bandwidth_desk also folds Mainland site analytics (Home proxy + Radio listeners)
 Database Logs/Website/analytics/daily (Website/scripts/analytics_pull.py / pull-from-api.sh).
 Gates: RR_VOICE_SOLAR / RR_VOICE_SECURITY / RR_VOICE_BANDWIDTH (jobs.py).
 boot_brief = G1 boot-prelims Boot Report (file-only, no Grok) as a template brief (Ava). PROPOSED (RR_VOICE_BOOT), not in jobs.py.
+custom_msg = Bruce reads Database Media/Audio/Voice/custom_msg_current.txt every run (exact path).
 Roll-ups append an LLM summary via run-infer.sh only when RR_VOICE_ROLLUP_LLM=1 (off by default). The off state is not written into the report.
 Scheduling: jobs.py, one env gate per report (read at poller start). Added 2026-09-29 (g3-voice-reports2).
 current_report summarizes the same measured desks. Spoken time and headings are the clock when the text is built.
@@ -65,6 +66,8 @@ DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosys
 LIB = Path(os.environ.get("RR_LIBRARY_ROOT", "/home/rootrecord/RootRecord-Ecosystem/5 - RootRecord-Library"))  # info: set LIB
 PACIFIC = HERE.parents[2]  # info: set PACIFIC
 REPORTS = Path(os.environ.get("RR_VOICE_REPORT_OUT", str(DB / "Media" / "Audio" / "Voice" / "Reports")))  # info: set REPORTS
+# Exact source for custom_msg — always this path, every run.
+CUSTOM_MSG = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Media/Audio/Voice/custom_msg_current.txt")  # info: set CUSTOM_MSG
 WX = DB / "Weather" / "Hawai'i"  # info: set WX
 ALERTS = WX / "hfo" / "api.weather.gov" / "alerts" / "active" / "area=HI" / "area=HI_current.json"  # info: set ALERTS
 SFP = WX / "reports" / "0 Level Processing" / "sfp_state_forecast_current.md"  # info: set SFP
@@ -101,7 +104,7 @@ KIND = {"hourly_chime": "chime", "nws_weather": "nws", "remaining_tasks": "remai
         "morning_report": "morning", "midday_report": "midday", "late_report": "late", "earthquake_report": "earthquake",  # info: "morning_report" : "morning" , "midday_report" : "midday" ,
         "hurricane_desk": "hurricane", "kilauea_report": "kilauea", "kilauea_image_check": "kilauea",  # info: kilauea kinds -> Carly
         "solar_desk": "solar", "security_desk": "security", "bandwidth_desk": "bandwidth",  # info: "solar_desk" : "solar" , "security_desk" : "security" ,
-        "boot_brief": "boot", "current_report": "current"}  # info: "boot_brief" : "boot" , "current_report" : "current"
+        "boot_brief": "boot", "current_report": "current", "custom_msg": "custom"}  # info: custom_msg -> Bruce
 DEV_NOTE = "Automated Reports are in active development and is expected to change"  # info: set DEV_NOTE
 
 
@@ -2018,6 +2021,27 @@ def b_current_report(t: datetime):  # info: def b_current_report
 
 
 # ====================================================
+# SECTION: function b_custom_msg
+# What it does: Bruce desk — speak Database Media/Audio/Voice/custom_msg_current.txt. Reads that exact path every run.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def b_custom_msg(t: datetime):  # info: def b_custom_msg
+    """Bruce desk — speak custom_msg_current.txt from the fixed Voice bank path every run."""  # info: docstring
+    path = CUSTOM_MSG  # info: exact path every time
+    md = [f"# Custom message — {t.isoformat()}", "", f"_Source: `{path}` (read every run)._", ""]  # info: set md
+    if not path.is_file():  # info: if not path . is_file ( )
+        spoken = ["Custom message file is missing."]  # info: set spoken
+        md += ["_File missing._", "", "## Spoken", "", spoken[0], ""]  # info: md += missing
+        return "\n".join(md), spoken  # info: return missing
+    text = path.read_text(encoding="utf-8", errors="replace")  # info: set text
+    spoken = [ln.strip() for ln in text.splitlines() if ln.strip()]  # info: one spoken unit per non-empty line
+    if not spoken:  # info: if not spoken
+        spoken = ["Custom message file is empty."]  # info: set spoken
+    md += ["## Body", "", text.rstrip(), "", "## Spoken", "", " ".join(spoken), ""]  # info: md += body + spoken
+    return "\n".join(md), spoken  # info: return "\n" . join ( md ) , spoken
+
+
+# ====================================================
 # SECTION: BUILD
 # What it does: Set BUILD.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -2027,7 +2051,7 @@ BUILD = {"hourly_chime": b_hourly_chime, "nws_weather": b_nws_weather,  # info: 
          "earthquake_report": b_earthquake_report, "hurricane_desk": b_hurricane_desk,  # info: "earthquake_report" : b_earthquake_report , "hurricane_desk" : b_hurricane_desk ,
          "kilauea_report": b_kilauea_report, "kilauea_image_check": b_kilauea_image_check, "solar_desk": b_solar_desk, "security_desk": b_security_desk,  # info: kilauea + solar
          "bandwidth_desk": b_bandwidth_desk, "boot_brief": b_boot_brief,  # info: "bandwidth_desk" : b_bandwidth_desk , "boot_brief" : b_boot_brief ,
-         "current_report": b_current_report}  # info: "current_report" : b_current_report
+         "current_report": b_current_report, "custom_msg": b_custom_msg}  # info: "current_report" : b_current_report , "custom_msg" : b_custom_msg
 
 
 # ====================================================
@@ -2076,6 +2100,8 @@ def voice(report: str, spoken: list[str]) -> dict:  # info: def voice
     cmd = ["bash", str(HERE / "voice-render.sh"), "stitch", "--report", report, "--kind", KIND[report], "--text-file", f.name]  # info: set cmd
     if report == "hourly_chime":  # info: if report == "hourly_chime" :
         cmd.append("--no-gate")  # G1 chimes bypassed the live-facts gate (spelled-out times carry no digits)
+    if report == "custom_msg":  # info: if report == "custom_msg" :
+        cmd.append("--no-gate")  # operator-authored text; not a live-facts desk
     if report == "bandwidth_desk":  # info: if report == "bandwidth_desk" :
         import speakers  # info: import speakers
         if not speakers.is_live("bandwidth", " ".join(spoken)):  # info: if not speakers . is_live ( "bandwidth" , " " . join ( spoken ) ) :

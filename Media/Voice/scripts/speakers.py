@@ -62,6 +62,7 @@ KIND_AGENT = {  # info: set KIND_AGENT
     "system": "bruce",  # info: "system" : "bruce" ,
     "remaining": "bruce",  # info: "remaining" : "bruce" ,
     "hourly": "bruce",  # info: "hourly" : "bruce" ,
+    "custom": "bruce",  # info: "custom" : "bruce" ,
     "earthquake": "carly",  # info: "earthquake" : "carly" ,
     "kilauea": "carly",  # info: "kilauea" : "carly" ,
     "hurricane": "carly",  # info: "hurricane" : "carly" ,
@@ -238,6 +239,8 @@ def is_live(kind: str, text: str) -> bool:  # info: def is_live
         )  # info: )
     if key in {"remaining"}:  # info: if key in { "remaining" } :
         return bool(re.search(r"\d", raw))  # info: return bool ( re . search ( r"\d"
+    if key in {"custom"}:  # info: if key in { "custom" }
+        return len(re.sub(r"\s+", "", raw)) >= 8  # info: operator text; length only
     if key in {"morning", "midday", "evening", "late", "summary", "boot", "current"}:  # info: if key in { "morning" , "midday" ,
         return bool(re.search(r"\d", raw))  # info: return bool ( re . search ( r"\d"
     return bool(re.search(r"\d", raw))  # info: return bool ( re . search ( r"\d"

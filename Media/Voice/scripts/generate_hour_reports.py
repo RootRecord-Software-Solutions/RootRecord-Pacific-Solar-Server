@@ -86,6 +86,7 @@ HOUR_REPORTS: list[tuple[str, str, str]] = [
     ("solar_desk", "bruce", "voice_reports"),
     ("remaining_tasks", "bruce", "voice_reports"),
     ("system_perf", "bruce", "system_perf"),
+    ("custom_msg", "bruce", "voice_reports"),
     ("earthquake_report", "carly", "voice_reports"),
     ("hurricane_desk", "carly", "voice_reports"),
     ("kilauea_report", "carly", "voice_reports"),
@@ -486,6 +487,9 @@ def cleanup_intermediates() -> dict:
                 continue
             suf = path.suffix.lower()
             if suf not in {".wav", ".txt", ".tx"}:
+                continue
+            # Keep the operator-authored custom message source.
+            if path.name == "custom_msg_current.txt":
                 continue
             try:
                 path.unlink()

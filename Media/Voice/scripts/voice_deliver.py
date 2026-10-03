@@ -50,6 +50,7 @@ TITLES = {  # info: set TITLES
     "midday_report": "Midday report",  # info: "midday_report" : "Midday report" ,
     "late_report": "Late report",  # info: "late_report" : "Late report" ,
     "boot_brief": "Boot brief",  # info: "boot_brief" : "Boot brief" ,
+    "custom_msg": "Custom message",  # info: "custom_msg" : "Custom message" ,
 }  # info: }
 NOTE_CAPTION = "Reply to this with notes if the report should be better."  # info: set NOTE_CAPTION
 
