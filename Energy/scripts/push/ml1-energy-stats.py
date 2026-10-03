@@ -164,7 +164,7 @@ def _pack(alias: str) -> dict:  # info: def _pack
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def build() -> dict:  # info: def build
-    _refresh_river()  # info: land a fresh River sample into Database before packing
+    # Do not call EcoFlow cloud from the push path. BLE hold/read must land files first.
     packs = {alias: _pack(alias) for alias in PACKS}  # info: set packs
     river = packs["river2pro"]  # info: set river
     delta = packs["delta2"]  # info: set delta
