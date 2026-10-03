@@ -36,7 +36,34 @@ def ensure_layers(db_path=None, layers_dir=None):  # info: def ensure_layers
 # What it does: Create missing layer files, then condense closed periods.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def condense_closed_periods(db_path=None, layers_dir=None):  # info: def condense_closed_periods
+MINUTE_LAYERS = ("1sec", "1min", "5min", "15min")  # info: set MINUTE_LAYERS
+HOUR_LAYERS = ("1hour", "day", "7days", "month", "year")  # info: set HOUR_LAYERS
+
+
+# ====================================================
+# SECTION: function consolidate_minutes
+# What it does: Roll closed second samples into the minute, 5-minute, and 15-minute buckets.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def consolidate_minutes(db_path=None, layers_dir=None):  # info: def consolidate_minutes
+    return condense_closed_periods(db_path, layers_dir, layers=MINUTE_LAYERS)  # info: return condense_closed_periods
+
+
+# ====================================================
+# SECTION: function condense_hours
+# What it does: Roll closed minute buckets into the hour, day, week, month, and year buckets.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def condense_hours(db_path=None, layers_dir=None):  # info: def condense_hours
+    return condense_closed_periods(db_path, layers_dir, layers=HOUR_LAYERS)  # info: return condense_closed_periods
+
+
+# ====================================================
+# SECTION: function condense_closed_periods
+# What it does: Create missing layer files, then condense the requested closed buckets.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def condense_closed_periods(db_path=None, layers_dir=None, layers=None):  # info: def condense_closed_periods
     raw_path = Path(db_path) if db_path else DEFAULT_DB_PATH  # info: set raw_path
     layers_dir = Path(layers_dir) if layers_dir else LAYERS_DIR  # info: set layers_dir
     ensure_layers(raw_path, layers_dir)  # info: call ensure_layers
@@ -50,7 +77,8 @@ def condense_closed_periods(db_path=None, layers_dir=None):  # info: def condens
         earliest = datetime.fromisoformat(row[0].replace("Z", "+00:00"))  # info: set earliest
         latest = datetime.fromisoformat(row[1].replace("Z", "+00:00"))  # info: set latest
 
-        for layer in LAYERS:  # info: for layer in LAYERS :
+        chosen = tuple(layers) if layers else LAYERS  # info: set chosen
+        for layer in chosen:  # info: for layer in chosen :
             source = BUCKET_SOURCE.get(layer)  # info: set source
             layer_conn = connect_layer(layer, raw_path, layers_dir)  # info: set layer_conn
             child_conn = connect_layer(source, raw_path, layers_dir) if source else None  # info: set child_conn
