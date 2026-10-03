@@ -231,8 +231,8 @@ def _watts(device: dict | None, key: str) -> str:  # info: def _watts
 
 
 # ====================================================
-# SECTION: function render
-# What it does: Composite the desk overlay on the full-bleed photo.
+# SECTION: function _tail
+# What it does: Last measured seconds from the clock stamp until the encoder can show the still.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _tail() -> float:  # info: def _tail
@@ -243,11 +243,21 @@ def _tail() -> float:  # info: def _tail
         return ENCODER_WAIT  # info: return the encoder wait
 
 
+# ====================================================
+# SECTION: function _remember_tail
+# What it does: Store this run's publish delay plus the encoder wait for the next clock.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
 def _remember_tail(drawn_at: datetime) -> None:  # info: def _remember_tail
     spent = (datetime.now(HST) - drawn_at).total_seconds() + ENCODER_WAIT  # info: set spent
     LATENCY.write_text(json.dumps({"tail_sec": round(max(0.0, spent), 2)}), encoding="utf-8")  # info: write tail
 
 
+# ====================================================
+# SECTION: function render
+# What it does: Composite the desk overlay on the full-bleed photo.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
 def render(state: dict | None, ops: dict | None, hawaii: dict, world: dict, when: datetime) -> Image.Image:  # info: def render
     base = Image.open(BG).convert("RGBA")  # info: set base
     if base.size != (1920, 1080):  # info: if base . size !=
@@ -346,10 +356,11 @@ def main() -> int:  # info: def main
     world = _quake_change((_get(gl_url, 40) or {}).get("features") or [])  # info: set world
     opened = datetime.now(HST).replace(second=0, microsecond=0)  # info: the minute this frame belongs to
     late = (datetime.now(HST) - opened).total_seconds()  # info: seconds already used since that minute
-    shown = opened + timedelta(seconds=late + _tail())  # info: clock plus the last delivery delay
+    stamped = opened + timedelta(seconds=late)  # info: the clock before the delivery delay
+    shown = stamped + timedelta(seconds=_tail())  # info: add the last delivery delay
     frame = render(state, ops, hi, world, shown)  # info: set frame
     detail = publish(frame)  # info: set detail
-    _remember_tail(shown)  # info: save how long publish took after the clock
+    _remember_tail(stamped)  # info: save how long publish took after the real clock
     if datetime.now(HST).minute in (0, 30):  # info: if the half-hour window just opened
         meta = subprocess.run(  # info: subprocess . run
             ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", HOST,  # info: ssh metadata
