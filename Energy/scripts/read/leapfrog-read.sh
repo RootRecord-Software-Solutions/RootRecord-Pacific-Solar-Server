@@ -10,9 +10,8 @@
 #!/usr/bin/env bash
 # Read the pack whose watt file is older. A wall-clock slot was skipping River
 # whenever the poller freed up on an even 5-second boundary.
-# If both watt files are stale, power-cycle hci0 once, then read. A second
-# cycle waits until the cooldown passes so a dead scan cannot bounce the radio
-# on every timer tick.
+# If both watt files are stale, make sure hci0 is powered on, then read.
+# Powering the adapter off stranded it. A second check waits out the cooldown.
 set -euo pipefail  # info: set
 ROOT="$(cd "$(dirname "$0")" && pwd)"  # info: set ROOT
 WATTS="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/watts"  # info: set WATTS
@@ -59,7 +58,7 @@ both_packs_stale() {  # info: both_packs_stale
 
 # ====================================================
 # SECTION: function reset_adapter_if_both_stale
-# What it does: Power-cycle hci0 when both packs are stale, at most once per STALE_SEC. Does not restart bluetoothd.
+# What it does: Power hci0 on when both packs are stale, at most once per STALE_SEC. Does not power it off and does not restart bluetoothd.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 reset_adapter_if_both_stale() {  # info: reset_adapter_if_both_stale
@@ -69,11 +68,10 @@ reset_adapter_if_both_stale() {  # info: reset_adapter_if_both_stale
   fi  # info: fi
   stamp_age="$(file_age "$RESET_STAMP")"  # info: set stamp_age
   if (( stamp_age < STALE_SEC )); then  # info: if
-    echo "both packs stale — adapter reset still in cooldown (${stamp_age}s)"  # info: echo
+    echo "both packs stale — adapter check still in cooldown (${stamp_age}s)"  # info: echo
     return 0  # info: return
   fi  # info: fi
-  echo "both packs stale — power-cycling hci0"  # info: echo
-  bluetoothctl power off >/dev/null 2>&1 || true  # info: bluetoothctl power off
+  echo "both packs stale — ensuring hci0 is powered on"  # info: echo
   bluetoothctl power on >/dev/null 2>&1 || true  # info: bluetoothctl power on
   date +%s >"$RESET_STAMP"  # info: date
   sleep 2  # info: sleep

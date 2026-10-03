@@ -77,7 +77,7 @@ def eflib_ready() -> tuple[bool, str]:  # info: def eflib_ready
 
 # ====================================================
 # SECTION: function _scan
-# What it does:  scan.
+# What it does: Return as soon as the MAC is advertised. Waiting out the full window makes the connect use a stale advertisement.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 
@@ -99,11 +99,16 @@ async def _scan(mac: str, seconds: float = 10.0):  # info: async def
     found = {}  # info: set found
 
     def _cb(d, adv):  # info: def _cb
-        if (d.address or "").upper() == want:  # info: if ( d . address or "" )
+        if (d.address or "").upper() == want and "rec" not in found:  # info: first sight of this MAC
             found["rec"] = (d, adv)  # info: found [ "rec" ] = ( d ,
 
     async with BleakScanner(detection_callback=_cb):  # info: async with
-        await asyncio.sleep(seconds)  # info: await asyncio . sleep ( seconds )
+        deadline = asyncio.get_running_loop().time() + seconds  # info: set deadline
+        while "rec" not in found:  # info: while the MAC has not been seen
+            remaining = deadline - asyncio.get_running_loop().time()  # info: set remaining
+            if remaining <= 0:  # info: if the window is over
+                break  # info: break
+            await asyncio.sleep(min(0.2, remaining))  # info: short poll so connect is not delayed
     return found.get("rec")  # info: return found . get ( "rec" )
 
 

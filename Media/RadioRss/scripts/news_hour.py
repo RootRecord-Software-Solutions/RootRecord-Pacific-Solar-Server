@@ -123,7 +123,7 @@ def _ordered(stories: list[dict]) -> list[dict]:  # info: def _ordered
 
 # ====================================================
 # SECTION: function _take
-# What it does: Fill one desk up to a word budget. The same cluster is read once.
+# What it does: Fill one desk up to a word budget. The same cluster or title is read once. One publisher is capped at two items so a feed cannot fill the desk.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _take(stories: list[dict], categories: list, budget: int, registry: dict, seen: set) -> tuple[list[str], list[dict], int]:  # info: def _take
@@ -131,11 +131,16 @@ def _take(stories: list[dict], categories: list, budget: int, registry: dict, se
     picked = []  # info: set picked
     used = 0  # info: set used
     wanted = set(categories or [])  # info: set wanted
+    publishers: dict[str, int] = {}  # info: set publishers
     for story in _ordered(stories):  # info: for story in _ordered ( stories )
         if story.get("category") not in wanted:  # info: if story . get ( "category" ) not in wanted :
             continue  # info: continue
+        title_key = (story.get("title_norm") or story.get("title") or "").strip().lower()  # info: set title_key
         key = story.get("cluster_id") or story.get("canonical_url") or story.get("id")  # info: set key
-        if not key or key in seen:  # info: if not key or key in seen :
+        if not key or key in seen or (title_key and title_key in seen):  # info: if already read
+            continue  # info: continue
+        publisher = (story.get("provider") or "").strip().lower()  # info: set publisher
+        if publisher and publishers.get(publisher, 0) >= 2:  # info: if this publisher already has two items
             continue  # info: continue
         line = _line(story, registry)  # info: set line
         if not line:  # info: if not line
@@ -154,6 +159,10 @@ def _take(stories: list[dict], categories: list, budget: int, registry: dict, se
         lines.append(line)  # info: lines . append ( line )
         picked.append(story)  # info: picked . append ( story )
         seen.add(key)  # info: seen . add ( key )
+        if title_key:  # info: if title_key
+            seen.add(title_key)  # info: seen . add title
+        if publisher:  # info: if publisher
+            publishers[publisher] = publishers.get(publisher, 0) + 1  # info: count this publisher
         used += count  # info: set used
         if used >= budget:  # info: if used >= budget :
             break  # info: break

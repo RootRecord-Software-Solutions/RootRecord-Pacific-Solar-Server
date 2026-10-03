@@ -55,9 +55,12 @@ print(f"{age}\t{name}\t{'' if out is None else out}")
 PY
 )
 in_range=0
-if [[ "$seen" == "1" && "$sage" -le "$FRESH" ]]; then in_range=1; fi
 if [[ "$ble_age" -le "$FRESH" && "$ac_flag" != "not_ble" && "$ac_flag" != "bad" && "$ac_flag" != "none" ]]; then in_range=1; fi
 if [[ "$in_range" -eq 0 ]]; then
+  if [[ "$seen" == "1" && "$sage" -le "$FRESH" ]]; then
+    log_line "no-op sample_stale sight_age=${sage}s ble_age=${ble_age}s ac_ports=${ac_flag} — reader owns the radio until a fresh BLE sample"
+    exit 0
+  fi
   log_line "no-op out_of_range sight=${seen} sight_age=${sage}s ble_age=${ble_age}s ac_ports=${ac_flag} detail=${detail}"
   exit 0
 fi
@@ -67,6 +70,11 @@ if [[ "$ble_age" -le "$FRESH" && "$ac_flag" == "true" ]]; then
 fi
 if [[ "$DRY" -eq 1 ]]; then
   log_line "dry-run WOULD_RUN_ac_on ble_age=${ble_age}s ac_ports=${ac_flag} sight=${seen} sight_age=${sage}s"
+  exit 0
+fi
+exec 9>/tmp/ecoflow-ble.lock
+if ! flock -n 9; then
+  log_line "no-op ble_busy"
   exit 0
 fi
 log_line "run ac_on reason=in_range ble_age=${ble_age}s ac_ports=${ac_flag} sight=${seen} sight_age=${sage}s"

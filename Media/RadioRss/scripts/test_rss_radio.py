@@ -24,7 +24,7 @@ sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 , str ( HERE ) )
 from datetime import datetime, timezone  # info: from datetime import datetime , timezone
 from parse_feed import parse_document  # info: from parse_feed import parse_document
 from stories import barred, deadline, normalize, partisan, sports, violent  # info: from stories import barred , deadline , normalize , partisan , sports , violent
-from news_hour import balance_personas, build_update, persona_for  # info: from news_hour import build_update , persona_for
+from news_hour import _take, balance_personas, build_update, persona_for  # info: from news_hour import _take , build_update , persona_for
 from pipeline import handoff, health_report, nhc_spoken, poll, trace  # info: from pipeline import handoff , health_report , nhc_spoken , poll , trace
 from registry import load_registry  # info: from registry import load_registry
 from store import connect, feed_row  # info: from store import connect , feed_row
@@ -283,6 +283,21 @@ def test_news_update() -> None:  # info: def test_news_update
     assert normalize(doj, due, registry) is None  # info: assert normalize ( doj , due , registry ) is None
     assert deadline(doj, charge, registry) is False  # info: assert deadline ( doj , charge , registry ) is False
     assert normalize(doj, charge, registry) is not None  # info: assert normalize ( doj , charge , registry ) is not None
+    campus = []  # info: set campus
+    for index, (publisher, title) in enumerate([  # info: for index
+        ("MIT News", "Warehouse dedication"), ("MIT News", "Endowment figures"), ("MIT News", "Computational tools"),  # info: three MIT items
+        ("MIT News", "Tech worker movement"), ("MIT News", "Space economy guide"),  # info: two more MIT items
+        ("UC Berkeley", "Woodland study"), ("Harvard Gazette", "Campus lab"),  # info: other universities
+    ]):  # info: end pairs
+        campus.append({  # info: campus . append
+            "id": f"campus-{index}", "category": "universities", "provider": publisher, "title": title,  # info: identity
+            "title_norm": title.lower(), "summary": "A short campus note with a live figure.", "url": f"https://news.test/campus/{index}",  # info: text
+            "canonical_url": f"https://news.test/campus/{index}", "cluster_id": f"campus-{index}", "priority": "high",  # info: keys
+            "published_at": f"2026-10-01T1{index}:00:00Z", "political": 0,  # info: time
+        })  # info: end story
+    _lines, picked, _used = _take(campus, ["universities"], 400, registry, set())  # info: set picked
+    assert sum(1 for story in picked if story["provider"] == "MIT News") == 2  # info: assert two MIT items
+    assert any(story["provider"] == "UC Berkeley" for story in picked)  # info: assert Berkeley still fits
     from pipeline import speak_body  # info: from pipeline import speak_body
     body = speak_body("Harbor ferry schedule", "Harbor ferry schedule. The state published a new timetable.", registry["policy"])  # info: set body
     assert body.lower().count("harbor ferry schedule") == 0  # info: assert headline not repeated
