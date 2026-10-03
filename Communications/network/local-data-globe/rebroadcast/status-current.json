@@ -1,25 +1,25 @@
 {
   "ok": true,
   "kind": "last-known",
-  "as_of": "Friday, October 2, 2026 \u00b7 15:35 Hawaiian Standard Time",
+  "as_of": "Friday, October 2, 2026 \u00b7 15:40 Hawaiian Standard Time",
   "power": {
     "resource": "power",
     "title": "Power / solar",
-    "as_of": "Friday, October 2, 2026 \u00b7 15:35 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 15:40 Hawaiian Standard Time",
     "devices": {
       "delta2": {
         "watts": {
-          "solar_input_power": 18,
+          "solar_input_power": 27,
           "ac_output_power": 0,
           "ac_input_power": 0,
           "usbc_output_power": 55,
-          "at": "2026-10-02T15:35:25-10:00",
+          "at": "2026-10-02T15:40:38-10:00",
           "source": "ble",
           "charge_source": "none"
         },
         "soc": {
-          "soc": 18.43,
-          "at": "2026-10-02T15:35:25-10:00",
+          "soc": 18.13,
+          "at": "2026-10-02T15:40:38-10:00",
           "source": "ble"
         }
       },
@@ -44,18 +44,18 @@
   "weather": {
     "resource": "weather",
     "title": "Weather",
-    "as_of": "Friday, October 2, 2026 \u00b7 15:35 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 15:40 Hawaiian Standard Time",
     "report": {
-      "generated": "2026-10-02T15:26:16-10:00 HST",
-      "sections": 18
+      "generated": "2026-10-02T15:35:45-10:00 HST",
+      "sections": 19
     }
   },
   "kilauea": {
     "resource": "kilauea",
     "title": "K\u012blauea",
-    "as_of": "Friday, October 2, 2026 \u00b7 15:35 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 15:40 Hawaiian Standard Time",
     "status": {
-      "at": "2026-10-02T15:26:25-10:00",
+      "at": "2026-10-02T15:36:14-10:00",
       "alert_level": "WATCH",
       "color_code": "ORANGE",
       "headline": "WATCH \u2014 elevated unrest",
@@ -66,7 +66,7 @@
   "moon": {
     "resource": "moon",
     "title": "Current moon",
-    "as_of": "Friday, October 2, 2026 \u00b7 15:35 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 15:40 Hawaiian Standard Time",
     "status": {
       "phase": 0.7297,
       "phase_name": "Waning Gibbous",
