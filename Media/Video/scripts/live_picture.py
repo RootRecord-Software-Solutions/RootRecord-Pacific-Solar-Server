@@ -21,6 +21,8 @@ from __future__ import annotations  # info: from __future__ import annotations
 import json  # info: import json
 import os  # info: import os
 import subprocess  # info: import subprocess
+import sys  # info: import sys
+import time  # info: import time
 from datetime import datetime, timedelta, timezone  # info: from datetime import datetime , timedelta , timezone
 from pathlib import Path  # info: from pathlib import Path
 from urllib.request import Request, urlopen  # info: from urllib . request import Request , urlopen
@@ -297,6 +299,45 @@ def _remember_tail(drawn_at: datetime) -> None:  # info: def _remember_tail
 
 
 # ====================================================
+# SECTION: function clock_line
+# What it does: Hawaii minute plus the last measured delay, with no seconds.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def clock_line(when: datetime) -> str:  # info: def clock_line
+    shown = when + timedelta(seconds=_tail())  # info: add the last publish delay
+    return shown.strftime("%I:%M %p").lstrip("0")  # info: minute only
+
+
+# ====================================================
+# SECTION: function push_clock
+# What it does: Write clock.txt on the encoder. Does not touch the still.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def push_clock(when: datetime) -> int:  # info: def push_clock
+    sent = subprocess.run(  # info: subprocess . run
+        ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", HOST, "cat > /home/ubuntu/youtube-stills/clock.txt"],  # info: ssh the clock only
+        input=clock_line(when) + "\n", capture_output=True, text=True,  # info: write the minute
+    )  # info: )
+    return sent.returncode  # info: return sent . returncode
+
+
+# ====================================================
+# SECTION: function clock_loop
+# What it does: Write the clock at each new Hawaii minute, even while another job holds the poller.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def clock_loop() -> int:  # info: def clock_loop
+    while True:  # info: while True
+        now = datetime.now(HST)  # info: set now
+        if push_clock(now) != 0:  # info: if the clock was not written
+            print(json.dumps({"ok": False, "detail": "clock-ssh"}), flush=True)  # info: print the miss
+        else:  # info: else
+            print(json.dumps({"ok": True, "clock": clock_line(now)}), flush=True)  # info: print the minute
+        nxt = now.replace(second=0, microsecond=0) + timedelta(minutes=1)  # info: the next minute
+        time.sleep(max(0.2, (nxt - datetime.now(HST)).total_seconds()))  # info: sleep until that minute opens
+
+
+# ====================================================
 # SECTION: function render
 # What it does: Composite the desk overlay on the full-bleed photo.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -311,7 +352,6 @@ def render(state: dict | None, ops: dict | None, hawaii: dict, world: dict, when
     river, delta = _ble_pack("river2pro"), _ble_pack("delta2")  # info: BLE files, not the cloud snapshot
     _card(draw, (20, 16, 636, 322))  # info: clock card above the title
     _text(draw, (48, 32), "ON AIR", 26, (255, 90, 90, 255), True)  # info: on air
-    _center(draw, 328, 150, now.strftime("%I:%M %p").lstrip("0"), 72, (236, 246, 255, 255), True)  # info: clock at the minute, ahead by the delivery delay
     _center(draw, 328, 230, now.strftime("%d %b %Y") + "  HST", 32, (190, 225, 238, 255))  # info: date
     _card(draw, (652, 16, 1268, 322))  # info: battery card above the title
     _text(draw, (680, 32), "BATTERY BANK", 26, (0, 229, 255, 255), True)  # info: battery title
@@ -357,13 +397,15 @@ def render(state: dict | None, ops: dict | None, hawaii: dict, world: dict, when
 
 # ====================================================
 # SECTION: function publish
-# What it does: Write the still and copy it onto the encoder thumb.
+# What it does: Write the local still and the encoder clock. Does not replace the live picture.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def publish(frame: Image.Image) -> str:  # info: def publish
+def publish(frame: Image.Image, when: datetime) -> str:  # info: def publish
     OUT.parent.mkdir(parents=True, exist_ok=True)  # info: OUT . parent . mkdir
     frame.save(OUT, "PNG")  # info: frame . save
-    return "local-only"  # info: do not replace the live thumb; that restarts the encoder and drops the station
+    if push_clock(when) != 0:  # info: if the clock was not written
+        return "local-only"  # info: return local-only
+    return "clock"  # info: return clock
 
 
 # ====================================================
@@ -372,6 +414,8 @@ def publish(frame: Image.Image) -> str:  # info: def publish
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def main() -> int:  # info: def main
+    if len(sys.argv) > 1 and sys.argv[1] == "clock":  # info: clock-only mode leaves the encoder alone
+        return clock_loop()  # info: return clock_loop
     _cover()  # info: call _cover
     if not BG.is_file():  # info: if not BG . is_file
         print(json.dumps({"ok": False, "detail": "background missing"}))  # info: print missing
@@ -390,13 +434,9 @@ def main() -> int:  # info: def main
         pass  # info: pass
     hi = _quake_change((_get(hi_url) or {}).get("features") or [])  # info: set hi
     world = _quake_change((_get(gl_url, 40) or {}).get("features") or [])  # info: set world
-    opened = datetime.now(HST).replace(second=0, microsecond=0)  # info: the minute this frame belongs to
-    late = (datetime.now(HST) - opened).total_seconds()  # info: seconds already used since that minute
-    stamped = opened + timedelta(seconds=late)  # info: the clock before the delivery delay
-    shown = stamped + timedelta(seconds=_tail())  # info: add the last delivery delay
+    shown = datetime.now(HST)  # info: the clock is the current Hawaii minute
     frame = render(state, ops, hi, world, shown)  # info: set frame
-    detail = publish(frame)  # info: set detail
-    _remember_tail(stamped)  # info: save how long publish took after the real clock
+    detail = publish(frame, shown)  # info: set detail
     if datetime.now(HST).minute in (0, 30):  # info: if the half-hour window just opened
         meta = subprocess.run(  # info: subprocess . run
             ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", HOST,  # info: ssh metadata

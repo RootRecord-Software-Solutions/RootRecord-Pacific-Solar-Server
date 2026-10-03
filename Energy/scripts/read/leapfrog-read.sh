@@ -82,23 +82,36 @@ reset_adapter_if_both_stale() {  # info: reset_adapter_if_both_stale
 reset_adapter_if_both_stale  # info: call reset_adapter_if_both_stale
 delta="$WATTS/delta2-last.json"  # info: set delta
 river="$WATTS/river2pro-last.json"  # info: set river
-pick="river2pro"  # info: set pick
-if [[ -f "$river" && -f "$delta" && "$delta" -ot "$river" ]]; then  # info: if
-  pick="delta2"  # info: set pick
-elif [[ ! -f "$delta" && -f "$river" ]]; then  # info: elif
-  pick="delta2"  # info: set pick
-fi  # info: fi
-other="delta2"  # info: set other
-if [[ "$pick" == "delta2" ]]; then  # info: if
-  other="river2pro"  # info: set other
+river_src=""  # info: set river_src
+if [[ -f "$river" ]]; then  # info: if
+  river_src="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("source") or "")' "$river" 2>/dev/null || true)"  # info: set river_src
 fi  # info: fi
 set +e  # info: set
-bash "$ROOT/${pick}-read.sh"  # info: bash the older pack
-code=$?  # info: set code
-if [[ "$code" -ne 0 ]]; then  # info: if the older pack was not read
-  bash "$ROOT/${other}-read.sh"  # info: bash the other pack
-  if [[ "$?" -eq 0 ]]; then  # info: if
+if [[ "$river_src" != ble && "$river_src" != ble+cloud ]]; then  # info: River has no live BLE sample, so read Delta before the auth miss
+  bash "$ROOT/delta2-read.sh"  # info: bash delta first
+  code=$?  # info: set code
+  bash "$ROOT/river2pro-read.sh"  # info: then try River
+  if [[ "$code" -ne 0 && "$?" -eq 0 ]]; then  # info: if
     code=0  # info: set code
+  fi  # info: fi
+else  # info: else
+  pick="river2pro"  # info: set pick
+  if [[ -f "$river" && -f "$delta" && "$delta" -ot "$river" ]]; then  # info: if
+    pick="delta2"  # info: set pick
+  elif [[ ! -f "$delta" && -f "$river" ]]; then  # info: elif
+    pick="delta2"  # info: set pick
+  fi  # info: fi
+  other="delta2"  # info: set other
+  if [[ "$pick" == "delta2" ]]; then  # info: if
+    other="river2pro"  # info: set other
+  fi  # info: fi
+  bash "$ROOT/${pick}-read.sh"  # info: bash the older pack
+  code=$?  # info: set code
+  if [[ "$code" -ne 0 ]]; then  # info: if the older pack was not read
+    bash "$ROOT/${other}-read.sh"  # info: bash the other pack
+    if [[ "$?" -eq 0 ]]; then  # info: if
+      code=0  # info: set code
+    fi  # info: fi
   fi  # info: fi
 fi  # info: fi
 set -e  # info: set

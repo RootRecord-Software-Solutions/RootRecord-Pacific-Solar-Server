@@ -301,8 +301,9 @@ async def _read_ble(alias: str):  # info: async def
         raise BleUnavailable("BLE auth timeout before fields")  # info: raise timeout
     if not getattr(state, "authenticated", False):  # info: if not authenticated
         kind = type(exc).__name__ if exc is not None else "none"  # info: exception class only, never the message
+        await asyncio.sleep(2.5)  # info: heartbeats can land after the auth flag flips
         fields = _fields_from_ble(device)  # info: same field read Delta uses; do not drop a live heartbeat
-        if _has_data(fields):  # info: if heartbeats landed despite the auth flag
+        if fields.get("soc") is not None:  # info: a charge percent means a real packet, not an empty default
             return device, fields  # info: BLE read, not a cloud substitute
         try:  # info: try disconnect
             await device.disconnect()  # info: disconnect after auth failure
