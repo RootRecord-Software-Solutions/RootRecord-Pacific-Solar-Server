@@ -31,7 +31,8 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 LAT, LON = 19.43, -155.23  # info: LAT , LON = 19.43 , - 155.23
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB
-PATH = DB / "Energy" / "moon" / "moon-last.json"  # info: set PATH
+PATH = DB / "Weather" / "moon" / "moon_current.json"  # info: moon lives under Weather, stable *_current bank
+LEGACY_PATH = DB / "Energy" / "moon" / "moon-last.json"  # info: read-only fallback while old path drains
 OPEN_METEO = ("https://api.open-meteo.com/v1/forecast"  # info: set OPEN_METEO
               f"?latitude={LAT}&longitude={LON}&daily=moon_phase,moonrise,moonset"  # info: f" ?latitude= { LAT } &longitude= { LON
               "&timezone=Pacific/Honolulu&forecast_days=16")  # info: "&timezone=Pacific/Honolulu&forecast_days=16" )
