@@ -1,11 +1,11 @@
 {
   "ok": true,
   "kind": "last-known",
-  "as_of": "Saturday, October 3, 2026 \u00b7 02:47 Hawaiian Standard Time",
+  "as_of": "Saturday, October 3, 2026 \u00b7 02:48 Hawaiian Standard Time",
   "power": {
     "resource": "power",
     "title": "Power / solar",
-    "as_of": "Saturday, October 3, 2026 \u00b7 02:47 Hawaiian Standard Time",
+    "as_of": "Saturday, October 3, 2026 \u00b7 02:48 Hawaiian Standard Time",
     "source_paths": [
       "Energy/soc/*_current.json",
       "Energy/watts/*_current.json"
@@ -14,16 +14,16 @@
       "delta2": {
         "watts": {
           "solar_input_power": 0.0,
-          "ac_output_power": 43.0,
+          "ac_output_power": 32.0,
           "ac_input_power": 0.0,
-          "usbc_output_power": 22.0,
-          "at": "2026-10-03T12:46:56.721Z",
+          "usbc_output_power": 24.0,
+          "at": "2026-10-03T12:48:21.760Z",
           "source": "ble",
           "charge_source": "none"
         },
         "soc": {
-          "soc": 3.2,
-          "at": "2026-10-03T12:46:56.721Z",
+          "soc": 3.0,
+          "at": "2026-10-03T12:48:21.760Z",
           "source": "ble"
         }
       },
@@ -48,13 +48,13 @@
   "weather": {
     "resource": "weather",
     "title": "Weather",
-    "as_of": "Saturday, October 3, 2026 \u00b7 02:47 Hawaiian Standard Time",
+    "as_of": "Saturday, October 3, 2026 \u00b7 02:48 Hawaiian Standard Time",
     "source_paths": [
       "Weather/Hawai'i/reports/0 Level Processing/Hawaii_State_Weather_Report_current.md",
       "Weather/moon/moon_current.json"
     ],
     "report": {
-      "generated": "2026-10-03T02:36:33-10:00 HST",
+      "generated": "2026-10-03T02:46:24-10:00 HST",
       "sections": 19
     },
     "moon": {
@@ -70,12 +70,12 @@
   "kilauea": {
     "resource": "kilauea",
     "title": "K\u012blauea",
-    "as_of": "Saturday, October 3, 2026 \u00b7 02:47 Hawaiian Standard Time",
+    "as_of": "Saturday, October 3, 2026 \u00b7 02:48 Hawaiian Standard Time",
     "source_paths": [
       "Geology/Volcanoes/Hawaii/kilauea_current.json"
     ],
     "status": {
-      "at": "2026-10-03T02:36:36-10:00",
+      "at": "2026-10-03T02:46:28-10:00",
       "alert_level": "WATCH",
       "color_code": "ORANGE",
       "headline": "WATCH \u2014 elevated unrest",
