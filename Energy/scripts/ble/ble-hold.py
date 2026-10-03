@@ -37,6 +37,8 @@ HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 LOCK = Path("/tmp/ecoflow-ble.lock")  # info: set LOCK
 SAMPLE_SEC = float(os.environ.get("ENERGY_BLE_HOLD_SAMPLE_S", "15"))  # info: set SAMPLE_SEC
 RECONNECT_SEC = float(os.environ.get("ENERGY_BLE_HOLD_RECONNECT_S", "5"))  # info: set RECONNECT_SEC
+# NeedBindInstallFirst often lands heartbeats late; stay on the link before giving up.
+EMPTY_GRACE_SEC = float(os.environ.get("ENERGY_BLE_HOLD_EMPTY_GRACE_S", "90"))  # info: set EMPTY_GRACE_SEC
 _stop = False  # info: set _stop
 
 
@@ -101,14 +103,21 @@ async def _session(alias: str) -> None:  # info: async def _session
             raise BleUnavailable(f"auth not completed state={state} exc={kind}")  # info: raise
         if getattr(state, "authenticated", False):  # info: if authenticated
             await asyncio.sleep(1.5)  # info: let the first heartbeat land
-        else:  # info: NeedBindInstallFirst still samples when soc arrives
-            await asyncio.sleep(2.5)  # info: wait for a charge percent
-        _log(f"{alias} connected auth={kind}")  # info: call _log
+        _log(f"{alias} connected auth={kind} — holding link")  # info: call _log
+        empty_since = time.time()  # info: set empty_since
+        got_data = False  # info: set got_data
         while not _stop:  # info: while not _stop
             line = _publish(alias, device)  # info: set line
+            if line == "empty":  # info: if fields have not landed yet
+                waited = time.time() - empty_since  # info: set waited
+                _log(f"{alias} waiting fields ({waited:.0f}s/{EMPTY_GRACE_SEC:.0f}s)")  # info: call _log
+                if got_data or waited >= EMPTY_GRACE_SEC:  # info: after a good streak, or past grace, reconnect
+                    raise BleUnavailable("fields empty on held session")  # info: raise so we reconnect
+                await asyncio.sleep(2)  # info: poll soon; do not drop the GATT session
+                continue  # info: continue
+            empty_since = time.time()  # info: reset empty clock after a real sample
+            got_data = True  # info: set got_data
             _log(f"{alias} sample {line}")  # info: call _log
-            if line == "empty":  # info: if the session went quiet
-                raise BleUnavailable("fields empty on held session")  # info: raise so we reconnect
             for _ in range(int(max(1, SAMPLE_SEC))):  # info: sleep in 1 s slices for SIGTERM
                 if _stop:  # info: if _stop
                     break  # info: break
