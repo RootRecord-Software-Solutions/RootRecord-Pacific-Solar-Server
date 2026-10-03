@@ -34,6 +34,11 @@ export RR_NIGHT_SLEEP="${RR_NIGHT_SLEEP:-0}"  # info: export — off; a running 
 # Voice notes Alexander asked for on 2026-09-30. Original council chat as of 2026-09-30 evening. Takes effect at the next poller start.
 export RR_VOICE_DELIVER="${RR_VOICE_DELIVER:-1}"  # info: export
 export RR_VOICE_HOURLY_CHIME="${RR_VOICE_HOURLY_CHIME:-1}"  # info: export — :00 and :30 prebuilt chimes
+# One full hour process: generate_hour_reports.py via voice_hour_batch (:36), news bank (:35), radio_push catch-up (:55).
+export RR_VOICE_HOUR_BATCH="${RR_VOICE_HOUR_BATCH:-1}"  # info: export — jobs.py voice_hour_batch → generate_hour_reports.py
+export RR_VOICE_HOUR_BASE_MINUTE="${RR_VOICE_HOUR_BASE_MINUTE:-36}"  # info: export — start minute for generate_hour_reports
+export RR_RADIO_PUSH="${RR_RADIO_PUSH:-1}"  # info: export — early batch push + :55 catch-up
+export RR_NEWS_CYCLE="${RR_NEWS_CYCLE:-1}"  # info: export — :35 news WAV bank folded into report_current at :36
 export RR_VOICE_BLE="${RR_VOICE_BLE:-0}"  # info: export — EcoFlow BLE pack lines off air while adapter is unreliable
 export RR_TELEGRAM_DEST="${RR_TELEGRAM_DEST:-council}"  # info: export
 export RR_VOICE_NWS="${RR_VOICE_NWS:-1}"  # info: export

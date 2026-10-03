@@ -322,19 +322,56 @@ def _shore(phrase: str) -> str:  # info: def _shore
 
 # ====================================================
 # SECTION: function _elev
-# What it does: Keep the elevation temperature when a zone also lists the shore. Does not send.
+# What it does: Keep the elevation temperature when a zone also lists the shore. Prefer feet near want_ft when set.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def _elev(phrase: str) -> str:  # info: def _elev
+def _elev(phrase: str, want_ft: int | None = None) -> str:  # info: def _elev
     raw = (phrase or "").strip(" ,")  # info: set raw
-    hit = re.search(  # info: set hit
+    hits = list(re.finditer(  # info: set hits
         r"(?:to\s+)?((?:around\s+)?\d+(?:\s+to\s+\d+)?)\s+(?:at|above|near)\s+(\d{3,})\s*feet",  # info: elevation band pattern
         raw,  # info: raw ,
         re.I,  # info: re . I ,
-    )  # info: )
-    if hit:  # info: if hit :
-        return f"{hit.group(1).strip()} at {hit.group(2)} feet"  # info: return elev reading
-    return ""  # info: return ""
+    ))  # info: )
+    if not hits:  # info: if no elev phrase
+        return ""  # info: return ""
+    pick = hits[0]  # info: default first elev band
+    if want_ft is not None:  # info: if a preferred elevation was asked for
+        pick = min(hits, key=lambda m: abs(int(m.group(2)) - want_ft))  # info: closest feet mark
+    return f"{pick.group(1).strip()} at {pick.group(2)} feet"  # info: return elev reading
+
+
+# ====================================================
+# SECTION: function _temp_nums
+# What it does: Fahrenheit integers from a Highs/Lows phrase (drops elevation feet).
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _temp_nums(phrase: str) -> list[int]:  # info: def _temp_nums
+    return [int(x) for x in re.findall(r"\d+", phrase or "") if 20 <= int(x) <= 120]  # info: return temps only
+
+
+# ====================================================
+# SECTION: function _mid_elev
+# What it does: Interpolate shore→elev temps to a mid elevation (Mountain View ~2000 ft). No shoreline wording.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _mid_elev(phrase: str, target_ft: int = 2000) -> str:  # info: def _mid_elev
+    raw = (phrase or "").strip(" ,")  # info: set raw
+    elev = _elev(raw)  # info: set elev
+    if not elev:  # info: if no elev band on file
+        return ""  # info: cannot invent a mid reading
+    feet_m = re.search(r"at (\d{3,}) feet", elev)  # info: set feet_m
+    elev_ft = int(feet_m.group(1)) if feet_m else 4000  # info: set elev_ft
+    shore_nums = _temp_nums(_shore(raw))  # info: set shore_nums
+    elev_nums = _temp_nums(elev)  # info: set elev_nums
+    if not elev_nums:  # info: if elev has no temps
+        return ""  # info: return ""
+    if not shore_nums:  # info: if shore missing, stay on elev band
+        return elev  # info: return elev
+    shore_mean = sum(shore_nums) / len(shore_nums)  # info: set shore_mean
+    elev_mean = sum(elev_nums) / len(elev_nums)  # info: set elev_mean
+    frac = min(1.0, max(0.0, float(target_ft) / float(elev_ft)))  # info: set frac
+    mid = round(shore_mean + (elev_mean - shore_mean) * frac)  # info: set mid
+    return f"around {mid} at {target_ft} feet"  # info: return mid elev, no shore wording
 
 
 # ====================================================
@@ -351,7 +388,7 @@ def _zone_range(phrase: str) -> str:  # info: def _zone_range
 
 # ====================================================
 # SECTION: function _band_temp
-# What it does: Apply shore, elev, or full-zone band to a Highs/Lows phrase. Does not send.
+# What it does: Apply shore, elev (~4k), or mid (~2k) band to a Highs/Lows phrase. Does not send.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _band_temp(phrase: str, band: str) -> str:  # info: def _band_temp
@@ -359,8 +396,10 @@ def _band_temp(phrase: str, band: str) -> str:  # info: def _band_temp
         return ""  # info: return ""
     if band == "shore":  # info: if band == "shore" :
         return _shore(phrase)  # info: return _shore ( phrase )
-    if band == "elev":  # info: if band == "elev" :
-        return _elev(phrase) or _zone_range(phrase)  # info: return elev or full zone span
+    if band == "elev" or band == "elev4000":  # info: if Volcano ~4000 ft band
+        return _elev(phrase, want_ft=4000) or _elev(phrase)  # info: prefer ~4000 ft, never shore wording
+    if band in ("mid", "mid2000", "range"):  # info: Mountain View ~2000 ft (legacy "range" was shore+elev span)
+        return _mid_elev(phrase, target_ft=2000)  # info: interpolate to ~2000 ft
     return _zone_range(phrase)  # info: return _zone_range ( phrase )
 
 
@@ -435,17 +474,37 @@ def _period_body(block: str, labels: tuple[str, ...]) -> str:  # info: def _peri
 
 
 def zfp_temps() -> list[dict]:  # info: def zfp_temps
-    """Today high and tonight low from the HFO zone forecast for report towns. Shore, elev, or full-zone band per place. Does not send."""  # info: docstring
-    # (NWS zone name, spoken place, band). Big Island East covers Hilo + Mountain View + Volcano.
+    """Today high and tonight low from the HFO zone forecast for report towns. Shore / mid-2k / elev-4k bands. Does not send."""  # info: docstring
+    # (NWS zone name, spoken place, band). Mountain View ~2000 ft and Volcano ~4000 ft — no shoreline for either.
     places = (  # info: set places
         ("Honolulu Metro", "Honolulu", "shore"),  # info: Honolulu shore
         ("Kauai East", "Lihue", "shore"),  # info: Lihue shore
         ("Maui Central Valley North", "Kahului", "shore"),  # info: Kahului shore
         ("Big Island East", "Hilo", "shore"),  # info: Hilo shore
-        ("Big Island East", "Mountain View", "range"),  # info: Mountain View upcountry span
-        ("Big Island East", "Volcano", "elev"),  # info: Volcano ~4000 ft band
+        ("Big Island East", "Mountain View", "mid2000"),  # info: Mountain View ~2000 ft (not shore)
+        ("Big Island East", "Volcano", "elev4000"),  # info: Volcano ~4000 ft (not shore)
         ("Kona", "Kailua-Kona", "shore"),  # info: Kailua-Kona shore
     )  # info: )
+    # Canonical bank every reader shares (stream + reports). Rebuild when ZFP is newer.
+    bank = WX / "reports" / "0 Level Processing" / "zfp_town_temps_current.json"  # info: set bank
+    try:  # info: try reuse bank
+        if bank.is_file() and ZFP.is_file() and bank.stat().st_mtime >= ZFP.stat().st_mtime:  # info: if bank is current
+            saved = json.loads(bank.read_text(encoding="utf-8"))  # info: set saved
+            rows = saved.get("places") if isinstance(saved, dict) else None  # info: set rows
+            if isinstance(rows, list) and rows:  # info: if usable
+                # Reject stale shore-span Mountain View rows left by the old "range" band.
+                bad = False  # info: set bad
+                for row in rows:  # info: for row
+                    if str(row.get("place") or "") != "Mountain View":  # info: if not MV
+                        continue  # info: continue
+                    blob = f"{row.get('high') or ''} {row.get('low') or ''}".lower()  # info: set blob
+                    if "near the shore" in blob or "2000" not in blob:  # info: if old band text
+                        bad = True  # info: set bad
+                        break  # info: break
+                if not bad:  # info: if bank ok
+                    return rows  # info: return cached banded temps
+    except (OSError, ValueError, TypeError):  # info: except
+        pass  # info: rebuild from ZFP
     try:  # info: try :
         txt = ZFP.read_text(encoding="utf-8")  # info: set txt
     except OSError:  # info: except OSError :
@@ -473,7 +532,7 @@ def zfp_temps() -> list[dict]:  # info: def zfp_temps
         raw = zone_raw.get(zone)  # info: set raw
         if not raw:  # info: if not raw :
             continue  # info: continue
-        row = {"place": place, "high": None, "low": None}  # info: set row
+        row = {"place": place, "high": None, "low": None, "band": band}  # info: set row
         for field in ("high", "low"):  # info: for field in ( "high" , "low" )
             if raw.get(field):  # info: if raw . get ( field ) :
                 valued = _band_temp(raw[field], band)  # info: set valued
@@ -481,6 +540,19 @@ def zfp_temps() -> list[dict]:  # info: def zfp_temps
                     row[field] = valued  # info: row [ field ] = valued
         if row["high"] or row["low"]:  # info: if row [ "high" ] or row [ "low" ]
             out.append(row)  # info: out . append ( row )
+    try:  # info: try write shared bank
+        bank.parent.mkdir(parents=True, exist_ok=True)  # info: mkdir
+        doc = {  # info: set doc
+            "at": datetime.now().astimezone().isoformat(timespec="seconds"),  # info: at
+            "source": str(ZFP),  # info: source
+            "bands": {"Mountain View": "mid2000", "Volcano": "elev4000"},  # info: bands
+            "places": out,  # info: places
+        }  # info: )
+        tmp = bank.with_suffix(".json.tmp")  # info: set tmp
+        tmp.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")  # info: write tmp
+        os.replace(tmp, bank)  # info: atomic replace
+    except OSError:  # info: except
+        pass  # info: reports still get out
     return out  # info: return out
 
 
@@ -634,7 +706,7 @@ def b_nws_weather(t: datetime):  # info: def b_nws_weather
     if today:  # info: if today :
         sp.append(f"State forecast for {today.split(':', 1)[0].lower()}.")  # info: sp . append ( f" State forecast for { today
         sp.append(today.split(":", 1)[1].strip().rstrip(".") + ".")  # info: sp . append ( today . split (
-    md += ["## Temperatures", "", "Shore number when the zone also lists an elevation.", ""]  # info: md += temperatures heading
+    md += ["## Temperatures", "", "Shore for coastal towns; Mountain View ~2000 ft; Volcano ~4000 ft.", ""]  # info: md += temperatures heading
     if places:  # info: if places :
         spoken_places = []  # info: set spoken_places
         for p in places:  # info: for p in places

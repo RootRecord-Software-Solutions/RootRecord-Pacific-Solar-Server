@@ -2,7 +2,7 @@
 """Generate every hour-desk voice report into Database Media/Audio/Voice/.
 
 Measured batch wall time (2026-10-03): ~8.6 minutes for all desks.
-jobs.py starts this at :42 by default. When the batch finishes it:
+jobs.py starts this at :36 by default. When the batch finishes it:
   1. stitches desk WAVs (HOUR_REPORTS order) then news_update → report_current.wav
   2. radio_push report (one file) to ML1; clears legacy per-desk currents on air
   3. deletes local .wav / .txt / .tx under Media/Audio/Voice/
@@ -77,8 +77,8 @@ VOICE_PY = Path(
 )
 CUSHION_MINUTES = float(os.environ.get("RR_VOICE_HOUR_CUSHION_MIN", "3"))
 HISTORY_KEEP = int(os.environ.get("RR_VOICE_HOUR_HISTORY_KEEP", "200"))
-# Preferred start minute (answer to life). Recalc may move earlier if averages need more lead before :55.
-BASE_START_MINUTE = int(os.environ.get("RR_VOICE_HOUR_BASE_MINUTE", "42"))
+# Preferred start minute. Recalc may move earlier if averages need more lead before :55.
+BASE_START_MINUTE = int(os.environ.get("RR_VOICE_HOUR_BASE_MINUTE", "36"))
 PUSH_MINUTE = int(os.environ.get("RR_VOICE_HOUR_PUSH_MINUTE", "55"))
 
 # Hour batch for :55 radio_push (no chime — that stays :00/:30).
@@ -388,7 +388,7 @@ def record_timing(summary: dict) -> dict:
 def recalculate_start_time(timing: dict | None = None) -> dict:
     """After a batch finishes, recompute the next voice_hour_batch minute from averages.
 
-    Keeps BASE_START_MINUTE (:42) unless measured lead needs an earlier start before :55.
+    Keeps BASE_START_MINUTE (:36) unless measured lead needs an earlier start before :55.
     Writes Media/Audio/Voice/Timing/hour_batch_schedule.json for jobs.py to read.
     """
     TIMING_DIR.mkdir(parents=True, exist_ok=True)
@@ -419,7 +419,7 @@ def recalculate_start_time(timing: dict | None = None) -> dict:
         at_minute = suggested
         reason = "averages_need_earlier" if suggested < BASE_START_MINUTE else "averages_match_base"
     else:
-        # Batch got faster than :42 lead — keep the answer to life (extra cushion).
+        # Batch got faster than base lead — keep :36 (extra cushion before :55).
         at_minute = BASE_START_MINUTE
         reason = "keep_base_extra_cushion"
 

@@ -69,11 +69,11 @@ DATABASE = "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"  # in
 
 # ====================================================
 # SECTION: function voice_hour_batch_at_minute
-# What it does: Start minute for voice_hour_batch. Default :42; generate_hour_reports recalculates after each full batch into Timing/hour_batch_schedule.json.
+# What it does: Start minute for voice_hour_batch. Default :36; generate_hour_reports recalculates after each full batch into Timing/hour_batch_schedule.json.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def voice_hour_batch_at_minute() -> int:  # info: def voice_hour_batch_at_minute
-    base = int(os.environ.get("RR_VOICE_HOUR_BASE_MINUTE", "42"))  # info: set base
+    base = int(os.environ.get("RR_VOICE_HOUR_BASE_MINUTE", "36"))  # info: set base
     path = Path(DATABASE) / "Media" / "Audio" / "Voice" / "Timing" / "hour_batch_schedule.json"  # info: set path
     if not path.is_file():  # info: if not path . is_file ( )
         return base  # info: return base
@@ -279,7 +279,7 @@ ONCE_AT_START = [  # info: set ONCE_AT_START
 
 # ====================================================
 # SECTION: EXACT_TIME
-# What it does: :00–:29 is stats, github, and EcoFlow leapfrog. All other hourly work is :30 or later. Voice batch at :42; :55 catch-up push to ML1.
+# What it does: :00–:29 is stats, github, and EcoFlow leapfrog. All other hourly work is :30 or later. Voice batch at :36; :55 catch-up push to ML1.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 EXACT_TIME = [  # info: set EXACT_TIME
@@ -299,7 +299,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # },
     # --- end TEMPLATE (EXACT_TIME) ---
     # :00–:29 is only sys_stats, github_sync, and the EcoFlow leapfrog. Everything else is :30 or later.
-    # Voice hour batch at :42 (generate_hour_reports.py → Timing + early ML1 push). :55 radio_push is catch-up.
+    # Voice hour batch at :36 (generate_hour_reports.py → Timing + early ML1 push). :55 radio_push is catch-up.
     {  # info: {
         # stacks on every 5s slot, all hour.
         "id": "sys_stats_cycle",  # info: "id" : "sys_stats_cycle" ,
@@ -313,7 +313,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
     {  # info: {
-        # Was every 5s — sync runs 60–300s and blocks the whole poller, so :35/:42/:55 voice slots get dropped.
+        # Was every 5s — sync runs 60–300s and blocks the whole poller, so :35/:36/:55 voice slots get dropped.
         "id": "github_sync_all",  # info: "id" : "github_sync_all" ,
         "enabled": True,  # info: "enabled" : True,
         "every_seconds": 300,  # info: every 5 min; never share the 5s stack with voice hour jobs
@@ -1507,18 +1507,18 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # --- 35:00–35:04 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     {  # info: {
-        # NEWS — poll News Data, four topic lanes, Pacific stitch WAV for :42 fold-in (no push).
+        # NEWS — poll News Data, four topic lanes, Pacific stitch WAV for :36 fold-in (no push).
         "id": "news_cycle",  # info: "id" : "news_cycle" ,
         "enabled": os.environ.get("RR_NEWS_CYCLE", "1") == "1",
         "at_minute": 35,  # info: "at_minute" : 35 ,
         "at_second": 0,  # info: "at_second" : 0 ,
-        "description": "News Data cycle at :35 — poll RSS, four ~5min topic lanes, numbered TTS, Pacific stitch to news_update_current.wav. Push is deferred: :42 voice_hour_batch folds news after desks into report_current.",  # info: "description"
+        "description": "News Data cycle at :35 — poll RSS, four ~5min topic lanes, numbered TTS, Pacific stitch to news_update_current.wav. Push is deferred: :36 voice_hour_batch folds news after desks into report_current.",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"nice -n 10 python3 \"{PACIFIC}/Media/News/scripts/run_news_cycle.py\"",  # info: "command"
         "timeout_sec": 1800,  # info: "timeout_sec" : 1800 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
         "cwd": f"{PACIFIC}/Media/News/scripts",  # info: "cwd"
-        "env": {"RR_DATABASE_ROOT": DATABASE, "RR_NEWS_DATA_ROOT": f"{DATABASE}/Media/News Data", "RR_PACIFIC_ROOT": PACIFIC, "RR_RADIO_RSS_CONFIG": f"{PACIFIC}/Media/News/radiorss/config", "RR_RADIO_PUSH": "0"},  # info: bank WAV only; :42 push
+        "env": {"RR_DATABASE_ROOT": DATABASE, "RR_NEWS_DATA_ROOT": f"{DATABASE}/Media/News Data", "RR_PACIFIC_ROOT": PACIFIC, "RR_RADIO_RSS_CONFIG": f"{PACIFIC}/Media/News/radiorss/config", "RR_RADIO_PUSH": "0"},  # info: bank WAV only; :36 fold-in
     },  # info: } ,
     # --- 35:05–35:09 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
@@ -1558,6 +1558,20 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # ---------- minute 36 of every hour ----------
     # --- 36:00–36:04 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
+    {  # info: {
+        # VOICE batch — generate_hour_reports one full process; ~8.6 min + cushion before :55.
+        "id": "voice_hour_batch",  # info: "id" : "voice_hour_batch" ,
+        "enabled": os.environ.get("RR_VOICE_HOUR_BATCH", os.environ.get("RR_RADIO_PUSH", "1")) == "1",
+        "at_minute": voice_hour_batch_at_minute(),  # info: recalculated after each batch; default :36 ,
+        "at_second": 0,  # info: "at_second" : 0 ,
+        "description": "Generate hour-desk voice reports, stitch desks then news_update into report_current, radio_push that one file to ML1. :55 radio_push_hour is catch-up only.",  # info: "description"
+        "builtin": "",  # info: "builtin"
+        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/generate_hour_reports.py\"",  # info: "command"
+        "timeout_sec": 900,  # info: "timeout_sec" : 900 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
+        "env": {"RR_VOICE_DELIVER": "0", "RR_VOICE_STATUS": "0", "RR_HOUR_BATCH_PUSH": "1"},  # info: push combined after batch
+    },  # info: } ,
     # --- 36:05–36:09 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
     # --- 36:10–36:14 ---
@@ -1813,20 +1827,6 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # ---------- minute 42 of every hour ----------
     # --- 42:00–42:04 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
-    {  # info: {
-        # VOICE batch — answer to life; ~8.6 min + cushion before :55.
-        "id": "voice_hour_batch",  # info: "id" : "voice_hour_batch" ,
-        "enabled": os.environ.get("RR_VOICE_HOUR_BATCH", os.environ.get("RR_RADIO_PUSH", "1")) == "1",
-        "at_minute": voice_hour_batch_at_minute(),  # info: recalculated after each batch; default :42 ,
-        "at_second": 0,  # info: "at_second" : 0 ,
-        "description": "Generate hour-desk voice reports, stitch desks then news_update into report_current, radio_push that one file to ML1. :55 radio_push_hour is catch-up only.",  # info: "description"
-        "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/generate_hour_reports.py\"",  # info: "command"
-        "timeout_sec": 900,  # info: "timeout_sec" : 900 ,
-        "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
-        "env": {"RR_VOICE_DELIVER": "0", "RR_VOICE_STATUS": "0", "RR_HOUR_BATCH_PUSH": "1"},  # info: push combined after batch
-    },  # info: } ,
     # --- 42:05–42:09 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
     # --- 42:10–42:14 ---
