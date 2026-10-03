@@ -5,15 +5,17 @@ Measured batch wall time (2026-10-03): ~8.6 minutes for all desks.
 jobs.py starts this at :42 by default. When the batch finishes it:
   1. records wall + per-report seconds under Media/Audio/Voice/Timing/
   2. updates running averages, then recalculates next start minute (keeps :42 unless averages need earlier)
-  3. radio_push --all to ML1 immediately
-  4. deletes local .wav / .txt / .tx under Media/Audio/Voice/ (keeps .ogg + Timing JSON)
+  3. radio_push --all to ML1 immediately (waits for transfer to finish)
+  4. deletes local .wav / .txt / .tx under Media/Audio/Voice/
+  5. renames this run's *_current.ogg to local HST time, zips to
+     Media/Audio/Voice/Archive/audio_reports_TIMESTAMP.zip, then removes the renamed oggs
 
 :55 radio_push_hour remains a catch-up if this send missed (WAV kept when push is skipped/failed).
 
 Writes under the single voice tree:
-  Media/Audio/Voice/<report>_current.ogg  (kept)
   Media/Audio/Voice/Reports/<report>_current.md
-  (WAV + speak/read txt removed after a successful push)
+  Media/Audio/Voice/Archive/audio_reports_YYYYMMDDTHHMMSS.zip
+  (WAV + speak/read txt removed after a successful push; oggs archived)
 
 Hourly chimes stay on voice_hourly_chime (:00/:30) unless --include-chime.
 
@@ -34,6 +36,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import zipfile
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -57,6 +60,12 @@ TIMING_DIR = Path(
     os.environ.get(
         "RR_VOICE_HOUR_TIMING_DIR",
         str(OUT_DIR / "Timing"),
+    )
+)
+ARCHIVE_DIR = Path(
+    os.environ.get(
+        "RR_VOICE_HOUR_ARCHIVE_DIR",
+        str(OUT_DIR / "Archive"),
     )
 )
 VOICE_WAV = OUT_DIR
