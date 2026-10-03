@@ -65,7 +65,6 @@ SERVICES = [  # info: set SERVICES
     ("BLE", "ava-ecoflow-ble.service", "user", ("scripts/ble/ble-owner.py",), 1),  # info: call (
     ("globe", "network-globe-hawaii.service", "user", ("local-data-globe/collector.js",), 1),  # info: call (
     ("cam", None, "", ("cam_server.py",), 1),  # info: call (
-    ("weather", None, "", ("Weather/scripts/run_poller.py", "weather/scripts/run_poller.py"), 1),  # info: call (
     ("ollama", "ollama.service", "system", ("ollama",), None),  # info: call (
     ("tunnel", None, "", ("cloudflared",), None),  # info: call (
 ]  # info: ]

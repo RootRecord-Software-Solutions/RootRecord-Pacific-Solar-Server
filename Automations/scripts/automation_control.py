@@ -33,10 +33,7 @@ RETRY_MINUTES = 15  # info: set RETRY_MINUTES
 SECTIONS = (  # info: set SECTIONS
     ("ON_BOOT", "On boot"),  # info: call (
     ("ONCE_AT_START", "Once at start"),  # info: call (
-    ("EVERY_SECONDS", "Every few seconds"),  # info: call (
-    ("EVERY_MINUTE", "Every minute"),  # info: call (
-    ("EVERY_HOUR", "Every hour"),  # info: call (
-    ("ON_AT", "At a clock time"),  # info: call (
+    ("EXACT_TIME", "Hourly process sequence"),  # info: call (
 )  # info: )
 DEVICES = (("delta2", "Delta 2"), ("river2pro", "River 2 Pro"))  # info: set DEVICES
 # device, function id, label, script file. Only these scripts may run.
@@ -194,7 +191,6 @@ def overrides_mtime() -> float:  # info: def overrides_mtime
 LOCAL_DATA_POLL_JOBS = frozenset({
     "geology_collect",
     "geology_kilauea_cams",
-    "weather_poller",
     "weather_us_states",
     "weather_radar_zip",
     "weather_retention",
@@ -258,16 +254,21 @@ def schedule_text(section: str, job: dict) -> str:  # info: def schedule_text
         return f"boot priority {job.get('priority', '—')}"  # info: return f
     if section == "ONCE_AT_START":  # info: if section == "ONCE_AT_START"
         return "once when the poller starts"  # info: return "once when the poller starts"
-    if section == "EVERY_SECONDS":  # info: if section == "EVERY_SECONDS"
-        return f"every {job.get('interval_sec', '—')}s"  # info: return f
-    if section == "EVERY_MINUTE":  # info: if section == "EVERY_MINUTE"
-        only = job.get("only_at_minutes") or []  # info: set only
-        return "minutes " + ", ".join(str(x) for x in only) if only else "every minute"  # info: return "minutes "
-    if section == "EVERY_HOUR":  # info: if section == "EVERY_HOUR"
-        only = job.get("only_at_hours") or []  # info: set only
-        return "hours " + ", ".join(str(x) for x in only) if only else "every hour"  # info: return "hours "
-    times = job.get("at_times") or []  # info: set times
-    return "at " + ", ".join(str(x) for x in times) if times else "at a clock time"  # info: return "at "
+    if section == "EXACT_TIME":  # info: if section == "EXACT_TIME"
+        every = job.get("every_seconds")  # info: set every
+        if every:  # info: if every
+            phase = int(job.get("at_second") or 0)  # info: set phase
+            opened = job.get("from_minute")  # info: set opened
+            extra = f" at :{phase:02d}" if phase else ""  # info: set extra
+            if opened is not None:  # info: if opened is not None
+                extra += f" from :{int(opened):02d}"  # info: extra += from minute
+            return f"every {every}s (stacks){extra}"  # info: return f
+        m = int(job.get("at_minute") or 0)  # info: set m
+        s = int(job.get("at_second") or 0)  # info: set s
+        if job.get("at_hour") is not None:  # info: if at_hour is set
+            return f"{int(job['at_hour']):02d}:{m:02d}:{s:02d} every day"  # info: return daily clock
+        return f":{m:02d}:{s:02d} every hour"  # info: return f
+    return "unscheduled"  # info: return "unscheduled"
 
 
 # ====================================================

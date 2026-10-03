@@ -155,8 +155,12 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do  # info:
 # ====================================================
   mirror_writeback() {  # info: mirror_writeback
     [[ "$mode" == "mirror" ]] || return 0  # info: command
+    if [[ "$id" == "database" ]]; then  # info: if database
+      echo "— [$id] one-way: live folder is not replaced from the worktree"  # info: echo
+      return 0  # info: return
+    fi  # info: fi
     rsync -a --exclude '.git' "$root"/ "$local_path"/  # info: rsync
-    # Same direction for every mirror id after a GitHub merge: worktree → live.
+    # Same direction for every other mirror id after a GitHub merge: worktree → live.
     # Mainland also refreshes Servers from the worktree at sync start (above).
     echo "↓ [$id] worktree/GitHub copy written back to the live folder"  # info: echo
   }  # info: command
@@ -172,7 +176,9 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do  # info:
     # Mainland: Github-worktrees/mainland is canonical git truth. Servers umbrella
     # is a read-through mirror only. Never rsync Servers → worktree (that path
     # restored stale DUCK 0.25 over a good worktree 0.1 as auto desk sync).
-    # Pacific/database/library/website keep live-folder → worktree (edit live).
+    # Pacific/library/website keep live-folder → worktree (edit live).
+    # Database is one-way: live → worktree only, and a local delete is not
+    # pushed as a wipe of the GitHub copy (--delete stays off).
     if [[ "$id" == "mainland" ]]; then  # info: if
       rsync -a --delete \
         --exclude '.git' \
@@ -182,6 +188,14 @@ while IFS=$'\t' read -r id enabled mode local_path slug remote_name; do  # info:
         --exclude 'tsconfig.tsbuildinfo' \
         "$root"/ "$local_path"/  # info: command
       echo "↑ [$id] worktree canonical → umbrella Servers mirror refreshed"  # info: echo
+    elif [[ "$id" == "database" ]]; then  # info: elif database
+      rsync -a \
+        --exclude '.git' \
+        --exclude '.venv' \
+        --exclude 'node_modules' \
+        --exclude '.next' \
+        --exclude 'tsconfig.tsbuildinfo' \
+        "$local_path"/ "$root"/  # info: command
     else  # info: else
       rsync -a --delete \
         --exclude '.git' \

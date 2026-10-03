@@ -24,6 +24,7 @@ if str(HERE) not in sys.path:  # info: if str ( HERE ) not in sys
 from paths import VENDOR, STATE_DIR, ensure_dirs  # noqa: E402
 from config import device as device_cfg  # noqa: E402
 from envload import user_id, load_env  # noqa: E402
+from adapter_on import ensure_adapter_on, recover_adapter  # noqa: E402
 
 MFG_KEY = 0xB5B5  # info: set MFG_KEY
 
@@ -94,6 +95,7 @@ def note_sight(alias: str, seen: bool, detail: str) -> None:  # info: def note_s
 
 
 async def _scan(mac: str, seconds: float = 10.0):  # info: async def
+    ensure_adapter_on()  # info: call ensure_adapter_on
     from bleak import BleakScanner  # info: from bleak import BleakScanner
     want = mac.upper()  # info: set want
     found = {}  # info: set found
@@ -157,6 +159,11 @@ async def connect(alias: str):  # info: async def
     if not rec:  # info: if not rec :
         rec = await _scan(mac, 8.0)  # info: one retry so a busy radio is not treated as gone
     if not rec:  # info: if not rec :
+        recover_adapter("scan_miss")  # info: call recover_adapter
+        rec = await _scan(mac, 8.0)  # info: set rec
+        if not rec:  # info: if not rec :
+            rec = await _scan(mac, 8.0)  # info: one more scan after recover
+    if not rec:  # info: if not rec :
         note_sight(alias, False, "not_seen")  # info: pack not on the air
         raise BleUnavailable(f"device not seen in scan mac={mac}")  # info: raise BleUnavailable ( f" device not seen in scan mac= { mac }
     note_sight(alias, True, "seen")  # info: advertisement seen; session may still fail auth
@@ -173,7 +180,10 @@ async def connect(alias: str):  # info: async def
                 await device.disconnect()  # info: await device . disconnect ( )
             except Exception:  # info: except Exception
                 pass  # info: pass
+            kind = type(exc).__name__  # info: set kind
             if attempt == 0:  # info: if attempt == 0 :
+                if "NeedBind" not in kind:  # info: auth reject is not a radio wedge
+                    recover_adapter(f"connect_{kind}")  # info: call recover_adapter
                 await asyncio.sleep(0.8)  # info: brief gap before a fresh scan
                 rec = await _scan(mac, 8.0)  # info: set rec
                 if not rec:  # info: if not rec :

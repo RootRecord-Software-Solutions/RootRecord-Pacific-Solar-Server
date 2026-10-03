@@ -350,13 +350,48 @@ def push_music() -> dict:
     return {"ok": True, "music": str(MUSIC)}
 
 
+HOUR_DESKS = (
+    "system_perf",
+    "nws_weather",
+    "remaining_tasks",
+    "earthquake_report",
+    "hurricane_desk",
+    "kilauea_report",
+    "kilauea_image_check",
+    "solar_desk",
+    "security_desk",
+    "bandwidth_desk",
+    "current_report",
+)
+
+
+def push_all() -> dict:
+    """Encode every finished hour desk WAV and replace it on ML1 in this send window."""
+    results = []
+    ok = True
+    sent = 0
+    for report in HOUR_DESKS:
+        if not (VOICE / f"{report}_current.wav").is_file():
+            results.append({"ok": True, "skipped": True, "detail": "no_wav", "report": report})
+            continue
+        one = push_report(report)
+        results.append(one)
+        if one.get("ok") and not one.get("skipped"):
+            sent += 1
+        elif not one.get("ok") and not one.get("skipped"):
+            ok = False
+    return {"ok": ok, "sent": sent, "pushed": results}
+
+
 def main() -> int:
     if len(sys.argv) == 2 and sys.argv[1] == "--music":
         result = push_music()
+    elif len(sys.argv) == 2 and sys.argv[1] == "--all":
+        result = push_all()
     elif len(sys.argv) == 2 and REPORT_NAME.fullmatch(sys.argv[1]):
         result = push_report(sys.argv[1])
     else:
-        result = {"ok": False, "detail": "usage: radio_push.py <report>|--music"}
+        result = {"ok": False, "detail": "usage: radio_push.py <report>|--all|--music"}
     print(json.dumps(result))
     return 0 if result.get("ok") else 1
 

@@ -36,7 +36,6 @@ JOB_WARN = {  # info: set JOB_WARN
     "self_terminal": "Next poller start skips its own process record.",  # info: "self_terminal"
     "cloudflare_tunnel": "Next poller start skips the Cloudflare tunnel.",  # info: "cloudflare_tunnel"
     "heartbeat": "The ENERGY status line stops after the poller reloads this flag.",  # info: "heartbeat"
-    "ecoflow_read_cycle": "EcoFlow battery reads stop after the poller reloads this flag.",  # info: "ecoflow_read_cycle"
     "service_supervisor": "Service checks stop after the poller reloads this flag.",  # info: "service_supervisor"
 }  # info: }
 

@@ -7,6 +7,12 @@
 set -euo pipefail  # info: set
 
 # ====================================================
+# SECTION: LOG FOLDER
+# What it does: Create the automations log directory if the database tree was emptied.
+# ====================================================
+mkdir -p "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Automations"  # info: mkdir
+
+# ====================================================
 # SECTION: PATHS + DEFAULTS
 # ====================================================
 # This file lives at Automations/scripts/poller/
@@ -24,9 +30,10 @@ export POLLER_TUNNEL_MODE="${POLLER_TUNNEL_MODE:-token}"  # info: export
 export CLOUDFLARED_BIN="${CLOUDFLARED_BIN:-$REPO/Communications/network/cloudflare/bin/cloudflared}"  # info: export
 export CLOUDFLARED_TOKEN_FILE="${CLOUDFLARED_TOKEN_FILE:-$HOME/.cloudflared/rootserver.token}"  # info: export
 # Armed 2026-09-30 after sign-off (WO-MIG-01). No night-mode.json still means not sleeping.
-export RR_NIGHT_SLEEP="${RR_NIGHT_SLEEP:-1}"  # info: export
+export RR_NIGHT_SLEEP="${RR_NIGHT_SLEEP:-0}"  # info: export — off; a running poller does not skip jobs
 # Voice notes Alexander asked for on 2026-09-30. Original council chat as of 2026-09-30 evening. Takes effect at the next poller start.
 export RR_VOICE_DELIVER="${RR_VOICE_DELIVER:-1}"  # info: export
+export RR_VOICE_HOURLY_CHIME="${RR_VOICE_HOURLY_CHIME:-1}"  # info: export — :00 and :30 prebuilt chimes
 export RR_TELEGRAM_DEST="${RR_TELEGRAM_DEST:-council}"  # info: export
 export RR_VOICE_NWS="${RR_VOICE_NWS:-1}"  # info: export
 export RR_VOICE_KILAUEA="${RR_VOICE_KILAUEA:-1}"  # info: export

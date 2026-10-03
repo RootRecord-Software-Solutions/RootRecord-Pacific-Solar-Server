@@ -11,23 +11,23 @@
   "start_page": "energy",
   "camera_viewer_enabled": false,
   "camera_refresh_sec": 10,
-  "camera_live_fallback": true,
+  "camera_live_fallback": false,
   "camera_live_fallback_url": "http://127.0.0.1:8791/{still}",
   "cameras": {
     "ch1": {
-      "enabled": true,
+      "enabled": false,
       "label": "CH1"
     },
     "ch2": {
-      "enabled": true,
+      "enabled": false,
       "label": "CH2"
     },
     "ch3": {
-      "enabled": true,
+      "enabled": false,
       "label": "CH3"
     },
     "ch4": {
-      "enabled": true,
+      "enabled": false,
       "label": "CH4"
     }
   },
@@ -97,9 +97,15 @@
       "url": "http://127.0.0.1:52625/v1/models"
     }
   ],
-  "starlink_enabled": true,
+  "starlink_enabled": false,
   "starlink_poll_sec": 10,
   "ssh_mainland_alias": "",
-  "aws_fallback_mode": "write",
-  "aws_fallback_alias": "rr-aws-ip"
+  "aws_fallback_mode": "dry-run",
+  "aws_fallback_alias": "rr-aws-ip",
+  "data_poll_toggle_mode": "dry-run",
+  "data_poll_apply_dropin": false,
+  "data_poll_restart_poller": false,
+  "data_poll_sync_ml2": false,
+  "data_poll_desired": "ml2",
+  "data_poll_ml2_alias": "ml2-ip"
 }

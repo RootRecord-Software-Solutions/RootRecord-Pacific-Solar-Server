@@ -16,6 +16,7 @@ LOG="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Energy/$
 if [[ "$ALIAS" == "river2pro" ]]; then
   LOG="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Energy/river2pro-ac-recover.log"
 fi
+mkdir -p "$(dirname "$LOG")"
 AC_ON="$ROOT/scripts/actions/${ALIAS}-ac-on.sh"
 FRESH=180
 log_line() { echo "$(date '+%Y-%m-%dT%H:%M:%S%z') ${ALIAS}-ac-force: $*" | tee -a "$LOG"; }

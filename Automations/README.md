@@ -14,7 +14,7 @@ RootRecord automation orchestration: poller engine, job catalog, stack lifecycle
 | **Log authority** | **`/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/` only** — not a Pacific domain folder |
 | Canonical poller log | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Automations/automations_current.log` (git-ignored; hourly `Archive/` is synced) |
 | Energy / System | LIVE on Pacific |
-| Weather | **PASS** — `weather_poller` enabled; run + reports verified 2026-09-29 01:50/01:59 HST |
+| Weather | **ML2-owned** (2026-10-02) — `weather_poller` job removed; Hawaiʻi via ML2 `weather_hawaii` + stream |
 | Ollama | **System service** — separate service-owned model store; operational logs are in journald |
 
 **Policy:** No old desk as poller host. Domain folders use existing capitalized names only. **Do not recreate `Logs/` under Pacific** — persistent logs belong to `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/`. GitHub sync flags and backups stay under `2 - RootRecord-Database/Github`. Mirror worktrees stay in `Github-worktrees/` at the ecosystem root. Nothing writes to `/home/rootrecord/Database`.
@@ -70,7 +70,7 @@ Full SOP: Library `Pacific-Domain-Import-Playbook-2026-09-28.md`.
 | ecoflow_read_* | `Energy/` |
 | sys_stats_cycle | `System/` |
 | systemd + open-poller-window | Pacific |
-| weather_poller | Pacific Weather scheduler; current statewide/county reports verified |
+| *(removed)* | `weather_poller` — see ML2 `weather_hawaii` |
 
 ## Residual G2
 

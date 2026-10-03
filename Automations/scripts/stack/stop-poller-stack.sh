@@ -52,11 +52,10 @@ kill_match 'cloudflared'  # info: kill_match
 kill_match 'poller-watch\.py'  # info: kill_match
 kill_match 'cam_server\.py'  # info: kill_match
 kill_match 'coms/ssh/local-data-globe/collector\.js'  # info: kill_match
-kill_match '[Ww]eather/scripts/run_poller\.py'  # info: kill_match
 
 sleep 1  # info: sleep
 
-for pat in 'rootserver_poller\.py' 'cloudflared' 'poller-watch\.py' 'cam_server\.py' 'coms/ssh/local-data-globe/collector\.js' '[Ww]eather/scripts/run_poller\.py'; do  # info: for
+for pat in 'rootserver_poller\.py' 'cloudflared' 'poller-watch\.py' 'cam_server\.py' 'coms/ssh/local-data-globe/collector\.js'; do  # info: for
   pids=$(pgrep -f "$pat" 2>/dev/null || true)  # info: set pids
   if [ -n "$pids" ]; then  # info: if
     echo "[stop] kill -9 $pat -> $pids"  # info: echo

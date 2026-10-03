@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# supervise-services.sh — mid-session auto-recovery for weather + council relay
+# supervise-services.sh — mid-session auto-recovery for council relay
 # ------------------------------------------------------------------------------
 # Approved: Library 08-Ideas/2026-09-29-weather-relay-auto-recovery.md (Alexander).
 # Called from jobs.py EVERY_SECONDS job `service_supervisor` (every 300 s).
@@ -17,7 +17,7 @@
 #   (default)            act (respawn when dead, subject to backoff)
 #   --dry-run | --check  detection only: never starts anything, never writes the
 #                        live backoff state; prints alive / WOULD-RESPAWN / WOULD-BLOCK
-#   --pretend-dead SVC   (test aid, dry-run only) treat SVC (weather|relay) as dead
+#   --pretend-dead SVC   (test aid, dry-run only) treat SVC (relay) as dead
 #   --state-dir DIR      backoff state dir (default $XDG_RUNTIME_DIR/rootrecord-supervisor;
 #                        tmpfs, resets at reboot, never in git). In --dry-run, state is
 #                        only recorded when --state-dir is given explicitly (tests).
@@ -40,7 +40,6 @@ PRETEND=""  # info: set PRETEND
 
 # id | pgrep pattern (same as the ensure script) | ensure command (same as the ON_BOOT job) | cwd
 SERVICES=(  # info: set SERVICES
-  "weather|[Ww]eather/scripts/run_poller\.py|$PACIFIC/Weather/scripts/ensure-weather-poller.sh|$PACIFIC/Weather"  # info: command
   "relay|^python3 .+/council-relay\.py|$PACIFIC/Communications/telegram/scripts/ensure-relay.sh|$PACIFIC/Communications/telegram"  # info: command
 )  # info: command
 
@@ -65,24 +64,6 @@ WRITE_STATE=1  # info: set WRITE_STATE
 # SECTION: HELPERS
 # ====================================================
 ts() { date -Iseconds; }  # info: ts
-
-# ====================================================
-# SECTION: function local_data_poll_off
-# What it does: True when RR_LOCAL_DATA_POLL is soft-off (ML2 owns gated collectors).
-# Weather daemon must not stay alive under gate=0; relay is never gated here.
-# ====================================================
-local_data_poll_off() {  # info: local_data_poll_off
-  local v="${RR_LOCAL_DATA_POLL-}"  # info: local
-  if [[ -z "$v" ]]; then  # info: if
-    local dropin="/home/rootrecord/.config/systemd/user/rr-rootserver-poller.service.d/rr-data-poll.conf"  # info: local
-    [[ -f "$dropin" ]] && v=$(grep -E '^Environment=RR_LOCAL_DATA_POLL=' "$dropin" 2>/dev/null | tail -n1 | cut -d= -f3 || true)  # info: command
-  fi  # info: fi
-  case "${v:-1}" in  # info: case
-    0|false|FALSE|off|OFF|no|NO) return 0 ;;  # info: 0
-    *) return 1 ;;  # info: *
-  esac  # info: esac
-}  # info: command
-
 
 # restarts inside the window (epoch seconds, one per line)
 recent_restarts() {  # info: recent_restarts
@@ -115,22 +96,6 @@ for row in "${SERVICES[@]}"; do  # info: for
   if [[ "$PRETEND" == "$sid" ]]; then pids=""; fi  # info: if
 
   if [[ -n "$pids" ]]; then  # info: if
-    # Soft gate: weather must not keep writing when RR_LOCAL_DATA_POLL=0 (ML2 owns it).
-    if [[ "$sid" == "weather" ]] && local_data_poll_off; then  # info: if
-      if [[ "$DRY" == 1 ]]; then  # info: if
-        echo "[supervisor] weather alive pid=$pids — WOULD-STOP (RR_LOCAL_DATA_POLL soft-off)"  # info: echo
-      else  # info: else
-        echo "[supervisor] weather gated-off — soft-stopping pid=$pids (RR_LOCAL_DATA_POLL soft-off; ML2 owns weather)"  # info: echo
-        # shellcheck disable=SC2086
-        kill $pids 2>/dev/null || true  # info: kill
-        sleep 1  # info: sleep
-        # shellcheck disable=SC2086
-        kill -9 $pids 2>/dev/null || true  # info: kill
-        echo "[supervisor] weather soft-stopped (gate=0)"  # info: echo
-      fi  # info: fi
-      [[ "$WRITE_STATE" == 1 ]] && prune_restarts "$sid"  # info: command
-      continue  # info: continue
-    fi  # info: fi
     echo "[supervisor] $sid alive pid=$pids ($mode)"  # info: echo
     if [[ "$WRITE_STATE" == 1 && -f "$blocked" ]]; then  # info: if
       rm -f "$blocked"; echo "[supervisor] $sid seen alive — BLOCKED cleared"  # info: rm
@@ -141,12 +106,6 @@ for row in "${SERVICES[@]}"; do  # info: for
 
   if [[ -f "$blocked" ]]; then  # info: if
     echo "[supervisor] $sid DEAD — BLOCKED since $(cat "$blocked" 2>/dev/null) (no retry; restart the stack or start it by hand)"  # info: echo
-    continue  # info: continue
-  fi  # info: fi
-
-  # Soft gate: do not respawn weather while ML2 owns internet weather fetches.
-  if [[ "$sid" == "weather" ]] && local_data_poll_off; then  # info: if
-    echo "[supervisor] weather DEAD — gated-off (RR_LOCAL_DATA_POLL soft-off; not respawning)"  # info: echo
     continue  # info: continue
   fi  # info: fi
 

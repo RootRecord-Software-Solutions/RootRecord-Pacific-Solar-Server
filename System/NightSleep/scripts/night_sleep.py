@@ -36,13 +36,10 @@ LOG_FILE = LOG_DIR / "night-sleep.log"  # info: set LOG_FILE
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 ALLOW = frozenset({  # info: set ALLOW
-    "weather_poller",  # info: "weather_poller" ,
     "geology_collect",  # info: "geology_collect" ,
     "geology_kilauea_cams",  # info: "geology_kilauea_cams" ,
     "council_quake_telegram",  # info: "council_quake_telegram" ,
     "heartbeat",  # info: "heartbeat" ,
-    "ecoflow_read_boot",  # info: "ecoflow_read_boot" ,
-    "ecoflow_read_cycle",  # info: "ecoflow_read_cycle" ,
     "ensure_tunnel_online",  # info: "ensure_tunnel_online" ,
     "service_supervisor",  # info: "service_supervisor" ,
     "sys_stats_cycle",  # info: "sys_stats_cycle" ,
@@ -132,8 +129,8 @@ def _check() -> int:  # info: def _check
     path = Path(name)  # info: set path
     try:  # info: try :
         path.write_text(json.dumps({"sleeping": True}), encoding="utf-8")  # info: path . write_text ( json . dumps (
-        if not should_run("weather_poller", enabled=True, state_path=path):  # info: if not should_run ( "weather_poller" , enabled =
-            print("FAIL weather_poller skipped while sleeping", file=sys.stderr)  # info: call print
+        if not should_run("geology_collect", enabled=True, state_path=path):  # info: if not should_run ( "geology_collect" , enabled =
+            print("FAIL geology_collect skipped while sleeping", file=sys.stderr)  # info: call print
             return 1  # info: return 1
         if should_run("voice_late_report", enabled=True, state_path=path):  # info: if should_run ( "voice_late_report" , enabled = True
             print("FAIL voice_late_report ran while sleeping", file=sys.stderr)  # info: call print
@@ -142,8 +139,8 @@ def _check() -> int:  # info: def _check
             print("FAIL last-skip record missing", file=sys.stderr)  # info: call print
             return 1  # info: return 1
         path.unlink()  # info: path . unlink ( )
-        if not should_run("weather_poller", enabled=True, state_path=path):  # info: if not should_run ( "weather_poller" , enabled =
-            print("FAIL weather_poller blocked with no file", file=sys.stderr)  # info: call print
+        if not should_run("geology_collect", enabled=True, state_path=path):  # info: if not should_run ( "geology_collect" , enabled =
+            print("FAIL geology_collect blocked with no file", file=sys.stderr)  # info: call print
             return 1  # info: return 1
         if not should_run("voice_late_report", enabled=True, state_path=path):  # info: if not should_run ( "voice_late_report" , enabled =
             print("FAIL voice_late_report blocked with no file", file=sys.stderr)  # info: call print

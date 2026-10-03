@@ -145,8 +145,8 @@ FILES: list[FileSpec] = [  # info: set FILES
     FileSpec("jobs.py", PAC / "Automations/scripts/jobs.py", "code-jobs", "services", POLLER, R_POLLER,  # info: call FileSpec
              read_only="Python code — job table shown read-only; edit jobs.py offline"),  # info: set read_only
     # ---- Weather
-    *[FileSpec(f"weather:{n}", PAC / f"Weather/config/{n}", "yaml", "weather", "weather poller (Weather/scripts/run_poller.py)",  # info: * [ FileSpec ( f" weather: { n
-               "takes effect after weather poller restart (service_supervisor / ensure-weather-poller.sh)",  # info: "takes effect after weather poller restart (service_supervisor / ensure-weather-poller.sh)" ,
+    *[FileSpec(f"weather:{n}", PAC / f"Weather/config/{n}", "yaml", "weather", "legacy Pacific Weather config (ML2 vendor/Weather uses a copy)",  # info: * [ FileSpec ( f" weather: { n
+               "Hawai'i fetch is ML2 weather_hawaii; edit vendor copy on mainland for live tier changes",  # info: "Hawai'i fetch is ML2 weather_hawaii; edit vendor copy on mainland for live tier changes" ,
                kinds=((r"seconds$|_s$|_sec$", "int"),))  # info: set kinds
       for n in ("hosts.yaml", "tiers.yaml", "resources.yaml", "counties.yaml", "report_counties.yaml", "text_cleaning.yaml")],  # info: for n in ( "hosts.yaml" , "tiers.yaml" ,
     FileSpec("weather-retention", PAC / "Weather/scripts/weather-retention.py", "code-const", "weather", "weather_retention job (gated OFF)",  # info: call FileSpec

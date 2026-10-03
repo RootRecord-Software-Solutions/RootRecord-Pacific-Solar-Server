@@ -59,6 +59,14 @@ ENABLE_TUNNEL = os.environ.get("POLLER_ENABLE_TUNNEL", "1") != "0"  # info: set 
 TUNNEL_READY_TIMEOUT_SEC = float(os.environ.get("POLLER_TUNNEL_READY_TIMEOUT_SEC", "45"))  # info: set TUNNEL_READY_TIMEOUT_SEC
 # Read once at process start, same moment as jobs.py. Default off: every enabled job still runs.
 NIGHT_SLEEP_GATE = os.environ.get("RR_NIGHT_SLEEP", "0").strip() == "1"  # info: set NIGHT_SLEEP_GATE
+# Late boot does not replay these. They run only when the clock reaches their slot.
+AI_HOLD = frozenset({  # info: set AI_HOLD
+    "ai_processing_report_hourly",  # info: "ai_processing_report_hourly" ,
+    "ai_usage_report",  # info: "ai_usage_report" ,
+    "cloud_narrative_merged",  # info: "cloud_narrative_merged" ,
+    "cloud_narrative_kilauea",  # info: "cloud_narrative_kilauea" ,
+    "cursor_fallback",  # info: "cursor_fallback" ,
+})  # info: }
 
 
 # ====================================================
@@ -737,6 +745,24 @@ def run_builtin(job: dict) -> None:  # info: def run_builtin
     if name == "ensure_tunnel_online":  # info: if name == "ensure_tunnel_online" :
         ensure_tunnel_online()  # info: call ensure_tunnel_online
         return  # info: return
+    if name == "ble_adapter_cycle":  # info: if name == "ble_adapter_cycle" :
+        try:  # info: try
+            import schedule_runtime as sch  # info: import schedule_runtime as sch
+            result = sch.run_ble_adapter_cycle()  # info: set result
+        except Exception as exc:  # info: except Exception as exc
+            log(f"{full_timestamp()}job:{jid} ble_adapter_cycle ERROR {exc}")  # info: call log
+            return  # info: return
+        log(f"{full_timestamp()}job:{jid} ble_adapter_cycle ok={result.get('ok')} code={result.get('code')}")  # info: call log
+        return  # info: return
+    if name == "ensure_process":  # info: if name == "ensure_process" :
+        try:  # info: try
+            import schedule_runtime as sch  # info: import schedule_runtime as sch
+            result = sch.ensure_process(job)  # info: set result
+        except Exception as exc:  # info: except Exception as exc
+            log(f"{full_timestamp()}job:{jid} ensure_process ERROR {exc}")  # info: call log
+            return  # info: return
+        log(f"{full_timestamp()}job:{jid} ensure_process {result.get('detail')}")  # info: call log
+        return  # info: return
     log(f"{full_timestamp()}job:{jid} UNKNOWN builtin={name!r}")  # info: call log
 
 
@@ -777,6 +803,8 @@ def run_job(job: dict) -> None:  # info: def run_job
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _job_on(job: dict) -> bool:  # info: def _job_on
+    if job.get("from_schedule"):  # info: schedule entry enable is the authority
+        return bool(job.get("enabled"))  # info: return bool ( job . get ( "enabled" ) )
     if actl is None:  # info: if actl is None
         return bool(job.get("enabled"))  # info: return bool ( job . get ( "enabled" ) )
     try:  # info: try
@@ -795,17 +823,37 @@ def enabled_jobs(section: list) -> list:  # info: def enabled_jobs
 
 
 # ====================================================
-# SECTION: function _scheduled_jobs
-# What it does: The four repeating lists, filtered by the current override file.
+# SECTION: function _exact_due
+# What it does: True when this EXACT_TIME job belongs on this 5-second mark. every_seconds uses at_second as the phase. from_minute holds a job until that minute.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def _scheduled_jobs() -> tuple:  # info: def _scheduled_jobs
-    return (  # info: return (
-        enabled_jobs(getattr(jobmod, "EVERY_SECONDS", [])),  # info: enabled_jobs ( getattr ( jobmod , "EVERY_SECONDS" , [ ] ) ) ,
-        enabled_jobs(getattr(jobmod, "EVERY_MINUTE", [])),  # info: enabled_jobs ( getattr ( jobmod , "EVERY_MINUTE" , [ ] ) ) ,
-        enabled_jobs(getattr(jobmod, "EVERY_HOUR", [])),  # info: enabled_jobs ( getattr ( jobmod , "EVERY_HOUR" , [ ] ) ) ,
-        enabled_jobs(getattr(jobmod, "ON_AT", [])),  # info: enabled_jobs ( getattr ( jobmod , "ON_AT" , [ ] ) ) ,
-    )  # info: )
+def _exact_due(job: dict, step) -> bool:  # info: def _exact_due
+    every = job.get("every_seconds")  # info: set every
+    if every:  # info: if every
+        gap = int(every)  # info: set gap
+        phase = int(job.get("at_second") or 0) % gap  # info: set phase
+        if step.second % gap != phase:  # info: if this second is the other battery or a skip
+            return False  # info: return False
+        opened = job.get("from_minute")  # info: set opened
+        if opened is not None and step.minute < int(opened):  # info: if before the :30 block
+            return False  # info: return False
+        return True  # info: return True
+    if job.get("at_hour") is not None and int(job["at_hour"]) != step.hour:  # info: if this hour is not the one named
+        return False  # info: return False
+    if int(job.get("at_minute") or 0) != step.minute:  # info: if int ( job . get ( "at_minute" ) or 0 ) != step . minute
+        return False  # info: return False
+    if int(job.get("at_second") or 0) != step.second:  # info: if int ( job . get ( "at_second" ) or 0 ) != step . second
+        return False  # info: return False
+    return True  # info: return True
+
+
+# ====================================================
+# SECTION: function _scheduled_jobs
+# What it does: The repeating lists, filtered by the current override file.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _scheduled_jobs() -> list:  # info: def _scheduled_jobs
+    return enabled_jobs(getattr(jobmod, "EXACT_TIME", []))  # info: return enabled_jobs ( getattr ( jobmod , "EXACT_TIME" , [ ] ) )
 
 
 # ====================================================
@@ -908,21 +956,129 @@ def crossed_slots(prev: datetime, now: datetime, cap: int = 60) -> list[datetime
 
 
 # ====================================================
+# SECTION: function crossed_seconds
+# What it does: Whole seconds after prev through now. Caps catch-up so a long job does not replay hours.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def crossed_seconds(prev: datetime, now: datetime, cap: int = 120) -> list[datetime]:  # info: def crossed_seconds
+    prev_s = prev.replace(microsecond=0)  # info: set prev_s
+    now_s = now.replace(microsecond=0)  # info: set now_s
+    if now_s <= prev_s:  # info: if now_s <= prev_s :
+        return []  # info: return [ ]
+    if now_s - prev_s > timedelta(seconds=cap):  # info: if catch-up too large
+        prev_s = now_s - timedelta(seconds=cap)  # info: set prev_s
+    out: list[datetime] = []  # info: set out
+    step = prev_s  # info: set step
+    while step < now_s and len(out) < cap:  # info: while step < now_s and len ( out ) < cap :
+        step = step + timedelta(seconds=1)  # info: set step
+        out.append(step)  # info: out . append ( step )
+    return out  # info: return out
+
+
+# ====================================================
+# SECTION: function _schedule_mode_loop
+# What it does: Fire only from Database schedule JSON. Idle while disconnected; re-check arming without restart.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _schedule_mode_loop(sch) -> None:  # info: def _schedule_mode_loop
+    last_fire: dict[str, float] = {}  # info: set last_fire
+    last_second: datetime | None = None  # info: set last_second
+    booted = False  # info: set booted
+    logged_idle = False  # info: set logged_idle
+    log(f"{full_timestamp()}scheduler  MODE=schedule entries={len((sch.load_schedule('pacific').get('entries') or []))}")  # info: call log
+    while not _stop.is_set():  # info: while not _stop . is_set ( ) :
+        if sch.polling_disconnected("pacific"):  # info: if sch . polling_disconnected ( "pacific" ) :
+            if not logged_idle:  # info: if not logged_idle :
+                log(f"{full_timestamp()}scheduler  POLLING_DISCONNECTED — no jobs fire until schedules are armed")  # info: call log
+                logged_idle = True  # info: set logged_idle
+            booted = False  # info: set booted
+            last_second = None  # info: set last_second
+            _stop.wait(1.0)  # info: _stop . wait ( 1.0 )
+            continue  # info: continue
+        logged_idle = False  # info: set logged_idle
+        if not booted:  # info: if not booted :
+            boot = sch.boot_jobs("pacific", "boot")  # info: set boot
+            log(f"{full_timestamp()}boot:start  schedule_jobs={len(boot)}")  # info: call log
+            for j in boot:  # info: for j in boot :
+                log(f"{full_timestamp()}boot:run  priority={j.get('priority', '?')}  id={j.get('id', '?')}")  # info: call log
+                run_job(j)  # info: call run_job
+            for j in sch.boot_jobs("pacific", "once_at_start"):  # info: for j in sch . boot_jobs
+                run_job(j)  # info: call run_job
+            log(f"{full_timestamp()}boot:done")  # info: call log
+            now = datetime.now().astimezone().replace(microsecond=0)  # info: set now
+            opened = now.replace(second=0) - timedelta(seconds=1)  # info: include this minute's :00
+            for step in crossed_seconds(opened, now, cap=60):  # info: for step in crossed_seconds
+                if step.hour != now.hour or step.minute != now.minute:  # info: if step is the previous minute
+                    continue  # info: continue
+                for j in sch.due_jobs("pacific", step, last_fire):  # info: for j in sch . due_jobs
+                    if j.get("every_seconds") or j.get("id") in AI_HOLD:  # info: stacks run on the next tick; AI waits for its clock
+                        continue  # info: continue
+                    log(f"{full_timestamp()}boot:catch  id={j.get('id', '?')}  at={step.strftime('%H:%M:%S')}")  # info: call log
+                    run_job(j)  # info: call run_job
+            last_second = now  # info: set last_second
+            booted = True  # info: set booted
+            _kick_service(datetime.now().astimezone())  # info: call _kick_service
+        wall = datetime.now().astimezone()  # info: set wall
+        mark = wall.replace(microsecond=0)  # info: set mark
+        if last_second is None:  # info: if last_second is None :
+            last_second = mark  # info: set last_second
+        elif mark < last_second:  # info: elif clock jumped back
+            last_second = mark  # info: set last_second
+        elif mark != last_second:  # info: elif mark != last_second :
+            for step in crossed_seconds(last_second, mark):  # info: for step in crossed_seconds ( last_second , mark ) :
+                for j in sch.due_jobs("pacific", step, last_fire):  # info: for j in sch . due_jobs
+                    run_job(j)  # info: call run_job
+                if step.second == 0:  # info: minute boundary only
+                    _kick_service(step)  # info: call _kick_service
+            last_second = mark  # info: set last_second
+        _stop.wait(0.25)  # info: _stop . wait ( 0.25 )
+
+
+# ====================================================
 # SECTION: function scheduler_loop
-# What it does: scheduler loop. Reloads job overrides when that file changes, and starts due power schedules. A job that runs across a minute still fires the jobs for each minute it crossed.
+# What it does: Prefer Database schedule JSON when present. Otherwise jobs.py timing. Reloads overrides; power schedules only in legacy mode.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def scheduler_loop() -> None:  # info: def scheduler_loop
-    sec_jobs, min_jobs, hour_jobs, at_jobs = _scheduled_jobs()  # info: sec_jobs , min_jobs , hour_jobs , at_jobs = _scheduled_jobs ( )
-    next_due: dict[str, float] = {}  # info: set next_due
-    now = time.monotonic()  # info: set now
-    for j in sec_jobs:  # info: for j in sec_jobs :
-        next_due[j["id"]] = now  # info: next_due [ j [ "id" ] ] =
-    last_minute: int | None = None  # info: set last_minute
+    try:  # info: try schedule disconnect gate
+        import schedule_runtime as sch  # info: import schedule_runtime as sch
+    except Exception:  # info: except Exception
+        sch = None  # info: set sch
+    if sch is not None and sch.schedule_active("pacific"):  # info: if schedule JSON owns timing
+        _schedule_mode_loop(sch)  # info: call _schedule_mode_loop
+        return  # info: return
+    if sch is not None and sch.polling_disconnected("pacific"):  # info: if schedule says do not fire
+        log(f"{full_timestamp()}scheduler  POLLING_DISCONNECTED — no jobs fire until schedules are armed")  # info: call log
+        while not _stop.is_set():  # info: idle until stop; do not start work
+            _stop.wait(1.0)  # info: _stop . wait ( 1.0 )
+        return  # info: return
+    exact_jobs = _scheduled_jobs()  # info: exact_jobs = _scheduled_jobs ( )
     last_hour: int | None = None  # info: set last_hour
     last_slot: datetime | None = None  # info: set last_slot
-    fired_at: set[str] = set()  # info: set fired_at
-    log(f"{full_timestamp()}scheduler  every_seconds={len(sec_jobs)}  every_minute={len(min_jobs)}  every_hour={len(hour_jobs)}  on_at={len(at_jobs)}")  # info: call log
+    last_five: datetime | None = None  # info: set last_five
+    fired_exact: set[str] = set()  # info: set fired_exact
+    log(f"{full_timestamp()}scheduler  MODE=jobs.py exact_time={len(exact_jobs)}")  # info: call log
+    now = datetime.now().astimezone().replace(microsecond=0)  # info: set now
+    opened = now.replace(second=0) - timedelta(seconds=1)  # info: include this minute's :00
+    for step in crossed_seconds(opened, now, cap=60):  # info: for step in crossed_seconds
+        if step.hour != now.hour or step.minute != now.minute:  # info: if step is the previous minute
+            continue  # info: continue
+        if step.second % 5 != 0:  # info: if step . second % 5 != 0
+            continue  # info: continue
+        for j in exact_jobs:  # info: for j in exact_jobs
+            if j.get("every_seconds") or j.get("id") in AI_HOLD:  # info: stacks run on the next tick; AI waits for its clock
+                continue  # info: continue
+            if not _exact_due(j, step):  # info: if not _exact_due
+                continue  # info: continue
+            key = f"{j['id']}|{step.date().isoformat()}|{step.hour:02d}:{step.minute:02d}:{step.second:02d}"  # info: set key
+            if key in fired_exact:  # info: if key in fired_exact
+                continue  # info: continue
+            log(f"{full_timestamp()}boot:catch  id={j.get('id', '?')}  at={step.strftime('%H:%M:%S')}")  # info: call log
+            run_job(j)  # info: call run_job
+            fired_exact.add(key)  # info: fired_exact . add
+    last_hour = now.hour  # info: set last_hour
+    last_slot = now.replace(second=0, microsecond=0)  # info: set last_slot
+    last_five = now.replace(second=(now.second // 5) * 5, microsecond=0)  # info: set last_five
     ov_stamp = actl.overrides_mtime() if actl is not None else None  # info: set ov_stamp
     _kick_power(datetime.now().astimezone())  # info: call _kick_power
     _kick_service(datetime.now().astimezone())  # info: call _kick_service
@@ -931,54 +1087,37 @@ def scheduler_loop() -> None:  # info: def scheduler_loop
             stamp = actl.overrides_mtime()  # info: set stamp
             if stamp != ov_stamp:  # info: if stamp != ov_stamp
                 ov_stamp = stamp  # info: set ov_stamp
-                sec_jobs, min_jobs, hour_jobs, at_jobs = _scheduled_jobs()  # info: sec_jobs , min_jobs , hour_jobs , at_jobs = _scheduled_jobs ( )
-                for j in sec_jobs:  # info: for j in sec_jobs
-                    next_due.setdefault(j["id"], time.monotonic())  # info: next_due . setdefault ( j [ "id" ] , time . monotonic ( ) )
-        wall = datetime.now().astimezone()  # info: set wall
-        mono = time.monotonic()  # info: set mono
-        for j in sec_jobs:  # info: for j in sec_jobs :
-            jid = j["id"]  # info: set jid
-            if mono >= next_due.get(jid, 0):  # info: if mono >= next_due . get ( jid
-                run_job(j)  # info: call run_job
-                interval = float(j.get("interval_sec") or INTERVAL_FALLBACK)  # info: set interval
-                next_due[jid] = time.monotonic() + max(0.2, interval)  # info: next_due [ jid ] = time . monotonic ( ) + max
+                exact_jobs = _scheduled_jobs()  # info: exact_jobs = _scheduled_jobs ( )
         wall = datetime.now().astimezone()  # info: set wall
         minute, hour = wall.minute, wall.hour  # info: minute , hour = wall . minute ,
         day = wall.date().isoformat()  # info: set day
         slot = wall.replace(second=0, microsecond=0)  # info: set slot
+        five = wall.replace(second=(wall.second // 5) * 5, microsecond=0)  # info: set five
         if last_slot is None:  # info: if last_slot is None :
-            last_minute, last_hour, last_slot = minute, hour, slot  # info: last_minute , last_hour , last_slot = minute , hour , slot
+            last_hour, last_slot, last_five = hour, slot, five  # info: last_hour , last_slot , last_five = hour , slot , five
         elif slot < last_slot:  # info: elif slot < last_slot :
-            last_minute, last_hour, last_slot = minute, hour, slot  # info: last_minute , last_hour , last_slot = minute , hour , slot
-        elif slot != last_slot:  # info: elif slot != last_slot :
-            for step in crossed_slots(last_slot, slot):  # info: for step in crossed_slots ( last_slot , slot )
-                _kick_power(step)  # info: call _kick_power
-                _kick_service(step)  # info: call _kick_service
-                hm_step = f"{step.hour:02d}:{step.minute:02d}"  # info: set hm_step
-                for j in min_jobs:  # info: for j in min_jobs :
-                    only = j.get("only_at_minutes") or []  # info: set only
-                    if only and step.minute not in only:  # info: if only and step . minute not in only :
+            last_hour, last_slot, last_five = hour, slot, five  # info: last_hour , last_slot , last_five = hour , slot , five
+        else:  # info: else
+            if last_five is not None and five > last_five:  # info: if last_five is not None and five > last_five
+                for step in crossed_seconds(last_five, five, cap=120):  # info: for step in crossed_seconds ( last_five , five , cap = 120 )
+                    if step.second % 5 != 0:  # info: if step . second % 5 != 0
                         continue  # info: continue
-                    run_job(j)  # info: call run_job
-                for j in at_jobs:  # info: for j in at_jobs :
-                    times = {t for raw in (j.get("at_times") or []) if (t := _normalize_hhmm(raw))}  # info: set times
-                    if hm_step not in times:  # info: if hm_step not in times :
-                        continue  # info: continue
-                    key = f"{j['id']}|{step.date().isoformat()}|{hm_step}"  # info: set key
-                    if key in fired_at:  # info: if key in fired_at :
-                        continue  # info: continue
-                    run_job(j)  # info: call run_job
-                    fired_at.add(key)  # info: fired_at . add ( key )
-                if step.minute == 0:  # info: if step . minute == 0 :
-                    for j in hour_jobs:  # info: for j in hour_jobs :
-                        only_h = j.get("only_at_hours") or []  # info: set only_h
-                        if only_h and step.hour not in only_h:  # info: if only_h and step . hour not in only_h :
+                    for j in exact_jobs:  # info: for j in exact_jobs
+                        if not _exact_due(j, step):  # info: if not _exact_due ( j , step )
+                            continue  # info: continue
+                        key = f"{j['id']}|{step.date().isoformat()}|{step.hour:02d}:{step.minute:02d}:{step.second:02d}"  # info: set key
+                        if key in fired_exact:  # info: if key in fired_exact
                             continue  # info: continue
                         run_job(j)  # info: call run_job
-                    last_hour = step.hour  # info: set last_hour
-            last_minute, last_slot = minute, slot  # info: last_minute , last_slot = minute , slot
-            if fired_at:  # info: if fired_at :
-                fired_at = {k for k in fired_at if f"|{day}|" in k}  # info: set fired_at
+                        fired_exact.add(key)  # info: fired_exact . add ( key )
+                last_five = five  # info: last_five = five
+                if fired_exact:  # info: if fired_exact
+                    fired_exact = {k for k in fired_exact if f"|{day}|" in k}  # info: set fired_exact
+            if slot != last_slot:  # info: if slot != last_slot
+                for step in crossed_slots(last_slot, slot):  # info: for step in crossed_slots ( last_slot , slot )
+                    _kick_power(step)  # info: call _kick_power
+                    _kick_service(step)  # info: call _kick_service
+                last_slot = slot  # info: last_slot = slot
         _stop.wait(0.25)  # info: _stop . wait ( 0.25 )
 
 
@@ -1016,15 +1155,38 @@ def run_on_boot() -> None:  # info: def run_on_boot
 
 # ====================================================
 # SECTION: function main
-# What it does: main.
+# What it does: main. Schedule JSON owns timing when present; boot for that mode runs inside the scheduler after arm.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def main() -> int:  # info: def main
     signal.signal(signal.SIGTERM, shutdown)  # info: signal . signal ( signal . SIGTERM ,
     signal.signal(signal.SIGINT, shutdown)  # info: signal . signal ( signal . SIGINT ,
+    try:  # info: try
+        import schedule_runtime as sch  # info: import schedule_runtime as sch
+        schedule_owns = sch.schedule_active("pacific")  # info: set schedule_owns
+        disconnected = sch.polling_disconnected("pacific")  # info: set disconnected
+    except Exception:  # info: except Exception
+        sch = None  # info: set sch
+        schedule_owns = False  # info: set schedule_owns
+        disconnected = False  # info: set disconnected
     server = ThreadingHTTPServer((HOST, PORT), Handler)  # info: set server
-    threading.Thread(target=server.serve_forever, name="http", daemon=True).start()  # info: threading . Thread ( target = server .
+    threading.Thread(target=server.serve_forever, name="http", daemon=True).start()  # info: start http
     log(f"{full_timestamp()}HTTP listening on http://{HOST}:{PORT} (open access on bind)")  # info: call log
+    if schedule_owns:  # info: schedule mode: boot waits for arm inside the loop
+        if disconnected:  # info: if disconnected :
+            log(f"{full_timestamp()}POLLING_DISCONNECTED — schedule mode idle until armed (jobs.py timing ignored)")  # info: call log
+        else:  # info: else
+            log(f"{full_timestamp()}schedule mode armed — jobs.py timing ignored")  # info: call log
+        scheduler_loop()  # info: call scheduler_loop
+        server.shutdown()  # info: server . shutdown ( )
+        shutdown()  # info: call shutdown
+        return 0  # info: return 0
+    if disconnected:  # info: if disconnected :
+        log(f"{full_timestamp()}POLLING_DISCONNECTED — skip boot jobs and do not arm the scheduler")  # info: call log
+        scheduler_loop()  # info: idle loop only
+        server.shutdown()  # info: server . shutdown ( )
+        shutdown()  # info: call shutdown
+        return 0  # info: return 0
     run_on_boot()  # info: call run_on_boot
     for j in enabled_jobs(getattr(jobmod, "ONCE_AT_START", [])):  # info: for j in enabled_jobs ( getattr ( jobmod
         run_job(j)  # info: call run_job

@@ -178,10 +178,8 @@ def load_jobs():  # info: def load_jobs
     buckets = {  # info: set buckets
         "boot": mod.ON_BOOT,  # info: "boot" : mod . ON_BOOT ,
         "once": mod.ONCE_AT_START,  # info: "once" : mod . ONCE_AT_START ,
-        "seconds": mod.EVERY_SECONDS,  # info: "seconds" : mod . EVERY_SECONDS ,
-        "minute": mod.EVERY_MINUTE,  # info: "minute" : mod . EVERY_MINUTE ,
-        "hour": mod.EVERY_HOUR,  # info: "hour" : mod . EVERY_HOUR ,
-        "at": mod.ON_AT,  # info: "at" : mod . ON_AT ,
+        "seconds": getattr(mod, "EXACT_TIME", []),  # info: "seconds" : getattr ( mod , "EXACT_TIME" , [ ] ) ,
+        "exact": getattr(mod, "EXACT_TIME", []),  # info: "exact" : getattr ( mod , "EXACT_TIME" , [ ] ) ,
     }  # info: }
     return buckets  # info: return buckets
 

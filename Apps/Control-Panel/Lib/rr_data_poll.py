@@ -29,7 +29,6 @@ DESIRED = ("local", "ml2")  # local = Pacific polls; ml2 = offload gated jobs
 GATED_JOBS = frozenset({
     "geology_collect",
     "geology_kilauea_cams",
-    "weather_poller",
     "weather_us_states",
     "weather_radar_zip",
     "weather_retention",

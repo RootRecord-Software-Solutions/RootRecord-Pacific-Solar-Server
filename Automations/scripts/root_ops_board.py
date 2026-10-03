@@ -28,7 +28,6 @@ SERVICES = (
     ("ble", "EcoFlow BLE", ("scripts/ble/ble-owner.py",)),
     ("globe", "Hawaii globe", ("local-data-globe/collector.js",)),
     ("cam", "Cameras", ("cam_server.py",)),
-    ("weather", "Weather poller", ("Weather/scripts/run_poller.py", "weather/scripts/run_poller.py")),
     ("ollama", "Ollama", ("ollama",)),
     ("tunnel", "Cloudflare tunnel", ("cloudflared",)),
 )

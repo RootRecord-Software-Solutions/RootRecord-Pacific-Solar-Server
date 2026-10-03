@@ -98,6 +98,7 @@ def load_done(inbox: Path) -> set[str]:  # info: def load_done
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def mark(inbox: Path, rec: dict, result: str) -> None:  # info: def mark
+    inbox.mkdir(parents=True, exist_ok=True)  # info: inbox . mkdir ( parents = True , exist_ok = True )
     f = inbox / LEDGER  # info: set f
     with f.open("a", encoding="utf-8") as fh:  # info: with f . open ( "a" , encoding
         fh.write(json.dumps({"key": key(rec), "ts": datetime.now().astimezone().isoformat(timespec="seconds"), "result": result}) + "\n")  # info: fh . write ( json . dumps (

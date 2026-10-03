@@ -82,6 +82,7 @@ def summary() -> dict:  # info: def summary
 if __name__ == '__main__':  # info: if __name__ == '__main__' :
     ap = argparse.ArgumentParser(); ap.add_argument('--backfill', action='store_true'); ap.add_argument('--checkpoint', default=CHECKPOINT)  # info: set ap
     a = ap.parse_args()  # info: set a
+    OUT.mkdir(parents=True, exist_ok=True)  # info: OUT . mkdir ( parents = True , exist_ok = True )
     buf = io.StringIO()  # info: set buf
     with contextlib.redirect_stdout(buf):  # info: with contextlib . redirect_stdout ( buf ) :
         run(STATE_SLUG, PORTAL_URL, DB, a.backfill, a.checkpoint, seed_feeds=SEED_FEEDS)  # info: call run
