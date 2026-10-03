@@ -144,12 +144,12 @@ FILES: list[FileSpec] = [  # info: set FILES
              kinds=((r"\.(prefer_api|poll_enabled)$", "bool01"), (r"_interval_s$", "int"))),  # info: set kinds
     FileSpec("jobs.py", PAC / "Automations/scripts/jobs.py", "code-jobs", "services", POLLER, R_POLLER,  # info: call FileSpec
              read_only="Python code — job table shown read-only; edit jobs.py offline"),  # info: set read_only
-    # ---- Weather
-    *[FileSpec(f"weather:{n}", PAC / f"Weather/config/{n}", "yaml", "weather", "legacy Pacific Weather config (ML2 vendor/Weather uses a copy)",  # info: * [ FileSpec ( f" weather: { n
-               "Hawai'i fetch is ML2 weather_hawaii; edit vendor copy on mainland for live tier changes",  # info: "Hawai'i fetch is ML2 weather_hawaii; edit vendor copy on mainland for live tier changes" ,
+    # ---- Weather (canonical YAML under ML2 vendor — Pacific has no Weather/config copy)
+    *[FileSpec(f"weather:{n}", ECO / "1 - Servers/3 - RootRecord-US-Mainland-Two/vendor/Weather/config" / n, "yaml", "weather", "ML2 vendor/Weather config (Hawai'i fetch)",  # info: ML2 canonical
+               "edit on ML2 desk tree; remote host picks up on deploy",  # info: deploy note
                kinds=((r"seconds$|_s$|_sec$", "int"),))  # info: set kinds
       for n in ("hosts.yaml", "tiers.yaml", "resources.yaml", "counties.yaml", "report_counties.yaml", "text_cleaning.yaml")],  # info: for n in ( "hosts.yaml" , "tiers.yaml" ,
-    FileSpec("weather-retention", PAC / "Weather/scripts/weather-retention.py", "code-const", "weather", "weather_retention job (gated OFF)",  # info: call FileSpec
+    FileSpec("weather-retention", Path("/home/rootrecord/RootRecord-Ecosystem/1 - Servers/3 - RootRecord-US-Mainland-Two/vendor/Weather/scripts/weather-retention.py"), "code-const", "weather", "weather_retention job (gated OFF)",  # info: call FileSpec
              R_EACH, read_only="Python constants (KEEP_*_DAYS) — code change + review of a dry run"),  # info: R_EACH , read_only = "Python constants (KEEP_*_DAYS) — code change + review of a dry run" ) ,
     # ---- AI / NPU
     FileSpec("specialist-routes", PAC / "System/config/specialist-routes.json", "json", "ai", "route-specialist.py / run-infer.sh",  # info: call FileSpec
