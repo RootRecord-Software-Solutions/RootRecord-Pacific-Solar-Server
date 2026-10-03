@@ -1480,6 +1480,20 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # ---------- minute 35 of every hour ----------
     # --- 35:00–35:04 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
+    {  # info: {
+        # NEWS — poll News Data, four topic lanes, Pacific stitch, push one news_update.
+        "id": "news_cycle",  # info: "id" : "news_cycle" ,
+        "enabled": os.environ.get("RR_NEWS_CYCLE", "1") == "1",
+        "at_minute": 35,  # info: "at_minute" : 35 ,
+        "at_second": 0,  # info: "at_second" : 0 ,
+        "description": "News Data cycle at :35 — poll RSS, four ~5min topic lanes, numbered TTS, Pacific stitch to news_update, radio_push to ML1.",  # info: "description"
+        "builtin": "",  # info: "builtin"
+        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/News/scripts/run_news_cycle.py\"",  # info: "command"
+        "timeout_sec": 1800,  # info: "timeout_sec" : 1800 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{PACIFIC}/Media/News/scripts",  # info: "cwd"
+        "env": {"RR_DATABASE_ROOT": DATABASE, "RR_NEWS_DATA_ROOT": f"{DATABASE}/Media/News Data", "RR_PACIFIC_ROOT": PACIFIC, "RR_RADIO_RSS_CONFIG": f"{ML1}/vendor/RadioRss/config"},  # info: "env"
+    },  # info: } ,
     # --- 35:05–35:09 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
     # --- 35:10–35:14 ---
@@ -2237,32 +2251,32 @@ EXACT_TIME = [  # info: set EXACT_TIME
     {  # info: {
         # hourly work at :30 or later.
         "id": "radio_rss_poll",  # info: "id" : "radio_rss_poll" ,
-        "enabled": os.environ.get("RR_RADIO_RSS", "0") == "1",
+        "enabled": False,  # info: retired — use news_cycle at :35
         "at_minute": 55,  # info: "at_minute" : 55 ,
         "at_second": 35,  # info: "at_second" : 35 ,
-        "description": "ML1 RadioRss poll → Database Media/RadioRss/ (ML1 tree only). Does not speak.",  # info: "description"
+        "description": "RETIRED — replaced by news_cycle at :35 (Media/News Data).",  # info: "description"
         "builtin": "",  # info: "builtin"
-        "command": f'bash "{ML1}/scripts/run-radio-rss.sh" poll',  # info: ML1 canonical
-        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
-        "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{ML1}",  # info: "cwd"
-        "env": {"RR_DATABASE_ROOT": DATABASE},  # info: bank into Pacific Database
+        "command": f'echo "retired radio_rss_poll → news_cycle"',  # info: retired
+        "timeout_sec": 5,  # info: "timeout_sec" : 5 ,
+        "needs_internet": False,  # info: "needs_internet" : False ,
+        "cwd": f"{PACIFIC}",  # info: "cwd"
+        "env": {},  # info: "env"
     },  # info: } ,
     # --- 55:40–55:44 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     {  # info: {
         # hourly work at :30 or later.
         "id": "radio_news_update",  # info: "id" : "radio_news_update" ,
-        "enabled": os.environ.get("RR_RADIO_NEWS", "0") == "1",
+        "enabled": False,  # info: retired — use news_cycle at :35
         "at_minute": 55,  # info: "at_minute" : 55 ,
         "at_second": 40,  # info: "at_second" : 40 ,
-        "description": "Hourly ~20-25 minute news update at :08 (universities, science, NVIDIA/big tech, world, mainland weather, centrist government/politics). Ava, Bruce, and Carly share airtime. Writes news_update_part1 and news_update_part2, Uploads part 1 and part 2 only.",  # info: "description"
+        "description": "RETIRED — replaced by news_cycle at :35 (four lanes, one stitched news_update).",  # info: "description"
         "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{ML1}/vendor/RadioRss/scripts/rss_radio.py\" news-hour --speak",  # info: ML1 vendor canonical
+        "command": f'echo "retired radio_news_update → news_cycle"',  # info: retired
         "timeout_sec": 5,  # info: "timeout_sec" : 5 ,
-        "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{ML1}/vendor/RadioRss",  # info: "cwd"
-        "env": {"RR_DATABASE_ROOT": DATABASE},  # info: Database bank
+        "needs_internet": False,  # info: "needs_internet" : False ,
+        "cwd": f"{PACIFIC}",  # info: "cwd"
+        "env": {},  # info: "env"
     },  # info: } ,
     # --- 55:45–55:49 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read

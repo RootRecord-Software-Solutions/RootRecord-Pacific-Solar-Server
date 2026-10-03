@@ -34,6 +34,9 @@ AUTOMATIONS_CURRENT = Path(  # info: set AUTOMATIONS_CURRENT
 AUTOMATIONS_ARCHIVE = Path(  # info: set AUTOMATIONS_ARCHIVE
     "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Logs/Automations/Archive"  # info: hourly archive folder
 )  # info: end AUTOMATIONS_ARCHIVE
+NEWS_DATA = Path(  # info: live RSS / news-lane bank
+    "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Media/News Data"
+)  # info: end NEWS_DATA
 
 
 # ====================================================
@@ -62,6 +65,54 @@ def archive_automations_log() -> str | None:  # info: def archive_automations_lo
 
 
 # ====================================================
+# SECTION: function archive_news_data
+# What it does: Zip live Media/News Data (except Archive/), then wipe so :35 poll is fresh.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def archive_news_data() -> str | None:  # info: def archive_news_data
+    """Zip the live News Data bank into Archive/, then recreate an empty skeleton."""  # info: docstring
+    import zipfile  # info: import zipfile
+
+    if not NEWS_DATA.is_dir():  # info: if not NEWS_DATA . is_dir ( )
+        return None  # info: return None
+    archive_dir = NEWS_DATA / "Archive"  # info: set archive_dir
+    archive_dir.mkdir(parents=True, exist_ok=True)  # info: archive_dir . mkdir
+    members = []  # info: set members
+    for path in NEWS_DATA.rglob("*"):  # info: for path in NEWS_DATA . rglob ( "*" )
+        if not path.is_file():  # info: if not path . is_file ( )
+            continue  # info: continue
+        try:  # info: try
+            path.relative_to(archive_dir)  # info: skip Archive/*
+            continue  # info: continue
+        except ValueError:  # info: except ValueError
+            pass  # info: pass
+        if path.name == "README.md":  # info: keep README
+            continue  # info: continue
+        members.append(path)  # info: members . append ( path )
+    if not members:  # info: if not members
+        return None  # info: return None
+    stamp = datetime.now(HST).strftime("%Y%m%dT%H%M%S")  # info: set stamp
+    dest = archive_dir / f"news_data_{stamp}.zip"  # info: set dest
+    if dest.exists():  # info: if dest . exists
+        stamp = datetime.now(HST).strftime("%Y%m%dT%H%M%S%f")  # info: set stamp
+        dest = archive_dir / f"news_data_{stamp}.zip"  # info: set dest
+    with zipfile.ZipFile(dest, "w", compression=zipfile.ZIP_DEFLATED) as zf:  # info: with zipfile . ZipFile
+        for path in members:  # info: for path in members
+            zf.write(path, arcname=str(path.relative_to(NEWS_DATA)))  # info: zf . write
+    for path in members:  # info: wipe live files that were zipped
+        try:  # info: try
+            path.unlink()  # info: path . unlink ( )
+        except OSError:  # info: except OSError
+            pass  # info: pass
+    for name in ("raw", "normalized", "processed"):  # info: recreate empty dirs
+        folder = NEWS_DATA / name  # info: set folder
+        if folder.is_dir():  # info: if folder . is_dir ( )
+            shutil.rmtree(folder, ignore_errors=True)  # info: shutil . rmtree
+        folder.mkdir(parents=True, exist_ok=True)  # info: folder . mkdir
+    return dest.name  # info: return dest . name
+
+
+# ====================================================
 # SECTION: function main
 # What it does: Run the minute roll-up or the hour roll-up from the first argument.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -76,12 +127,16 @@ def main(argv: list[str] | None = None) -> int:  # info: def main
     if mode in ("hours", "hour"):  # info: if mode is the hour roll-up
         count = condense_hours()  # info: set count
         archived = None  # info: set archived
+        news_zip = None  # info: set news_zip
         if datetime.now(HST).minute == 30:  # info: once an hour on the :30 hours job
             archived = archive_automations_log()  # info: call archive_automations_log
+            news_zip = archive_news_data()  # info: zip+wipe News Data for fresh :35 poll
+        bits = [f"SUMMARY=ecoflow_layers hours={count} json=periods.json"]  # info: set bits
         if archived:  # info: if archived
-            print(f"SUMMARY=ecoflow_layers hours={count} json=periods.json automations_log={archived}")  # info: call print
-        else:  # info: else
-            print(f"SUMMARY=ecoflow_layers hours={count} json=periods.json")  # info: call print
+            bits.append(f"automations_log={archived}")  # info: bits . append
+        if news_zip:  # info: if news_zip
+            bits.append(f"news_data={news_zip}")  # info: bits . append
+        print(" ".join(bits))  # info: call print
         return 0  # info: return 0
     print("usage: consolidate.py minutes|hours", file=sys.stderr)  # info: call print
     return 2  # info: return 2
