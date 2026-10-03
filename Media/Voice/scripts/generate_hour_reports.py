@@ -3,12 +3,11 @@
 
 Measured batch wall time (2026-10-03): ~8.6 minutes for all desks.
 jobs.py starts this at :42 by default. When the batch finishes it:
-  1. records wall + per-report seconds under Media/Audio/Voice/Timing/
-  2. updates running averages, then recalculates next start minute (keeps :42 unless averages need earlier)
-  3. radio_push --all to ML1 immediately (waits for transfer to finish)
-  4. deletes local .wav / .txt / .tx under Media/Audio/Voice/
-  5. renames this run's *_current.ogg to local HST time, zips to
+  1. radio_push --all to ML1 (waits for transfer to finish)
+  2. deletes local .wav / .txt / .tx under Media/Audio/Voice/
+  3. renames this run's *_current.ogg to local HST time, zips to
      Media/Audio/Voice/Archive/audio_reports_TIMESTAMP.zip, then removes the renamed oggs
+  4. only then records TOTAL wall time + averages under Timing/ and recalculates the next start minute
 
 :55 radio_push_hour remains a catch-up if this send missed (WAV kept when push is skipped/failed).
 
@@ -314,7 +313,9 @@ def _percentile(vals: list[float], pct: float) -> float | None:
 
 
 def record_timing(summary: dict) -> dict:
-    """Bank this run's durations and recompute averages for scheduling.
+    """Bank this run's TOTAL wall (generate→push→cleanup→archive) and recompute averages.
+
+    Call only after finalize — wall_seconds must already include the full pipeline.
 
     Writes:
       Media/Audio/Voice/Timing/hour_batch_current.json
@@ -522,13 +523,12 @@ def push_to_ml1() -> dict:
 def cleanup_intermediates() -> dict:
     """After a successful ML1 push, drop .wav / .txt / .tx under Media/Audio/Voice/.
 
-    Keeps .ogg, Timing JSON, Chimes/, Clips/, Archive/, and Reports/*.md.
+    Keeps .ogg (until finalize_archive), Timing JSON, Chimes/, Clips/, Archive/, Reports/*.md.
     """
     if os.environ.get("RR_VOICE_KEEP_WAV", "0") == "1":
         return {"ok": True, "skipped": True, "detail": "RR_VOICE_KEEP_WAV=1"}
     deleted: list[str] = []
     errors: list[str] = []
-    skip_dirs = {"Chimes", "Clips", "Archive", "Timing"}
     roots = [OUT_DIR]
     reports = OUT_DIR / "Reports"
     if reports.is_dir():
@@ -538,9 +538,6 @@ def cleanup_intermediates() -> dict:
             continue
         for path in root.iterdir():
             if not path.is_file():
-                continue
-            # Never walk into skip_dirs (iterdir is top-level only here).
-            if path.parent.name in skip_dirs:
                 continue
             suf = path.suffix.lower()
             if suf not in {".wav", ".txt", ".tx"}:
@@ -554,6 +551,75 @@ def cleanup_intermediates() -> dict:
         "ok": not errors,
         "deleted": len(deleted),
         "paths": deleted,
+        "errors": errors,
+    }
+
+
+def finalize_archive(report_ids: list[str]) -> dict:
+    """After transfer finishes: rename this run's *_current.ogg to local HST time, zip, remove.
+
+    Zip path: Media/Audio/Voice/Archive/audio_reports_YYYYMMDDTHHMMSS.zip
+    """
+    if os.environ.get("RR_VOICE_ARCHIVE", "1") != "1":
+        return {"ok": True, "skipped": True, "detail": "RR_VOICE_ARCHIVE=0"}
+    stamp = datetime.now(HST).strftime("%Y%m%dT%H%M%S")
+    ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
+    renamed: list[Path] = []
+    missing: list[str] = []
+    errors: list[str] = []
+
+    for report in report_ids:
+        src = OUT_DIR / f"{report}_current.ogg"
+        if not src.is_file():
+            missing.append(report)
+            continue
+        dest = OUT_DIR / f"{report}_{stamp}.ogg"
+        try:
+            src.rename(dest)
+            renamed.append(dest)
+        except OSError as exc:
+            errors.append(f"rename {src.name}: {exc}")
+
+    if not renamed:
+        return {
+            "ok": not errors,
+            "skipped": True,
+            "detail": "no_ogg_to_archive",
+            "stamp": stamp,
+            "missing": missing,
+            "errors": errors,
+        }
+
+    zip_path = ARCHIVE_DIR / f"audio_reports_{stamp}.zip"
+    try:
+        with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+            for path in renamed:
+                zf.write(path, arcname=path.name)
+    except OSError as exc:
+        return {
+            "ok": False,
+            "detail": f"zip_failed: {exc}",
+            "stamp": stamp,
+            "renamed": [str(p) for p in renamed],
+            "errors": errors,
+        }
+
+    removed: list[str] = []
+    for path in renamed:
+        try:
+            path.unlink()
+            removed.append(str(path))
+        except OSError as exc:
+            errors.append(f"unlink {path.name}: {exc}")
+
+    return {
+        "ok": not errors,
+        "stamp": stamp,
+        "zip": str(zip_path),
+        "bytes": zip_path.stat().st_size if zip_path.is_file() else 0,
+        "count": len(removed),
+        "archived": [Path(p).name for p in removed],
+        "missing": missing,
         "errors": errors,
     }
 
@@ -589,16 +655,8 @@ def main() -> int:
         "out": str(OUT_DIR),
         "passed": sum(1 for r in results if r.get("ok")),
         "failed": sum(1 for r in results if not r.get("ok")),
-        "wall_seconds": round(time.time() - t0, 1),
         "results": results,
     }
-    summary["timing"] = record_timing(summary)
-    print(json.dumps({"ok": True, "phase": "timing", **summary["timing"]}, ensure_ascii=False), flush=True)
-    summary["schedule"] = recalculate_start_time(summary["timing"])
-    print(
-        json.dumps({"ok": True, "phase": "schedule", **summary["schedule"]}, ensure_ascii=False),
-        flush=True,
-    )
 
     if args.no_push:
         summary["radio"] = {"ok": True, "skipped": True, "detail": "--no-push"}
@@ -609,10 +667,12 @@ def main() -> int:
         if not summary["radio"].get("ok") and not summary["radio"].get("skipped"):
             summary["ok"] = False
 
+    push_ok = bool(summary.get("radio", {}).get("ok")) and not summary.get("radio", {}).get("skipped")
+
     # Drop intermediates only after a real successful push (keep WAV for :55 catch-up otherwise).
     if args.keep_wav:
         summary["cleanup"] = {"ok": True, "skipped": True, "detail": "--keep-wav"}
-    elif summary.get("radio", {}).get("ok") and not summary.get("radio", {}).get("skipped"):
+    elif push_ok:
         print(json.dumps({"ok": True, "phase": "cleanup_begin"}), flush=True)
         summary["cleanup"] = cleanup_intermediates()
         print(json.dumps({"ok": True, "phase": "cleanup_done", **summary["cleanup"]}, ensure_ascii=False), flush=True)
@@ -622,6 +682,27 @@ def main() -> int:
             "skipped": True,
             "detail": "kept_wav_for_catchup",
         }
+
+    # Waited for transfer above; finalize rename + zip only after a successful push.
+    if push_ok:
+        report_ids = [r["report"] for r in results if r.get("ok") and r.get("report")]
+        print(json.dumps({"ok": True, "phase": "archive_begin", "count": len(report_ids)}), flush=True)
+        summary["archive"] = finalize_archive(report_ids)
+        print(json.dumps({"ok": True, "phase": "archive_done", **summary["archive"]}, ensure_ascii=False), flush=True)
+        if not summary["archive"].get("ok") and not summary["archive"].get("skipped"):
+            summary["ok"] = False
+    else:
+        summary["archive"] = {"ok": True, "skipped": True, "detail": "push_not_done"}
+
+    # Time tracking ends here — TOTAL wall includes generate + push + cleanup + archive.
+    summary["wall_seconds"] = round(time.time() - t0, 1)
+    summary["timing"] = record_timing(summary)
+    print(json.dumps({"ok": True, "phase": "timing", **summary["timing"]}, ensure_ascii=False), flush=True)
+    summary["schedule"] = recalculate_start_time(summary["timing"])
+    print(
+        json.dumps({"ok": True, "phase": "schedule", **summary["schedule"]}, ensure_ascii=False),
+        flush=True,
+    )
 
     summary_path = OUT_DIR / "generate_hour_reports_last.json"
     summary_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
