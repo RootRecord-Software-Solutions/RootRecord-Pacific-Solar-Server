@@ -5,7 +5,7 @@ Wants=bluetooth.service
 
 [Service]
 Type=simple
-ExecStart=/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/.venv/bin/python "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/ble/ble-hold.py" --device river2pro
+ExecStart=/usr/bin/bash -c 'exec "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/.venv/bin/python" "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/ble/ble-hold.py" --device river2pro'
 WorkingDirectory=/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy
 Restart=always
 RestartSec=5
