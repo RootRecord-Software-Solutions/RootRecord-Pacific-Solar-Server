@@ -31,11 +31,6 @@ def ensure_layers(db_path=None, layers_dir=None):  # info: def ensure_layers
         layer_conn.close()  # info: layer_conn . close ( )
 
 
-# ====================================================
-# SECTION: function condense_closed_periods
-# What it does: Create missing layer files, then condense closed periods.
-# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
-# ====================================================
 MINUTE_LAYERS = ("1sec", "1min", "5min", "15min")  # info: set MINUTE_LAYERS
 HOUR_LAYERS = ("1hour", "day", "7days", "month", "year")  # info: set HOUR_LAYERS
 

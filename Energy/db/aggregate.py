@@ -235,7 +235,7 @@ def consolidate_period(parent_conn, child_conn, layer, start, end, source_layer)
     run = parent_conn.execute("SELECT aggregation_run_id FROM aggregation_run WHERE layer=? AND period_start=? AND period_end=?",  # info: set run
                      (layer, period_start, period_end)).fetchone()[0]  # info: call (
     parent_conn.execute("DELETE FROM aggregate_measurement WHERE aggregation_run_id=?", (run,))  # info: parent_conn . execute ( "DELETE FROM aggregate_measurement WHERE aggregation_run_id=?" , ( run
-    rows = child_conn.execute("""SELECT am.subject_type, am.subject_id, am.metric_key, am.unit,
+    rows = list(child_conn.execute("""SELECT am.subject_type, am.subject_id, am.metric_key, am.unit,
                                         am.sample_count, am.valid_sample_count, am.coverage_pct,
                                         am.observed_span_s, am.valid_duration_s, am.value_avg, am.value_min,
                                         am.value_max, am.value_sum, am.value_delta, am.energy_wh, am.state
@@ -244,7 +244,11 @@ def consolidate_period(parent_conn, child_conn, layer, start, end, source_layer)
                                  WHERE ar.layer=? AND ar.status='complete'
                                    AND ar.period_start>=? AND ar.period_end<=?
                                  ORDER BY ar.period_start""",
-                              (source_layer, period_start, period_end)).fetchall()  # info: call (
+                              (source_layer, period_start, period_end)).fetchall())  # info: call (
+    if not rows:  # info: finer bucket is not ready; leave this one open
+        parent_conn.execute("DELETE FROM aggregation_run WHERE aggregation_run_id=?", (run,))  # info: parent_conn . execute
+        parent_conn.commit()  # info: parent_conn . commit ( )
+        return 0  # info: return 0
     grouped = {}  # info: set grouped
     for r in rows:  # info: for r in rows
         grouped.setdefault((r["subject_type"], r["subject_id"], r["metric_key"], r["unit"]), []).append(r)  # info: grouped . setdefault

@@ -338,6 +338,32 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "cwd": f"{PACIFIC}/Security/Cameras",  # info: "cwd"
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
+    {  # info: {
+        # every minute at second 0. Rolls 1sec into 1min, 5min, and 15min.
+        "id": "ecoflow_consolidate_minutes",  # info: "id" : "ecoflow_consolidate_minutes" ,
+        "enabled": True,  # info: "enabled" : True ,
+        "every_seconds": 60,  # info: "every_seconds" : 60 ,
+        "at_second": 0,  # info: "at_second" : 0 ,
+        "description": "Every minute at :00, roll closed EcoFlow samples into the 1min, 5min, and 15min buckets.",  # info: "description"
+        "builtin": "",  # info: "builtin"
+        "command": f"nice -n 10 python3 \"{PACIFIC}/Energy/scripts/consolidate_minutes.py\"",  # info: "command"
+        "timeout_sec": 120,  # info: "timeout_sec" : 120 ,
+        "cwd": f"{PACIFIC}/Energy",  # info: "cwd"
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
+    {  # info: {
+        # every minute at second 30. Rolls those buckets into the hour and above.
+        "id": "ecoflow_condense_hours",  # info: "id" : "ecoflow_condense_hours" ,
+        "enabled": True,  # info: "enabled" : True ,
+        "every_seconds": 60,  # info: "every_seconds" : 60 ,
+        "at_second": 30,  # info: "at_second" : 30 ,
+        "description": "Every minute at :30, roll closed EcoFlow buckets into the hour, day, week, month, and year.",  # info: "description"
+        "builtin": "",  # info: "builtin"
+        "command": f"nice -n 10 python3 \"{PACIFIC}/Energy/scripts/condense_hours.py\"",  # info: "command"
+        "timeout_sec": 120,  # info: "timeout_sec" : 120 ,
+        "cwd": f"{PACIFIC}/Energy",  # info: "cwd"
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
 
     # ---------- minute 00 of every hour ----------
     # --- 00:00–00:04 ---

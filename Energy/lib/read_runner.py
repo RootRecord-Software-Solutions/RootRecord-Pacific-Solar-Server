@@ -28,7 +28,7 @@ from paths import SAMPLES, SOC, WATTS, STATE_DIR, ensure_dirs  # noqa: E402
 from ble_client import connect, await_session, BleUnavailable, eflib_ready  # noqa: E402
 from config import device as device_cfg, load as load_conf  # noqa: E402
 from Energy.db.ingest import persist_eflow_device  # noqa: E402
-from Energy.db.condense import condense_closed_periods, ensure_layers  # noqa: E402
+from Energy.db.condense import ensure_layers  # noqa: E402
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 CLOUD_FALLBACK_SEC = 120  # info: set CLOUD_FALLBACK_SEC
@@ -552,7 +552,6 @@ def main() -> int:  # info: def main
     if device is not None:  # info: if device is not None :
         try:  # info: try :
             persist_eflow_device(device, alias, observed_at)  # info: call persist_eflow_device
-            condense_closed_periods()  # info: call condense_closed_periods
             db_ok = True  # info: set db_ok
         except Exception as e:  # info: except Exception as e :
             print(f"DB_ERROR: {type(e).__name__}: {e}", file=sys.stderr)  # info: call print
