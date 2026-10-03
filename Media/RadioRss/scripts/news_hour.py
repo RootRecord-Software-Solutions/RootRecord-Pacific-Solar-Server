@@ -21,7 +21,7 @@ from pathlib import Path  # info: from pathlib import Path
 from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 from common import DB, PACIFIC, iso, parse_iso, utc_now  # info: from common import DB , PACIFIC , iso , parse_iso , utc_now
-from pipeline import _publisher, nhc_spoken, nhc_story, poll_feed, speak_body  # info: from pipeline import _publisher , nhc_spoken , nhc_story , poll_feed , speak_body
+from pipeline import _publisher, nhc_spoken, nhc_story, speak_body  # info: from pipeline import _publisher , nhc_spoken , nhc_story , speak_body
 from registry import configured_on  # info: from registry import configured_on
 from stories import barred, deadline, sports, violent  # info: from stories import barred , deadline , sports , violent
 
@@ -272,19 +272,6 @@ def _source(story: dict) -> dict:  # info: def _source
 
 
 # ====================================================
-# SECTION: function _roundup_feeds
-# What it does: Feeds whose category is on a news-update desk.
-# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
-# ====================================================
-def _roundup_feeds(registry: dict) -> list[dict]:  # info: def _roundup_feeds
-    categories = set()  # info: set categories
-    for desk in (_cfg(registry).get("desks") or []):  # info: for desk in ( _cfg ( registry ) . get ( "desks" ) or [ ] )
-        if isinstance(desk, dict) and not desk.get("fill"):  # info: if isinstance ( desk , dict ) and not desk . get ( "fill" ) :
-            categories.update(desk.get("categories") or [])  # info: categories . update ( desk . get ( "categories" ) or [ ] )
-    return [feed for feed in registry["feeds"] if configured_on(feed) and feed.get("category") in categories]  # info: return [ feed for feed in registry [ "feeds" ] if configured_on ( feed ) and feed . get ( "category" ) in categories ]
-
-
-# ====================================================
 # SECTION: function _load
 # What it does: Read stories still inside the backfill window.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -466,19 +453,12 @@ def _archive_ids(conn, ids: list[str], when: str) -> None:  # info: def _archive
 
 # ====================================================
 # SECTION: function news_hour
-# What it does: Poll the news desks, write this hour's script, and optionally speak and upload it.
+# What it does: Build this hour's script from the stories already pulled at :05. It does not fetch feeds.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def news_hour(registry: dict, conn, speak: bool = False, root: Path | None = None) -> dict:  # info: def news_hour
     from common import ROOT  # info: from common import ROOT
-    from fetch import fetch_url  # info: from fetch import fetch_url
     base = root or ROOT  # info: set base
-    polled = []  # info: set polled
-    for feed in _roundup_feeds(registry):  # info: for feed in _roundup_feeds ( registry )
-        try:  # info: try
-            polled.append(poll_feed(registry, conn, feed, fetch_url, base))  # info: polled . append ( poll_feed ( registry , conn , feed , fetch_url , base ) )
-        except Exception:  # info: except Exception
-            polled.append({"feed": feed["id"], "ok": False})  # info: polled . append ( { "feed" : feed [ "id" ] , "ok" : False } )
     hours = float(_cfg(registry).get("backfill_hours") or 36)  # info: set hours
     loaded = _load(conn, iso(utc_now() - timedelta(hours=hours)))  # info: set loaded
     stamp = iso(utc_now())  # info: set stamp
@@ -499,7 +479,7 @@ def news_hour(registry: dict, conn, speak: bool = False, root: Path | None = Non
         "hour": built["hour"],  # info: "hour" : built [ "hour" ] ,
         "voices": [section["persona"] for section in built["sections"]],  # info: "voices" : [ section [ "persona" ] for section in built [ "sections" ] ] ,
         "script": str(path),  # info: "script" : str ( path ) ,
-        "polled": len(polled),  # info: "polled" : len ( polled ) ,
+        "polled": 0,  # info: feeds arrive at :05 only
         "stories": len(stories),  # info: "stories" : len ( stories ) ,
     }  # info: }
     if not speak:  # info: if not speak :

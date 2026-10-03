@@ -121,11 +121,11 @@ def violent(feed: dict, item: dict, registry: dict) -> bool:  # info: def violen
 
 # ====================================================
 # SECTION: function barred
-# What it does: Drop a story from a publisher or host that is off the station. The Guardian and the BBC are on this list.
+# What it does: Drop a story from a publisher, feed, or host that is off the station. The Guardian, the BBC, MarketWatch, the Hawaii broadcast desks, every NPR feed, and Justice are on this list.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def barred(feed: dict, item: dict, registry: dict) -> bool:  # info: def barred
-    text = f"{item.get('provider') or ''} {item.get('source_name') or ''} {feed.get('provider') or ''} {feed.get('name') or ''} {item.get('url') or ''} {item.get('canonical_url') or ''}"  # info: set text
+    text = f"{item.get('provider') or ''} {item.get('source_name') or ''} {item.get('source_id') or ''} {feed.get('id') or ''} {feed.get('provider') or ''} {feed.get('name') or ''} {item.get('url') or ''} {item.get('canonical_url') or ''}"  # info: set text
     return _hit(text, registry["policy"].get("blocked_sources") or [])  # info: return _hit
 
 

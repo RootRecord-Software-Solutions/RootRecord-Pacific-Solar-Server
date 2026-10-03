@@ -1043,31 +1043,6 @@ feeds:
     directory: https://www.federalreserve.gov/feeds/feeds.htm
     note: "The feeds page lists /feeds/press_all.xml. A fetch on 2026-10-01 returned HTTP 404, so it is not enabled."
 
-  - id: npr_news
-    name: NPR News
-    provider: NPR
-    category: global_news
-    type: rss
-    url: https://feeds.npr.org/1001/rss.xml
-    enabled: true
-    priority: high
-    native_overlap: false
-    origin: external
-    directory: https://www.npr.org/
-
-  - id: guardian_international
-    name: The Guardian International
-    provider: The Guardian
-    category: global_news
-    type: rss
-    url: https://www.theguardian.com/international/rss
-    enabled: false
-    priority: high
-    native_overlap: false
-    origin: external
-    directory: https://www.theguardian.com/international
-    note: "Off. The Guardian is not a RootRecord news source. Stored Guardian rows are dropped by blocked_sources."
-
   - id: aljazeera_all
     name: Al Jazeera
     provider: Al Jazeera
@@ -1141,31 +1116,6 @@ feeds:
     native_overlap: false
     origin: external
     directory: https://www.cftc.gov/RSS/RSSGP/rssgp.xml
-
-  - id: marketwatch_top
-    name: MarketWatch Top Stories
-    provider: MarketWatch
-    category: markets
-    type: rss
-    url: https://feeds.marketwatch.com/marketwatch/topstories/
-    enabled: true
-    priority: high
-    native_overlap: false
-    origin: external
-    directory: https://www.marketwatch.com/
-
-  - id: bbc_business
-    name: BBC Business
-    provider: BBC
-    category: markets
-    type: rss
-    url: https://feeds.bbci.co.uk/news/business/rss.xml
-    enabled: false
-    priority: high
-    native_overlap: false
-    origin: external
-    directory: https://www.bbc.com/news/business
-    note: "Sports URLs that leak into this feed are dropped."
 
   - id: cnbc_markets
     name: CNBC Markets
@@ -1345,49 +1295,6 @@ feeds:
     origin: external
     directory: https://health.hawaii.gov/news/
 
-  - id: civil_beat
-    name: Honolulu Civil Beat
-    provider: Honolulu Civil Beat
-    category: hawaii
-    type: rss
-    url: https://www.civilbeat.org/feed/
-    enabled: true
-    priority: high
-    native_overlap: false
-    nonviolent: true
-    origin: external
-    directory: https://www.civilbeat.org/
-
-  - id: star_advertiser
-    name: Honolulu Star-Advertiser
-    provider: Honolulu Star-Advertiser
-    category: hawaii
-    type: rss
-    url: https://www.staradvertiser.com/feed/
-    enabled: true
-    priority: high
-    native_overlap: false
-    nonviolent: true
-    origin: external
-    directory: https://www.staradvertiser.com/
-    note: "Sports items are dropped. Violent crime is dropped."
-
-  - id: hawaii_news_now
-    name: Hawaii News Now
-    provider: Hawaii News Now
-    category: hawaii
-    type: rss
-    url: https://www.hawaiinewsnow.com/arc/outboundfeeds/rss/
-    enabled: true
-    priority: medium
-    native_overlap: true
-    nonviolent: true
-    origin: overlapping
-    directory: https://www.hawaiinewsnow.com/
-    note: "Broadcast desk. Weather, quake, and volcano items are dropped. Violent crime is dropped. Sports items are dropped."
-
-  # --- Freed sports airtime: tech/chips, world (every continent), mainland weather, centrist mainland politics ---
-
   - id: microsoft_news
     name: Microsoft News
     provider: Microsoft
@@ -1412,129 +1319,6 @@ feeds:
     native_overlap: false
     origin: external
     directory: https://blogs.microsoft.com/
-
-  - id: bbc_technology
-    name: BBC Technology
-    provider: BBC
-    category: chips
-    type: rss
-    url: https://feeds.bbci.co.uk/news/technology/rss.xml
-    enabled: false
-    priority: medium
-    native_overlap: false
-    origin: external
-    directory: https://www.bbc.com/news/technology
-    note: "Chip and big-tech items. Sports URLs that leak in are dropped."
-
-  - id: bbc_world
-    name: BBC World
-    provider: BBC
-    category: global_news
-    type: rss
-    url: https://feeds.bbci.co.uk/news/world/rss.xml
-    enabled: false
-    priority: high
-    native_overlap: false
-    origin: external
-    directory: https://www.bbc.com/news/world
-
-  - id: bbc_asia
-    name: BBC Asia
-    provider: BBC
-    category: global_news
-    type: rss
-    url: https://feeds.bbci.co.uk/news/world/asia/rss.xml
-    enabled: false
-    priority: high
-    native_overlap: false
-    origin: external
-    directory: https://www.bbc.com/news/world/asia
-
-  - id: bbc_australia
-    name: BBC Australia
-    provider: BBC
-    category: global_news
-    type: rss
-    url: https://feeds.bbci.co.uk/news/world/australia/rss.xml
-    enabled: false
-    priority: high
-    native_overlap: false
-    origin: external
-    directory: https://www.bbc.com/news/world/australia
-    note: "Australia spelling retained in desk copy and publisher notes."
-
-  - id: bbc_africa
-    name: BBC Africa
-    provider: BBC
-    category: global_news
-    type: rss
-    url: https://feeds.bbci.co.uk/news/world/africa/rss.xml
-    enabled: false
-    priority: high
-    native_overlap: false
-    origin: external
-    directory: https://www.bbc.com/news/world/africa
-
-  - id: bbc_europe
-    name: BBC Europe
-    provider: BBC
-    category: global_news
-    type: rss
-    url: https://feeds.bbci.co.uk/news/world/europe/rss.xml
-    enabled: false
-    priority: high
-    native_overlap: false
-    origin: external
-    directory: https://www.bbc.com/news/world/europe
-
-  - id: bbc_latin_america
-    name: BBC Latin America
-    provider: BBC
-    category: global_news
-    type: rss
-    url: https://feeds.bbci.co.uk/news/world/latin_america/rss.xml
-    enabled: false
-    priority: high
-    native_overlap: false
-    origin: external
-    directory: https://www.bbc.com/news/world/latin_america
-
-  - id: bbc_middle_east
-    name: BBC Middle East
-    provider: BBC
-    category: global_news
-    type: rss
-    url: https://feeds.bbci.co.uk/news/world/middle_east/rss.xml
-    enabled: false
-    priority: high
-    native_overlap: false
-    origin: external
-    directory: https://www.bbc.com/news/world/middle_east
-
-  - id: bbc_us_canada
-    name: BBC US and Canada
-    provider: BBC
-    category: global_news
-    type: rss
-    url: https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml
-    enabled: false
-    priority: medium
-    native_overlap: false
-    origin: external
-    directory: https://www.bbc.com/news/world/us_and_canada
-    note: "North America world desk. Sports items are dropped."
-
-  - id: npr_world
-    name: NPR World
-    provider: NPR
-    category: global_news
-    type: rss
-    url: https://feeds.npr.org/1004/rss.xml
-    enabled: true
-    priority: high
-    native_overlap: false
-    origin: external
-    directory: https://www.npr.org/sections/world/
 
   - id: abc_australia_top
     name: ABC News Australia Top Stories
@@ -1699,48 +1483,6 @@ feeds:
     centrist: true
     origin: external
     directory: https://www.congress.gov/
-
-  - id: npr_national
-    name: NPR National
-    provider: NPR
-    category: mainland_politics
-    type: rss
-    url: https://feeds.npr.org/1003/rss.xml
-    enabled: true
-    priority: high
-    native_overlap: false
-    centrist: true
-    origin: external
-    directory: https://www.npr.org/sections/national/
-    note: "Measured national desk. Partisan phrasing is dropped."
-
-  - id: npr_politics
-    name: NPR Politics
-    provider: NPR
-    category: mainland_politics
-    type: rss
-    url: https://feeds.npr.org/1014/rss.xml
-    enabled: true
-    priority: high
-    native_overlap: false
-    centrist: true
-    origin: external
-    directory: https://www.npr.org/sections/politics/
-    note: "Centrist mainland politics. Sports items are dropped. Partisan phrasing is dropped."
-
-  - id: doj_news
-    name: Department of Justice News
-    provider: Department of Justice
-    category: mainland_politics
-    type: rss
-    url: https://www.justice.gov/news/rss
-    enabled: true
-    priority: high
-    native_overlap: false
-    centrist: true
-    origin: external
-    directory: https://www.justice.gov/news/
-    note: "Justice releases. FOIA calendar deadlines under /oip/event/ are dropped."
 
   - id: defense_gov
     name: U.S. Department of Defense News

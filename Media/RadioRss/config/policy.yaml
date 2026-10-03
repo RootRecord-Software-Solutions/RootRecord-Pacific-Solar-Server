@@ -9,15 +9,17 @@ fetch:
   max_bytes: 2000000
   user_agent: "RootRecord Radio RSS/1.0"
   max_redirects: 5
-  max_feeds_per_run: 24
+  # One list. The poller job runs at :05 and fetches every enabled feed in that pass.
+  max_feeds_per_run: 200
   max_items_per_feed: 20
   max_broadcast_age_hours: 36
   cluster_window_hours: 48
   similarity: 0.62
   unhealthy_after_failures: 5
+  list_interval_minutes: 60
   intervals_minutes:
-    high: 10
-    medium: 30
+    high: 60
+    medium: 60
     low: 60
 
 # Applied to every news feed. Native desks already cover quakes, volcanoes, and marine weather.
@@ -113,6 +115,33 @@ blocked_sources:
   - bbc.com
   - bbc.co.uk
   - "bbc"
+  - marketwatch.com
+  - marketwatch
+  - civilbeat.org
+  - "civil beat"
+  - staradvertiser.com
+  - "star-advertiser"
+  - hawaiinewsnow.com
+  - "hawaii news now"
+  - npr.org
+  - "npr"
+  - npr_news
+  - "npr news"
+  - feeds.npr.org/1001
+  - npr_world
+  - "npr world"
+  - feeds.npr.org/1004
+  - npr_national
+  - "npr national"
+  - npr.org/sections/national
+  - feeds.npr.org/1003
+  - npr_politics
+  - "npr politics"
+  - npr.org/sections/politics
+  - feeds.npr.org/1014
+  - justice.gov
+  - "department of justice"
+  - doj_news
 
 # Calendar deadlines, not news. The Justice FOIA board was read as a stack of "report due" lines.
 calendar_patterns:

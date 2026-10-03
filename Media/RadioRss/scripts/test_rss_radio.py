@@ -150,7 +150,7 @@ def test_pipeline() -> None:  # info: def test_pipeline
         _feed("native_desk", "http://feeds.test/nasa", origin="native", category="science"),  # info: _feed ( "native_desk" , "http://feeds.test/nasa" , origin = "native" , category = "science" ) ,
         _feed("bad_desk", "http://feeds.test/bad", provider="NIST", category="cybersecurity"),  # info: _feed ( "bad_desk" , "http://feeds.test/bad" , provider = "NIST" , category = "cybersecurity" ) ,
         _feed("cyber_desk", "http://feeds.test/cyber", provider="NIST", category="cybersecurity"),  # info: _feed ( "cyber_desk" , "http://feeds.test/cyber" , provider = "NIST" , category = "cybersecurity" ) ,
-        _feed("vote_desk", "http://feeds.test/vote", provider="NPR", category="global_news", priority="medium"),  # info: _feed ( "vote_desk" , "http://feeds.test/vote" , provider = "NPR" , category = "global_news" , priority = "medium" ) ,
+        _feed("vote_desk", "http://feeds.test/vote", provider="France 24", category="global_news", priority="medium"),  # info: _feed ( "vote_desk" , "http://feeds.test/vote" , provider = "France 24" , category = "global_news" , priority = "medium" ) ,
     ]  # info: ]
     registry = _registry(feeds)  # info: set registry
     conn = connect(root)  # info: set conn
@@ -177,7 +177,7 @@ def test_pipeline() -> None:  # info: def test_pipeline
         found = trace(conn, vote["id"])  # info: set found
         assert found["story"]["url"] == "https://news.test/vote"  # info: assert found [ "story" ] [ "url" ] == "https://news.test/vote"
         script = Path(found["queue"]["script_path"]).read_text(encoding="utf-8")  # info: set script
-        assert "NPR reports that" in script and "vote for" not in script.lower() and "https://news.test/vote" in script  # info: assert "NPR reports that" in script and "vote for" not in script . lower ( ) and "https://news.test/vote" in script
+        assert "France 24 reports that" in script and "vote for" not in script.lower() and "https://news.test/vote" in script  # info: assert vote sentence dropped
         board = health_report(registry, conn)  # info: set board
         labels = {row["id"]: row["status"] for row in board["feeds"]}  # info: set labels
         assert labels["bad_desk"] == "UNHEALTHY" and labels["nasa_desk"] == "HEALTHY"  # info: assert labels [ "bad_desk" ] == "UNHEALTHY" and labels [ "nasa_desk" ] == "HEALTHY"
@@ -245,7 +245,7 @@ def test_news_update() -> None:  # info: def test_news_update
     assert persona_for(0, 1, ("ava", "bruce", "carly")) == "bruce"  # info: assert persona_for ( 0 , 1 , ( "ava" , "bruce" , "carly" ) ) == "bruce"
     cfg = registry["policy"]["news_update"]  # info: set cfg
     assert int(cfg.get("target_words") or 0) >= 3000  # info: assert int ( cfg . get ( "target_words" ) or 0 ) >= 3000
-    hawaii = {"id": "hi", "nonviolent": True, "category": "hawaii", "provider": "Honolulu Civil Beat", "name": "Honolulu Civil Beat", "priority": "high"}  # info: set hawaii
+    hawaii = {"id": "hi", "nonviolent": True, "category": "hawaii", "provider": "Hawaii DBEDT", "name": "Hawaii DBEDT", "priority": "high"}  # info: set hawaii
     crime = {"title": "Shooting in Honolulu", "summary": "A man was killed.", "url": "https://news.test/crime", "guid": "crime"}  # info: set crime
     calm = {"title": "Harbor ferry schedule", "summary": "The state published a new timetable.", "url": "https://news.test/ferry", "guid": "ferry", "published_at": "2026-10-01T18:00:00Z"}  # info: set calm
     assert violent(hawaii, crime, registry) is True  # info: assert violent ( hawaii , crime , registry ) is True
@@ -263,12 +263,12 @@ def test_news_update() -> None:  # info: def test_news_update
     beer = {"title": "Sustainable beers", "summary": "Brewers cut packaging.", "url": "https://www.theguardian.com/food/beer", "guid": "beer", "provider": "The Guardian"}  # info: set beer
     assert barred(guardian, beer, registry) is True  # info: assert barred ( guardian , beer , registry ) is True
     assert normalize(guardian, beer, registry) is None  # info: assert normalize ( guardian , beer , registry ) is None
-    assert any(feed["id"] == "guardian_international" and not feed.get("enabled") for feed in registry["feeds"])  # info: assert guardian feed is off
+    assert all(feed["id"] != "guardian_international" for feed in registry["feeds"])  # info: assert guardian feed is gone
     bbc = {"id": "bbc", "category": "markets", "provider": "BBC", "name": "BBC Business", "priority": "high"}  # info: set bbc
     diesel = {"title": "G7 oil release", "summary": "Prices fell.", "url": "https://www.bbc.com/news/business/oil", "guid": "oil", "provider": "BBC"}  # info: set diesel
     assert barred(bbc, diesel, registry) is True  # info: assert barred ( bbc , diesel , registry ) is True
     assert normalize(bbc, diesel, registry) is None  # info: assert normalize ( bbc , diesel , registry ) is None
-    assert all(not feed.get("enabled") for feed in registry["feeds"] if str(feed.get("id") or "").startswith("bbc_"))  # info: assert every bbc feed is off
+    assert all(not str(feed.get("id") or "").startswith("bbc_") for feed in registry["feeds"])  # info: assert every bbc feed is gone
     advisory = "LOCATION...19.3N 111.1W ABOUT 260 MI...420 KM SSW OF THE SOUTHERN TIP OF BAJA CALIFORNIA MAXIMUM SUSTAINED WINDS...105 MPH...165 KM/H PRESENT MOVEMENT...W OR 265 DEGREES AT 5 MPH...7 KM/H ...RACHEL CONTINUES LASHING SOCORRO ISLAND AS IT MOVES SLOWLY WESTWARD..."  # info: set advisory
     said = nhc_spoken("Hurricane Rachel Public Advisory Number 23", advisory)  # info: set said
     assert "260 miles south-southwest" in said and "socorro island" in said.lower()  # info: assert place and headline
@@ -282,7 +282,18 @@ def test_news_update() -> None:  # info: def test_news_update
     assert deadline(doj, due, registry) is True  # info: assert deadline ( doj , due , registry ) is True
     assert normalize(doj, due, registry) is None  # info: assert normalize ( doj , due , registry ) is None
     assert deadline(doj, charge, registry) is False  # info: assert deadline ( doj , charge , registry ) is False
-    assert normalize(doj, charge, registry) is not None  # info: assert normalize ( doj , charge , registry ) is not None
+    assert barred(doj, charge, registry) is True  # info: assert justice is off
+    assert normalize(doj, charge, registry) is None  # info: assert normalize drops justice
+    watch = {"title": "Wage note", "summary": "Prices moved.", "url": "https://www.marketwatch.com/story/wages", "guid": "mw", "provider": "MarketWatch", "source_id": "marketwatch_top"}  # info: set watch
+    assert barred({"id": "marketwatch_top", "provider": "MarketWatch", "name": "MarketWatch Top Stories"}, watch, registry) is True  # info: assert marketwatch is off
+    npr_ok = {"title": "A research note", "summary": "A lab published a result.", "url": "https://www.npr.org/2026/10/02/research", "guid": "npr-ok", "provider": "NPR", "source_name": "NPR News", "source_id": "npr_news"}  # info: set npr_ok
+    assert barred({"id": "npr_news", "provider": "NPR", "name": "NPR News"}, npr_ok, registry) is True  # info: assert npr news is off
+    npr_world = {"title": "A world note", "summary": "A desk filed a note.", "url": "https://www.npr.org/2026/10/02/world", "guid": "npr-world", "provider": "NPR", "source_name": "NPR World", "source_id": "npr_world"}  # info: set npr_world
+    assert barred({"id": "npr_world", "provider": "NPR", "name": "NPR World"}, npr_world, registry) is True  # info: assert npr world is off
+    npr_nat = {"title": "A hearing", "summary": "A committee met.", "url": "https://www.npr.org/2026/10/02/hearing", "guid": "npr-nat", "provider": "NPR", "source_name": "NPR National", "source_id": "npr_national"}  # info: set npr_nat
+    assert barred({}, npr_nat, registry) is True  # info: assert npr national is off
+    gone = {"marketwatch_top", "civil_beat", "star_advertiser", "hawaii_news_now", "npr_news", "npr_world", "npr_national", "npr_politics", "doj_news", "guardian_international"}  # info: set gone
+    assert gone.isdisjoint({feed["id"] for feed in registry["feeds"]})  # info: assert those feeds are deleted
     campus = []  # info: set campus
     for index, (publisher, title) in enumerate([  # info: for index
         ("MIT News", "Warehouse dedication"), ("MIT News", "Endowment figures"), ("MIT News", "Computational tools"),  # info: three MIT items
@@ -327,7 +338,7 @@ def test_news_update() -> None:  # info: def test_news_update
     for index, category in enumerate(categories):  # info: for index , category in enumerate ( categories )
         for copy in range(8):  # info: for copy in range ( 8 )
             stories.append({  # info: stories . append ( {
-                "id": f"{category}-{copy}", "category": category, "provider": "NPR", "title": f"{category} item {copy} with a live figure {copy}",  # info: "id" : f"{ category }-{ copy }" , "category" : category , "provider" : "NPR" , "title" : f"{ category } item { copy } with a live figure { copy }" ,
+                "id": f"{category}-{copy}", "category": category, "provider": "France 24", "title": f"{category} item {copy} with a live figure {copy}",  # info: "id" : f"{ category }-{ copy }" , "category" : category , "provider" : "France 24" , "title" : f"{ category } item { copy } with a live figure { copy }" ,
                 "summary": long, "url": f"https://news.test/{category}/{copy}", "published_at": f"2026-10-01T{10 + (copy % 9):02d}:00:00Z",  # info: "summary" : long , "url" : f"https://news.test/{ category }/{ copy }" , "published_at" : f"2026-10-01T{ 10 + ( copy % 9 ) :02d }:00:00Z" ,
                 "priority": "high", "cluster_id": f"c-{category}-{copy}", "political": 0, "canonical_url": f"https://news.test/{category}/{copy}",  # info: "priority" : "high" , "cluster_id" : f"c-{ category }-{ copy }" , "political" : 0 , "canonical_url" : f"https://news.test/{ category }/{ copy }" ,
             })  # info: } )

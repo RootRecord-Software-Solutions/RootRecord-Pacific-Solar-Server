@@ -52,13 +52,16 @@ _NHC_DIR = {  # info: set _NHC_DIR
 def _minutes(feed: dict, policy: dict) -> int:  # info: def _minutes
     if feed.get("interval_minutes"):  # info: if feed . get ( "interval_minutes" ) :
         return int(feed["interval_minutes"])  # info: return int ( feed [ "interval_minutes" ] )
-    table = (policy.get("fetch") or {}).get("intervals_minutes") or {}  # info: set table
-    return int(table.get(feed.get("priority") or "medium", 30))  # info: return int ( table . get ( feed . get ( "priority" ) or "medium" , 30 ) )
+    fetch = policy.get("fetch") or {}  # info: set fetch
+    if fetch.get("list_interval_minutes") is not None:  # info: if one list interval
+        return int(fetch["list_interval_minutes"])  # info: return the list interval
+    table = fetch.get("intervals_minutes") or {}  # info: set table
+    return int(table.get(feed.get("priority") or "medium", 60))  # info: return int ( table . get ( feed . get ( "priority" ) or "medium" , 60 ) )
 
 
 # ====================================================
 # SECTION: function _due
-# What it does: Choose the configured feeds whose interval has elapsed. Highest priority goes first.
+# What it does: Return every enabled feed due for the one hourly list. Order is the feed file, not priority.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _due(registry: dict, conn, now) -> list[dict]:  # info: def _due
@@ -73,8 +76,7 @@ def _due(registry: dict, conn, now) -> list[dict]:  # info: def _due
         if last and now < last + timedelta(minutes=_minutes(feed, registry["policy"])):  # info: if last and now < last + timedelta ( minutes = _minutes ( feed , registry [ "policy" ] ) ) :
             continue  # info: continue
         chosen.append(feed)  # info: chosen . append ( feed )
-    chosen.sort(key=lambda feed: (-WEIGHT.get({"high": "high", "medium": "normal", "low": "low"}.get(feed["priority"], "normal"), 2), feed["id"]))  # info: chosen . sort ( key = lambda feed : ( - WEIGHT . get ( { "high" : "high" , "medium" : "normal" , "low" : "low" } . get ( feed [ "priority" ] , "normal" ) , 2 ) , feed [ "id" ] ) )
-    budget = int((registry["policy"].get("fetch") or {}).get("max_feeds_per_run") or 6)  # info: set budget
+    budget = int((registry["policy"].get("fetch") or {}).get("max_feeds_per_run") or 200)  # info: set budget
     return chosen[:budget]  # info: return chosen [ : budget ]
 
 

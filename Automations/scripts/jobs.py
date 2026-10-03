@@ -664,20 +664,6 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
         "env": {"RR_DISCORD_POST": "1"},  # info: "env" : { "RR_DISCORD_POST" : "1" } ,
     },  # info: } ,
     {  # info: {
-        # External RSS for RootRecord Radio. On when RR_RADIO_RSS=1. The poller script defaults that on.
-        # Polls the feed registry into the story queue. Does not speak, push audio, or change the broadcaster.
-        "id": "radio_rss_poll",  # info: "id" : "radio_rss_poll" ,
-        "enabled": os.environ.get("RR_RADIO_RSS", "0") == "1",  # info: "enabled" : os . environ . get ( "RR_RADIO_RSS" , "0" ) == "1" ,
-        "description": "Poll external RSS into the Radio story queue. Does not speak or push audio.",  # info: "description" : "Poll external RSS into the Radio story queue. Does not speak or push audio." ,
-        "interval_sec": 300,  # info: "interval_sec" : 300 ,
-        "builtin": "",  # info: "builtin" : "" ,
-        "command": f'nice -n 10 python3 "{PACIFIC}/Media/RadioRss/scripts/rss_radio.py" poll',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/RadioRss/scripts/rss_radio.py" poll ' ,
-        "timeout_sec": 600,  # info: "timeout_sec" : 600 ,
-        "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{PACIFIC}/Media/RadioRss",  # info: "cwd" : f" { PACIFIC } /Media/RadioRss " ,
-        "env": {},  # info: "env" : { } ,
-    },  # info: } ,
-    {  # info: {
         # Mainland site analytics mirror (2026-10-02). OFF unless RR_ANALYTICS_PULL=1 at poller start.
         # Prefer Logs/Website/analytics/pull-from-api.sh; writes daily/YYYY-MM-DD.json. No send.
         "id": "analytics_pull",  # info: "id" : "analytics_pull" ,
@@ -729,6 +715,20 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 EVERY_MINUTE = [  # info: set EVERY_MINUTE
+    {  # info: {
+        # External RSS for RootRecord Radio. On when RR_RADIO_RSS=1. The poller script defaults that on.
+        # One list: every enabled feed at :05. Does not speak, push audio, or change the broadcaster.
+        "id": "radio_rss_poll",  # info: "id" : "radio_rss_poll" ,
+        "enabled": os.environ.get("RR_RADIO_RSS", "0") == "1",  # info: "enabled" : os . environ . get ( "RR_RADIO_RSS" , "0" ) == "1" ,
+        "description": "Poll the full RSS feed list into the Radio story queue at :05. Does not speak or push audio.",  # info: "description"
+        "only_at_minutes": [5],  # info: "only_at_minutes" : [ 5 ] ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Media/RadioRss/scripts/rss_radio.py" poll',  # info: "command"
+        "timeout_sec": 1800,  # info: "timeout_sec" : 1800 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{PACIFIC}/Media/RadioRss",  # info: "cwd"
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
     {  # info: {
         # G3 voice (2026-09-29, g3-voice-ailog): first ported G1 voice report. OFF unless RR_VOICE_SYSTEM_PERF=1
         # is in the poller's environment at poller start. Text _current.md + stitched WAV; NO delivery.
