@@ -34,6 +34,18 @@ from Energy.db.latest import latest_for_alias  # noqa: E402
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 CLOUD_FALLBACK_SEC = 120  # info: set CLOUD_FALLBACK_SEC
 CLOUD_STALE_SEC = 300  # info: EcoFlow quota freezes when the phone app is closed; identical values past this are stale
+# Same board keys for samples, soc/watts last files, and Cloud-Quota — all rebuilt from rootrecord.db.
+BOARD_KEYS = (  # info: set BOARD_KEYS
+    "soc",  # info: soc
+    "ac_output_power",  # info: ac_output_power
+    "ac_input_power",  # info: ac_input_power
+    "solar_input_power",  # info: solar_input_power
+    "usbc_output_power",  # info: usbc_output_power
+    "usba_output_power",  # info: usba_output_power
+    "ac_ports",  # info: ac_ports
+    "usb_ports",  # info: usb_ports
+    "dc_12v_port",  # info: dc_12v_port
+)  # info: end BOARD_KEYS
 # A scan miss while the last BLE file is still this fresh must not be replaced by quota.
 BLE_HOLD_SEC = 180  # info: set BLE_HOLD_SEC
 # Inverter watts live in one heartbeat. These packs withhold that heartbeat while the AC outlet is off.
@@ -475,48 +487,60 @@ def _hold_last_ble(alias: str) -> bool:  # info: def _hold_last_ble
 
 
 # ====================================================
-# SECTION: function _write_last_from_db
-# What it does: Rebuild soc/watts last JSON from Energy/rootrecord.db after the row is stored.
+# SECTION: function _snap_from_db
+# What it does: Build the desk sample payload from Energy/rootrecord.db with the shared board keys.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def _write_last_from_db(alias: str, source: str, charge_source: str) -> None:  # info: def _write_last_from_db
+def _snap_from_db(alias: str, source: str, charge_source: str) -> dict | None:  # info: def _snap_from_db
     row = latest_for_alias(alias)  # info: set row
     if not row:  # info: if not row
-        return  # info: return
-    at = row.get("observed_at") or datetime.now(HST).isoformat(timespec="seconds")  # info: set at
-    if row.get("soc") is not None:  # info: if row . get ( "soc" ) is not None
-        (SOC / f"{alias}-last.json").write_text(  # info: write soc last file
-            json.dumps({"soc": row["soc"], "at": at, "source": source}, indent=2),  # info: json payload
+        return None  # info: return None
+    return {  # info: return
+        "alias": row.get("alias") or alias,  # info: alias from the db row
+        "fields": {key: row.get(key) for key in BOARD_KEYS},  # info: same keys as Cloud-Quota and BLE samples
+        "at": row.get("observed_at") or datetime.now(HST).isoformat(timespec="seconds"),  # info: observed_at from sqlite
+        "source": source,  # info: how this row was collected
+        "charge_source": charge_source,  # info: charge_source
+    }  # info: end snap
+
+
+# ====================================================
+# SECTION: function _write_json_from_db
+# What it does: Rebuild samples, soc/watts last files, and Cloud-Quota JSON from Energy/rootrecord.db only.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _write_json_from_db(alias: str, source: str, charge_source: str) -> dict | None:  # info: def _write_json_from_db
+    """Every Energy JSON artifact is rebuilt from rootrecord.db after the row is stored."""  # info: docstring
+    snap = _snap_from_db(alias, source, charge_source)  # info: set snap
+    if not snap:  # info: if not snap
+        return None  # info: return None
+    fields = snap["fields"]  # info: set fields
+    at = snap["at"]  # info: set at
+    if fields.get("soc") is not None:  # info: if fields . get ( "soc" ) is not None
+        (SOC / f"{alias}-last.json").write_text(  # info: write soc last from db
+            json.dumps({"soc": fields["soc"], "at": at, "source": source}, indent=2),  # info: json payload
             encoding="utf-8",  # info: encoding
         )  # info: end write
     watts = {  # info: set watts
-        k: row[k]  # info: copy measured watt
-        for k in ("ac_output_power", "ac_input_power", "usbc_output_power", "solar_input_power")  # info: watt keys
-        if row.get(k) is not None  # info: only measured
+        key: fields[key]  # info: keep 0 W; only skip missing
+        for key in ("ac_output_power", "ac_input_power", "usbc_output_power", "usba_output_power", "solar_input_power")  # info: watt keys
+        if fields.get(key) is not None  # info: only measured
     }  # info: end watts
     if watts:  # info: if watts
-        (WATTS / f"{alias}-last.json").write_text(  # info: write watts last file
+        (WATTS / f"{alias}-last.json").write_text(  # info: write watts last from db
             json.dumps({**watts, "at": at, "source": source, "charge_source": charge_source}, indent=2),  # info: json payload
             encoding="utf-8",  # info: encoding
         )  # info: end write
-
-
-# ====================================================
-# SECTION: function _write_sample
-# What it does: BLE samples stay in Energy/samples. A cloud read rebuilds Cloud-Quota JSON from the db.
-# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
-# ====================================================
-def _write_sample(snap: dict, alias: str, source: str) -> None:  # info: def _write_sample
-    """BLE samples stay in Energy/samples. A cloud read rebuilds Cloud-Quota JSON from the db."""  # info: docstring
-    if str(source).startswith("cloud"):  # info: cloud and cloud_stale both rebuild from the db
+    if str(source).startswith("cloud"):  # info: cloud path uses Cloud-Quota
         scripts = HERE.parent / "Cloud-Quota" / "scripts"  # info: set scripts
         if str(scripts) not in sys.path:  # info: if str ( scripts ) not in sys
             sys.path.insert(0, str(scripts))  # info: sys . path . insert ( 0 ,
         from store import write_cloud_snapshot  # info: from store import write_cloud_snapshot
         write_cloud_snapshot(snap=snap, alias=alias)  # info: rebuild Cloud-Quota JSON/log from rootrecord.db
-        return  # info: return
+        return snap  # info: return snap
     path = SAMPLES / f"read-{alias}-{datetime.now(HST).strftime('%Y%m%d-%H%M%S')}.json"  # info: set path
-    path.write_text(json.dumps(snap, indent=2), encoding="utf-8")  # info: path . write_text ( json . dumps (
+    path.write_text(json.dumps(snap, indent=2) + "\n", encoding="utf-8")  # info: BLE sample rebuilt from db
+    return snap  # info: return snap
 
 
 # ====================================================
@@ -648,11 +672,13 @@ def main() -> int:  # info: def main
         except Exception:  # info: except Exception :
             pass  # info: pass
 
-    # 5) Samples / last files are rebuilt from the db after the row is stored.
-    if not cloud_reused and db_ok:  # info: if not cloud_reused and db_ok
-        _write_last_from_db(alias, source, charge_source)  # info: call _write_last_from_db
-        if source != "none":  # info: if source != "none"
-            _write_sample(snap, alias, source)  # info: BLE sample file or Cloud-Quota rebuild from db
+    # 5) Samples / last files / Cloud-Quota are rebuilt from rootrecord.db only — never from the live dict.
+    db_snap = None  # info: set db_snap
+    if not cloud_reused and db_ok and source != "none":  # info: if not cloud_reused and db_ok and source != "none"
+        db_snap = _write_json_from_db(alias, source, charge_source)  # info: call _write_json_from_db
+        if db_snap is not None:  # info: if db_snap is not None
+            fields = db_snap["fields"]  # info: SUMMARY and STATUS use the db values
+            snap = db_snap  # info: set snap
         if source.startswith("cloud"):  # info: if source . startswith ( "cloud" )
             _save_cloud_cache(alias, fields, snap["at"])  # info: call _save_cloud_cache
     elif source == "cloud_stale":  # info: elif source == "cloud_stale"
