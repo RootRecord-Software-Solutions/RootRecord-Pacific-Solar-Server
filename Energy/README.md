@@ -47,7 +47,7 @@ Hardware Alexander intends to add later. These notes do not authorize a purchase
 | Python package | **`Energy`** — matches folder; rewrite G2 `import energy` → `import Energy` |
 | Launcher | `Energy/lib/py` — PYTHONPATH = vendor + Pacific root |
 | jobs.py | Pacific paths (quoted) |
-| Data | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/` (sqlite store: `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/RootRecord/`) |
+| Data | `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/` (`rootrecord.db` + `layers/`) |
 | Sun times | `scripts/sun_times.py` (G1 `hourly-solar-weather/sun_times.py` port, stdlib, Open-Meteo once per HST day) → Database `Energy/sun/sun-times-last.json`. Pacific hourly `energy_sun_times` was removed 2026-10-02. ML2 catalog has the name and no clock yet. LANDED · PASS one run 2026-09-29 13:26 HST |
 | Load categories | `scripts/load_categories.py [--input F]` (G1 `load-categories` logic verbatim + adapter from G3 BLE `Energy/watts` / `soc` last-files; sun state from `Energy/sun`). Prints Starlink / lights, house AC, transfer, E-Batt callout lines. On demand, writes nothing. Smoke PASS 2026-09-29 14:33 HST. Check-later: no USB-A / 12 V / car fields in G3 (`car_w`=0), thresholds; G1 `append_history` (deleted old logs) not ported |
 | Smart devices | `Smart-Devices/` — WiZ bulbs + Tuya BSD01 plugs (Wi-Fi, not BLE). Collector `smart_devices_collect` (EVERY_SECONDS 300 s) **gated OFF** (`RR_SMART_DEVICES=1`) → Database `Energy/Smart-Devices/*-last.json`. Plug control BLOCKED (no `local_key`). See `Smart-Devices/README.md`. LANDED 2026-09-29 13:30 HST |
