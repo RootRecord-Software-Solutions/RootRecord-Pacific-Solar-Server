@@ -14,13 +14,14 @@ from datetime import datetime, timezone  # info: from datetime import datetime ,
 from pathlib import Path  # info: from pathlib import Path
 from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
-from paths import SYSTEM_DB, ensure_dirs  # info: from paths import SYSTEM_DB , ensure_dirs
+from paths import CPU, LAST, LOAD, MEM, SAMPLES, SYSTEM_DB, ensure_dirs  # info: from paths import SYSTEM_DB , ensure_dirs
 
 # db helpers (skill root on path)
 _SKILL = Path(__file__).resolve().parents[1]  # info: set _SKILL
 if str(_SKILL) not in sys.path:  # info: if str ( _SKILL ) not in sys
     sys.path.insert(0, str(_SKILL))  # info: sys . path . insert ( 0 ,
 from db.store import persist_snapshot  # noqa: E402
+from db.latest import latest_snapshot  # noqa: E402
 
 LOCAL = ZoneInfo("Pacific/Honolulu")  # info: set LOCAL
 
@@ -131,11 +132,54 @@ def persist(snap):  # info: def persist
         ensure_layers()  # info: leave the layer files; consolidate.py owns the roll-up
         from status_json import write_status_json  # info: from status_json import write_status_json
         write_status_json()  # info: status json is built from system.db + layers/5min.db
+        _write_json_from_db()  # info: last-file JSON is rebuilt from system.db
         db_ok = True  # info: set db_ok
     except Exception as e:  # info: except Exception as e :
         print(f"DB_ERROR: {type(e).__name__}: {e}", file=sys.stderr)  # info: call print
 
     return SYSTEM_DB, db_ok  # info: return SYSTEM_DB , db_ok
+
+
+# ====================================================
+# SECTION: function _atomic_write
+# What it does: Write one JSON file atomically.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _atomic_write(path, obj):  # info: def _atomic_write
+    path.parent.mkdir(parents=True, exist_ok=True)  # info: path . parent . mkdir
+    tmp = path.with_suffix(path.suffix + ".tmp")  # info: set tmp
+    tmp.write_text(json.dumps(obj, indent=2) + "\n", encoding="utf-8")  # info: tmp . write_text
+    tmp.replace(path)  # info: tmp . replace
+
+
+# ====================================================
+# SECTION: function _write_json_from_db
+# What it does: Rebuild samples and host-last JSON from system.db after the row is stored.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _write_json_from_db() -> None:  # info: def _write_json_from_db
+    doc = latest_snapshot()  # info: set doc
+    if not doc:  # info: if not doc
+        return  # info: return
+    fields = doc.get("fields") or {}  # info: set fields
+    _atomic_write(SAMPLES / f"sys-{_local_stamp()}.json", doc)  # info: call _atomic_write
+    _atomic_write(LAST / "host-last.json", doc)  # info: call _atomic_write
+    cpu = fields.get("cpu_percent") or {}  # info: set cpu
+    _atomic_write(CPU / "host-last.json", {"cpu_percent": cpu.get("value"), "state": cpu.get("state"), "at": doc.get("at")})  # info: call _atomic_write
+    _atomic_write(LOAD / "host-last.json", {  # info: call _atomic_write
+        "load1": (fields.get("load1") or {}).get("value"),  # info: "load1"
+        "load5": (fields.get("load5") or {}).get("value"),  # info: "load5"
+        "load15": (fields.get("load15") or {}).get("value"),  # info: "load15"
+        "state": (fields.get("load1") or {}).get("state"),  # info: "state"
+        "at": doc.get("at"),  # info: "at"
+    })  # info: end load
+    _atomic_write(MEM / "host-last.json", {  # info: call _atomic_write
+        "mem_used_percent": (fields.get("mem_used_percent") or {}).get("value"),  # info: "mem_used_percent"
+        "mem_available_bytes": (fields.get("mem_available_bytes") or {}).get("value"),  # info: "mem_available_bytes"
+        "mem_total_bytes": (fields.get("mem_total_bytes") or {}).get("value"),  # info: "mem_total_bytes"
+        "state": (fields.get("mem_used_percent") or {}).get("state"),  # info: "state"
+        "at": doc.get("at"),  # info: "at"
+    })  # info: end mem
 
 # ====================================================
 # SECTION: function summary_line
