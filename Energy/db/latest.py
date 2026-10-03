@@ -144,18 +144,28 @@ def latest_for_alias(alias: str, db_path: Path | str = DEFAULT_DB_PATH) -> Optio
                 "soc": esoc if estate not in ("missing", "not_applicable", None) else None,  # info: "soc" : esoc if estate not in (
             })  # info: } )
 
+        def first_measured(*values: Any) -> Any:  # info: def first_measured
+            for value in values:  # info: for value in values
+                if value is not None:  # info: keep 0.0 watts; only skip missing
+                    return value  # info: return value
+            return None  # info: return None
+
         return {  # info: return {
             "alias": dev_alias or alias,  # info: "alias" : dev_alias or alias ,
             "sn": sn,  # info: "sn" : sn ,
             "model": model,  # info: "model" : model ,
             "observed_at": observed_at,  # info: "observed_at" : observed_at ,
             "soc": soc,  # info: "soc" : soc ,
-            "ac_output_power": electrical("ac_output") or measured("device_measurement", "ac_output_power"),  # info: "ac_output_power" : electrical ( "ac_output" ) or measured
+            "ac_output_power": first_measured(electrical("ac_output"), measured("device_measurement", "ac_output_power")),  # info: same board key as BLE
             "ac_input_power": electrical("ac_input"),  # info: "ac_input_power" : electrical ( "ac_input" ) ,
-            "solar_input_power": electrical("solar_input") or electrical("xt60_input"),  # info: "solar_input_power" : electrical ( "solar_input" ) or electrical
+            "solar_input_power": first_measured(electrical("solar_input"), electrical("xt60_input")),  # info: 0 W stays 0 W
             "usbc_output_power": electrical("usb_c_1"),  # info: "usbc_output_power" : electrical ( "usb_c_1" ) ,
-            "input_power": electrical("input_total") or measured("device_measurement", "input_power"),  # info: "input_power" : electrical ( "input_total" ) or measured
-            "output_power": electrical("output_total") or measured("device_measurement", "output_power"),  # info: "output_power" : electrical ( "output_total" ) or measured
+            "usba_output_power": electrical("usb_a_1"),  # info: same board key as BLE
+            "ac_ports": measured("device_measurement", "ac_ports"),  # info: same board key as BLE
+            "usb_ports": measured("device_measurement", "usb_ports"),  # info: same board key as BLE
+            "dc_12v_port": measured("device_measurement", "dc_12v_port"),  # info: same board key as BLE
+            "input_power": first_measured(electrical("input_total"), measured("device_measurement", "input_power")),  # info: 0 W stays 0 W
+            "output_power": first_measured(electrical("output_total"), measured("device_measurement", "output_power")),  # info: 0 W stays 0 W
             "expansions": expansions,  # info: "expansions" : expansions ,
             "source": "sqlite",  # info: "source" : "sqlite" ,
         }  # info: }

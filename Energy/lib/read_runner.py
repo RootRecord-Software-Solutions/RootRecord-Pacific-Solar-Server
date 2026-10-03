@@ -33,6 +33,7 @@ from Energy.db.latest import latest_for_alias  # noqa: E402
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 CLOUD_FALLBACK_SEC = 120  # info: set CLOUD_FALLBACK_SEC
+CLOUD_STALE_SEC = 300  # info: EcoFlow quota freezes when the phone app is closed; identical values past this are stale
 # A scan miss while the last BLE file is still this fresh must not be replaced by quota.
 BLE_HOLD_SEC = 180  # info: set BLE_HOLD_SEC
 # Inverter watts live in one heartbeat. These packs withhold that heartbeat while the AC outlet is off.
@@ -344,7 +345,61 @@ def _read_api(alias: str) -> dict:  # info: def _read_api
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _cloud_cache_path(alias: str) -> Path:  # info: def _cloud_cache_path
-    return STATE_DIR / f"cloud-fallback-{alias}.json"  # info: return STATE_DIR / f" cloud-fallback- { alias } .json"
+    return STATE_DIR / f"cloud-fallback-{alias}.json"  # info: return STATE_DIR / f" cloud-fallback- { alias } .json
+
+
+# ====================================================
+# SECTION: function _cloud_fingerprint_path
+# What it does: Track how long the EcoFlow quota payload has been unchanged for this alias.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _cloud_fingerprint_path(alias: str) -> Path:  # info: def _cloud_fingerprint_path
+    return STATE_DIR / f"cloud-fingerprint-{alias}.json"  # info: return STATE_DIR / f" cloud-fingerprint- { alias } .json
+
+
+# ====================================================
+# SECTION: function _board_fingerprint
+# What it does: Compact board values used to spot a frozen EcoFlow cloud payload.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _board_fingerprint(fields: dict) -> list:  # info: def _board_fingerprint
+    return [  # info: return [
+        fields.get(key)  # info: fields . get ( key )
+        for key in (  # info: for key in (
+            "soc",  # info: soc
+            "ac_output_power",  # info: ac_output_power
+            "ac_input_power",  # info: ac_input_power
+            "solar_input_power",  # info: solar_input_power
+            "usbc_output_power",  # info: usbc_output_power
+            "usba_output_power",  # info: usba_output_power
+            "ac_ports",  # info: ac_ports
+        )  # info: end keys
+    ]  # info: ]
+
+
+# ====================================================
+# SECTION: function _note_cloud_fingerprint
+# What it does: Remember when this exact cloud board payload first appeared. Returns True when it is stale.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _note_cloud_fingerprint(alias: str, fields: dict) -> bool:  # info: def _note_cloud_fingerprint
+    """EcoFlow only refreshes quota while the phone app is open. Identical values past CLOUD_STALE_SEC are stale."""  # info: docstring
+    fp = _board_fingerprint(fields)  # info: set fp
+    path = _cloud_fingerprint_path(alias)  # info: set path
+    now = time.time()  # info: set now
+    first_seen = now  # info: set first_seen
+    try:  # info: try
+        if path.is_file():  # info: if path . is_file
+            data = json.loads(path.read_text(encoding="utf-8"))  # info: set data
+            if data.get("fingerprint") == fp:  # info: if data . get ( "fingerprint" ) == fp
+                first_seen = float(data.get("first_seen_epoch") or now)  # info: set first_seen
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):  # info: except parse/IO
+        first_seen = now  # info: set first_seen
+    path.write_text(  # info: path . write_text
+        json.dumps({"alias": alias, "fingerprint": fp, "first_seen_epoch": first_seen, "at_epoch": now}),  # info: json payload
+        encoding="utf-8",  # info: encoding
+    )  # info: end write
+    return (now - first_seen) >= CLOUD_STALE_SEC  # info: return True when frozen past the stale window"
 
 
 # ====================================================
@@ -453,12 +508,12 @@ def _write_last_from_db(alias: str, source: str, charge_source: str) -> None:  #
 # ====================================================
 def _write_sample(snap: dict, alias: str, source: str) -> None:  # info: def _write_sample
     """BLE samples stay in Energy/samples. A cloud read rebuilds Cloud-Quota JSON from the db."""  # info: docstring
-    if source == "cloud":  # info: if source == "cloud" :
+    if str(source).startswith("cloud"):  # info: cloud and cloud_stale both rebuild from the db
         scripts = HERE.parent / "Cloud-Quota" / "scripts"  # info: set scripts
         if str(scripts) not in sys.path:  # info: if str ( scripts ) not in sys
             sys.path.insert(0, str(scripts))  # info: sys . path . insert ( 0 ,
         from store import write_cloud_snapshot  # info: from store import write_cloud_snapshot
-        write_cloud_snapshot(alias=alias)  # info: rebuild Cloud-Quota JSON/log from rootrecord.db
+        write_cloud_snapshot(snap=snap, alias=alias)  # info: rebuild Cloud-Quota JSON/log from rootrecord.db
         return  # info: return
     path = SAMPLES / f"read-{alias}-{datetime.now(HST).strftime('%Y%m%d-%H%M%S')}.json"  # info: set path
     path.write_text(json.dumps(snap, indent=2), encoding="utf-8")  # info: path . write_text ( json . dumps (
@@ -553,6 +608,10 @@ def main() -> int:  # info: def main
                 print("STATUS=WAITING")  # info: call print
                 return 2  # info: return 2
 
+    # 2b) EcoFlow cloud freezes when the phone app is closed. Do not treat a frozen quota as live.
+    if source == "cloud" and _note_cloud_fingerprint(alias, fields):  # info: if the quota board values have not moved
+        source = "cloud_stale"  # info: set source
+
     # 3) Charge source
     other_outs = _collect_other_ac_outs(alias)  # info: set other_outs
     charge_source = derive_charge_source(fields, source, other_outs, alias)  # info: set charge_source
@@ -571,13 +630,14 @@ def main() -> int:  # info: def main
     }  # info: }
 
     # 4) Persist into Energy/rootrecord.db. Cloud and BLE both land here before any JSON is rewritten.
+    #    cloud_stale is not written into the averages path — frozen app-closed quota is not a new sample.
     db_ok = False  # info: set db_ok
     try:  # info: try :
         ensure_layers()  # info: call ensure_layers
         if device is not None:  # info: if device is not None
             persist_eflow_device(device, alias, observed_at)  # info: call persist_eflow_device
             db_ok = True  # info: set db_ok
-        elif _has_data(fields):  # info: elif the cloud path has measured fields
+        elif source != "cloud_stale" and _has_data(fields):  # info: elif live cloud or BLE-shaped fields
             persist_eflow_fields(fields, alias, observed_at, source=source)  # info: call persist_eflow_fields
             db_ok = True  # info: set db_ok
     except Exception as e:  # info: except Exception as e :
@@ -593,14 +653,22 @@ def main() -> int:  # info: def main
         _write_last_from_db(alias, source, charge_source)  # info: call _write_last_from_db
         if source != "none":  # info: if source != "none"
             _write_sample(snap, alias, source)  # info: BLE sample file or Cloud-Quota rebuild from db
-        if source == "cloud":  # info: if source == "cloud"
+        if source.startswith("cloud"):  # info: if source . startswith ( "cloud" )
             _save_cloud_cache(alias, fields, snap["at"])  # info: call _save_cloud_cache
+    elif source == "cloud_stale":  # info: elif source == "cloud_stale"
+        _save_cloud_cache(alias, fields, snap["at"])  # info: keep throttle cache warm without pretending it is live
 
     # 6) Console
     if not _is_internal_only(alias):  # info: if not _is_internal_only ( alias ) :
         print(_summary_line(alias, fields, db_ok, source, charge_source, ble_err))  # info: call print
     else:  # info: else :
         print(f"INTERNAL={alias} soc={fields.get('soc')} src={source} charge={charge_source}")  # info: call print
+
+    if source == "cloud_stale":  # info: if source == "cloud_stale"
+        print("WAITING")  # info: call print
+        print("No data — EcoFlow cloud frozen (open the phone app to refresh quota); BLE: " + (ble_err or "skipped"))  # info: call print
+        print("STATUS=WAITING")  # info: call print
+        return 2  # info: return 2
 
     if not _has_data(fields):  # info: if not _has_data ( fields ) :
         print("WAITING")  # info: call print

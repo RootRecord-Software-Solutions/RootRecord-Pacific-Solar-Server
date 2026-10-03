@@ -194,6 +194,7 @@ def persist_eflow_device(device: Any, alias: str, observed_at: str) -> int:  # i
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def persist_eflow_fields(fields: dict, alias: str, observed_at: str, source: str = "cloud") -> int:  # info: def persist_eflow_fields
+    """Persist the same board field set BLE uses (soc/watts/ports). Cloud cannot invent missing keys."""  # info: docstring
     conn = connect()  # info: set conn
     try:  # info: try
         initialize_schema(conn)  # info: call initialize_schema
@@ -219,11 +220,12 @@ def persist_eflow_fields(fields: dict, alias: str, observed_at: str, source: str
         primary = upsert_battery(conn, device_id=device_id, battery_role="primary", battery_slot=0, serial_number=None, enabled=True, observed_at=observed_at)  # info: set primary
         soc = fields.get("soc")  # info: set soc
         add_battery_measurement(conn, observation_id=observation_id, battery_id=primary, metric_key="soc_percent", value=soc, unit="%", state="measured" if soc is not None else "missing")  # info: call add_battery_measurement
-        for key, channel in (  # info: for key , channel
+        for key, channel in (  # info: same watt channels the board reads from BLE
             ("ac_output_power", "ac_output"),  # info: AC out
             ("ac_input_power", "ac_input"),  # info: AC in
             ("solar_input_power", "solar_input"),  # info: solar
             ("usbc_output_power", "usb_c_1"),  # info: USB-C
+            ("usba_output_power", "usb_a_1"),  # info: USB-A
         ):  # info: end map
             value = fields.get(key)  # info: set value
             add_electrical_measurement(conn, observation_id=observation_id, channel=channel, metric_key="power_w", value=value, unit="W", state="measured" if value is not None else "missing")  # info: call add_electrical_measurement
@@ -231,7 +233,16 @@ def persist_eflow_fields(fields: dict, alias: str, observed_at: str, source: str
         solar = fields.get("solar_input_power")  # info: set solar
         add_device_measurement(conn, observation_id=observation_id, metric_key="output_power", value=out, unit="W", state="measured" if out is not None else "missing")  # info: call add_device_measurement
         add_device_measurement(conn, observation_id=observation_id, metric_key="input_power", value=solar, unit="W", state="measured" if solar is not None else "missing")  # info: call add_device_measurement
-        insert_raw_payload(conn, observation_id=observation_id, payload_format="cloud_fields", payload=json.dumps({"alias": alias, "source": source, "fields": {k: fields.get(k) for k in ("soc", "ac_output_power", "ac_input_power", "solar_input_power", "usbc_output_power")}}, separators=(",", ":")), parser_name="RootRecord EcoFlow cloud ingest", parser_version="1")  # info: call insert_raw_payload
+        board_keys = ("soc", "ac_output_power", "ac_input_power", "solar_input_power", "usbc_output_power", "usba_output_power", "ac_ports", "usb_ports", "dc_12v_port")  # info: set board_keys
+        for key in ("ac_ports", "usb_ports", "dc_12v_port"):  # info: for key in port switches
+            value = fields.get(key)  # info: set value
+            add_device_measurement(conn, observation_id=observation_id, metric_key=key, value=value, unit=None, state="measured" if value is not None else "missing")  # info: call add_device_measurement
+        for ptype, key in (("ac", "ac_ports"), ("usb", "usb_ports"), ("dc12v", "dc_12v_port")):  # info: for ptype , key
+            if fields.get(key) is None:  # info: if fields . get ( key ) is None
+                continue  # info: continue
+            pid = _ensure_port(conn, device_id, ptype)  # info: set pid
+            add_port_measurement(conn, observation_id=observation_id, port_id=pid, metric_key="enabled", value=fields.get(key), state="measured")  # info: call add_port_measurement
+        insert_raw_payload(conn, observation_id=observation_id, payload_format="cloud_fields", payload=json.dumps({"alias": alias, "source": source, "fields": {k: fields.get(k) for k in board_keys}}, separators=(",", ":")), parser_name="RootRecord EcoFlow cloud ingest", parser_version="1")  # info: call insert_raw_payload
         conn.commit()  # info: conn . commit
         return observation_id  # info: return observation_id
     except Exception:  # info: except Exception

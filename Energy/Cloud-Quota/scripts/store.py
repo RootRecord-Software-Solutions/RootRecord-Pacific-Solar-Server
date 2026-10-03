@@ -27,6 +27,17 @@ from paths import CLOUD_QUOTA, CLOUD_QUOTA_LOG  # noqa: E402
 from Energy.db.latest import latest_for_alias  # noqa: E402
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
+BOARD_KEYS = (  # info: same keys BLE samples use on the desk
+    "soc",  # info: soc
+    "ac_output_power",  # info: ac_output_power
+    "ac_input_power",  # info: ac_input_power
+    "solar_input_power",  # info: solar_input_power
+    "usbc_output_power",  # info: usbc_output_power
+    "usba_output_power",  # info: usba_output_power
+    "ac_ports",  # info: ac_ports
+    "usb_ports",  # info: usb_ports
+    "dc_12v_port",  # info: dc_12v_port
+)  # info: end BOARD_KEYS
 
 
 # ====================================================
@@ -44,20 +55,15 @@ def write_cloud_snapshot(snap: dict | None = None, alias: str | None = None) -> 
     CLOUD_QUOTA_LOG.mkdir(parents=True, exist_ok=True)  # info: CLOUD_QUOTA_LOG . mkdir
     stamp = datetime.now(HST).strftime("%Y%m%d-%H%M%S")  # info: set stamp
     path = CLOUD_QUOTA / f"read-{name}-{stamp}.json"  # info: set path
+    source = (snap or {}).get("source") or "cloud"  # info: set source
     payload = {  # info: set payload
         "alias": row.get("alias") or name,  # info: "alias"
         "at": row.get("observed_at"),  # info: "at"
-        "source": "cloud",  # info: "source"
-        "fields": {  # info: "fields"
-            "soc": row.get("soc"),  # info: "soc"
-            "ac_output_power": row.get("ac_output_power"),  # info: "ac_output_power"
-            "ac_input_power": row.get("ac_input_power"),  # info: "ac_input_power"
-            "solar_input_power": row.get("solar_input_power"),  # info: "solar_input_power"
-            "usbc_output_power": row.get("usbc_output_power"),  # info: "usbc_output_power"
-        },  # info: end fields
+        "source": source,  # info: "source"
+        "fields": {key: row.get(key) for key in BOARD_KEYS},  # info: same board field set as BLE
     }  # info: end payload
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")  # info: path . write_text
-    line = f"{payload['at']} alias={name} source=cloud soc={payload['fields'].get('soc')}\n"  # info: set line
+    line = f"{payload['at']} alias={name} source={source} soc={payload['fields'].get('soc')}\n"  # info: set line
     with (CLOUD_QUOTA_LOG / "quota.log").open("a", encoding="utf-8") as fh:  # info: with quota.log
         fh.write(line)  # info: fh . write
     return path  # info: return path
