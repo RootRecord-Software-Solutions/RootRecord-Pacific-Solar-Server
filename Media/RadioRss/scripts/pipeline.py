@@ -25,9 +25,15 @@ from store import (  # info: from store import (
     ensure_cluster,  # info: ensure_cluster ,
     feed_row,  # info: feed_row ,
     items_today,  # info: items_today ,
+    list_pull_dir,  # info: list_pull_dir ,
+    make_pull_id,  # info: make_pull_id ,
     recent_stories,  # info: recent_stories ,
     save_feed,  # info: save_feed ,
+    save_pull,  # info: save_pull ,
+    scripts_dir,  # info: scripts_dir ,
+    state_dir,  # info: state_dir ,
     upsert_story,  # info: upsert_story ,
+    write_pull_manifest,  # info: write_pull_manifest ,
     write_raw,  # info: write_raw ,
     write_story,  # info: write_story ,
 )  # info: )
@@ -134,13 +140,18 @@ def _cluster_for(conn, story: dict, registry: dict) -> str:  # info: def _cluste
 # What it does: Store one normalized story and count whether it was new or a duplicate.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def _accept(conn, story: dict, registry: dict, root: Path) -> str:  # info: def _accept
+def _accept(conn, story: dict, registry: dict, root: Path, pull_id: str = "") -> str:  # info: def _accept
     if not fresh(story, registry):  # info: if not fresh ( story , registry ) :
         story["status"] = "archived"  # info: story [ "status" ] = "archived"
     story["cluster_id"] = _cluster_for(conn, story, registry) if story["status"] == "new" else ""  # info: story [ "cluster_id" ] = _cluster_for ( conn , story , registry ) if story [ "status" ] == "new" else ""
+    if pull_id:  # info: if pull_id :
+        story["pull_id"] = pull_id  # info: story [ "pull_id" ] = pull_id
     kind = upsert_story(conn, story)  # info: set kind
     if kind == "new":  # info: if kind == "new" :
-        write_story(story, root)  # info: write_story ( story , root )
+        write_story(story, root, pull_id=pull_id)  # info: write_story under the list pull
+        if story.get("file_path"):  # info: if story . get ( "file_path" ) :
+            conn.execute("UPDATE stories SET file_path=? WHERE id=?", (story["file_path"], story["id"]))  # info: save relative path
+            conn.commit()  # info: conn . commit ( )
         if story["cluster_id"]:  # info: if story [ "cluster_id" ] :
             ensure_cluster(conn, story, story["cluster_id"])  # info: ensure_cluster ( conn , story , story [ "cluster_id" ] )
     return kind  # info: return kind
@@ -151,8 +162,9 @@ def _accept(conn, story: dict, registry: dict, root: Path) -> str:  # info: def 
 # What it does: Fetch and store one feed. Any error is recorded. It does not escape to the caller.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def poll_feed(registry: dict, conn, feed: dict, fetcher, root: Path) -> dict:  # info: def poll_feed
+def poll_feed(registry: dict, conn, feed: dict, fetcher, root: Path, pull_id: str = "") -> dict:  # info: def poll_feed
     previous = feed_row(conn, feed["id"])  # info: set previous
+    stamp = pull_id or make_pull_id()  # info: set stamp
     try:  # info: try
         result = fetcher(feed["url"], registry["policy"], previous.get("etag") or "", previous.get("last_modified") or "")  # info: set result
     except Exception as exc:  # info: except Exception as exc
@@ -186,11 +198,12 @@ def poll_feed(registry: dict, conn, feed: dict, fetcher, root: Path) -> dict:  #
     except ValueError as exc:  # info: except ValueError as exc
         _fail(conn, feed, previous, registry, str(exc), int(result.get("status") or 0), int(result.get("latency_ms") or 0))  # info: _fail ( conn , feed , previous , registry , str ( exc ) , int ( result . get ( "status" ) or 0 ) , int ( result . get ( "latency_ms" ) or 0 ) )
         return {"feed": feed["id"], "ok": False}  # info: return { "feed" : feed [ "id" ] , "ok" : False }
-    write_raw(feed, result.get("body") or b"", root)  # info: write_raw ( feed , result . get ( "body" ) or b"" , root )
+    write_raw(feed, result.get("body") or b"", root, pull_id=stamp)  # info: write_raw under the list pull
     limit = int((registry["policy"].get("fetch") or {}).get("max_items_per_feed") or 20)  # info: set limit
     newest = ""  # info: set newest
     received = 0  # info: set received
     duplicates = 0  # info: set duplicates
+    new_count = 0  # info: set new_count
     for item in items[:limit]:  # info: for item in items [ : limit ]
         received += 1  # info: set received
         story = normalize(feed, item, registry)  # info: set story
@@ -198,8 +211,10 @@ def poll_feed(registry: dict, conn, feed: dict, fetcher, root: Path) -> dict:  #
             continue  # info: continue
         if (story.get("published_at") or "") > newest:  # info: if ( story . get ( "published_at" ) or "" ) > newest :
             newest = story["published_at"]  # info: set newest
-        if _accept(conn, story, registry, root) == "duplicate":  # info: if _accept ( conn , story , registry , root ) == "duplicate" :
+        if _accept(conn, story, registry, root, pull_id=stamp) == "duplicate":  # info: if duplicate
             duplicates += 1  # info: set duplicates
+        else:  # info: else
+            new_count += 1  # info: set new_count
     row = _state(feed["id"], previous)  # info: set row
     row["etag"] = result.get("etag") or ""  # info: row [ "etag" ] = result . get ( "etag" ) or ""
     row["last_modified"] = result.get("modified") or ""  # info: row [ "last_modified" ] = result . get ( "modified" ) or ""
@@ -216,18 +231,21 @@ def poll_feed(registry: dict, conn, feed: dict, fetcher, root: Path) -> dict:  #
     row["runtime_enabled"] = 1  # info: row [ "runtime_enabled" ] = 1
     row["disable_reason"] = ""  # info: row [ "disable_reason" ] = ""
     save_feed(conn, row)  # info: save_feed ( conn , row )
-    return {"feed": feed["id"], "ok": True, "items": received, "duplicates": duplicates}  # info: return { "feed" : feed [ "id" ] , "ok" : True , "items" : received , "duplicates" : duplicates }
+    return {"feed": feed["id"], "ok": True, "items": received, "duplicates": duplicates, "new": new_count}  # info: return feed result
 
 
 # ====================================================
 # SECTION: function poll
-# What it does: Poll due feeds. One broken feed does not stop the others or the station.
+# What it does: Poll due feeds into one list folder. One broken feed does not stop the others or the station.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def poll(registry: dict, conn=None, fetcher=None, root: Path | None = None, only: str = "") -> dict:  # info: def poll
     own = conn or connect(root)  # info: set own
     base = root or ROOT  # info: set base
     call = fetcher or fetch_url  # info: set call
+    started = utc_now()  # info: set started
+    pull_id = make_pull_id(started)  # info: set pull_id
+    list_pull_dir(base, pull_id).mkdir(parents=True, exist_ok=True)  # info: create the list pull folder
     if only:  # info: if only :
         feeds = [feed for feed in registry["feeds"] if feed["id"] == only and configured_on(feed)]  # info: set feeds
     else:  # info: else
@@ -235,18 +253,33 @@ def poll(registry: dict, conn=None, fetcher=None, root: Path | None = None, only
     results = []  # info: set results
     for feed in feeds:  # info: for feed in feeds
         try:  # info: try
-            results.append(poll_feed(registry, own, feed, call, base))  # info: results . append ( poll_feed ( registry , own , feed , call , base ) )
+            results.append(poll_feed(registry, own, feed, call, base, pull_id=pull_id))  # info: results . append ( poll_feed ... )
         except Exception as exc:  # info: except Exception as exc
             log_line(f"isolated {feed['id']} {type(exc).__name__}")  # info: log_line ( f"isolated { feed [ 'id' ] } { type ( exc ) . __name__ }" )
             results.append({"feed": feed["id"], "ok": False})  # info: results . append ( { "feed" : feed [ "id" ] , "ok" : False } )
+    finished = utc_now()  # info: set finished
+    feeds_ok = sum(1 for row in results if row.get("ok"))  # info: set feeds_ok
+    feeds_fail = len(results) - feeds_ok  # info: set feeds_fail
+    stories_new = sum(int(row.get("new") or 0) for row in results)  # info: set stories_new
+    manifest = {  # info: set manifest
+        "pull_id": pull_id,  # info: "pull_id" : pull_id ,
+        "started_at": iso(started),  # info: "started_at" : iso ( started ) ,
+        "finished_at": iso(finished),  # info: "finished_at" : iso ( finished ) ,
+        "feeds_ok": feeds_ok,  # info: "feeds_ok" : feeds_ok ,
+        "feeds_fail": feeds_fail,  # info: "feeds_fail" : feeds_fail ,
+        "stories_new": stories_new,  # info: "stories_new" : stories_new ,
+        "feeds": results,  # info: "feeds" : results ,
+    }  # info: }
     try:  # info: try
+        save_pull(own, manifest)  # info: save_pull ( own , manifest )
+        write_pull_manifest(base, pull_id, manifest)  # info: write_pull_manifest ( base , pull_id , manifest )
         composed = compose(registry, own, base)  # info: set composed
         write_health(registry, own, base)  # info: write_health ( registry , own , base )
         export_queue(own, base)  # info: export_queue ( own , base )
     except Exception as exc:  # info: except Exception as exc
         log_line(f"compose_failed {type(exc).__name__}")  # info: log_line ( f"compose_failed { type ( exc ) . __name__ }" )
         composed = []  # info: set composed
-    return {"ok": True, "polled": results, "composed": composed}  # info: return { "ok" : True , "polled" : results , "composed" : composed }
+    return {"ok": True, "pull_id": pull_id, "polled": results, "composed": composed}  # info: return poll result
 
 
 # ====================================================
@@ -426,7 +459,7 @@ def compose(registry: dict, conn, root: Path | None = None) -> list[str]:  # inf
         program_name = category["program"]  # info: set program_name
         program = (registry["policy"].get("programs") or {}).get(program_name) or {"report": "news_brief"}  # info: set program
         speak, audit = script_for(dict(cluster), stories, registry)  # info: speak , audit = script_for ( dict ( cluster ) , stories , registry )
-        folder = base / "processed" / "scripts" / program["report"]  # info: set folder
+        folder = scripts_dir(base) / "briefs" / program["report"]  # info: set folder
         folder.mkdir(parents=True, exist_ok=True)  # info: folder . mkdir ( parents = True , exist_ok = True )
         speak_path = folder / f"{cluster['id']}.speak.txt"  # info: set speak_path
         audit_path = folder / f"{cluster['id']}.txt"  # info: set audit_path
@@ -478,8 +511,10 @@ def export_queue(conn, root: Path | None = None) -> Path:  # info: def export_qu
         for story in conn.execute("SELECT provider, title, url, published_at, source_name FROM stories WHERE cluster_id=?", (row["cluster_id"],)):  # info: for story in conn . execute ( "SELECT provider, title, url, published_at, source_name FROM stories WHERE cluster_id=?" , ( row [ "cluster_id" ] , ) )
             sources.append({"publisher": story["provider"], "source": story["source_name"], "title": story["title"], "url": story["url"], "published_at": story["published_at"]})  # info: sources . append ( { "publisher" : story [ "provider" ] , "source" : story [ "source_name" ] , "title" : story [ "title" ] , "url" : story [ "url" ] , "published_at" : story [ "published_at" ] } )
         items.append({"id": row["id"], "cluster_id": row["cluster_id"], "program": row["program"], "report": row["report"], "priority": row["priority"], "script": row["script_path"], "speak": row["speak_path"], "sources": sources})  # info: items . append ( { "id" : row [ "id" ] , "cluster_id" : row [ "cluster_id" ] , "program" : row [ "program" ] , "report" : row [ "report" ] , "priority" : row [ "priority" ] , "script" : row [ "script_path" ] , "speak" : row [ "speak_path" ] , "sources" : sources } )
-    path = base / "queue.json"  # info: set path
-    path.write_text(json.dumps({"ok": True, "items": items}, indent=2) + "\n", encoding="utf-8")  # info: path . write_text ( json . dumps ( { "ok" : True , "items" : items } , indent = 2 ) + "\n" , encoding = "utf-8" )
+    folder = state_dir(base)  # info: set folder
+    folder.mkdir(parents=True, exist_ok=True)  # info: folder . mkdir ( parents = True , exist_ok = True )
+    path = folder / "queue.json"  # info: set path
+    path.write_text(json.dumps({"ok": True, "items": items}, indent=2) + "\n", encoding="utf-8")  # info: path . write_text
     return path  # info: return path
 
 
@@ -611,9 +646,10 @@ def health_text(report: dict) -> str:  # info: def health_text
 def write_health(registry: dict, conn, root: Path | None = None) -> dict:  # info: def write_health
     base = root or ROOT  # info: set base
     report = health_report(registry, conn)  # info: set report
-    base.mkdir(parents=True, exist_ok=True)  # info: base . mkdir ( parents = True , exist_ok = True )
-    (base / "health.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")  # info: ( base / "health.json" ) . write_text ( json . dumps ( report , indent = 2 ) + "\n" , encoding = "utf-8" )
-    (base / "health.txt").write_text(health_text(report), encoding="utf-8")  # info: ( base / "health.txt" ) . write_text ( health_text ( report ) , encoding = "utf-8" )
+    folder = state_dir(base)  # info: set folder
+    folder.mkdir(parents=True, exist_ok=True)  # info: folder . mkdir ( parents = True , exist_ok = True )
+    (folder / "health.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")  # info: write health.json
+    (folder / "health.txt").write_text(health_text(report), encoding="utf-8")  # info: write health.txt
     return report  # info: return report
 
 

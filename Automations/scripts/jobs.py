@@ -717,11 +717,11 @@ EVERY_SECONDS = [  # info: set EVERY_SECONDS
 EVERY_MINUTE = [  # info: set EVERY_MINUTE
     {  # info: {
         # External RSS for RootRecord Radio. On when RR_RADIO_RSS=1. The poller script defaults that on.
-        # One list: every enabled feed at :05. Does not speak, push audio, or change the broadcaster.
+        # Once per hour at HH:05 only (not every 5 minutes). One list: every enabled feed. No speak/push.
         "id": "radio_rss_poll",  # info: "id" : "radio_rss_poll" ,
         "enabled": os.environ.get("RR_RADIO_RSS", "0") == "1",  # info: "enabled" : os . environ . get ( "RR_RADIO_RSS" , "0" ) == "1" ,
-        "description": "Poll the full RSS feed list into the Radio story queue at :05. Does not speak or push audio.",  # info: "description"
-        "only_at_minutes": [5],  # info: "only_at_minutes" : [ 5 ] ,
+        "description": "Once per hour at HH:05: poll the full RSS feed list into the Radio story queue. Does not speak or push audio.",  # info: "description"
+        "only_at_minutes": [5],  # info: once each hour when wall-clock minute is 05
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/RadioRss/scripts/rss_radio.py" poll',  # info: "command"
         "timeout_sec": 1800,  # info: "timeout_sec" : 1800 ,

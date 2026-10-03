@@ -13,8 +13,10 @@ This layer writes a queue the station can take from, and `--speak` can hand one 
 | Categories | `Media/RadioRss/config/categories.yaml` |
 | Policy | `Media/RadioRss/config/policy.yaml` |
 | Data | `2 - RootRecord-Database/Media/RadioRss/` |
-| Health | `health.txt` and `health.json` in that data folder |
-| Queue | `queue.json` in that data folder |
+| Index | `radio_rss.sqlite` |
+| List pulls | `list/YYYY-MM-DD/HHhhmm/{pull.json,raw/,stories/}` |
+| State | `state/{health.json,health.txt,queue.json}` |
+| Scripts | `scripts/news_hour/…` and `scripts/briefs/<report>/…` |
 | Logs | `2 - RootRecord-Database/Logs/Media/RadioRss/rss.log` |
 
 Add or remove a feed in `feeds.yaml`. Leave `url` empty and `origin: unavailable` when the publisher has no verified RSS or Atom endpoint. A guessed URL does not belong in the registry.
@@ -32,7 +34,7 @@ python3 scripts/rss_radio.py trace STORY_ID
 
 `poll` keeps going when a feed fails. After repeated failures the feed is marked `feed_unhealthy` in the runtime index. The YAML entry stays. `enable ID` turns that runtime flag back on.
 
-The poller job is `radio_rss_poll`. It runs at minute :05 when `RR_RADIO_RSS=1` (the poller script defaults that on) and pulls every enabled feed in one list. The job does not speak and does not push audio.
+The poller job is `radio_rss_poll`. It runs once per hour at HH:05 when `RR_RADIO_RSS=1` (the poller script defaults that on) and pulls every enabled feed in one list. It is not a 5-minute interval job. The job does not speak and does not push audio.
 
 `news-hour` builds from stories already pulled at :05 (markets, defence, SpaceX, Hawaii, tech/chips, world news, weather, politics, science, universities). It writes one script aimed at twenty to twenty-five spoken minutes. A verified sample was ~22.7 minutes, with Ava, Bruce, and Carly balanced. Solar remains a separate 5–7 minute desk. Hawaii items matching the violence list and sports items are dropped; sports matching uses word edges to avoid false hits such as conflict, influenza, and sportswear. Centrist politics feeds also drop partisan phrasing. `defense_gov` is on the national security desk. MarketWatch, the BBC, The Guardian, NPR, Justice, Honolulu Civil Beat, the Honolulu Star-Advertiser, and Hawaii News Now are not in the feed list. `--speak` renders that script with Ava, Bruce, and Carly rotating by the Hawaii hour, replaces `news_update_current.wav`, and `radio_push.py` encodes that one report to `news_update_current.opus` (24 kbps mono) on the Mainland runtime. The poller job is `radio_news_update` at minute 20, with a 2400-second timeout. At the Report Instructor's ~11:53 HST read, `RR_RADIO_NEWS=1` and the news job is on; the soft poller restart is only needed to adopt that timeout change.
 

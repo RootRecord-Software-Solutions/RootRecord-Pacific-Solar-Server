@@ -248,6 +248,8 @@ def normalize(feed: dict, item: dict, registry: dict) -> dict | None:  # info: d
         "broadcast_at": None,  # info: "broadcast_at" : None ,
         "cluster_id": "",  # info: "cluster_id" : "" ,
         "political": political,  # info: "political" : political ,
+        "pull_id": "",  # info: filled by the list pull
+        "file_path": "",  # info: relative path under Media/RadioRss
     }  # info: }
 
 

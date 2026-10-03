@@ -290,11 +290,13 @@ def _load(conn, since: str) -> list[dict]:  # info: def _load
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _write_script(built: dict, root: Path) -> Path:  # info: def _write_script
-    folder = root / "processed" / "scripts" / built["report"]  # info: set folder
+    from store import scripts_dir  # info: from store import scripts_dir
+    stamp = utc_now().strftime("%Y-%m-%dT%H")  # info: set stamp
+    folder = scripts_dir(root) / "news_hour" / stamp  # info: set folder
     folder.mkdir(parents=True, exist_ok=True)  # info: folder . mkdir ( parents = True , exist_ok = True )
-    speak_path = folder / "news_update.speak.txt"  # info: set speak_path
+    speak_path = folder / "speak.txt"  # info: set speak_path
     speak_path.write_text(built["speak"] + "\n", encoding="utf-8")  # info: speak_path . write_text ( built [ "speak" ] + "\n" , encoding = "utf-8" )
-    (folder / "news_update.json").write_text(json.dumps(built, indent=2) + "\n", encoding="utf-8")  # info: ( folder / "news_update.json" ) . write_text ( json . dumps ( built , indent = 2 ) + "\n" , encoding = "utf-8" )
+    (folder / "built.json").write_text(json.dumps(built, indent=2) + "\n", encoding="utf-8")  # info: write built.json
     return speak_path  # info: return speak_path
 
 
