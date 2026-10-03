@@ -25,7 +25,7 @@ from datetime import datetime, timezone  # info: from datetime import datetime ,
 from parse_feed import parse_document  # info: from parse_feed import parse_document
 from stories import barred, normalize, partisan, sports, violent  # info: from stories import barred , normalize , partisan , sports , violent
 from news_hour import balance_personas, build_update, persona_for  # info: from news_hour import build_update , persona_for
-from pipeline import handoff, health_report, poll, trace  # info: from pipeline import handoff , health_report , poll , trace
+from pipeline import handoff, health_report, nhc_spoken, poll, trace  # info: from pipeline import handoff , health_report , nhc_spoken , poll , trace
 from registry import load_registry  # info: from registry import load_registry
 from store import connect, feed_row  # info: from store import connect , feed_row
 

@@ -35,6 +35,13 @@ from stories import barred, fresh, normalize, same_event, sports, violent  # inf
 
 WEIGHT = {"urgent": 4, "high": 3, "normal": 2, "low": 1}  # info: set WEIGHT
 SENTENCE = re.compile(r"(?<=[.!?])\s+")  # info: set SENTENCE
+_NHC_RAW = ("forecast discussion", "forecast advisory", "wind speed probabilities", "graphics")  # info: set _NHC_RAW
+_NHC_DIR = {  # info: set _NHC_DIR
+    "N": "north", "NNE": "north-northeast", "NE": "northeast", "ENE": "east-northeast",  # info: cardinal directions
+    "E": "east", "ESE": "east-southeast", "SE": "southeast", "SSE": "south-southeast",  # info: cardinal directions
+    "S": "south", "SSW": "south-southwest", "SW": "southwest", "WSW": "west-southwest",  # info: cardinal directions
+    "W": "west", "WNW": "west-northwest", "NW": "northwest", "NNW": "north-northwest",  # info: cardinal directions
+}  # info: end _NHC_DIR
 
 
 # ====================================================
@@ -250,6 +257,59 @@ def _publisher(provider: str, policy: dict) -> str:  # info: def _publisher
 
 
 # ====================================================
+# SECTION: function nhc_story
+# What it does: True when the item came from a National Hurricane Center feed.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def nhc_story(story: dict) -> bool:  # info: def nhc_story
+    provider = str(story.get("provider") or "")  # info: set provider
+    source = str(story.get("source_id") or "")  # info: set source
+    return provider == "National Hurricane Center" or source.startswith("nhc_")  # info: return provider or source
+
+
+# ====================================================
+# SECTION: function nhc_spoken
+# What it does: One plain hurricane sentence. Raw discussions, probability tables, and coordinates are not spoken.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def nhc_spoken(title: str, summary: str) -> str:  # info: def nhc_spoken
+    low_title = (title or "").lower()  # info: set low_title
+    if any(phrase in low_title for phrase in _NHC_RAW):  # info: if raw product
+        return ""  # info: return empty
+    blob = f"{title or ''} {summary or ''}".lower()  # info: set blob
+    if "no tropical cyclones" in blob:  # info: if quiet basin
+        return "There are no tropical cyclones in that basin."  # info: return quiet line
+    if "public advisory" not in low_title:  # info: if not the public advisory
+        return ""  # info: return empty
+    parts = []  # info: set parts
+    headline = re.search(r"\.\.\.(.+?)\.\.\.", summary or "")  # info: set headline
+    if headline:  # info: if headline
+        line = " ".join(headline.group(1).split()).strip(" .")  # info: set line
+        if line:  # info: if line
+            parts.append(line[:1].upper() + line[1:].lower() + ".")  # info: parts . append headline
+    place = re.search(  # info: set place
+        r"ABOUT\s+(\d+)\s+MI(?:\.\.\.\d+\s+KM)?\s+([NSEW]{1,3})\s+OF\s+(?:THE\s+)?(.+?)(?=\s+MAXIMUM|\s+PRESENT|\s+MINIMUM|\s+WATCHES|$)",  # info: place pattern
+        summary or "",  # info: summary
+        re.I,  # info: ignore case
+    )  # info: end place
+    if place:  # info: if place
+        direction = _NHC_DIR.get(place.group(2).upper(), place.group(2).lower())  # info: set direction
+        where = " ".join(place.group(3).split()).lower()  # info: set where
+        parts.append(f"It is about {place.group(1)} miles {direction} of the {where}.")  # info: parts . append place
+    winds = re.search(r"MAXIMUM SUSTAINED WINDS\.\.\.(\d+)\s+MPH", summary or "", re.I)  # info: set winds
+    if winds:  # info: if winds
+        parts.append(f"Maximum sustained winds are {winds.group(1)} miles per hour.")  # info: parts . append winds
+    move = re.search(r"PRESENT MOVEMENT\.\.\.([NSEW]{1,3})\s+OR\s+\d+\s+DEGREES\s+AT\s+(\d+)\s+MPH", summary or "", re.I)  # info: set move
+    if move:  # info: if move
+        direction = _NHC_DIR.get(move.group(1).upper(), move.group(1).lower())  # info: set direction
+        parts.append(f"It is moving {direction} at {move.group(2)} miles per hour.")  # info: parts . append movement
+    spoken = " ".join(parts)  # info: set spoken
+    if re.search(r"\b(latitude|longitude)\b|\d+\.\d+", spoken, re.I):  # info: if coordinates leaked
+        return ""  # info: return empty
+    return spoken  # info: return spoken
+
+
+# ====================================================
 # SECTION: function speak_body
 # What it does: Keep the summary and drop a sentence that repeats the headline.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -312,6 +372,12 @@ def script_for(cluster: dict, stories: list[dict], registry: dict) -> tuple[str,
         spoken = _publisher(story.get("provider") or "", policy)  # info: set spoken
         if spoken not in names:  # info: if spoken not in names :
             names.append(spoken)  # info: names . append ( spoken )
+        if nhc_story(story):  # info: if nhc story
+            text = nhc_spoken(story.get("title") or "", story.get("summary") or "")  # info: set text
+            if not text:  # info: if not text
+                continue  # info: continue
+            lines.append(f"{spoken} reports that {text}")  # info: lines . append hurricane sentence
+            continue  # info: continue
         body = speak_body(story.get("title") or "", story.get("summary") or "", policy)  # info: set body
         sentence = f"{spoken} reports that {story['title']}."  # info: set sentence
         if body:  # info: if body
