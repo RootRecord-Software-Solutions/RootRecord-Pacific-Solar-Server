@@ -855,6 +855,16 @@ class Connection:
             return
         exc = exc(f"Authentication failed with response: {packet.payload.hex()}")
 
+        # River often answers NeedBindInstallFirst on the user-id auth packet even
+        # when the encrypted session is already up. Disconnecting here kills GATT
+        # before PD heartbeats land (and LCD sleep makes that race worse). Keep the
+        # link so the caller can latch AUTHENTICATED and wait for fields.
+        if isinstance(exc, AuthErrors.NeedBindInstallFirst):
+            self._logger.warning(
+                "NeedBindInstallFirst — keeping GATT for heartbeats: %s", packet
+            )
+            return
+
         self._logger.error("Authentication failed, packet: %s", packet, exc_info=exc)
         self._set_state(ConnectionState.ERROR_AUTH_FAILED, exc)
 

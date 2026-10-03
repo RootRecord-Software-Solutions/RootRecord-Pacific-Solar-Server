@@ -120,7 +120,8 @@ async def _session(alias: str) -> None:  # info: async def _session
             raise BleUnavailable(f"auth not completed state={state} exc={kind}")  # info: raise
         if getattr(state, "authenticated", False):  # info: if authenticated
             await asyncio.sleep(1.5)  # info: let the first heartbeat land
-        _log(f"{alias} connected auth={kind} — holding link")  # info: call _log
+        _log(f"{alias} connected auth={kind} state={state} — holding link")  # info: call _log
+        # Manual LCD never-off is set on the pack; still re-assert after first sample.
         # Do not write LCD config until heartbeats land — a write while the screen is
         # asleep tears the link (NeedBind + NotConnectedError).
         empty_since = time.time()  # info: set empty_since
@@ -128,12 +129,14 @@ async def _session(alias: str) -> None:  # info: async def _session
         lcd_locked = False  # info: set lcd_locked
         lcd_nudge_at = 0.0  # info: set lcd_nudge_at
         while not _stop:  # info: while not _stop
+            if not getattr(device, "is_connected", True):  # info: GATT already gone
+                raise BleUnavailable("GATT dropped while holding")  # info: raise BleUnavailable
             line = _publish(alias, device)  # info: set line
             if line == "empty":  # info: if fields have not landed yet
                 waited = time.time() - empty_since  # info: set waited
-                _log(f"{alias} waiting fields ({waited:.0f}s/{EMPTY_GRACE_SEC:.0f}s) — tap River LCD to wake BLE")  # info: call _log
+                _log(f"{alias} waiting fields ({waited:.0f}s/{EMPTY_GRACE_SEC:.0f}s) — LCD awake / heartbeats")  # info: call _log
                 if got_data or waited >= EMPTY_GRACE_SEC:  # info: after a good streak, or past grace, reconnect
-                    raise BleUnavailable("fields empty on held session (LCD sleep?)")  # info: raise so we reconnect
+                    raise BleUnavailable("fields empty on held session")  # info: raise so we reconnect
                 await asyncio.sleep(2)  # info: poll soon; do not drop the GATT session
                 continue  # info: continue
             empty_since = time.time()  # info: reset empty clock after a real sample
