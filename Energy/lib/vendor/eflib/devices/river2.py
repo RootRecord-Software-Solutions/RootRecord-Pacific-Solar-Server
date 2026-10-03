@@ -145,6 +145,13 @@ class Device(DeviceBase, RawDataProps):
 
         return processed
 
+    async def set_screen_timeout(self, seconds: int):
+        """LCD off delay in seconds. 0 = never off (keeps BLE from dying with the screen)."""
+        sec = max(0, min(int(seconds), 1800))
+        payload = bytes([sec & 0xFF, (sec >> 8) & 0xFF, 0xFF])
+        packet = Packet(0x21, 0x02, 0x20, 0x27, payload, version=2)
+        await self.send_packet(packet, raise_on_failure=True)
+
     @controls.outlet(ac_ports)
     async def enable_ac_ports(self, enabled: bool):
         payload = bytes([1 if enabled else 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
