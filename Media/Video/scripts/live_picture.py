@@ -34,6 +34,7 @@ PACIFIC = HERE.parents[3]  # info: set PACIFIC
 BG = PACIFIC / "Website" / "Home" / "assets" / "broadcast-bg.jpg"  # info: set BG
 SOURCE = Path("/home/rootrecord/Downloads/IbxbN.jpg")  # info: set SOURCE
 OUT = PACIFIC / "Media" / "Video" / "live-frame.png"  # info: set OUT
+ENERGY = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy")  # info: set ENERGY
 LATENCY = PACIFIC / "Media" / "Video" / "live-picture-latency.json"  # info: set LATENCY
 ENCODER_WAIT = 1.0  # info: encoder checks the thumb once a second
 API = "https://api.rootrecord.cloud"  # info: set API
@@ -207,6 +208,48 @@ def _gauge(draw: ImageDraw.ImageDraw, cx: int, cy: int, pct: float | None, label
 
 
 # ====================================================
+# SECTION: function _ble_pack
+# What it does: Charge and watts from the newest BLE sample. A cloud last file is ignored.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _ble_pack(alias: str) -> dict:  # info: def _ble_pack
+    best_at = ""  # info: set best_at
+    fields: dict = {}  # info: set fields
+    samples = sorted((ENERGY / "samples").glob(f"read-{alias}-*.json"))  # info: set samples
+    for path in reversed(samples[-80:]):  # info: for path
+        try:  # info: try
+            row = json.loads(path.read_text(encoding="utf-8"))  # info: set row
+        except (OSError, ValueError):  # info: except
+            continue  # info: continue
+        if not str(row.get("source") or "").startswith("ble"):  # info: if the sample is not BLE
+            continue  # info: continue
+        got = row.get("fields") or {}  # info: set got
+        nums = [got.get(key) for key in ("soc", "solar_input_power", "ac_output_power", "usbc_output_power")]  # info: set nums
+        if all(value in (None, 0, 0.0) for value in nums):  # info: if the sample is an empty miss
+            continue  # info: continue
+        fields = got  # info: set fields
+        best_at = str(row.get("at") or "")  # info: set best_at
+        break  # info: break
+    for kind, path in (("soc", ENERGY / "soc" / f"{alias}-last.json"), ("watts", ENERGY / "watts" / f"{alias}-last.json")):  # info: for kind , path
+        try:  # info: try
+            row = json.loads(path.read_text(encoding="utf-8"))  # info: set row
+        except (OSError, ValueError):  # info: except
+            continue  # info: continue
+        if not str(row.get("source") or "").startswith("ble"):  # info: if the last file is not BLE
+            continue  # info: continue
+        stamp = str(row.get("at") or "")  # info: set stamp
+        if stamp < best_at:  # info: if an older file
+            continue  # info: continue
+        if kind == "soc" and row.get("soc") is not None:  # info: if a newer charge
+            fields["soc"] = row.get("soc")  # info: set soc
+        if kind == "watts":  # info: if newer watts
+            for key in ("solar_input_power", "ac_output_power", "usbc_output_power"):  # info: for key
+                if row.get(key) is not None:  # info: if the watt is present
+                    fields[key] = row.get(key)  # info: set watt
+    return {"soc": {"soc": fields.get("soc")}, "watts": fields}  # info: return pack
+
+
+# ====================================================
 # SECTION: function _soc
 # What it does: State of charge from one operations device, or None.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -265,11 +308,10 @@ def render(state: dict | None, ops: dict | None, hawaii: dict, world: dict, when
     layer = Image.new("RGBA", base.size, (0, 0, 0, 0))  # info: set layer
     draw = ImageDraw.Draw(layer)  # info: set draw
     now = when  # info: set now
-    devices = ((ops or {}).get("power") or {}).get("devices") or {}  # info: set devices
-    river, delta = devices.get("river2pro") or {}, devices.get("delta2") or {}  # info: river , delta
+    river, delta = _ble_pack("river2pro"), _ble_pack("delta2")  # info: BLE files, not the cloud snapshot
     _card(draw, (20, 16, 636, 322))  # info: clock card above the title
     _text(draw, (48, 32), "ON AIR", 26, (255, 90, 90, 255), True)  # info: on air
-    _center(draw, 328, 150, now.strftime("%I:%M:%S %p").lstrip("0"), 64, (236, 246, 255, 255), True)  # info: clock ahead by the delivery delay
+    _center(draw, 328, 150, now.strftime("%I:%M %p").lstrip("0"), 72, (236, 246, 255, 255), True)  # info: clock at the minute, ahead by the delivery delay
     _center(draw, 328, 230, now.strftime("%d %b %Y") + "  HST", 32, (190, 225, 238, 255))  # info: date
     _card(draw, (652, 16, 1268, 322))  # info: battery card above the title
     _text(draw, (680, 32), "BATTERY BANK", 26, (0, 229, 255, 255), True)  # info: battery title
@@ -304,7 +346,7 @@ def render(state: dict | None, ops: dict | None, hawaii: dict, world: dict, when
     _pair(draw, 680, 1240, 982, "Eruption", "yes" if erupt else "no" if erupt is False else "—", 28)  # info: eruption
     _pair(draw, 680, 1240, 1022, str(moon.get("phase_name") or "Moon"), f"{moon.get('illumination', '—')}% lit", 26)  # info: moon
     _card(draw, (1284, 840, 1900, 1064))  # info: quake card below the title
-    _text(draw, (1312, 856), "EARTHQUAKES  M2.5", 26, (0, 229, 255, 255), True)  # info: quake title
+    _text(draw, (1312, 856), "EARTHQUAKES  M2.5+", 26, (0, 229, 255, 255), True)  # info: quake title
     _pair(draw, 1312, 1872, 902, "Hawaii 24h", f"{hawaii.get('day', '—')}   {_say_pct(hawaii.get('day_pct'))}", 28)  # info: hi day
     _pair(draw, 1312, 1872, 942, "Hawaii 7d", f"{hawaii.get('week', '—')}   {_say_pct(hawaii.get('week_pct'))}", 28)  # info: hi week
     _pair(draw, 1312, 1872, 982, "World 24h", f"{world.get('day', '—')}   {_say_pct(world.get('day_pct'))}", 28)  # info: world day
