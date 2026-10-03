@@ -18,18 +18,21 @@ from Energy.db.report_json import write_period_report  # info: from Energy . db 
 
 # ====================================================
 # SECTION: function ensure_layers
-# What it does: Create every EcoFlow layer database if it is missing. A read with no closed period still leaves the files.
+# What it does: Create every EcoFlow layer database if it is missing. Does not create the raw rootrecord.db — that lands on first persist.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def ensure_layers(db_path=None, layers_dir=None):  # info: def ensure_layers
-    raw_path = Path(db_path) if db_path else DEFAULT_DB_PATH  # info: set raw_path
+    from Energy.db.store import initialize_layer_schema, layer_db_path  # info: local import keeps layer-only create off the raw path
+    import sqlite3  # info: import sqlite3
     layers_dir = Path(layers_dir) if layers_dir else LAYERS_DIR  # info: set layers_dir
-    raw_conn = connect(raw_path)  # info: set raw_conn
-    initialize_schema(raw_conn)  # info: call initialize_schema
-    raw_conn.close()  # info: raw_conn . close ( )
     for layer in LAYERS:  # info: for layer in LAYERS :
-        layer_conn = connect_layer(layer, raw_path, layers_dir)  # info: set layer_conn
-        layer_conn.close()  # info: layer_conn . close ( )
+        path = layer_db_path(layer, layers_dir)  # info: set path
+        path.parent.mkdir(parents=True, exist_ok=True)  # info: path . parent . mkdir
+        conn = sqlite3.connect(str(path))  # info: open the layer file only — no ATTACH of the raw db
+        try:  # info: try
+            initialize_layer_schema(conn)  # info: call initialize_layer_schema
+        finally:  # info: finally
+            conn.close()  # info: conn . close
 
 
 MINUTE_LAYERS = ("1sec", "1min", "5min", "15min")  # info: set MINUTE_LAYERS
