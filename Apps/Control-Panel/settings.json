@@ -11,23 +11,23 @@
   "start_page": "energy",
   "camera_viewer_enabled": false,
   "camera_refresh_sec": 10,
-  "camera_live_fallback": false,
+  "camera_live_fallback": true,
   "camera_live_fallback_url": "http://127.0.0.1:8791/{still}",
   "cameras": {
     "ch1": {
-      "enabled": false,
+      "enabled": true,
       "label": "CH1"
     },
     "ch2": {
-      "enabled": false,
+      "enabled": true,
       "label": "CH2"
     },
     "ch3": {
-      "enabled": false,
+      "enabled": true,
       "label": "CH3"
     },
     "ch4": {
-      "enabled": false,
+      "enabled": true,
       "label": "CH4"
     }
   },

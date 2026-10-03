@@ -391,7 +391,7 @@ class Handler(BaseHTTPRequestHandler):  # info: class Handler
         self.wfile.write(data)  # info: self . wfile . write ( data )
 
     def _proxy_aeyes(self) -> None:  # info: def _proxy_aeyes
-        """Reverse-proxy /aeyes* to local a-eyes cam server (127.0.0.1:8791)."""  # info: """Reverse-proxy /aeyes* to local a-eyes cam server (127.0.0.1:8791)."""
+        """Reverse-proxy /aeyes* to local a-eyes cam server (127.0.0.1:8791). Streams MJPEG; does not buffer the whole body."""  # info: docstring
         import urllib.error  # info: import urllib . error
         import urllib.request  # info: import urllib . request
         target = f"http://127.0.0.1:8791{self.path}"  # info: set target
@@ -404,18 +404,40 @@ class Handler(BaseHTTPRequestHandler):  # info: class Handler
         if self.command == "POST":  # info: if self . command == "POST" :
             length = int(self.headers.get("Content-Length") or 0)  # info: set length
             body = self.rfile.read(length) if length > 0 else b""  # info: set body
+        # Live MJPEG never ends; stills/HTML finish quickly. Long timeout only for open.
+        stream = ".mjpeg" in (self.path or "")  # info: set stream
+        timeout = 300 if stream else 45  # info: set timeout
         req = urllib.request.Request(target, data=body, headers=headers, method=self.command)  # info: set req
         try:  # info: try :
-            with urllib.request.urlopen(req, timeout=45) as resp:  # info: with urllib . request . urlopen ( req
-                data = resp.read()  # info: set data
+            resp = urllib.request.urlopen(req, timeout=timeout)  # info: set resp
+            try:  # info: try :
                 self.send_response(resp.status)  # info: self . send_response ( resp . status )
-                for key in ("Content-Type", "Set-Cookie", "Location", "Cache-Control"):  # info: for key in ( "Content-Type" , "Set-Cookie" ,
+                ctype = resp.headers.get("Content-Type") or ""  # info: set ctype
+                for key in ("Content-Type", "Set-Cookie", "Location", "Cache-Control", "Pragma", "Connection"):  # info: for key in
                     val = resp.headers.get(key)  # info: set val
                     if val:  # info: if val :
                         self.send_header(key, val)  # info: self . send_header ( key , val )
-                self.send_header("Content-Length", str(len(data)))  # info: self . send_header ( "Content-Length" , str (
-                self.end_headers()  # info: self . end_headers ( )
-                self.wfile.write(data)  # info: self . wfile . write ( data )
+                # Multipart live streams have no finite length — do not buffer or set Content-Length.
+                if stream or "multipart/" in ctype:  # info: if stream or "multipart/" in ctype :
+                    self.end_headers()  # info: self . end_headers ( )
+                    while True:  # info: while True :
+                        chunk = resp.read(8192)  # info: set chunk
+                        if not chunk:  # info: if not chunk :
+                            break  # info: break
+                        self.wfile.write(chunk)  # info: self . wfile . write ( chunk )
+                        self.wfile.flush()  # info: self . wfile . flush ( )
+                else:  # info: else :
+                    data = resp.read()  # info: set data
+                    self.send_header("Content-Length", str(len(data)))  # info: self . send_header ( "Content-Length" , str (
+                    self.end_headers()  # info: self . end_headers ( )
+                    self.wfile.write(data)  # info: self . wfile . write ( data )
+            finally:  # info: finally :
+                try:  # info: try :
+                    resp.close()  # info: resp . close ( )
+                except Exception:  # info: except Exception :
+                    pass  # info: pass
+        except (BrokenPipeError, ConnectionResetError):  # info: except ( BrokenPipeError , ConnectionResetError ) :
+            pass  # client closed the live tab
         except urllib.error.HTTPError as e:  # info: except urllib . error . HTTPError as e
             data = e.read()  # info: set data
             self.send_response(e.code)  # info: self . send_response ( e . code )

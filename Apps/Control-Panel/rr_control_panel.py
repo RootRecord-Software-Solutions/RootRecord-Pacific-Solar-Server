@@ -687,17 +687,21 @@ class Panel(ExtraPages, AwsFallbackPage, AutomationsPage, SchedulerPage, Telemet
 
     def _live_done(self, cam, data):  # info: def _live_done
         self.cam_fetching.discard(cam)  # info: self . cam_fetching . discard ( cam )
-        if data and self.camera_viewer_on and self.stack.get_visible_child_name() == "cameras":  # info: if data and self . camera_viewer_on and self
-            try:  # info: try :
-                loader = GdkPixbuf.PixbufLoader()  # info: set loader
-                loader.set_size(640, 360)  # info: loader . set_size ( 640 , 360 )
-                loader.write(data)  # info: loader . write ( data )
-                loader.close()  # info: loader . close ( )
-                _v, pic, cap = self.cam_tiles[cam]  # info: _v , pic , cap = self .
-                pic.set_paintable(Gdk.Texture.new_for_pixbuf(loader.get_pixbuf()))  # info: pic . set_paintable ( Gdk . Texture .
-                cap.set_text(f"{cam} · local cam_server still (no still on disk)")  # info: cap . set_text ( f" { cam }
-            except Exception:  # info: except Exception :
-                pass  # info: pass
+        # Reject cam_server JSON errors (503) — only accept JPEG magic.
+        if not data or len(data) < 4 or data[:2] != b"\xff\xd8":  # info: if not data or len ( data ) < 4 or data [ : 2 ] != b" \xff\xd8 " :
+            return False  # info: return False
+        if not (self.camera_viewer_on and self.stack.get_visible_child_name() == "cameras"):  # info: if not ( self . camera_viewer_on and self
+            return False  # info: return False
+        try:  # info: try :
+            loader = GdkPixbuf.PixbufLoader()  # info: set loader
+            loader.set_size(640, 360)  # info: loader . set_size ( 640 , 360 )
+            loader.write(data)  # info: loader . write ( data )
+            loader.close()  # info: loader . close ( )
+            _v, pic, cap = self.cam_tiles[cam]  # info: _v , pic , cap = self .
+            pic.set_paintable(Gdk.Texture.new_for_pixbuf(loader.get_pixbuf()))  # info: pic . set_paintable ( Gdk . Texture .
+            cap.set_text(f"{cam} · local cam_server still (no still on disk)")  # info: cap . set_text ( f" { cam }
+        except Exception:  # info: except Exception :
+            pass  # info: pass
         return False  # info: return False
 
     def cam_timer_update(self):  # info: def cam_timer_update
