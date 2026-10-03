@@ -649,9 +649,7 @@ def save_lessons(state_dir, rows):  # info: def save_lessons
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def ensure_lessons(state_dir):  # info: def ensure_lessons
-    if load_lessons(state_dir):  # info: if load_lessons ( state_dir )
-        return  # info: return
-    save_lessons(state_dir, list(STARTER_LESSONS))  # info: call save_lessons
+    return  # info: lessons.json is not used; do not recreate it
 
 # ====================================================
 # SECTION: function remember_lesson
