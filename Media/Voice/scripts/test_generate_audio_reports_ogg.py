@@ -74,7 +74,8 @@ ENV_BASE = {
 
 def encode_ogg(wav: Path, dest: Path) -> dict:
     dest.parent.mkdir(parents=True, exist_ok=True)
-    tmp = dest.with_suffix(".ogg.partial")
+    # Keep a real .ogg suffix so ffmpeg selects the Ogg muxer (not ".ogg.partial").
+    tmp = dest.parent / f".{dest.stem}.partial.ogg"
     cmd = [
         "ffmpeg",
         "-y",
@@ -88,6 +89,8 @@ def encode_ogg(wav: Path, dest: Path) -> dict:
         "voip",
         "-ac",
         "1",
+        "-f",
+        "ogg",
         str(tmp),
     ]
     p = subprocess.run(cmd, capture_output=True, text=True, timeout=180)
