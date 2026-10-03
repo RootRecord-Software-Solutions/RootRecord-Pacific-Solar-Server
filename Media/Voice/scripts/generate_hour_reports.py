@@ -411,19 +411,19 @@ def recalculate_start_time(timing: dict | None = None) -> dict:
         except (TypeError, ValueError):
             suggested = None
 
-    # Both minutes are in the pre-:55 window: earlier start = smaller minute.
+    # Env base is the floor start (:36). Averages may only pull earlier, never later.
+    base = max(0, min(59, int(BASE_START_MINUTE)))
     if suggested is None:
-        at_minute = BASE_START_MINUTE
+        at_minute = base
         reason = "base_default"
-    elif suggested <= BASE_START_MINUTE:
-        at_minute = suggested
-        reason = "averages_need_earlier" if suggested < BASE_START_MINUTE else "averages_match_base"
+    elif suggested < base:
+        at_minute = max(0, int(suggested))
+        reason = "averages_need_earlier"
     else:
-        # Batch got faster than base lead — keep :36 (extra cushion before :55).
-        at_minute = BASE_START_MINUTE
-        reason = "keep_base_extra_cushion"
+        at_minute = base
+        reason = "keep_base" if suggested == base else "ignore_later_suggested"
 
-    at_minute = max(0, min(59, int(at_minute)))
+    at_minute = max(0, min(base, int(at_minute)))  # never schedule after env base
     lead = (PUSH_MINUTE - at_minute) % 60
     now = datetime.now(HST).replace(microsecond=0)
     schedule = {
@@ -432,7 +432,7 @@ def recalculate_start_time(timing: dict | None = None) -> dict:
         "at_minute": at_minute,
         "at_second": 0,
         "push_minute": PUSH_MINUTE,
-        "base_start_minute": BASE_START_MINUTE,
+        "base_start_minute": base,
         "suggested_start_minute": suggested,
         "lead_minutes_before_push": lead,
         "reason": reason,

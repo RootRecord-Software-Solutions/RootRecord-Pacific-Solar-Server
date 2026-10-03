@@ -100,7 +100,9 @@ _service_busy = threading.Lock()  # info: set _service_busy
 _github_busy = threading.Lock()  # info: github_sync must not block :35/:36/:55 voice slots
 _news_busy = threading.Lock()  # info: news_cycle at :35 — may overlap desks; folds when ready
 _hour_batch_busy = threading.Lock()  # info: one generate_hour_reports + radio_push lane
+_camera_busy = threading.Lock()  # info: security_camera must not block the hour batch tick
 _hour_workflow_done: set[str] = set()  # info: "id|YYYY-MM-DD|HH" — catch-up after a missed exact second
+_watchdog_last_minute: int | None = None  # info: hour-batch watchdog fires once per clock minute
 _tunnel_ready = threading.Event()  # info: set _tunnel_ready
 _tunnel_proc: subprocess.Popen | None = None  # info: set _tunnel_proc
 _internet_ok = False  # info: set _internet_ok
@@ -832,7 +834,7 @@ def run_job(job: dict) -> bool:  # info: def run_job — True when work started
         run_builtin(job)  # info: call run_builtin
         return True  # info: return True
     jid = str(job.get("id") or "")  # info: set jid
-    # github_sync can run minutes; keep it off the scheduler thread so exact-time voice jobs still fire.
+    # Long / blocking jobs stay off the scheduler thread so :35/:36/:55 still fire.
     if jid == "github_sync_all":  # info: if jid == "github_sync_all"
         if not _github_busy.acquire(blocking=False):  # info: if not _github_busy . acquire ( blocking = False )
             return False  # info: already syncing; skip this tick
@@ -843,7 +845,17 @@ def run_job(job: dict) -> bool:  # info: def run_job — True when work started
                 _github_busy.release()  # info: _github_busy . release ( )
         threading.Thread(target=_github_work, name="github-sync", daemon=True).start()  # info: start side thread
         return True  # info: return True
-    # Hour workflow owns the air clock; never block behind camera/BLE. News may overlap the :36 batch.
+    if jid == "security_camera_frame_grab":  # info: if jid == "security_camera_frame_grab"
+        if not _camera_busy.acquire(blocking=False):  # info: if not _camera_busy . acquire ( blocking = False )
+            return False  # info: already grabbing
+        def _camera_work() -> None:  # info: def _camera_work
+            try:  # info: try
+                run_command_job(job)  # info: call run_command_job
+            finally:  # info: finally
+                _camera_busy.release()  # info: _camera_busy . release ( )
+        threading.Thread(target=_camera_work, name="security-camera", daemon=True).start()  # info: start side thread
+        return True  # info: return True
+    # Hour workflow owns the air clock. News may overlap the :36 batch.
     if jid == "news_cycle":  # info: if jid == "news_cycle"
         if not _news_busy.acquire(blocking=False):  # info: if not _news_busy . acquire ( blocking = False )
             log(f"{full_timestamp()}job:{jid} SKIP — news_cycle already running")  # info: call log
@@ -856,6 +868,25 @@ def run_job(job: dict) -> bool:  # info: def run_job — True when work started
         threading.Thread(target=_news_work, name="hour-news_cycle", daemon=True).start()  # info: start side thread
         return True  # info: return True
     if jid in ("voice_hour_batch", "radio_push_hour"):  # info: if jid in ( "voice_hour_batch" , "radio_push_hour" )
+        if jid == "voice_hour_batch":  # info: if jid == "voice_hour_batch"
+            try:  # info: try
+                probe = subprocess.run(  # info: set probe
+                    ["pgrep", "-f", "python3.*generate_hour_reports.py"],  # info: pgrep the one script
+                    capture_output=True,  # info: capture_output = True
+                    text=True,  # info: text = True
+                    timeout=2,  # info: timeout = 2
+                )  # info: )
+                if probe.returncode == 0 and (probe.stdout or "").strip():  # info: if already running
+                    log(f"{full_timestamp()}job:{jid} SKIP — generate_hour_reports already running")  # info: call log
+                    # Count as done this hour so catch-up / watchdog do not keep retrying.
+                    try:  # info: try
+                        wall = datetime.now().astimezone()  # info: set wall
+                        _hour_workflow_done.add(_workflow_hour_key(jid, wall))  # info: mark hour done
+                    except Exception:  # info: except Exception
+                        pass  # info: pass
+                    return True  # info: return True — hour is covered; do not retry
+            except Exception:  # info: except Exception
+                pass  # info: pass
         if not _hour_batch_busy.acquire(blocking=False):  # info: if not _hour_batch_busy . acquire ( blocking = False )
             log(f"{full_timestamp()}job:{jid} SKIP — hour batch already running")  # info: call log
             return False  # info: return False — keep catch-up open
@@ -945,14 +976,78 @@ def _workflow_catchup_due(job: dict, step) -> bool:  # info: def _workflow_catch
     if _workflow_hour_key(jid, step) in _hour_workflow_done:  # info: already ran this hour
         return False  # info: return False
     at_m = int(job.get("at_minute") or 0)  # info: set at_m
-    # news :35 only (batch starts :36); voice batch at_minute→:54; radio_push :55→:59
+    # news :35 only; voice from scheduled/base minute through :54; radio_push :55→:59
     if jid == "news_cycle":  # info: if jid == "news_cycle"
         return step.minute == at_m  # info: return step . minute == at_m
     if jid == "voice_hour_batch":  # info: if jid == "voice_hour_batch"
-        return at_m <= step.minute <= 54  # info: return at_m <= step . minute <= 54
+        # Always open the window from env base (:36) even if a stale job dict still says :42.
+        base = int(os.environ.get("RR_VOICE_HOUR_BASE_MINUTE", "36"))  # info: set base
+        start = min(at_m, base) if at_m else base  # info: set start
+        start = max(0, min(59, start))  # info: clamp start
+        return start <= step.minute <= 54  # info: return start <= step . minute <= 54
     if jid == "radio_push_hour":  # info: if jid == "radio_push_hour"
         return at_m <= step.minute <= 59  # info: return at_m <= step . minute <= 59
     return False  # info: return False
+
+
+# ====================================================
+# SECTION: function _kick_hour_batch_watchdog
+# What it does: Belt-and-suspenders — if generate_hour_reports has not started this hour by :36+, start it now.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _kick_hour_batch_watchdog(wall: datetime) -> None:  # info: def _kick_hour_batch_watchdog
+    global _watchdog_last_minute  # info: global _watchdog_last_minute
+    if _stop.is_set():  # info: if _stop . is_set ( )
+        return  # info: return
+    minute = int(wall.minute)  # info: set minute
+    if _watchdog_last_minute == minute:  # info: once per clock minute
+        return  # info: return
+    base = int(os.environ.get("RR_VOICE_HOUR_BASE_MINUTE", "36"))  # info: set base
+    resolve = getattr(jobmod, "voice_hour_batch_at_minute", None)  # info: set resolve
+    at_m = int(resolve()) if callable(resolve) else base  # info: set at_m
+    start = min(at_m, base)  # info: set start
+    start = max(0, min(59, start))  # info: clamp
+    if minute < start or minute > 54:  # info: outside generate window
+        return  # info: return
+    key = f"voice_hour_batch|{wall.date().isoformat()}|{wall.hour:02d}"  # info: set key
+    if key in _hour_workflow_done:  # info: already started this hour
+        _watchdog_last_minute = minute  # info: set _watchdog_last_minute
+        return  # info: return
+    # External manual run still counts — do not stack a second generate_hour_reports.
+    try:  # info: try
+        import subprocess as _sp  # info: import subprocess as _sp
+        probe = _sp.run(  # info: set probe
+            ["pgrep", "-f", "python3.*generate_hour_reports.py"],  # info: pgrep the one script
+            capture_output=True,  # info: capture_output = True
+            text=True,  # info: text = True
+            timeout=2,  # info: timeout = 2
+        )  # info: )
+        if probe.returncode == 0 and (probe.stdout or "").strip():  # info: if already running
+            log(f"{full_timestamp()}watchdog  voice_hour_batch already running externally — mark hour done")  # info: call log
+            _hour_workflow_done.add(key)  # info: _hour_workflow_done . add ( key )
+            _watchdog_last_minute = minute  # info: set _watchdog_last_minute
+            return  # info: return
+    except Exception:  # info: except Exception
+        pass  # info: pass
+    job = None  # info: set job
+    for j in _scheduled_jobs():  # info: for j in _scheduled_jobs ( )
+        if isinstance(j, dict) and j.get("id") == "voice_hour_batch":  # info: if voice hour batch
+            job = {**j, "at_minute": at_m}  # info: set job
+            break  # info: break
+    if job is None:  # info: if job is None
+        log(f"{full_timestamp()}watchdog  voice_hour_batch MISSING from enabled jobs")  # info: call log
+        _watchdog_last_minute = minute  # info: set _watchdog_last_minute
+        return  # info: return
+    _watchdog_last_minute = minute  # info: set before start so a failed start retries next minute
+    log(  # info: call log
+        f"{full_timestamp()}watchdog  START voice_hour_batch  window={start:02d}-54  clock={wall.strftime('%H:%M:%S')}  at_minute={at_m}"  # info: f" ... "
+    )  # info: )
+    if run_job(job):  # info: if run_job ( job )
+        _hour_workflow_done.add(key)  # info: _hour_workflow_done . add ( key )
+        log(f"{full_timestamp()}watchdog  voice_hour_batch launched")  # info: call log
+    else:  # info: else
+        log(f"{full_timestamp()}watchdog  voice_hour_batch launch failed — will retry next minute")  # info: call log
+        _watchdog_last_minute = None  # info: allow immediate retry next loop after backoff
 
 
 # ====================================================
@@ -969,8 +1064,18 @@ def _fire_exact_step(exact_jobs: list, step, fired_exact: set) -> None:  # info:
             due.append(j)  # info: due . append ( j )
     if not due:  # info: if not due
         return  # info: return
-    due.sort(key=lambda j: (0 if j.get("id") in HOUR_WORKFLOW else 1, str(j.get("id") or "")))  # info: hour lane first
+    # priority 0 = highest (same as ON_BOOT). Hour workflow still ahead of stack at equal priority.
+    due.sort(  # info: due . sort
+        key=lambda j: (  # info: key = lambda j
+            int(j.get("priority") if j.get("priority") is not None else 50),  # info: lower number first
+            0 if j.get("id") in HOUR_WORKFLOW else 1,  # info: hour lane before stack
+            str(j.get("id") or ""),  # info: stable
+        )  # info: )
+    )  # info: )
     workflow_due = any(j.get("id") in HOUR_WORKFLOW for j in due)  # info: set workflow_due
+    if workflow_due:  # info: if workflow_due
+        names = ",".join(str(j.get("id")) for j in due if j.get("id") in HOUR_WORKFLOW)  # info: set names
+        log(f"{full_timestamp()}hour-lane  due={names}  at={step.strftime('%H:%M:%S')}")  # info: call log
     for j in due:  # info: for j in due
         jid = str(j.get("id") or "")  # info: set jid
         if workflow_due and jid in STACK_DEFER:  # info: defer stack while hour script must start
@@ -980,6 +1085,8 @@ def _fire_exact_step(exact_jobs: list, step, fired_exact: set) -> None:  # info:
             continue  # info: continue
         started = run_job(j)  # info: set started
         if not started:  # info: if not started
+            if jid in HOUR_WORKFLOW:  # info: if jid in HOUR_WORKFLOW
+                log(f"{full_timestamp()}hour-lane  {jid} did not start at {step.strftime('%H:%M:%S')}")  # info: call log
             continue  # info: continue — offline / busy; catch-up may retry
         fired_exact.add(key)  # info: fired_exact . add ( key )
         if jid in HOUR_WORKFLOW:  # info: if jid in HOUR_WORKFLOW
@@ -1247,6 +1354,13 @@ def scheduler_loop() -> None:  # info: def scheduler_loop
         elif slot < last_slot:  # info: elif slot < last_slot :
             last_hour, last_slot, last_five = hour, slot, five  # info: last_hour , last_slot , last_five = hour , slot , five
         else:  # info: else
+            # Refresh job list BEFORE firing when the minute rolls — voice at_minute must be current.
+            if slot != last_slot:  # info: if slot != last_slot
+                exact_jobs = _scheduled_jobs()  # info: refresh voice_hour_batch minute from Timing / env base
+                for step in crossed_slots(last_slot, slot):  # info: for step in crossed_slots ( last_slot , slot )
+                    _kick_power(step)  # info: call _kick_power
+                    _kick_service(step)  # info: call _kick_service
+                last_slot = slot  # info: last_slot = slot
             if last_five is not None and five > last_five:  # info: if last_five is not None and five > last_five
                 for step in crossed_seconds(last_five, five, cap=600):  # info: was 120 — too small when a long job delayed the loop
                     if step.second % 5 != 0:  # info: if step . second % 5 != 0
@@ -1259,12 +1373,7 @@ def scheduler_loop() -> None:  # info: def scheduler_loop
                 _hour_workflow_done.intersection_update(  # info: _hour_workflow_done . intersection_update
                     {k for k in _hour_workflow_done if k.split("|")[1] == day}  # info: keep today only
                 )  # info: )
-            if slot != last_slot:  # info: if slot != last_slot
-                exact_jobs = _scheduled_jobs()  # info: refresh voice_hour_batch minute from Timing each minute
-                for step in crossed_slots(last_slot, slot):  # info: for step in crossed_slots ( last_slot , slot )
-                    _kick_power(step)  # info: call _kick_power
-                    _kick_service(step)  # info: call _kick_service
-                last_slot = slot  # info: last_slot = slot
+        _kick_hour_batch_watchdog(wall)  # info: belt-and-suspenders for generate_hour_reports
         _stop.wait(0.25)  # info: _stop . wait ( 0.25 )
 
 

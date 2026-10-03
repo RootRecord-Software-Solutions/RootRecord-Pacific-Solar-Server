@@ -42,6 +42,7 @@
 #   Then recurring: EXACT_TIME (hourly process sequence).
 # EXACT_TIME = hourly process sequence. Same minute:second every hour (desk TZ = HST).
 #   at_minute 0-59, at_second 0/5/10/15/20/25/30/35/40/45/50/55 (start of that 5-second slot).
+#   priority 0 = highest on a shared tick (voice_hour_batch); omit → 50.
 # ====================================================
 
 import json  # info: import json
@@ -69,11 +70,12 @@ DATABASE = "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"  # in
 
 # ====================================================
 # SECTION: function voice_hour_batch_at_minute
-# What it does: Start minute for voice_hour_batch. Default :36; generate_hour_reports recalculates after each full batch into Timing/hour_batch_schedule.json.
+# What it does: Start minute for voice_hour_batch. Default :36. Timing may only move EARLIER (never later than RR_VOICE_HOUR_BASE_MINUTE).
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def voice_hour_batch_at_minute() -> int:  # info: def voice_hour_batch_at_minute
     base = int(os.environ.get("RR_VOICE_HOUR_BASE_MINUTE", "36"))  # info: set base
+    base = max(0, min(59, base))  # info: clamp base
     path = Path(DATABASE) / "Media" / "Audio" / "Voice" / "Timing" / "hour_batch_schedule.json"  # info: set path
     if not path.is_file():  # info: if not path . is_file ( )
         return base  # info: return base
@@ -82,7 +84,8 @@ def voice_hour_batch_at_minute() -> int:  # info: def voice_hour_batch_at_minute
         minute = int(doc.get("at_minute"))  # info: set minute
     except (ValueError, TypeError, OSError, json.JSONDecodeError):  # info: except
         return base  # info: return base
-    if 0 <= minute <= 59:  # info: if 0 <= minute <= 59
+    # Stale schedule with :42 must not win over env base :36 — only allow an earlier start.
+    if 0 <= minute <= base:  # info: if 0 <= minute <= base
         return minute  # info: return minute
     return base  # info: return base
 
@@ -1509,7 +1512,8 @@ EXACT_TIME = [  # info: set EXACT_TIME
     {  # info: {
         # NEWS — poll News Data, four topic lanes, Pacific stitch WAV for :36 fold-in (no push).
         "id": "news_cycle",  # info: "id" : "news_cycle" ,
-        "enabled": os.environ.get("RR_NEWS_CYCLE", "1") == "1",
+        "enabled": True,  # info: hour-lane — bank news before :36 fold-in
+        "priority": 1,  # info: just under voice_hour_batch (0)
         "at_minute": 35,  # info: "at_minute" : 35 ,
         "at_second": 0,  # info: "at_second" : 0 ,
         "description": "News Data cycle at :35 — poll RSS, four ~5min topic lanes, numbered TTS, Pacific stitch to news_update_current.wav. Push is deferred: :36 voice_hour_batch folds news after desks into report_current.",  # info: "description"
@@ -1559,14 +1563,15 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # --- 36:00–36:04 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     {  # info: {
-        # VOICE batch — generate_hour_reports one full process; ~8.6 min + cushion before :55.
+        # VOICE batch — generate_hour_reports one full process; priority 0 = highest among EXACT_TIME.
         "id": "voice_hour_batch",  # info: "id" : "voice_hour_batch" ,
-        "enabled": os.environ.get("RR_VOICE_HOUR_BATCH", os.environ.get("RR_RADIO_PUSH", "1")) == "1",
+        "enabled": True,  # info: always on — one full hour process
+        "priority": 0,  # info: highest; fires before stack jobs on the same tick
         "at_minute": voice_hour_batch_at_minute(),  # info: recalculated after each batch; default :36 ,
         "at_second": 0,  # info: "at_second" : 0 ,
         "description": "Generate hour-desk voice reports, stitch desks then news_update into report_current, radio_push that one file to ML1. :55 radio_push_hour is catch-up only.",  # info: "description"
         "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/generate_hour_reports.py\"",  # info: "command"
+        "command": f"nice -n 0 python3 \"{PACIFIC}/Media/Voice/scripts/generate_hour_reports.py\"",  # info: highest nice among user jobs
         "timeout_sec": 900,  # info: "timeout_sec" : 900 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
         "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
@@ -2169,7 +2174,8 @@ EXACT_TIME = [  # info: set EXACT_TIME
     {  # info: {
         # SEND — all finished WAVs to ML1 over SSH.
         "id": "radio_push_hour",  # info: "id" : "radio_push_hour" ,
-        "enabled": os.environ.get("RR_RADIO_PUSH", "1") == "1",
+        "enabled": True,  # info: hour-lane catch-up push
+        "priority": 1,  # info: just under voice_hour_batch (0)
         "at_minute": 55,  # info: "at_minute" : 55 ,
         "at_second": 0,  # info: "at_second" : 0 ,
         "description": "Catch-up at :55: encode/send report_current (combined desks+news) if still missing on ML1 after voice_hour_batch early push (SSH remote, or desk rootrecord-radio/ when RR_RADIO_MODE=local/auto).",  # info: "description"
