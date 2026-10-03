@@ -2,35 +2,44 @@
 """Generate every hour-desk voice report into Database Media/Audio/Voice/.
 
 Measured batch wall time (2026-10-03): ~8.6 minutes for all desks.
-jobs.py starts this at :43 so it finishes before radio_push --all at :55
-(8.6 + 3 minute cushion → 12 minutes before :55).
+jobs.py starts this at :43 (8.6 + 3 minute cushion). When the batch finishes it:
+  1. records wall + per-report seconds under Media/Audio/Voice/Timing/
+  2. updates running averages / suggested start minute before :55
+  3. radio_push --all to ML1 immediately
+
+:55 radio_push_hour remains a catch-up if this send missed.
 
 Writes under the single voice tree:
   Media/Audio/Voice/<report>_current.wav
   Media/Audio/Voice/<report>_current.ogg
   Media/Audio/Voice/Reports/<report>_current.md
 
-Does not push to ML1 (RR_RADIO_PUSH=0). radio_push_hour at :55 owns the send.
 Hourly chimes stay on voice_hourly_chime (:00/:30) unless --include-chime.
 
 Usage:
   python3 generate_hour_reports.py
   python3 generate_hour_reports.py --only solar_desk,kilauea_report
   python3 generate_hour_reports.py --include-chime
+  python3 generate_hour_reports.py --no-push
 """
 from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
+import statistics
 import subprocess
 import sys
 import tempfile
 import time
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 HERE = Path(__file__).resolve().parent
 PACIFIC = HERE.parents[2]
+HST = ZoneInfo("Pacific/Honolulu")
 DB = Path(
     os.environ.get(
         "RR_DATABASE_ROOT",
@@ -43,6 +52,12 @@ OUT_DIR = Path(
         str(DB / "Media" / "Audio" / "Voice"),
     )
 )
+TIMING_DIR = Path(
+    os.environ.get(
+        "RR_VOICE_HOUR_TIMING_DIR",
+        str(OUT_DIR / "Timing"),
+    )
+)
 VOICE_WAV = OUT_DIR
 VOICE_PY = Path(
     os.environ.get(
@@ -50,6 +65,8 @@ VOICE_PY = Path(
         str(PACIFIC / "Media" / "Voice" / ".venv" / "bin" / "python"),
     )
 )
+CUSHION_MINUTES = float(os.environ.get("RR_VOICE_HOUR_CUSHION_MIN", "3"))
+HISTORY_KEEP = int(os.environ.get("RR_VOICE_HOUR_HISTORY_KEEP", "200"))
 
 # Hour batch for :55 radio_push (no chime — that stays :00/:30).
 HOUR_REPORTS: list[tuple[str, str, str]] = [
@@ -247,10 +264,146 @@ def one(report: str, agent: str, how: str) -> dict:
         }
 
 
+def _load_history() -> list[dict]:
+    path = TIMING_DIR / "hour_batch_history.jsonl"
+    if not path.is_file():
+        return []
+    rows: list[dict] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            obj = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(obj, dict) and obj.get("wall_seconds") is not None:
+            rows.append(obj)
+    return rows[-HISTORY_KEEP:]
+
+
+def _mean(vals: list[float]) -> float | None:
+    return round(statistics.fmean(vals), 1) if vals else None
+
+
+def _percentile(vals: list[float], pct: float) -> float | None:
+    if not vals:
+        return None
+    ordered = sorted(vals)
+    if len(ordered) == 1:
+        return round(ordered[0], 1)
+    k = (len(ordered) - 1) * pct
+    f = math.floor(k)
+    c = math.ceil(k)
+    if f == c:
+        return round(ordered[int(k)], 1)
+    return round(ordered[f] * (c - k) + ordered[c] * (k - f), 1)
+
+
+def record_timing(summary: dict) -> dict:
+    """Bank this run's durations and recompute averages for scheduling.
+
+    Writes:
+      Media/Audio/Voice/Timing/hour_batch_current.json
+      Media/Audio/Voice/Timing/hour_batch_averages.json
+      Media/Audio/Voice/Timing/hour_batch_history.jsonl  (append)
+    """
+    TIMING_DIR.mkdir(parents=True, exist_ok=True)
+    now = datetime.now(HST).replace(microsecond=0)
+    per_report = {
+        r["report"]: r.get("seconds")
+        for r in summary.get("results") or []
+        if isinstance(r.get("seconds"), (int, float))
+    }
+    entry = {
+        "at": now.isoformat(),
+        "ok": bool(summary.get("ok")),
+        "wall_seconds": summary.get("wall_seconds"),
+        "passed": summary.get("passed"),
+        "failed": summary.get("failed"),
+        "count": len(summary.get("results") or []),
+        "per_report_seconds": per_report,
+    }
+
+    history_path = TIMING_DIR / "hour_batch_history.jsonl"
+    with history_path.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
+    history = _load_history()
+    # Keep file trimmed.
+    if len(history) > HISTORY_KEEP:
+        history_path.write_text(
+            "".join(json.dumps(h, ensure_ascii=False) + "\n" for h in history[-HISTORY_KEEP:]),
+            encoding="utf-8",
+        )
+        history = history[-HISTORY_KEEP:]
+
+    walls = [float(h["wall_seconds"]) for h in history if h.get("wall_seconds") is not None]
+    by_report: dict[str, list[float]] = {}
+    for h in history:
+        for name, sec in (h.get("per_report_seconds") or {}).items():
+            if isinstance(sec, (int, float)):
+                by_report.setdefault(name, []).append(float(sec))
+
+    avg_wall = _mean(walls)
+    p95_wall = _percentile(walls, 0.95)
+    lead_from = p95_wall if p95_wall is not None else avg_wall
+    suggested_lead_min = math.ceil((lead_from or 0) / 60.0 + CUSHION_MINUTES) if lead_from else None
+    suggested_start_minute = (55 - suggested_lead_min) % 60 if suggested_lead_min is not None else None
+
+    averages = {
+        "at": now.isoformat(),
+        "runs": len(history),
+        "cushion_minutes": CUSHION_MINUTES,
+        "wall_seconds": {
+            "avg": avg_wall,
+            "median": round(statistics.median(walls), 1) if walls else None,
+            "p95": p95_wall,
+            "min": round(min(walls), 1) if walls else None,
+            "max": round(max(walls), 1) if walls else None,
+            "last": entry.get("wall_seconds"),
+        },
+        "per_report_avg_seconds": {k: _mean(v) for k, v in sorted(by_report.items())},
+        "suggested_lead_minutes_before_55": suggested_lead_min,
+        "suggested_start_minute": suggested_start_minute,
+    }
+
+    current = {
+        **entry,
+        "averages": averages,
+        "paths": {
+            "history": str(history_path),
+            "averages": str(TIMING_DIR / "hour_batch_averages.json"),
+        },
+    }
+    (TIMING_DIR / "hour_batch_current.json").write_text(
+        json.dumps(current, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    (TIMING_DIR / "hour_batch_averages.json").write_text(
+        json.dumps(averages, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    return current
+
+
+def push_to_ml1() -> dict:
+    """Send every finished hour-desk WAV to ML1 as soon as the batch finishes."""
+    if os.environ.get("RR_HOUR_BATCH_PUSH", "1") != "1":
+        return {"ok": True, "skipped": True, "detail": "RR_HOUR_BATCH_PUSH=0"}
+    try:
+        import radio_push
+    except Exception as exc:
+        return {"ok": False, "detail": f"import_radio_push: {type(exc).__name__}: {exc}"}
+    try:
+        return radio_push.push_all()
+    except Exception as exc:
+        return {"ok": False, "detail": f"push_all: {type(exc).__name__}: {exc}"}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", default="", help="comma-separated report ids")
     ap.add_argument("--include-chime", action="store_true", help="also render hourly_chime (not used by :43 job)")
+    ap.add_argument("--no-push", action="store_true", help="skip ML1 radio_push after generate")
     args = ap.parse_args()
     only = {x.strip() for x in args.only.split(",") if x.strip()}
     catalog = list(HOUR_REPORTS)
@@ -279,6 +432,18 @@ def main() -> int:
         "wall_seconds": round(time.time() - t0, 1),
         "results": results,
     }
+    summary["timing"] = record_timing(summary)
+    print(json.dumps({"ok": True, "phase": "timing", **summary["timing"]}, ensure_ascii=False), flush=True)
+
+    if args.no_push:
+        summary["radio"] = {"ok": True, "skipped": True, "detail": "--no-push"}
+    else:
+        print(json.dumps({"ok": True, "phase": "push_begin"}), flush=True)
+        summary["radio"] = push_to_ml1()
+        print(json.dumps({"ok": True, "phase": "push_done", **summary["radio"]}, ensure_ascii=False), flush=True)
+        if not summary["radio"].get("ok") and not summary["radio"].get("skipped"):
+            summary["ok"] = False
+
     summary_path = OUT_DIR / "generate_hour_reports_last.json"
     summary_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(json.dumps(summary, ensure_ascii=False), flush=True)

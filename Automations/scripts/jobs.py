@@ -2138,7 +2138,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
     {  # info: {
         # VOICE generation — :30 or later, finish by :55; no SSH here.
         "id": "voice_current_report",  # info: "id" : "voice_current_report" ,
-        "enabled": False,
+        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1",  # info: legacy single; hour batch owns this
         "at_minute": 52,  # info: "at_minute" : 52 ,
         "at_second": 5,  # info: "at_second" : 5 ,
         "description": "Full current report at :45, after the other desks and before the radio snapshot. Heading is the slot time. Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
