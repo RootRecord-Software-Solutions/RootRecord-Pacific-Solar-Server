@@ -6,6 +6,8 @@ Energy monitoring, EcoFlow device reads, and power subsystem ownership for the P
 
 ## Current (2026-10-03)
 
+2026-10-03 ~04:44 HST: Every-minute SSH push of Energy current files to ML1 (`rr-ml1-energy-stats.timer` → `Energy/scripts/push/ml1-energy-stats.py` + `live_picture.py energy`). Standing rule: Library `2026-10-01-ecoflow-ble-reads.md`. No commit.
+
 2026-10-03 ~04:42 HST: Standing rule for River BLE is in Library `Documentation/01-Operations/2026-10-01-ecoflow-ble-reads.md` — LCD never-off **and** EcoFlow-app Bluetooth bind (NeedBindInstallFirst is a real block, not labeling). Cloud fallback stays off; hold soft-keeps NeedBind. No commit.
 
 2026-10-03 ~04:26 HST: Alexander ordered EcoFlow cloud fallback off. `read_runner.py` is BLE only (`cloud not used` on every miss). No `source: cloud`, no `ble+cloud`. River hold service keeps the GATT session. Delta discharged/powered off. Standing rule: Library `2026-10-01-ecoflow-ble-reads.md`. No commit.

@@ -1,0 +1,9 @@
+[Unit]
+Description=Push EcoFlow energy_current stats to ML1 over SSH
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy
+ExecStart=/usr/bin/python3 "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/push/ml1-energy-stats.py"
+Nice=10

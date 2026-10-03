@@ -492,13 +492,33 @@ def publish(frame: Image.Image, when: datetime) -> str:  # info: def publish
 
 
 # ====================================================
+# SECTION: function _energy_still
+# What it does: Fast YouTube thumb from live BLE gauges only — no USGS, no API. For the 1-min ML1 push.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _energy_still() -> int:  # info: def _energy_still
+    _cover()  # info: call _cover
+    if not BG.is_file():  # info: if not BG . is_file
+        print(json.dumps({"ok": False, "detail": "background missing"}))  # info: print missing
+        return 1  # info: return 1
+    empty = {"day": "—", "week": "—", "day_pct": None, "week_pct": None}  # info: quake slots unused this pass
+    shown = air_time(datetime.now(HST))  # info: same lead minute the on-air clock shows
+    frame = render(None, {}, empty, empty, shown)  # info: BLE gauges only; side cards stay blank
+    detail = publish(frame, datetime.now(HST))  # info: ssh/scp thumb + clock
+    print(json.dumps({"ok": True, "detail": detail, "mode": "energy", "path": str(OUT), "size": list(frame.size)}))  # info: print
+    return 0  # info: return 0
+
+
+# ====================================================
 # SECTION: function main
-# What it does: Build one still and publish it.
+# What it does: Build one still and publish it. Modes: clock | energy | full (default).
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def main() -> int:  # info: def main
     if len(sys.argv) > 1 and sys.argv[1] == "clock":  # info: clock-only mode leaves the encoder alone
         return clock_loop()  # info: return clock_loop
+    if len(sys.argv) > 1 and sys.argv[1] == "energy":  # info: 1-min EcoFlow stats push path
+        return _energy_still()  # info: return _energy_still
     _cover()  # info: call _cover
     if not BG.is_file():  # info: if not BG . is_file
         print(json.dumps({"ok": False, "detail": "background missing"}))  # info: print missing

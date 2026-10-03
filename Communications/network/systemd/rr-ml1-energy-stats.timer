@@ -1,0 +1,12 @@
+[Unit]
+Description=Every 1 min: Pacific EcoFlow stats → ML1 over SSH
+
+[Timer]
+OnBootSec=45
+OnUnitActiveSec=1min
+AccuracySec=10s
+Persistent=true
+Unit=rr-ml1-energy-stats.service
+
+[Install]
+WantedBy=timers.target

@@ -852,9 +852,11 @@ def enabled_jobs(section: list) -> list:  # info: def enabled_jobs
 def _exact_due(job: dict, step) -> bool:  # info: def _exact_due
     every = job.get("every_seconds")  # info: set every
     if every:  # info: if every
-        gap = int(every)  # info: set gap
+        gap = max(1, int(every))  # info: set gap
         phase = int(job.get("at_second") or 0) % gap  # info: set phase
-        if step.second % gap != phase:  # info: if this second is the other battery or a skip
+        # Use seconds-since-midnight so every_seconds > 60 (e.g. 300 / 900) lands on the clock.
+        wall = int(step.hour) * 3600 + int(step.minute) * 60 + int(step.second)  # info: set wall
+        if wall % gap != phase:  # info: if this wall second is not this job's phase
             return False  # info: return False
         opened = job.get("from_minute")  # info: set opened
         if opened is not None and step.minute < int(opened):  # info: if before the :30 block

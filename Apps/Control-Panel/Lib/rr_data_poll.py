@@ -28,7 +28,7 @@ DESIRED = ("local", "ml2")  # local = Pacific polls; ml2 = offload gated jobs
 # Keep in sync with Automations/scripts/automation_control.py LOCAL_DATA_POLL_JOBS.
 GATED_JOBS = frozenset({
     "geology_collect",
-    "geology_kilauea_cams",
+    # geology_kilauea_cams is Pacific report-side — not gated by RR_LOCAL_DATA_POLL.
     "weather_poller",
     "weather_us_states",
     "weather_radar_zip",

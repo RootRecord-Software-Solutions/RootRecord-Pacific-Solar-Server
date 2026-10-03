@@ -1381,18 +1381,29 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # --- 33:35–33:39 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
     {  # info: {
-        # hourly work at :30 or later.
+        # Report-side USGS still bank for kilauea_look / voice image check (not gated by RR_LOCAL_DATA_POLL).
         "id": "geology_kilauea_cams",  # info: "id" : "geology_kilauea_cams" ,
-        "enabled": os.environ.get("RR_KILAUEA_CAMS", "0") == "1",
-        "at_minute": 33,  # info: "at_minute" : 33 ,
-        "at_second": 35,  # info: "at_second" : 35 ,
-        "description": "Fail-safe: ML2 geology_kilauea_cams → Database Volcanoes/Hawaii/Cams/*_current (ML2 tree only).",  # info: "description"
+        "enabled": os.environ.get("RR_KILAUEA_CAMS", "1") == "1",
+        "every_seconds": 900,  # info: every 15 minutes — keep Cams fresh for vision
+        "description": "Pacific USGS HVO still pull → Database Volcanoes/Hawaii/Cams/*_current.jpg + cams_current.json. Report-side bank for kilauea_look; ML2 may also stream the same paths.",  # info: "description"
         "builtin": "",  # info: "builtin"
-        "command": f'bash "{ML2}/scripts/run-local-bank.sh" --only geology_kilauea_cams',  # info: ML2 canonical
+        "command": f'nice -n 10 python3 "{PACIFIC}/Geology/scripts/kilauea_cams.py"',  # info: Pacific pull
         "timeout_sec": 120,  # info: "timeout_sec" : 120 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{ML2}",  # info: "cwd"
+        "cwd": f"{PACIFIC}/Geology/scripts",  # info: "cwd"
         "env": {"RR_DATABASE_ROOT": DATABASE},  # info: bank into Pacific Database
+    },  # info: } ,
+    {  # info: {
+        "id": "voice_kilauea_image_check",  # info: "id" : "voice_kilauea_image_check" ,
+        "enabled": os.environ.get("RR_VOICE_KILAUEA_IMAGE", "0") == "1",
+        "every_seconds": 900,  # info: every 15 minutes
+        "description": "Carly Kīlauea observation image check: kilauea_look (Gemma) on Cams bank, then voice_reports kilauea_image_check. Report-side; not LOCAL_DATA_POLL.",  # info: "description"
+        "builtin": "",  # info: "builtin"
+        "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" kilauea_image_check',  # info: voice report
+        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
+        "needs_internet": True,  # info: needs USGS if bank stale + Ollama local
+        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
+        "env": {"RR_DATABASE_ROOT": DATABASE, "RR_VOICE_DELIVER": os.environ.get("RR_VOICE_DELIVER", "0")},  # info: inherit deliver gate
     },  # info: } ,
     {  # info: {
         "id": "geology_collect",  # info: "id" : "geology_collect" ,

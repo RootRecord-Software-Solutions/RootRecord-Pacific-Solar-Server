@@ -190,7 +190,7 @@ def overrides_mtime() -> float:  # info: def overrides_mtime
 # TOGGLE only — do not delete these jobs. Flip env back to 1 (or unset) to restore local polling immediately if ML2 is down.
 LOCAL_DATA_POLL_JOBS = frozenset({
     "geology_collect",
-    "geology_kilauea_cams",
+    # geology_kilauea_cams is Pacific report-side (Geology/scripts/kilauea_cams.py) — not gated here.
     "weather_poller",
     "weather_us_states",
     "weather_radar_zip",
