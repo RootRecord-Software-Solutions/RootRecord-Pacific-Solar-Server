@@ -890,7 +890,7 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "id": "live_picture",  # info: "id" : "live_picture" ,
         "enabled": os.environ.get("RR_LIVE_PICTURE", "0") == "1",  # info: "enabled" : os . environ . get ( "RR_LIVE_PICTURE" , "0" ) == "1" ,
         "description": "Cover the stream still with the live desk numbers and copy it to the mainland thumb. Does not start a second encoder.",  # info: description
-        "only_at_minutes": [],  # info: "only_at_minutes" : [ ] ,
+        "only_at_minutes": [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55],  # info: every five minutes
         "builtin": "",  # info: "builtin" : "" ,
         "command": f'nice -n 10 python3 "{PACIFIC}/Media/Video/scripts/live_picture.py"',  # info: command
         "timeout_sec": 90,  # info: "timeout_sec" : 90 ,
