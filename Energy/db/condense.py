@@ -18,7 +18,7 @@ from Energy.db.report_json import write_period_report  # info: from Energy . db 
 
 # ====================================================
 # SECTION: function ensure_layers
-# What it does: Create every EcoFlow layer database if it is missing. Does not create the raw rootrecord.db — that lands on first persist.
+# What it does: Create every EcoFlow layer database if it is missing. Raw samples land in layers/1sec.db on first persist (same file as the 1sec layer).
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def ensure_layers(db_path=None, layers_dir=None):  # info: def ensure_layers

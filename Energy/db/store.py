@@ -21,7 +21,7 @@ import os  # info: import os
 from typing import Any, Iterable, Mapping, Optional  # info: from typing import Any , Iterable , Mapping
 
 SCHEMA_PATH = Path(__file__).with_name("schema.sql")  # info: set SCHEMA_PATH
-DEFAULT_DB_PATH = Path(os.environ.get("ROOTRECORD_DB", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/rootrecord.db"))  # info: set DEFAULT_DB_PATH
+DEFAULT_DB_PATH = Path(os.environ.get("ROOTRECORD_DB", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/layers/1sec.db"))  # info: raw samples live in the finest layer file — no separate rootrecord.db
 
 
 # ====================================================
@@ -91,7 +91,7 @@ def initialize_layer_schema(conn: sqlite3.Connection) -> None:  # info: def init
 
 # ====================================================
 # SECTION: function connect_layer
-# What it does: Open one layer's own db file, with the raw canonical db ATTACHed as 'raw' so aggregate_period() can read source telemetry without the two living in the same file.
+# What it does: Open one layer's own db file. When the raw store is a different file, ATTACH it as 'raw' for aggregate_period(); when raw is layers/1sec.db itself, skip ATTACH so SQLite is not asked to open the same file twice.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def connect_layer(  # info: def connect_layer
@@ -99,9 +99,7 @@ def connect_layer(  # info: def connect_layer
     raw_db_path: Path | str = DEFAULT_DB_PATH,  # info: set raw_db_path
     layers_dir: Path | str = LAYERS_DIR,  # info: set layers_dir
 ) -> sqlite3.Connection:  # info: ) -> sqlite3 . Connection :
-    """Open one layer's own db file, with the raw canonical db ATTACHed as
-    'raw' so aggregate_period() can read source telemetry without the two
-    living in the same file."""
+    """Open one layer db. ATTACH raw only when it is a different file than this layer."""  # info: docstring
     path = layer_db_path(layer, layers_dir)  # info: set path
     path.parent.mkdir(parents=True, exist_ok=True)  # info: path . parent . mkdir ( parents =
     conn = sqlite3.connect(str(path))  # info: set conn
@@ -110,7 +108,9 @@ def connect_layer(  # info: def connect_layer
     conn.execute("PRAGMA journal_mode = WAL")  # info: conn . execute ( "PRAGMA journal_mode = WAL" )
     conn.execute("PRAGMA synchronous = NORMAL")  # info: conn . execute ( "PRAGMA synchronous = NORMAL" )
     initialize_layer_schema(conn)  # info: call initialize_layer_schema
-    conn.execute("ATTACH DATABASE ? AS raw", (str(raw_db_path),))  # info: conn . execute ( "ATTACH DATABASE ? AS raw" , ( str
+    raw_path = Path(raw_db_path)  # info: set raw_path
+    if path.resolve() != raw_path.resolve():  # info: same-file ATTACH fails; 1sec holds raw + its aggregates
+        conn.execute("ATTACH DATABASE ? AS raw", (str(raw_path),))  # info: conn . execute ( "ATTACH DATABASE ? AS raw" , ( str
     return conn  # info: return conn
 
 

@@ -27,7 +27,7 @@ Legacy JSON remains a compatibility/output layer during migration.
 
 Target production path:
 
-Energy owns one tree: `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/rootrecord.db` (env `ROOTRECORD_DB`) and `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/layers` (env `ROOTRECORD_LAYERS_DIR`). System mirrors that shape under `Database/System/` (`system.db` + `layers/`).
+Energy owns one tree under `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/layers` (env `ROOTRECORD_LAYERS_DIR`). Raw samples land in `layers/1sec.db` (env `ROOTRECORD_DB`); higher layers condense from that. There is no separate `rootrecord.db`. System still uses `Database/System/system.db` + `layers/`.
 
 Importing modules does not create telemetry. Live ingestion explicitly initializes the schema on first persistence.
 

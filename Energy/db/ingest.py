@@ -190,7 +190,7 @@ def persist_eflow_device(device: Any, alias: str, observed_at: str) -> int:  # i
 
 # ====================================================
 # SECTION: function persist_eflow_fields
-# What it does: Persist a cloud (or other non-BLE) fields dict into Energy/rootrecord.db.
+# What it does: Persist a cloud (or other non-BLE) fields dict into Energy/layers/1sec.db.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def persist_eflow_fields(fields: dict, alias: str, observed_at: str, source: str = "cloud") -> int:  # info: def persist_eflow_fields

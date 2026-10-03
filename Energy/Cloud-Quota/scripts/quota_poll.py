@@ -126,7 +126,7 @@ def poll_cloud() -> int:  # info: def poll_cloud
         )  # info: end observed_at
         try:  # info: try
             ensure_layers()  # info: call ensure_layers
-            persist_eflow_fields(fields, alias, observed_at, source="cloud")  # info: land cloud fields in rootrecord.db
+            persist_eflow_fields(fields, alias, observed_at, source="cloud")  # info: land cloud fields in layers/1sec.db
             path = write_cloud_snapshot(alias=alias)  # info: rebuild Cloud-Quota JSON/log from the db
         except Exception as exc:  # info: except Exception as exc
             print(f"alias={alias} error={type(exc).__name__}: {exc}")  # info: call print

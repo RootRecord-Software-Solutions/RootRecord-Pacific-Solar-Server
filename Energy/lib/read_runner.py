@@ -34,7 +34,7 @@ from Energy.db.latest import latest_for_alias  # noqa: E402
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 CLOUD_FALLBACK_SEC = 120  # info: set CLOUD_FALLBACK_SEC
 CLOUD_STALE_SEC = 300  # info: EcoFlow quota freezes when the phone app is closed; identical values past this are stale
-# Same board keys for samples, soc/watts last files, and Cloud-Quota — all rebuilt from rootrecord.db.
+# Same board keys for samples, soc/watts last files, and Cloud-Quota — all rebuilt from layers/1sec.db.
 BOARD_KEYS = (  # info: set BOARD_KEYS
     "soc",  # info: soc
     "ac_output_power",  # info: ac_output_power
@@ -488,7 +488,7 @@ def _hold_last_ble(alias: str) -> bool:  # info: def _hold_last_ble
 
 # ====================================================
 # SECTION: function _snap_from_db
-# What it does: Build the desk sample payload from Energy/rootrecord.db with the shared board keys.
+# What it does: Build the desk sample payload from Energy/layers/1sec.db with the shared board keys.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _snap_from_db(alias: str, source: str, charge_source: str) -> dict | None:  # info: def _snap_from_db
@@ -506,11 +506,11 @@ def _snap_from_db(alias: str, source: str, charge_source: str) -> dict | None:  
 
 # ====================================================
 # SECTION: function _write_json_from_db
-# What it does: Rebuild samples, soc/watts last files, and Cloud-Quota JSON from Energy/rootrecord.db only.
+# What it does: Rebuild samples, soc/watts last files, and Cloud-Quota JSON from Energy/layers/1sec.db only.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _write_json_from_db(alias: str, source: str, charge_source: str) -> dict | None:  # info: def _write_json_from_db
-    """Every Energy JSON artifact is rebuilt from rootrecord.db after the row is stored."""  # info: docstring
+    """Every Energy JSON artifact is rebuilt from layers/1sec.db after the row is stored."""  # info: docstring
     snap = _snap_from_db(alias, source, charge_source)  # info: set snap
     if not snap:  # info: if not snap
         return None  # info: return None
@@ -536,7 +536,7 @@ def _write_json_from_db(alias: str, source: str, charge_source: str) -> dict | N
         if str(scripts) not in sys.path:  # info: if str ( scripts ) not in sys
             sys.path.insert(0, str(scripts))  # info: sys . path . insert ( 0 ,
         from store import write_cloud_snapshot  # info: from store import write_cloud_snapshot
-        write_cloud_snapshot(snap=snap, alias=alias)  # info: rebuild Cloud-Quota JSON/log from rootrecord.db
+        write_cloud_snapshot(snap=snap, alias=alias)  # info: rebuild Cloud-Quota JSON/log from layers/1sec.db
         return snap  # info: return snap
     path = SAMPLES / f"read-{alias}-{datetime.now(HST).strftime('%Y%m%d-%H%M%S')}.json"  # info: set path
     path.write_text(json.dumps(snap, indent=2) + "\n", encoding="utf-8")  # info: BLE sample rebuilt from db
@@ -653,7 +653,7 @@ def main() -> int:  # info: def main
         "charge_source": charge_source,  # info: "charge_source" : charge_source ,
     }  # info: }
 
-    # 4) Persist into Energy/rootrecord.db. Cloud and BLE both land here before any JSON is rewritten.
+    # 4) Persist into Energy/layers/1sec.db. Cloud and BLE both land here before any JSON is rewritten.
     #    cloud_stale is not written into the averages path — frozen app-closed quota is not a new sample.
     db_ok = False  # info: set db_ok
     try:  # info: try :
@@ -672,7 +672,7 @@ def main() -> int:  # info: def main
         except Exception:  # info: except Exception :
             pass  # info: pass
 
-    # 5) Samples / last files / Cloud-Quota are rebuilt from rootrecord.db only — never from the live dict.
+    # 5) Samples / last files / Cloud-Quota are rebuilt from layers/1sec.db only — never from the live dict.
     db_snap = None  # info: set db_snap
     if not cloud_reused and db_ok and source != "none":  # info: if not cloud_reused and db_ok and source != "none"
         db_snap = _write_json_from_db(alias, source, charge_source)  # info: call _write_json_from_db

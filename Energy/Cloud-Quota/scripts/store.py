@@ -8,7 +8,7 @@
 # Kind: python
 # ==============================================================================
 #!/usr/bin/env python3
-"""Write a labeled cloud quota snapshot from Energy/rootrecord.db. Does not call EcoFlow."""  # info: docstring
+"""Write a labeled cloud quota snapshot from Energy/layers/1sec.db. Does not call EcoFlow."""  # info: docstring
 from __future__ import annotations  # info: from __future__ import annotations
 
 import json  # info: import json
@@ -42,11 +42,11 @@ BOARD_KEYS = (  # info: same keys BLE samples use on the desk
 
 # ====================================================
 # SECTION: function write_cloud_snapshot
-# What it does: Rebuild one Cloud-Quota JSON file and quota.log line from Energy/rootrecord.db.
+# What it does: Rebuild one Cloud-Quota JSON file and quota.log line from Energy/layers/1sec.db.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def write_cloud_snapshot(snap: dict | None = None, alias: str | None = None) -> Path | None:  # info: def write_cloud_snapshot
-    """Rebuild one Cloud-Quota JSON file and quota.log line from Energy/rootrecord.db."""  # info: docstring
+    """Rebuild one Cloud-Quota JSON file and quota.log line from Energy/layers/1sec.db."""  # info: docstring
     name = alias or (snap or {}).get("alias") or "unknown"  # info: set name
     row = latest_for_alias(str(name))  # info: set row
     if not row:  # info: if not row
