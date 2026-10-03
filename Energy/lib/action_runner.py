@@ -21,9 +21,11 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 HERE = Path(__file__).resolve().parent  # info: set HERE
 if str(HERE) not in sys.path:  # info: if str ( HERE ) not in sys
     sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 ,
+sys.path.insert(0, str(HERE.parent.parent / "System" / "lib"))  # info: shared *_current bank helper
 
 from paths import SAMPLES, PORTS, ensure_dirs, BLE_LOG  # noqa: E402
 from ble_client import apply_bool, BleUnavailable, eflib_ready  # noqa: E402
+from current_bank import write_current_json  # noqa: E402
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 
@@ -48,9 +50,8 @@ def _log(msg: str) -> None:  # info: def _log
 # ====================================================
 def _write_sample(kind: str, payload: dict) -> Path:  # info: def _write_sample
     ensure_dirs()  # info: call ensure_dirs
-    ts = datetime.now(HST).strftime("%Y%m%d-%H%M%S")  # info: set ts
-    path = SAMPLES / f"{kind}-{ts}.json"  # info: set path
-    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")  # info: path . write_text ( json . dumps (
+    path = SAMPLES / f"{kind}_current.json"  # info: stable *_current — no stamp flood
+    write_current_json(path, payload)  # info: archive prior _current then write
     (PORTS / f"{payload.get('alias', 'dev')}-last.json").write_text(  # info: call (
         json.dumps(payload, indent=2), encoding="utf-8"  # info: json . dumps ( payload , indent =
     )  # info: )

@@ -217,7 +217,8 @@ def _gauge(draw: ImageDraw.ImageDraw, cx: int, cy: int, pct: float | None, label
 def _ble_pack(alias: str) -> dict:  # info: def _ble_pack
     best_at = ""  # info: set best_at
     fields: dict = {}  # info: set fields
-    samples = sorted((ENERGY / "samples").glob(f"read-{alias}-*.json"))  # info: set samples
+    current = ENERGY / "samples" / f"read-{alias}_current.json"  # info: stable *_current bank
+    samples = [current] if current.is_file() else sorted((ENERGY / "samples").glob(f"read-{alias}*.json"))  # info: prefer current
     for path in reversed(samples[-80:]):  # info: for path
         try:  # info: try
             row = json.loads(path.read_text(encoding="utf-8"))  # info: set row

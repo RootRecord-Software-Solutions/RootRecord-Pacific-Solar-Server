@@ -25,6 +25,8 @@ PERIODS = (
 )
 
 _NAME = re.compile(r"^read-(delta2|river2pro)-(\d{8})-(\d{6})\.json$")
+_CURRENT = re.compile(r"^read-(delta2|river2pro)_current\.json$")
+_ARCHIVED = re.compile(r"^read-(delta2|river2pro)_current_(\d{6})(?:_\d+)?\.json$")
 _index: list[tuple[str, datetime, Path]] | None = None
 
 
@@ -36,6 +38,14 @@ def _stamp(text: str) -> datetime | None:
     if when.tzinfo is None:
         when = when.replace(tzinfo=HST)
     return when
+
+
+def _when_from_sample(path: Path) -> datetime | None:
+    try:
+        row = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return None
+    return _stamp(str((row or {}).get("at") or ""))
 
 
 def load_rows(path: Path | None = None) -> list[dict]:
@@ -87,11 +97,27 @@ def _energy_index() -> list[tuple[str, datetime, Path]]:
     found = []
     if SAMPLES.is_dir():
         for path in SAMPLES.glob("read-*.json"):
+            hit = _CURRENT.match(path.name)
+            if hit:
+                when = _when_from_sample(path)
+                if when is not None:
+                    found.append((hit.group(1), when, path))
+                continue
             hit = _NAME.match(path.name)
             if not hit:
                 continue
             when = datetime.strptime(hit.group(2) + hit.group(3), "%Y%m%d%H%M%S").replace(tzinfo=HST)
             found.append((hit.group(1), when, path))
+        archive = SAMPLES / "archive"
+        if archive.is_dir():
+            for path in archive.glob("**/read-*_current_*.json"):
+                hit = _ARCHIVED.match(path.name)
+                if not hit:
+                    continue
+                when = _when_from_sample(path)
+                if when is None:
+                    continue
+                found.append((hit.group(1), when, path))
     _index = found
     return found
 

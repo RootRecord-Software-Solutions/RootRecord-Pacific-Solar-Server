@@ -23,6 +23,7 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 HERE = Path(__file__).resolve().parent  # info: set HERE
 sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 ,
 sys.path.insert(0, str(HERE.parent.parent))  # info: sys . path . insert ( 0 ,
+sys.path.insert(0, str(HERE.parent.parent / "System" / "lib"))  # info: shared *_current bank helper
 
 from paths import SAMPLES, SOC, WATTS, STATE_DIR, ensure_dirs  # noqa: E402
 from ble_client import connect, await_session, BleUnavailable, eflib_ready  # noqa: E402
@@ -30,6 +31,7 @@ from config import device as device_cfg, load as load_conf  # noqa: E402
 from Energy.db.ingest import persist_eflow_device, persist_eflow_fields  # noqa: E402
 from Energy.db.condense import ensure_layers  # noqa: E402
 from Energy.db.latest import latest_for_alias  # noqa: E402
+from current_bank import write_current_json  # noqa: E402
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 CLOUD_FALLBACK_SEC = 120  # info: set CLOUD_FALLBACK_SEC
@@ -538,8 +540,8 @@ def _write_json_from_db(alias: str, source: str, charge_source: str) -> dict | N
         from store import write_cloud_snapshot  # info: from store import write_cloud_snapshot
         write_cloud_snapshot(snap=snap, alias=alias)  # info: rebuild Cloud-Quota JSON/log from layers/1sec.db
         return snap  # info: return snap
-    path = SAMPLES / f"read-{alias}-last.json"  # info: one file per pack — overwrite, do not stamp a new flood file
-    path.write_text(json.dumps(snap, indent=2) + "\n", encoding="utf-8")  # info: BLE sample rebuilt from db
+    path = SAMPLES / f"read-{alias}_current.json"  # info: stable *_current live path — archive-on-replace, no stamp flood
+    write_current_json(path, snap)  # info: archive prior _current then write
     return snap  # info: return snap
 
 

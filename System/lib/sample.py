@@ -15,6 +15,7 @@ from pathlib import Path  # info: from pathlib import Path
 from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 from paths import CPU, LAST, LOAD, MEM, SAMPLES, SYSTEM_DB, ensure_dirs  # info: from paths import SYSTEM_DB , ensure_dirs
+from current_bank import write_current_json  # info: stable *_current sample bank
 
 # db helpers (skill root on path)
 _SKILL = Path(__file__).resolve().parents[1]  # info: set _SKILL
@@ -154,7 +155,7 @@ def _atomic_write(path, obj):  # info: def _atomic_write
 
 # ====================================================
 # SECTION: function _write_json_from_db
-# What it does: Rebuild samples and host-last JSON from system.db after the row is stored.
+# What it does: Rebuild sys_current.json and host-last JSON from system.db after the row is stored.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _write_json_from_db() -> None:  # info: def _write_json_from_db
@@ -162,7 +163,7 @@ def _write_json_from_db() -> None:  # info: def _write_json_from_db
     if not doc:  # info: if not doc
         return  # info: return
     fields = doc.get("fields") or {}  # info: set fields
-    _atomic_write(SAMPLES / f"sys-{_local_stamp()}.json", doc)  # info: call _atomic_write
+    write_current_json(SAMPLES / "sys_current.json", doc)  # info: stable *_current — archive-on-replace, no stamp flood
     _atomic_write(LAST / "host-last.json", doc)  # info: call _atomic_write
     cpu = fields.get("cpu_percent") or {}  # info: set cpu
     _atomic_write(CPU / "host-last.json", {"cpu_percent": cpu.get("value"), "state": cpu.get("state"), "at": doc.get("at")})  # info: call _atomic_write

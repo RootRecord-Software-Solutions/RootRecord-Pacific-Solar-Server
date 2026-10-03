@@ -22,6 +22,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+_LIB = Path(__file__).resolve().parents[1] / "lib"
+if str(_LIB) not in sys.path:
+    sys.path.insert(0, str(_LIB))
+from current_bank import archive_before_replace, is_current_product  # noqa: E402
+
 ALLOWED_PATH_PREFIXES = (
     "Geology/",
     "Weather/",
@@ -55,33 +60,6 @@ def allowed(path_rel: str) -> bool:
             return False
     return any(path_rel.startswith(p) for p in ALLOWED_PATH_PREFIXES)
 
-
-
-def is_current_product(path_rel: str, dest: Path | None = None) -> bool:
-    """True when the bank filename contains _current (stable live path)."""
-    name = (dest.name if dest is not None else Path(path_rel).name)
-    return "_current" in name
-
-
-def archive_before_replace(dest: Path, path_rel: str = "") -> str | None:
-    """If dest exists and basename contains _current, rename into sibling archive/.
-
-    Keeps the stable *_current path for LLM/desk readers; archives are historical
-    only under archive/YYYYMMDD/<stem>_<HHMMSS><suffix> (HST). Non-_current files
-    (e.g. *-last.json) are never archived on replace.
-    """
-    if not dest.is_file():
-        return None
-    if not is_current_product(path_rel or dest.name, dest):
-        return None
-    now = datetime.now(HST).replace(microsecond=0)
-    archive_dir = dest.parent / "archive" / now.strftime("%Y%m%d")
-    archive_dir.mkdir(parents=True, exist_ok=True)
-    archived = archive_dir / f"{dest.stem}_{now.strftime('%H%M%S')}{dest.suffix}"
-    if archived.exists():
-        archived = archive_dir / f"{dest.stem}_{now.strftime('%H%M%S')}_{now.microsecond}{dest.suffix}"
-    os.rename(dest, archived)
-    return str(archived)
 
 
 def atomic_write(dest: Path, data: bytes) -> None:

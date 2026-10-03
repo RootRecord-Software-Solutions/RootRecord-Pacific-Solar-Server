@@ -146,9 +146,13 @@ def last_car_on() -> bool | None:  # info: def last_car_on
     port = PORTS / "river2pro-last.json"  # info: set port
     if port.is_file():  # info: if port . is_file ( ) :
         candidates.append(port)  # info: candidates . append ( port )
-    reads = sorted(SAMPLES.glob("read-river2pro-*.json"))  # info: set reads
-    if reads:  # info: if reads :
-        candidates.append(reads[-1])  # info: candidates . append ( reads [ - 1
+    current = SAMPLES / "read-river2pro_current.json"  # info: stable *_current bank
+    if current.is_file():  # info: if current . is_file ( )
+        candidates.append(current)  # info: candidates . append ( current )
+    else:  # info: else
+        reads = sorted(SAMPLES.glob("read-river2pro*.json"))  # info: legacy stamped or -last names
+        if reads:  # info: if reads :
+            candidates.append(reads[-1])  # info: candidates . append ( reads [ - 1
     best: Path | None = None  # info: set best
     best_mtime = -1.0  # info: set best_mtime
     for path in candidates:  # info: for path in candidates :

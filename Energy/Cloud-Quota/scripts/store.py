@@ -19,12 +19,14 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 PACIFIC = Path(__file__).resolve().parents[3]  # info: set PACIFIC
 ENERGY_LIB = Path(__file__).resolve().parents[2] / "lib"  # info: set ENERGY_LIB
-for path in (str(PACIFIC), str(ENERGY_LIB)):  # info: for path in ( str ( PACIFIC ) , str ( ENERGY_LIB ) )
+SYSTEM_LIB = PACIFIC / "System" / "lib"  # info: set SYSTEM_LIB
+for path in (str(PACIFIC), str(ENERGY_LIB), str(SYSTEM_LIB)):  # info: for path in ( str ( PACIFIC ) , str ( ENERGY_LIB ) )
     if path not in sys.path:  # info: if path not in sys . path
         sys.path.insert(0, path)  # info: sys . path . insert ( 0 , path )
 
 from paths import CLOUD_QUOTA, CLOUD_QUOTA_LOG  # noqa: E402
 from Energy.db.latest import latest_for_alias  # noqa: E402
+from current_bank import write_current_json  # noqa: E402
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 BOARD_KEYS = (  # info: same keys BLE samples use on the desk
@@ -52,8 +54,7 @@ def write_cloud_snapshot(snap: dict | None = None, alias: str | None = None) -> 
     if not row:  # info: if not row
         return None  # info: return None
     CLOUD_QUOTA.mkdir(parents=True, exist_ok=True)  # info: CLOUD_QUOTA . mkdir
-    stamp = datetime.now(HST).strftime("%Y%m%d-%H%M%S")  # info: set stamp
-    path = CLOUD_QUOTA / f"read-{name}-{stamp}.json"  # info: set path
+    path = CLOUD_QUOTA / f"read-{name}_current.json"  # info: stable *_current live path — no stamp flood
     source = (snap or {}).get("source") or "cloud"  # info: set source
     payload = {  # info: set payload
         "alias": row.get("alias") or name,  # info: "alias"
@@ -61,7 +62,7 @@ def write_cloud_snapshot(snap: dict | None = None, alias: str | None = None) -> 
         "source": source,  # info: "source"
         "fields": {key: row.get(key) for key in BOARD_KEYS},  # info: same board field set as BLE
     }  # info: end payload
-    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")  # info: path . write_text
+    write_current_json(path, payload)  # info: archive prior _current then write
     line = f"{payload['at']} alias={name} source={source} soc={payload['fields'].get('soc')}\n"  # info: set line
     with (CLOUD_QUOTA_LOG / "quota.log").open("a", encoding="utf-8") as fh:  # info: quota.log next to Cloud-Quota JSON
         fh.write(line)  # info: fh . write

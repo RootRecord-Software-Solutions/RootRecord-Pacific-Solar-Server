@@ -34,11 +34,13 @@ PY
 IFS=$'\t' read -r ble_age ac_flag ac_out < <(python3 - "$SAMPLES" "$ALIAS" << 'PY'
 import glob, json, os, sys, time
 samples, alias = sys.argv[1], sys.argv[2]
-files = glob.glob(os.path.join(samples, f"read-{alias}-*.json"))
-if not files:
-    print("999999\tnone\t")
-    raise SystemExit
-path = max(files, key=os.path.getmtime)
+path = os.path.join(samples, f"read-{alias}_current.json")
+if not os.path.isfile(path):
+    files = glob.glob(os.path.join(samples, f"read-{alias}*.json"))
+    if not files:
+        print("999999\tnone\t")
+        raise SystemExit
+    path = max(files, key=os.path.getmtime)
 age = max(0, int(time.time() - os.path.getmtime(path)))
 try:
     data = json.load(open(path, encoding="utf-8"))
