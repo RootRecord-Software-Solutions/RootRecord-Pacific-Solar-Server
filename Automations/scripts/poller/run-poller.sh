@@ -34,6 +34,7 @@ export RR_NIGHT_SLEEP="${RR_NIGHT_SLEEP:-0}"  # info: export — off; a running 
 # Voice notes Alexander asked for on 2026-09-30. Original council chat as of 2026-09-30 evening. Takes effect at the next poller start.
 export RR_VOICE_DELIVER="${RR_VOICE_DELIVER:-1}"  # info: export
 export RR_VOICE_HOURLY_CHIME="${RR_VOICE_HOURLY_CHIME:-1}"  # info: export — :00 and :30 prebuilt chimes
+export RR_VOICE_BLE="${RR_VOICE_BLE:-0}"  # info: export — EcoFlow BLE pack lines off air while adapter is unreliable
 export RR_TELEGRAM_DEST="${RR_TELEGRAM_DEST:-council}"  # info: export
 export RR_VOICE_NWS="${RR_VOICE_NWS:-1}"  # info: export
 export RR_VOICE_KILAUEA="${RR_VOICE_KILAUEA:-1}"  # info: export

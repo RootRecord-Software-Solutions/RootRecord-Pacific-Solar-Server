@@ -92,8 +92,9 @@ HOUR_REPORTS: list[tuple[str, str, str]] = [
     ("custom_msg", "bruce", "voice_reports"),
     ("earthquake_report", "carly", "voice_reports"),
     ("hurricane_desk", "carly", "voice_reports"),
-    ("kilauea_report", "carly", "voice_reports"),
+    # Image check first so kilauea_report photo summary uses a fresh look, not a stale night slot.
     ("kilauea_image_check", "carly", "voice_reports"),
+    ("kilauea_report", "carly", "voice_reports"),
     ("security_desk", "carly", "voice_reports"),
     ("bandwidth_desk", "carly", "voice_reports"),
 ]
@@ -107,6 +108,8 @@ ENV_BASE = {
     "RR_VOICE_DELIVER": "0",
     "RR_VOICE_STATUS": "0",
     "RR_DATABASE_ROOT": str(DB),
+    # current_report omits spoken NWS block — nws_weather is the prior desk in HOUR_REPORTS.
+    "RR_HOUR_BATCH": "1",
 }
 
 

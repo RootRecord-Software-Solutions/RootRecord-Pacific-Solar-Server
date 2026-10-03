@@ -12,6 +12,7 @@ from __future__ import annotations  # info: from __future__ import annotations
 
 import json  # info: import json
 import os  # info: import os
+import re  # info: import re
 import shutil  # info: import shutil
 import subprocess  # info: import subprocess
 import sys  # info: import sys
@@ -29,6 +30,17 @@ HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 RANK = {"urgent": 4, "high": 3, "normal": 2, "low": 1}  # info: set RANK
 VOICE_DIR = DB / "Media" / "Audio" / "Voice"  # info: set VOICE_DIR
 REPORT_TEXT = DB.parent / "test-reports" / "Voice"  # info: set REPORT_TEXT
+# NHC product titles that must not be read aloud (raw tables / discussions).
+_NHC_SKIP_TITLE = re.compile(  # info: set _NHC_SKIP_TITLE
+    r"(?i)\b(?:graphics|wind speed probabilit|forecast discussion|forecast advisory|"
+    r"intermediate advisory|tropical cyclone update|summary for)\b"
+)  # info: )
+_NHC_KEEP_TITLE = re.compile(r"(?i)\b(?:public advisory|tropical weather outlook)\b")  # info: keep only these NHC products
+_NHC_QUIET = re.compile(  # info: basin-quiet lines that contradict active storms
+    r"(?i)\b(?:no tropical cyclones|there are no tropical cyclone|"
+    r"tropical cyclone formation is not expected)\b"
+)  # info: )
+_NHC_NAMED = re.compile(r"(?i)\b(?:hurricane|tropical storm|tropical depression)\s+[A-Za-z]")  # info: named storm in title
 
 
 # ====================================================
@@ -101,14 +113,127 @@ def _recent(story: dict, now: datetime, hours: float) -> bool:  # info: def _rec
 
 
 # ====================================================
+# SECTION: function _is_nhc
+# What it does: True for National Hurricane Center feed rows.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _is_nhc(story: dict) -> bool:  # info: def _is_nhc
+    provider = str(story.get("provider") or "").lower()  # info: set provider
+    source = str(story.get("source_id") or story.get("source_name") or "").lower()  # info: set source
+    return "hurricane center" in provider or source.startswith("nhc_") or "nhc" in source  # info: return
+
+
+# ====================================================
+# SECTION: function _filter_nhc_stories
+# What it does: Keep Public Advisory + Tropical Weather Outlook only; drop quiet basin lines when named storms are active.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _advisory_number(title: str) -> int:  # info: def _advisory_number
+    match = re.search(r"(?i)\bnumber\s+(\d+)\b", title or "")  # info: set match
+    return int(match.group(1)) if match else -1  # info: return number or -1
+
+
+def _filter_nhc_stories(stories: list[dict]) -> list[dict]:  # info: def _filter_nhc_stories
+    active = any(  # info: set active
+        _is_nhc(story) and (_NHC_NAMED.search(story.get("title") or "") or re.search(r"(?i)\bactive systems\b", story.get("summary") or ""))
+        for story in stories
+    )  # info: )
+    # Newest / highest advisory number first so dedupe keeps the current product.
+    ranked = sorted(  # info: set ranked
+        stories,
+        key=lambda story: (
+            story.get("published_at") or "",
+            _advisory_number(story.get("title") or ""),
+        ),
+        reverse=True,
+    )  # info: )
+    out: list[dict] = []  # info: set out
+    seen_advisory: set[str] = set()  # info: one public advisory per storm name
+    seen_outlook: set[str] = set()  # info: one outlook per basin feed
+    for story in ranked:  # info: for story in ranked
+        if not _is_nhc(story):  # info: non-NHC rows pass through
+            out.append(story)  # info: out . append ( story )
+            continue  # info: continue
+        title = story.get("title") or ""  # info: set title
+        blob = f"{title} {story.get('summary') or ''}"  # info: set blob
+        if _NHC_SKIP_TITLE.search(title):  # info: drop discussion / radii / graphics
+            continue  # info: continue
+        if active and _NHC_QUIET.search(blob) and not _NHC_NAMED.search(title):  # info: no "all quiet" while storms are named
+            continue  # info: continue
+        if not _NHC_KEEP_TITLE.search(title):  # info: only public advisory + outlook
+            if (not active) and _NHC_QUIET.search(blob):  # info: quiet line only when nothing is active
+                out.append(story)  # info: out . append ( story )
+            continue  # info: continue
+        if re.search(r"(?i)public advisory", title):  # info: dedupe advisories per storm
+            named = _NHC_NAMED.search(title)  # info: set named
+            key = named.group(0).lower() if named else title.lower()  # info: set key
+            if key in seen_advisory:  # info: if key in seen_advisory
+                continue  # info: continue
+            seen_advisory.add(key)  # info: seen_advisory . add ( key )
+        elif re.search(r"(?i)tropical weather outlook", title):  # info: one outlook per source
+            key = str(story.get("source_id") or title).lower()  # info: set key
+            if active and _NHC_QUIET.search(blob) and not re.search(r"(?i)\bactive systems\b", blob):  # info: skip quiet Atlantic outlook when Pacific is active
+                continue  # info: continue
+            if key in seen_outlook:  # info: if key in seen_outlook
+                continue  # info: continue
+            seen_outlook.add(key)  # info: seen_outlook . add ( key )
+        out.append(story)  # info: out . append ( story )
+    return out  # info: return out
+
+
+# ====================================================
+# SECTION: function _nhc_body
+# What it does: One short speakable body for an NHC public advisory or outlook.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _nhc_body(title: str, summary: str) -> str:  # info: def _nhc_body
+    body = " ".join((summary or "").replace("...", " ").split())  # info: set body
+    body = re.sub(r"(?<=[A-Za-z])\.(?=\d)", " ", body)  # info: WINDS.90 → WINDS 90
+    body = re.sub(r"(?<=[A-Za-z])\.(?=[NSEW]\b)", " ", body)  # info: MOVEMENT.W → MOVEMENT W
+    if re.search(r"(?i)tropical weather outlook", title):  # info: outlook → Active Systems sentence when present
+        match = re.search(r"(?i)Active Systems:\s*(.+?)(?:\s{2,}|South of |$)", body)  # info: set match
+        if match:  # info: if match
+            return match.group(1).strip().rstrip(".") + "."  # info: return active systems
+        first = body.split(". ")[0].strip()  # info: set first
+        return first if first.endswith(".") else (first + "." if first else "")  # info: return first
+    bits: list[str] = []  # info: public advisory crumbs
+    about = re.search(  # info: set about
+        r"(?i)about\s+\d+\s*(?:miles|kilometers|km)\b[^.]{0,80}?(?:of\s+[^.]+)?",
+        body,
+    )  # info: )
+    if about:  # info: if about
+        bits.append(about.group(0).rstrip("."))  # info: bits . append
+    winds = re.search(  # info: set winds
+        r"(?i)maximum sustained winds?\s+\d+\s*(?:mph|kt|kts|knots|miles per hour)?",
+        body,
+    )  # info: )
+    if winds:  # info: if winds
+        bits.append(winds.group(0).rstrip("."))  # info: bits . append
+    move = re.search(  # info: set move — stop before the next NHC field label
+        r"(?i)present movement\s+.+?(?=\s+(?:MINIMUM|MAXIMUM|WATCHES|ABOUT|LOCATION)\b|$)",
+        body,
+    )  # info: )
+    if move:  # info: if move
+        bits.append(move.group(0).rstrip("."))  # info: bits . append
+    if bits:  # info: if bits
+        return ". ".join(bits).rstrip(".") + "."  # info: return crumbs
+    first = body.split(". ")[0].strip()  # info: set first
+    return first if first.endswith(".") else (first + "." if first else "")  # info: return first
+
+
+# ====================================================
 # SECTION: function _line
 # What it does: One attributed sentence. The wording stays the publisher's account.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _line(story: dict, registry: dict) -> str:  # info: def _line
     spoken = _publisher(story.get("provider") or "", registry["policy"])  # info: set spoken
-    body = _summary(story.get("summary") or "", registry["policy"])  # info: set body
-    line = f"{spoken} reports that {story.get('title') or 'an update'}."  # info: set line
+    title = story.get("title") or "an update"  # info: set title
+    if _is_nhc(story):  # info: NHC → short advisory / outlook body only
+        body = _nhc_body(title, story.get("summary") or "")  # info: set body
+    else:  # info: else
+        body = _summary(story.get("summary") or "", registry["policy"])  # info: set body
+    line = f"{spoken} reports that {title}."  # info: set line
     if body:  # info: if body :
         line = f"{line} {body}"  # info: set line
     return line  # info: return line — no spoken publish date
@@ -190,6 +315,7 @@ def build_update(stories: list[dict], registry: dict, when: datetime) -> dict:  
     desk_words = int(cfg.get("desk_words") or 750)  # info: set desk_words
     min_lane = int(cfg.get("min_lane_words") or 200)  # info: set min_lane
     stories = [story for story in stories if not sports({}, story, registry)]  # info: set stories
+    stories = _filter_nhc_stories(stories)  # info: drop NHC noise / quiet-vs-active contradiction
     fresh = [story for story in stories if _recent(story, now, fresh_hours)]  # info: set fresh
     older = [story for story in stories if _recent(story, now, backfill_hours)]  # info: set older
     desks = [desk for desk in (cfg.get("desks") or []) if isinstance(desk, dict) and not desk.get("fill")]  # info: set desks
@@ -371,7 +497,7 @@ def render_update(built: dict) -> dict:  # info: def render_update
     if voice_dir not in sys.path:  # info: if voice_dir not in sys . path :
         sys.path.insert(0, voice_dir)  # info: sys . path . insert ( 0 , voice_dir )
     import status_cue  # info: import status_cue
-    from hawaiian_lexicon import fold_place_spellings, pronounce_places  # info: from hawaiian_lexicon import fold_place_spellings , pronounce_places
+    from speakable import speakable  # info: from speakable import speakable
     status_cue.play("news_update", "starting")  # info: status cue before the news render
     folder = Path(tempfile.mkdtemp(prefix="news-hour-"))  # info: set folder
     gap = folder / "gap.wav"  # info: set gap
@@ -382,7 +508,8 @@ def render_update(built: dict) -> dict:  # info: def render_update
     for section in lanes:  # info: TTS each lane when reached
         stem = str(section.get("file_stem") or f"{int(section.get('order') or 0):02d}_{section.get('id') or 'lane'}")  # info: set stem
         wav = folder / f"{stem}.wav"  # info: numbered lane wav
-        spoken = pronounce_places(fold_place_spellings(section.get("text") or ""))  # info: set spoken
+        # speakable: drop URLs/coords/long digit runs, then place respelling (also re-applied in voice_generate).
+        spoken = speakable(section.get("text") or "")  # info: set spoken
         if _words(spoken) < 1:  # info: if _words ( spoken ) < 1 :
             continue  # info: continue
         rendered = _render_section(str(section.get("persona") or "ava"), spoken, wav, folder / f"{stem}.txt")  # info: set rendered
@@ -401,10 +528,29 @@ def render_update(built: dict) -> dict:  # info: def render_update
         return {"ok": True, "detail": "rendered", "wav": joined["wav"], "voices": voices, "lanes": [str(p.name) for p in parts if p.suffix == ".wav" and p.name != "gap.wav"]}  # info: return
     import radio_push  # info: import radio_push
     status_cue.play("news_update", "transit")  # info: transit
-    pushed = radio_push.push_report("news_update")  # info: single file
-    if not isinstance(pushed, dict):  # info: if not isinstance ( pushed , dict ) :
+    # Fold desks + this news into report_current so :00 and :30 both replay chime → report/news.
+    pushed: dict = {"ok": False, "detail": "push_failed", "wav": joined["wav"]}  # info: set pushed
+    try:  # info: try restitch hour file
+        import generate_hour_reports as hour_batch  # info: import generate_hour_reports
+        desk_ids = [rid for rid, _who, _mod in hour_batch.HOUR_REPORTS]  # info: desk order
+        combined = hour_batch.stitch_combined(desk_ids)  # info: desks then news_update
+        if combined.get("ok"):  # info: if combined ok
+            pushed = radio_push.push_hour_batch()  # info: push report_current; clear legacy singles
+            pushed["combined"] = combined  # info: keep stitch detail
+        else:  # info: else
+            pushed = radio_push.push_report("news_update")  # info: fall back to news-only
+            pushed["combined"] = combined  # info: note why
+    except Exception as exc:  # info: except
+        pushed = radio_push.push_report("news_update")  # info: fall back
+        pushed["combined_error"] = str(exc)[:160]  # info: record
+    if not isinstance(pushed, dict) or not pushed.get("ok"):  # info: if push failed
         status_cue.play("news_update", "failed")  # info: failed
-        return {"ok": False, "detail": "push_failed", "wav": joined["wav"]}  # info: return
+        if not isinstance(pushed, dict):  # info: if not dict
+            return {"ok": False, "detail": "push_failed", "wav": joined["wav"]}  # info: return
+        pushed["ok"] = False  # info: mark
+        pushed["detail"] = pushed.get("detail") or "push_failed"  # info: detail
+        pushed["wav"] = joined["wav"]  # info: wav
+        return pushed  # info: return
     pushed["status_send"] = status_cue.after_push("news_update", pushed)  # info: after push
     pushed["voices"] = voices  # info: voices
     pushed["wav"] = joined["wav"]  # info: wav

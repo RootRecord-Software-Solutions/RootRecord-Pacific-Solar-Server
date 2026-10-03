@@ -230,17 +230,132 @@ def audio_duration(path: Path) -> float:
         return 0.0
 
 
-def _encode_opus(wav: Path, tmp: Path) -> bool:
+def _encode_opus(wav: Path, tmp: Path, *, bitrate: str = "24k") -> bool:
     made = subprocess.run(
         [
             "ffmpeg", "-y", "-i", str(wav),
-            "-c:a", "libopus", "-b:a", "24k", "-application", "voip", "-ac", "1",
+            "-c:a", "libopus", "-b:a", bitrate, "-application", "voip", "-ac", "1",
             str(tmp),
         ],
         capture_output=True,
         timeout=180,
     )
     return made.returncode == 0 and tmp.is_file() and tmp.stat().st_size >= 64
+
+
+CHIME_WAV_DIR = VOICE / "Chimes"
+CHIME_SLOT = re.compile(r"^hour-((?:[01]\d|2[0-3])-(?:00|30))\.wav$")
+
+
+def ensure_chimes(*, local: bool | None = None, force: bool = False) -> dict:
+    """Bank prebuilt Chimes/*.wav → hour-HH-MM.opus. Never runs Kokoro; encodes only when missing/stale."""
+    if local is None:
+        local = use_local()
+    if not CHIME_WAV_DIR.is_dir():
+        return {"ok": False, "detail": "no_chime_wav_dir", "dir": str(CHIME_WAV_DIR)}
+    wavs = sorted(p for p in CHIME_WAV_DIR.glob("hour-*.wav") if CHIME_SLOT.match(p.name))
+    if not wavs:
+        return {"ok": False, "detail": "no_chime_wavs", "dir": str(CHIME_WAV_DIR)}
+    encoded = 0
+    kept = 0
+    failed: list[str] = []
+    if local:
+        dest_dir = local_audio_dir() / "chimes"
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        for wav in wavs:
+            slot = CHIME_SLOT.match(wav.name).group(1)
+            dest = dest_dir / f"hour-{slot}.opus"
+            if dest.is_file() and not force and dest.stat().st_mtime >= wav.stat().st_mtime:
+                kept += 1
+                continue
+            fd, tmp_name = tempfile.mkstemp(prefix=f"chime-{slot}-", suffix=".opus")
+            os.close(fd)
+            tmp = Path(tmp_name)
+            partial = dest_dir / f".hour-{slot}.opus.partial"
+            try:
+                if not _encode_opus(wav, tmp, bitrate="48k"):
+                    failed.append(slot)
+                    continue
+                partial.write_bytes(tmp.read_bytes())  # same filesystem as dest (tmp may be cross-device)
+                os.replace(partial, dest)
+                dest.chmod(0o644)
+                encoded += 1
+            finally:
+                tmp.unlink(missing_ok=True)
+                partial.unlink(missing_ok=True)
+        return {
+            "ok": not failed,
+            "mode": "local",
+            "encoded": encoded,
+            "kept": kept,
+            "failed": failed,
+            "total": len(wavs),
+        }
+    # Remote: encode locally then SCP only slots that need refresh.
+    remote_dir = REMOTE.rstrip("/") + "/chimes"
+    folder = subprocess.run(
+        SSH + [HOST, "mkdir -p -- " + shlex.quote(remote_dir)],
+        capture_output=True,
+        text=True,
+        timeout=40,
+    )
+    if folder.returncode != 0:
+        return {"ok": False, "detail": "remote_dir", "mode": "remote"}
+    for wav in wavs:
+        slot = CHIME_SLOT.match(wav.name).group(1)
+        name = f"hour-{slot}.opus"
+        remote = remote_dir + "/" + name
+        if not force:
+            probe = subprocess.run(
+                SSH + [HOST, "test -s -- " + shlex.quote(remote)],
+                capture_output=True,
+                text=True,
+                timeout=20,
+            )
+            if probe.returncode == 0:
+                kept += 1
+                continue
+        fd, tmp_name = tempfile.mkstemp(prefix=f"chime-{slot}-", suffix=".opus")
+        os.close(fd)
+        tmp = Path(tmp_name)
+        try:
+            if not _encode_opus(wav, tmp, bitrate="48k"):
+                failed.append(slot)
+                continue
+            partial = remote + ".partial"
+            sent = subprocess.run(
+                ["scp", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", str(tmp), f"{HOST}:{partial}"],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            if sent.returncode != 0:
+                failed.append(slot)
+                continue
+            moved = subprocess.run(
+                SSH
+                + [
+                    HOST,
+                    "mv -f -- " + shlex.quote(partial) + " " + shlex.quote(remote) + " && chmod 644 -- " + shlex.quote(remote),
+                ],
+                capture_output=True,
+                text=True,
+                timeout=40,
+            )
+            if moved.returncode != 0:
+                failed.append(slot)
+                continue
+            encoded += 1
+        finally:
+            tmp.unlink(missing_ok=True)
+    return {
+        "ok": not failed,
+        "mode": "remote",
+        "encoded": encoded,
+        "kept": kept,
+        "failed": failed,
+        "total": len(wavs),
+    }
 
 
 def push_report_local(report: str, wav: Path) -> dict:
@@ -500,10 +615,10 @@ def push_music() -> dict:
     return {"ok": True, "music": str(MUSIC), "mode": "remote"}
 
 
-# Combined :42 hour file (desks + news). Catch-up pushes this one file.
+# Combined hour file (desks + news). :00/:30 replay this; push overwrites in place.
 COMBINED_HOUR = "report"
-# Legacy per-desk currents removed from ML1 after the combined file lands.
-LEGACY_HOUR_DESKS = (
+# Desk/news ids used when falling back to per-file overwrite (no deletes on ML1).
+HOUR_DESKS = (
     "boot_brief",
     "system_perf",
     "nws_weather",
@@ -519,61 +634,29 @@ LEGACY_HOUR_DESKS = (
     "custom_msg",
     "news_update",
 )
-# Backward-compat alias for older callers.
-HOUR_DESKS = LEGACY_HOUR_DESKS
+# Backward-compat alias.
+LEGACY_HOUR_DESKS = HOUR_DESKS
 
 
 def clear_legacy_hour_reports(*, local: bool | None = None) -> dict:
-    """Drop old per-desk *_current on air so only report_current plays."""
+    """No-op. Half-hour replay overwrites report_current; desk files are left alone."""
     if local is None:
         local = use_local()
-    names: list[str] = []
-    for report in LEGACY_HOUR_DESKS:
-        for ext in (".opus", ".ogg"):
-            names.append(f"{report}_current{ext}")
-    removed: list[str] = []
-    if local:
-        root = local_reports_dir()
-        for name in names:
-            path = root / name
-            if not path.is_file() and not path.is_symlink():
-                continue
-            try:
-                path.unlink()
-                removed.append(name)
-            except OSError:
-                return {"ok": False, "detail": "local_unlink_failed", "removed": removed, "failed": name}
-        return {"ok": True, "removed": removed, "mode": "local"}
-    remote_dir = REPORTS_REMOTE.rstrip("/")
-    remote_paths = " ".join(shlex.quote(remote_dir + "/" + name) for name in names)
-    cleared = subprocess.run(
-        SSH + [HOST, "rm -f -- " + remote_paths],
-        capture_output=True,
-        text=True,
-        timeout=40,
-    )
-    if cleared.returncode != 0:
-        return {"ok": False, "detail": "remote_unlink_failed", "mode": "remote"}
-    return {"ok": True, "removed": names, "mode": "remote"}
+    return {"ok": True, "skipped": True, "detail": "overwrite_only", "removed": [], "mode": "local" if local else "remote"}
 
 
 def push_hour_batch() -> dict:
-    """Push report_current (desks+news stitch) and clear legacy per-desk currents."""
+    """Overwrite report_current on ML1 (desks+news stitch). Does not delete other report files."""
     if not (VOICE / f"{COMBINED_HOUR}_current.wav").is_file():
         return {"ok": False, "detail": "no_combined_wav", "report": COMBINED_HOUR}
     one = push_report(COMBINED_HOUR)
-    if not one.get("ok") or one.get("skipped"):
-        return one
-    cleared = clear_legacy_hour_reports(local=one.get("mode") == "local")
-    one["cleared_legacy"] = cleared
-    if not cleared.get("ok"):
-        one["ok"] = False
-        one["detail"] = cleared.get("detail") or "clear_legacy_failed"
+    if isinstance(one, dict):
+        one["cleared_legacy"] = clear_legacy_hour_reports(local=one.get("mode") == "local")
     return one
 
 
 def push_all() -> dict:
-    """Catch-up: push the combined hour file when present; else legacy per-desk WAVs."""
+    """Catch-up: overwrite the combined hour file when present; else overwrite each desk/news WAV."""
     if (VOICE / f"{COMBINED_HOUR}_current.wav").is_file():
         one = push_hour_batch()
         sent = 1 if one.get("ok") and not one.get("skipped") else 0
@@ -581,7 +664,7 @@ def push_all() -> dict:
     results = []
     ok = True
     sent = 0
-    for report in LEGACY_HOUR_DESKS:
+    for report in HOUR_DESKS:
         if not (VOICE / f"{report}_current.wav").is_file():
             results.append({"ok": True, "skipped": True, "detail": "no_wav", "report": report})
             continue
@@ -597,12 +680,14 @@ def push_all() -> dict:
 def main() -> int:
     if len(sys.argv) == 2 and sys.argv[1] == "--music":
         result = push_music()
+    elif len(sys.argv) == 2 and sys.argv[1] == "--chimes":
+        result = ensure_chimes()
     elif len(sys.argv) == 2 and sys.argv[1] == "--all":
         result = push_all()
     elif len(sys.argv) == 2 and REPORT_NAME.fullmatch(sys.argv[1]):
         result = push_report(sys.argv[1])
     else:
-        result = {"ok": False, "detail": "usage: radio_push.py <report>|--all|--music"}
+        result = {"ok": False, "detail": "usage: radio_push.py <report>|--all|--music|--chimes"}
     print(json.dumps(result))
     return 0 if result.get("ok") else 1
 

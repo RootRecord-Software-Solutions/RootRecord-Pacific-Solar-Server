@@ -86,7 +86,9 @@ PROMPT = (  # info: set PROMPT
     "Use plume for a gas or ash column without clear lava jets. Use quiet when the crater looks dark or inactive. "  # info: plume quiet
     "Use unclear when the frame is too dark, fogged, or blocked to judge. "  # info: unclear
     "fountaining is true only when activity is fountaining, otherwise false. "  # info: bool
-    'visible is one short factual phrase of what is on the still, or "" when unclear. Do not invent numbers or times.'  # info: visible
+    'visible is one short factual phrase of what is on the still, or "" when unclear. '  # info: visible
+    "Describe only lava, glow, plume, or crater features on the pixels. "  # info: pixels only
+    "Do not mention night, day, sunrise, sunset, dawn, dusk, or the time of day."  # info: no clock claims
 )  # info: )
 
 COMPARE_PROMPT = (  # info: set COMPARE_PROMPT
@@ -96,7 +98,8 @@ COMPARE_PROMPT = (  # info: set COMPARE_PROMPT
     'Keys: "activity", "fountaining", "visible". '  # info: keys
     "activity is one of quiet, glow, incandescent, fountaining, plume, unclear for Image 1 only. "  # info: activity
     "fountaining is true only when Image 1 shows bright vertical lava jets or spray like Image 2. "  # info: compare
-    "Do not copy Image 2 into the answer. visible describes Image 1 only in one short factual phrase."  # info: visible
+    "Do not copy Image 2 into the answer. visible describes Image 1 only in one short factual phrase. "  # info: visible
+    "Do not mention night, day, sunrise, sunset, dawn, dusk, or the time of day."  # info: no clock claims
 )  # info: )
 
 
@@ -302,10 +305,27 @@ def ask(path: Path, reference: Path | None = None) -> tuple[str, bool, str]:  # 
     fountain = bool(row.get("fountaining")) and activity == "fountaining"  # info: set fountain
     if activity == "fountaining":  # info: if fountaining label
         fountain = True  # info: force true
-    visible = str(row.get("visible") or "").strip()  # info: set visible
+    visible = sanitize_visible(str(row.get("visible") or "").strip())  # info: set visible without clock claims
     if len(visible) > 160:  # info: if long
         visible = visible[:157].rstrip() + "..."  # info: trim
     return activity, fountain, visible  # info: return triple
+
+
+# ====================================================
+# SECTION: function sanitize_visible
+# What it does: Drop invented night/day clock phrases from the model visible line.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def sanitize_visible(visible: str) -> str:  # info: def sanitize_visible
+    text = str(visible or "").strip()  # info: set text
+    if not text:  # info: if empty
+        return ""  # info: return empty
+    low = text.lower()  # info: set low
+    # Model often invents "dark night sky" even on a daylight USGS still.
+    bad = ("night", "daytime", "day time", "sunrise", "sunset", "dawn", "dusk", "before sunrise", "after sunset")  # info: set bad
+    if any(token in low for token in bad):  # info: if clock claim
+        return ""  # info: drop invented clock phrase
+    return text  # info: return clean
 
 
 # ====================================================

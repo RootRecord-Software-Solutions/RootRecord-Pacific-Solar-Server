@@ -386,10 +386,15 @@ def _expand_units(text: str) -> str:  # info: def _expand_units
     out = re.sub(r"\bkW\b", "kilowatts", out)  # info: set out
     out = re.sub(r"(?<=\d)\s*W\b", " watts", out)  # info: set out
     out = re.sub(r"(?<=\d)W\b", " watts", out)  # info: set out
-    out = re.sub(r"\bmph\b", "miles per hour", out)  # info: set out
+    # NHC field glue: "WINDS.90 MPH" / "MOVEMENT.W OR" → spaced before unit expand.
+    out = re.sub(r"(?<=[A-Za-z])\.(?=\d)", " ", out)  # info: split WORD.90
+    out = re.sub(r"(?<=[A-Za-z])\.(?=[NSEW]\b)", " ", out)  # info: split MOVEMENT.W
+    # Dual metric tags NHC writes as "150 KM, H" / "150 KM/H".
+    out = re.sub(r"(?i)(?<=\d)\s*km\s*[,/]\s*h\b", " kilometers per hour", out)  # info: km,h → km/h words
+    out = re.sub(r"(?i)\bmph\b", "miles per hour", out)  # info: mph / MPH
     out = re.sub(r"(?i)\bmiles per hour\b", "miles per hour", out)  # info: set out
-    out = re.sub(r"\bnmi\b", "nautical miles", out)  # info: set out
-    out = re.sub(r"(?<=\d)\s*nm\b", " nautical miles", out)  # info: set out
+    out = re.sub(r"(?i)\bnmi\b", "nautical miles", out)  # info: set out
+    out = re.sub(r"(?i)(?<=\d)\s*nm\b", " nautical miles", out)  # info: set out
     out = re.sub(r"\bNWS\b", "National Weather Service", out)  # info: set out
     out = _expand_states(out)  # info: set out
     out = re.sub(r"\bU\. ?S\. ?G\. ?S\.?", "United States Geological Survey", out)  # info: set out
@@ -399,8 +404,8 @@ def _expand_units(text: str) -> str:  # info: def _expand_units
     out = re.sub(r"\bHI alerts\b", "Hawaii alerts", out)  # info: set out
     out = re.sub(r"(?i)\bH(?:\.|\s)*I\.?\b", "Hawaii", out)  # info: set out
     out = re.sub(r"\bHI\b", "Hawaii", out)  # info: set out
-    out = re.sub(r"(?<=\d)\s*km\b", " kilometers", out)  # info: set out
-    out = re.sub(r"(?<=\d)km\b", " kilometers", out)  # info: set out
+    out = re.sub(r"(?i)(?<=\d)\s*km\b", " kilometers", out)  # info: set out
+    out = re.sub(r"(?i)(?<=\d)km\b", " kilometers", out)  # info: set out
     out = re.sub(r"(?i)(?<=\d)\s*mi\b(?!\w)", " miles", out)  # info: set out
     out = re.sub(r"(?i)(?<=\d)mi\b(?!\w)", " miles", out)  # info: set out
     out = re.sub(r"\bSSW\b", "south-southwest", out)  # info: set out
@@ -419,17 +424,147 @@ def _expand_units(text: str) -> str:  # info: def _expand_units
     out = re.sub(r"\bN of\b", "north of", out)  # info: set out
     out = re.sub(r"\bE of\b", "east of", out)  # info: set out
     out = re.sub(r"\bW of\b", "west of", out)  # info: set out
+    # Lone cardinal after movement / toward (NHC "PRESENT MOVEMENT W OR 275").
+    out = re.sub(r"(?i)\b((?:movement|toward|towards|from|to)\s+)W\b", r"\1west", out)  # info: movement W → west
+    out = re.sub(r"(?i)\b((?:movement|toward|towards|from|to)\s+)E\b", r"\1east", out)  # info: movement E → east
+    out = re.sub(r"(?i)\b((?:movement|toward|towards|from|to)\s+)N\b", r"\1north", out)  # info: movement N → north
+    out = re.sub(r"(?i)\b((?:movement|toward|towards|from|to)\s+)S\b", r"\1south", out)  # info: movement S → south
     out = re.sub(r"\bCPU\b", "processor", out)  # info: set out
     out = re.sub(r"\bRAM\b", "memory", out)  # info: set out
     out = re.sub(r"\bNPU\b", "neural processor", out)  # info: set out
     out = re.sub(r"\bi_gpu\b", "graphics", out, flags=re.I)  # info: set out
     out = re.sub(r"\bGPU\b", "graphics", out)  # info: set out
     out = re.sub(r"\bPV\b", "solar", out)  # info: set out
-    out = re.sub(r"\bkt\b", "knots", out)  # info: set out
-    out = re.sub(r"\bmb\b", "millibars", out)  # info: set out
+    # Knots / millibars — case-insensitive so NHC "80 KT" / "80 KTS" never reads as letters.
+    out = re.sub(r"(?i)\bkts?\b", "knots", out)  # info: kt / KT / kts → knots
+    out = re.sub(r"(?i)\bmb\b", "millibars", out)  # info: mb / MB
+    # Drop redundant dual-unit tails (NHC lists knots + mph + km/h).
+    out = re.sub(  # info: keep knots, drop following mph
+        r"(?i)(\d+(?:\.\d+)?\s*knots)\s+\d+(?:\.\d+)?\s*miles per hour",
+        r"\1",
+        out,
+    )  # info: )
+    out = re.sub(  # info: keep knots, drop following km/h
+        r"(?i)(\d+(?:\.\d+)?\s*knots)\s+\d+(?:\.\d+)?\s*kilometers per hour",
+        r"\1",
+        out,
+    )  # info: )
+    out = re.sub(  # info: keep mph, drop following km/h duplicate
+        r"(?i)(\d+(?:\.\d+)?\s*miles per hour)\s+\d+(?:\.\d+)?\s*kilometers per hour",
+        r"\1",
+        out,
+    )  # info: )
     out = re.sub(r"(?<=\d)\s*%", " percent", out)  # info: set out
     out = re.sub(r"(?<=\d)%", " percent", out)  # info: set out
+    # Soften NHC ALL-CAPS labels so Kokoro says "winds" not letter-salad.
+    out = re.sub(  # info: 4+ letter ALL-CAPS words → lowercase (keep short codes)
+        r"\b[A-Z]{4,}\b",
+        lambda m: m.group(0) if m.group(0) in {"NWS", "USGS", "UTC", "GMT", "NHC", "NOAA"} else m.group(0).lower(),
+        out,
+    )  # info: )
+    # Short shouted fillers left by NHC products.
+    out = re.sub(r"\b(?:TO|OR|AT|OF|IN|ON|BY|AS|IS|MAX|MIN)\b", lambda m: m.group(0).lower(), out)  # info: TO/OR/AT/MAX → lower
     return out  # info: return out
+
+
+# ====================================================
+# SECTION: function _scrub_unspeakable
+# What it does: Drop URLs, lat/lon coordinates, and long digit strings before TTS.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _scrub_unspeakable(text: str) -> str:  # info: def _scrub_unspeakable
+    """Drop URLs, coordinates, NWS/NHC boilerplate, and long digit runs so Kokoro never reads them aloud."""  # info: docstring
+    out = text or ""  # info: set out
+    # Forecast advisory radii / seas grids BEFORE turning NWS "..." into spaces.
+    out = re.sub(r"\b\d{1,3}\s*KT\.+\s*(?:\d{1,3}[NESW]{2}\s*)+", " ", out, flags=re.I)  # info: strip wind radii dotted
+    out = re.sub(r"\b\d{1,3}\s*KT\.?\s+(?:\d{1,3}[NESW]{2}\s*){3,}", " ", out, flags=re.I)  # info: strip wind radii spaced
+    out = re.sub(r"\b\d\s*M\s*SEAS\.+\s*(?:\d{1,3}[NESW]{2}\s*)+", " ", out, flags=re.I)  # info: strip seas radii dotted
+    out = re.sub(r"\b\d\s*M\s*SEAS\.?\s+(?:\d{1,3}[NESW]{2}\s*){3,}", " ", out, flags=re.I)  # info: strip seas radii spaced
+    out = re.sub(r"(?i)\brepeat\b\.+\s*center\b", " ", out)  # info: strip REPEAT...CENTER
+    out = out.replace("...", " ")  # info: NWS uses ... as separators — turn into spaces
+    out = out.replace("…", " ")  # info: unicode ellipsis
+    # Full URLs and www hosts (keep the surrounding sentence when possible).
+    out = re.sub(r"(?i)\b(?:https?://|www\.)\S+", " ", out)  # info: strip http/https/www
+    out = re.sub(r"(?i)\bmore at\b[:\s]*", " ", out)  # info: drop "More at" lead-in left by URL strip
+    # Bare domains that news blurbs append (nsf.gov/events/...).
+    out = re.sub(r"(?i)\b(?:[\w-]+\.)+(?:gov|com|org|edu|net|io|cloud|us)(?:/[\w./?&=%-]*)?", " ", out)  # info: strip bare domains
+    # NHC timezone legend only (keep ordinary "Hawaiian Standard Time" in desk copy).
+    out = re.sub(r"(?i)\bz indicates coordinated universal time\b[^.]*\.?", " ", out)  # info: strip Z indicates UTC
+    out = re.sub(  # info: strip "Pacific Daylight Time (PDT).SUBTRACT 7 HOURS FROM Z TIME"
+        r"(?i)\b(?:pacific|hawaiian|hawaii|eastern|central|mountain|alaska)\s+"
+        r"(?:daylight|standard)\s+time\s*(?:\([^)]*\))?\.?\s*"
+        r"subtract\s+\d+\s+hours?(?:\s+from\s+z\s+time)?\b",
+        " ",
+        out,
+    )  # info: )
+    out = re.sub(r"(?i)\bsubtract\s+\d+\s+hours?\s+from\s+z\s+time\b", " ", out)  # info: strip subtract from Z time
+    out = re.sub(r"(?i)\bsubtract\s+\d+\s+hours?\b[^.]*", " ", out)  # info: any leftover subtract-hours line
+    # Wind-speed probability table lead-in + chance lines (NHC FOPZ products).
+    out = re.sub(  # info: strip probability table block start through next story break when possible
+        r"(?i)\bwind speed probability table for specific locations\b.*?(?=\bthe national hurricane center reports\b|\bthat is the news update\b|$)",
+        " ",
+        out,
+    )  # info: )
+    out = re.sub(r"(?i)\bchances of sustained\b[^.]*", " ", out)  # info: strip chances-of-sustained lead-in
+    out = re.sub(r"\b(?:\d{1,3}[NESW]{2}\s*){3,}", " ", out, flags=re.I)  # info: strip leftover quadrant lists
+    out = re.sub(r"(?i)\bwinds and seas vary greatly in each quadrant\b[^.]*\.?", " ", out)  # info: strip radii disclaimer
+    out = re.sub(r"(?i)\bradii in nautical miles are the largest radii expected anywhere in that quadrant\b\.?", " ", out)  # info: strip radii disclaimer 2
+    # Lat/lon — pairs first so LOCATION...19.4N does not leave 111.8W for the watts expander.
+    out = re.sub(r"\b\d{1,3}(?:\.\d+)?\s*°?\s*[NS]\s*[,/]?\s*\d{1,3}(?:\.\d+)?\s*°?\s*[EW]\b", " ", out, flags=re.I)  # info: strip 19.4N 111.8W
+    out = re.sub(  # info: near lat/lon pair → short place phrase
+        r"(?i)\bnear\s+latitude\s+[-\d.]+\s*(?:north|south)?\s*[.,]?\s*longitude\s+[-\d.]+\s*(?:east|west)?",
+        "near its reported position",
+        out,
+    )  # info: )
+    out = re.sub(r"(?i)\blatitude\s+[-\d.]+\s*(?:north|south)?\.?", " ", out)  # info: strip latitude N/S
+    out = re.sub(r"(?i)\blongitude\s+[-\d.]+\s*(?:east|west)?\.?", " ", out)  # info: strip longitude E/W
+    out = re.sub(  # info: strip LOCATION.19.4N 111.8W / LOCATION...19.4N as a whole
+        r"(?i)\blocation\.?\s*[:=]?\s*-?\d{1,3}(?:\.\d+)?\s*[nsew]?(?:\s+-?\d{1,3}(?:\.\d+)?\s*[nsew])?",
+        " ",
+        out,
+    )  # info: )
+    out = re.sub(r"(?i)\b(?:lat|lon|long)\.?\s*[:=]?\s*-?\d{1,3}(?:\.\d+)?\s*[nsew]?\b", " ", out)  # info: strip lat=/lon=
+    out = re.sub(r"\b-?\d{1,3}\.\d{2,}\s*[,/]\s*-?\d{1,3}\.\d{2,}\b", " ", out)  # info: strip decimal degree pairs
+    # Lone degree crumbs (must go before unit expand turns 111.8W into "watts").
+    out = re.sub(r"\b\d{1,3}(?:\.\d+)?\s*°?\s*[NSEW]\b", " ", out)  # info: strip lone 19.4N / 111.8W
+    out = re.sub(r"\b\d{1,3}(?:\.\d{1,3}){3}\b", " ", out)  # info: strip IPv4-looking dotted quads
+    # NWS / NHC WMO header crumbs: 000 WTPZ43 KNHC 030836 TCDEP3 (also mid-string, not only line-start).
+    out = re.sub(r"\b\d{3}\s+[A-Z]{3,5}\d{0,3}\s+K[A-Z]{3}\s+\d{5,6}\s+[A-Z0-9]{4,}\b", " ", out)  # info: strip WMO headers
+    out = re.sub(r"\b(?:WTPZ|FOPZ|TCMEP|TCPEP|TCDEP|ABNT|ABPZ|TWOAT|TWOEP|PWSEP|PWSAT)\d{0,3}\b", " ", out, flags=re.I)  # info: strip AWIPS ids
+    out = re.sub(r"\bEP\d{6}\b", " ", out)  # info: strip storm product ids EP182026
+    out = re.sub(r"\b\d{2}/\d{4}Z\b", " ", out)  # info: strip 03/0900Z stamps
+    out = re.sub(r"(?i)\b\$\$\s*forecaster\s+\w+\b", " ", out)  # info: strip $$ Forecaster Name
+    out = out.replace("$", " ")  # info: never speak dollar signs (NHC $$ / money crumbs)
+    out = out.replace("&", " and ")  # info: never speak ampersands — say "and"
+    # If named storms are present, drop contradictory "no tropical cyclones" sentences.
+    if re.search(r"(?i)\b(?:hurricane|tropical storm|tropical depression)\s+[A-Za-z]", out):  # info: if named storm present
+        out = re.sub(r"(?i)[^.?!]*\bno tropical cyclones\b[^.?!]*[.?!]?", " ", out)  # info: drop quiet basin claims
+        out = re.sub(r"(?i)[^.?!]*\bthere are no tropical cyclone\b[^.?!]*[.?!]?", " ", out)  # info: drop no-tropical claims
+    out = re.sub(r"-{3,}", " ", out)  # info: strip dash runs from NWS summaries
+    # USGS quake feed crumbs that sneak into news titles.
+    out = re.sub(r"(?i)\bpager\s*-\s*\w+\b", " ", out)  # info: strip PAGER - GREEN
+    out = re.sub(r"(?i)\bshakemap\s*-\s*[IVXLC]+\b", " ", out)  # info: strip ShakeMap - III
+    out = re.sub(r"(?i)\bdyfi\??\s*-\s*[IVXLC]+\b", " ", out)  # info: strip DYFI? - IV
+    # Long digit runs (product IDs, stamps) — keep shorter spoken numbers (temps, years, percents).
+    out = re.sub(r"\b\d{6,}\b", " ", out)  # info: strip 6+ digit runs
+    out = re.sub(r"\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b", " ", out, flags=re.I)  # info: strip UUIDs
+    out = re.sub(r"\b[0-9a-f]{32,}\b", " ", out, flags=re.I)  # info: strip long hex
+    out = re.sub(r"(?i)\bat\s+near\b", "near", out)  # info: fix "at near" after coord strip
+    out = re.sub(r"(?i)\blocated\s+near\s+at\b", "located near", out)  # info: fix "located near at" after coord strip
+    out = re.sub(r"(?i)\bnear\s+at\b", "near", out)  # info: fix "near at"
+    out = re.sub(r"(?i)\bposition\s+accurate\s+within\s+\d+\s*n\.?m\.?\b", " ", out)  # info: strip POSITION ACCURATE WITHIN 20 NM
+    out = re.sub(r"(?i)\blocated\s+near\s+position\b", "located near its reported position", out)  # info: fix after coord+stamp strip
+    out = re.sub(  # info: fix "located near PRESENT MOVEMENT" after stamp/position strip
+        r"(?i)\blocated\s+near\s+(?=present\s+movement\b)",
+        "located near its reported position. ",
+        out,
+    )  # info: )
+    out = re.sub(r"(?i)\blocation\s+(?=about\b|maximum\b|present\b)", " ", out)  # info: drop orphan LOCATION field label
+    out = re.sub(r"(?i)\beast of\s+\d{1,3}\s+longitude\b", "east of the International Date Line", out)  # info: soften 180 longitude
+    out = re.sub(r"\s+([.,;:])", r"\1", out)  # info: trim space before punctuation
+    out = re.sub(r"^[.,;:\s]+|[.,;:\s]+$", "", out)  # info: trim orphan punctuation ends
+    out = re.sub(r"\s{2,}", " ", out)  # info: collapse spaces
+    return out.strip()  # info: return out
 
 
 # ====================================================
@@ -439,6 +574,8 @@ def _expand_units(text: str) -> str:  # info: def _expand_units
 # ====================================================
 def speakable(text: str) -> str:  # info: def speakable
     out = " ".join((text or "").replace("\u00a0", " ").split())  # info: set out
+    out = _scrub_unspeakable(out)  # info: drop URLs, coordinates, long digit strings first
+    out = " ".join(out.split())  # info: collapse spaces left by scrub
     try:  # info: try :
         from hawaiian_lexicon import fold_place_spellings, pronounce_places  # info: from hawaiian_lexicon import fold_place_spellings , pronounce_places
     except ImportError:  # info: except ImportError :

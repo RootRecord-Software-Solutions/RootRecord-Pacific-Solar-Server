@@ -408,6 +408,14 @@ def reuse_hour(cached: dict | None, image: Path | None, hour: str, force: bool) 
             return True  # info: return True
         if image.stat().st_mtime > looked.timestamp():  # info: if image . stat ( ) . st_mtime > looked . timestamp ( )
             return False  # info: return False
+    # Dawn: a color daylight frame replaces a cached infrared / "dark" look in the same hour.
+    if image and (cached.get("infrared") or cached.get("weather") == "dark") and not infrared(image) and not blank(image):  # info: if daylight replaces night cache
+        try:  # info: try
+            looked = datetime.fromisoformat(str(cached.get("at") or ""))  # info: set looked
+        except ValueError:  # info: except ValueError
+            return False  # info: force re-look when cache time is bad
+        if image.stat().st_mtime > looked.timestamp():  # info: if newer daylight still
+            return False  # info: return False
     return True  # info: return True
 
 

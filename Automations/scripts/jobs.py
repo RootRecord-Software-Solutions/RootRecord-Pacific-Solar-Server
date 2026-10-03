@@ -1335,6 +1335,20 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     {  # info: {
         # hourly work at :30 or later.
+        "id": "energy_sun_times",  # info: "id" : "energy_sun_times" ,
+        "enabled": os.environ.get("RR_SUN_TIMES", "1") == "1",  # info: "enabled" : os . environ . get (
+        "at_minute": 32,  # info: "at_minute" : 32 ,
+        "at_second": 40,  # info: "at_second" : 40 ,
+        "description": "Sunrise/sunset HST (Volcano/Puna) -> Database Energy/sun/sun-times_current.json. No send.",  # info: "description"
+        "builtin": "",  # info: "builtin"
+        "command": f"python3 \"{PACIFIC}/Energy/scripts/sun_times.py\" refresh",  # info: "command"
+        "timeout_sec": 30,  # info: "timeout_sec" : 30 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{PACIFIC}/Energy",  # info: "cwd"
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
+    {  # info: {
+        # hourly work at :30 or later.
         "id": "energy_moon_phase",  # info: "id" : "energy_moon_phase" ,
         "enabled": os.environ.get("RR_MOON", "1") == "1",  # info: "enabled" : os . environ . get (,
         "at_minute": 32,  # info: "at_minute" : 32 ,
@@ -2245,12 +2259,12 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # --- 55:30–55:34 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     {  # info: {
-        # YouTube still — desks + BLE gauges; atomic thumb to ML1. Clock is rr-live-clock.
+        # YouTube still — clock + network/site/quakes (EcoFlow BLE cards off); atomic thumb to ML1.
         "id": "live_picture",  # info: "id" : "live_picture" ,
         "enabled": os.environ.get("RR_LIVE_PICTURE", "0") == "1",
         "every_seconds": 300,  # info: every 5 minutes
         "at_second": 30,  # info: "at_second" : 30 ,
-        "description": "Render live desk still (BLE River/Delta + network/site) and atomically replace ML1 youtube-stills/thumb.png. Clock stays on rr-live-clock (20s lead).",  # info: "description"
+        "description": "Render livestream still (clock + sun/host + island weather + network/site/quakes; EcoFlow BLE cards off). Atomic ML1 youtube-stills/thumb.png. Clock on rr-live-clock (20s lead).",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Video/scripts/live_picture.py\"",  # info: "command"
         "timeout_sec": 180,  # info: "timeout_sec" : 180 ,

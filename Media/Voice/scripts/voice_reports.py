@@ -95,6 +95,11 @@ STALE_MIN = 30  # info: set STALE_MIN
 OFFLINE_SOC = 5  # info: set OFFLINE_SOC
 DELTA_GEN_W = 550  # info: Delta 2 AC in above this is the generator
 RIVER_GEN_W = 300  # info: River 2 Pro AC in above this is the generator
+
+
+def ble_voice_on() -> bool:  # info: def ble_voice_on
+    """EcoFlow BLE pack lines on air. Default off while the adapter is unreliable."""  # info: docstring
+    return os.environ.get("RR_VOICE_BLE", "0") == "1"  # info: return RR_VOICE_BLE gate
 # ====================================================
 # SECTION: KIND
 # What it does: Set KIND.
@@ -155,6 +160,8 @@ def jload(p: Path):  # info: def jload
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def energy_facts(t: datetime) -> list[dict]:  # info: def energy_facts
+    if not ble_voice_on():  # info: BLE off the air for now
+        return []  # info: return empty — callers skip EcoFlow lines
     out = []  # info: set out
     for key, name in DEVICES:  # info: for key , name in DEVICES :
         soc, watts = jload(ENERGY / "soc" / f"{key}_current.json"), jload(ENERGY / "watts" / f"{key}_current.json") or {}  # info: soc , watts = jload ( ENERGY /
@@ -1064,7 +1071,9 @@ def kilauea_photo_summary() -> str:  # info: def kilauea_photo_summary
         conditions = activity  # info: set activity conditions
     else:  # info: if no activity
         conditions = ""  # info: set empty conditions
-    if visible:  # info: if visible detail
+    # Drop invented night/day clock phrases (Gemma has said "dark night sky" on daylight stills).
+    vis_low = visible.lower()  # info: set vis_low
+    if visible and not any(tok in vis_low for tok in ("night", "daytime", "sunrise", "sunset", "dawn", "dusk")):  # info: if visible is factual
         conditions = f"{conditions}; {visible}" if conditions else visible  # info: append visible detail
     if not viewed:  # info: if photo not viewed
         return "Photo viewed: no. Conditions: no still available."  # info: return no-photo line
@@ -1083,10 +1092,13 @@ def b_kilauea_report(t: datetime):  # info: def b_kilauea_report
     k, ml = jload(VOLCANOES / "kilauea_current.json"), jload(VOLCANOES / "mauna-loa_current.json")  # info: k , ml = jload ( VOLCANOES /
     hi = jload(QUAKES / "hawaii_current.json") or {}  # info: set hi
     photo_line = kilauea_photo_summary()  # info: set photo line
+    # Hour batch already aired kilauea_image_check — keep photo in md, do not speak it again.
+    speak_photo = os.environ.get("RR_HOUR_BATCH", "0") != "1"  # info: speak_photo false when image check is the prior desk
     md = [f"# Kilauea report — {t.isoformat()}", ""]
     if not isinstance(k, dict) or not k.get("alert_level"):  # info: if not isinstance ( k , dict )
-        md += ["_No HVO data on file (Database Geology/Volcanoes/Hawaii/kilauea_current.json missing). Run geology_collect.py._", f"- **Photo:** {photo_line}", "", "## Spoken", "", photo_line, ""]  # info: set md
-        return "\n".join(md), ["Kilauea: DOWN.", photo_line]  # info: return "\n" . join ( md ) ,
+        spoken_down = ["Kilauea: DOWN."] + ([photo_line] if speak_photo else [])  # info: set spoken_down
+        md += ["_No HVO data on file (Database Geology/Volcanoes/Hawaii/kilauea_current.json missing). Run geology_collect.py._", f"- **Photo:** {photo_line}", "", "## Spoken", "", " ".join(spoken_down), ""]  # info: set md
+        return "\n".join(md), spoken_down  # info: return down
     level = str(k.get("alert_level") or "unknown").strip().lower()  # info: set level
     erupting = k.get("erupting")  # info: set erupting
     if erupting:  # info: if erupting :
@@ -1098,7 +1110,9 @@ def b_kilauea_report(t: datetime):  # info: def b_kilauea_report
     color = str(k.get("color_code") or "").lower()  # info: set color
     sp = ["Kilauea report.", generated_at(t),  # info: set sp
           f"Alert level {level}" + (f", aviation color code {color}." if color else "."),  # info: f" Alert level { level } " + (
-          f"The volcano {state}.", photo_line]  # info: f" The volcano { state } . " ]
+          f"The volcano {state}."]  # info: volcano state
+    if speak_photo:  # info: if speak_photo :
+        sp.append(photo_line)  # info: sp . append photo once when not hour-batch
     note = k.get("latest_activity_notice") if erupting and k.get("latest_activity_notice") else k.get("latest_notice")  # info: set note
     note = note if isinstance(note, dict) else {}  # info: set note
     excerpt = _first_sentences(note.get("synopsis") or "")  # info: set excerpt
@@ -1427,31 +1441,39 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
             sbits.append(age_bit)  # info: sbits . append ( age_bit )
         lines.append(f"{f['name']}: " + ", ".join(bits))  # info: lines . append ( f" { f [
         spoken_lines.append(f"{f['name']}: " + ", ".join(sbits))  # info: spoken_lines . append ( f" { f [
-    if not any(f["ok"] for f in facts):  # info: if not any ( f [ "ok" ]
-        sp.append("EcoFlow is offline.")  # info: sp . append ( "EcoFlow is offline." )
-    else:  # info: else :
-        for f in facts:  # info: for f in facts
-            if not f.get("ok"):  # info: if not f . get ( "ok" )
-                sp.append(f"{f['name']}: offline.")  # info: sp . append missing pack
-            elif f.get("off"):  # info: elif f . get ( "off" )
-                sp.append(off_sentence(f))  # info: sp . append powered-off pack
-        bank = merged_battery(facts)  # info: set bank
-        if bank:  # info: if bank
-            spoken = bank_spoken(bank)  # info: set spoken
-            if spoken:  # info: if spoken
-                sp.append(spoken)  # info: sp . append merged battery
-            lines.insert(0, spoken.rstrip("."))  # info: lines . insert merged battery
-            if bank.get("soc") is not None:  # info: if bank . get ( "soc" ) is not None
-                say_change(sp, "energy.bank.soc", bank["soc"], "Battery", t)  # info: say_change bank charge
-            if bank.get("solar_w") is not None:  # info: if bank . get ( "solar_w" ) is not None
-                say_change(sp, "energy.solar_total", bank["solar_w"], "Solar input", t)  # info: say_change solar total
-            out = sum(x for x in (bank.get("ac_out_w"), bank.get("usbc_out_w")) if isinstance(x, (int, float)))  # info: set out
-            if bank.get("ac_out_w") is not None or bank.get("usbc_out_w") is not None:  # info: if output watts are present
-                say_change(sp, "energy.bank.output_w", out, "Battery output", t)  # info: say_change bank output
-        for f in facts:  # info: for f in facts :
-            note = range_clause(f)  # info: set note
-            if note:  # info: if note :
-                sp.append(note)  # info: sp . append ( note )
+    if ble_voice_on():  # info: pack speech only when BLE voice is on
+        if not any(f["ok"] for f in facts):  # info: if not any ( f [ "ok" ]
+            sp.append("EcoFlow is offline.")  # info: sp . append ( "EcoFlow is offline." )
+        else:  # info: else :
+            for f in facts:  # info: for f in facts
+                if not f.get("ok"):  # info: if not f . get ( "ok" )
+                    sp.append(f"{f['name']}: offline.")  # info: sp . append missing pack
+                elif f.get("off"):  # info: elif f . get ( "off" )
+                    sp.append(off_sentence(f))  # info: sp . append powered-off pack
+            bank = merged_battery(facts)  # info: set bank
+            if bank:  # info: if bank
+                spoken = bank_spoken(bank)  # info: set spoken
+                if spoken:  # info: if spoken
+                    sp.append(spoken)  # info: sp . append merged battery
+                lines.insert(0, spoken.rstrip("."))  # info: lines . insert merged battery
+                if bank.get("soc") is not None:  # info: if bank . get ( "soc" ) is not None
+                    say_change(sp, "energy.bank.soc", bank["soc"], "Battery", t)  # info: say_change bank charge
+                if bank.get("solar_w") is not None:  # info: if bank . get ( "solar_w" ) is not None
+                    say_change(sp, "energy.solar_total", bank["solar_w"], "Solar input", t)  # info: say_change solar total
+                out = sum(x for x in (bank.get("ac_out_w"), bank.get("usbc_out_w")) if isinstance(x, (int, float)))  # info: set out
+                if bank.get("ac_out_w") is not None or bank.get("usbc_out_w") is not None:  # info: if output watts are present
+                    say_change(sp, "energy.bank.output_w", out, "Battery output", t)  # info: say_change bank output
+            for f in facts:  # info: for f in facts :
+                note = range_clause(f)  # info: set note
+                if note:  # info: if note :
+                    sp.append(note)  # info: sp . append ( note )
+    else:  # info: else BLE pack lines held off
+        notice = (  # info: set notice
+            "EcoFlow Bluetooth and connection have become programmatically unreliable, "
+            "and live statuses will not be available at this time."
+        )  # info: )
+        sp.append(notice)  # info: speak the hold notice
+        lines.insert(0, notice.rstrip("."))  # info: lines . insert hold notice
     if sun.get("date") == t.date().isoformat() and sun.get("sunset"):  # info: if sun . get ( "date" ) ==
         if t.strftime("%H:%M") < sun["sunset"]:  # info: if t . strftime ( "%H:%M" ) <
             sp.append(f"Sunrise was {spoken_hhmm(sun['sunrise'])}, sunset is {spoken_hhmm(sun['sunset'])}.".replace("..", "."))  # info: sp . append ( f" Sunrise was { spoken_hhmm
@@ -1462,18 +1484,6 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
     elif sun.get("date"):  # info: elif sun . get ( "date" ) :
         sp.append("Sun times on file are not for today.")  # info: sp . append ( "Sun times on file are not for today." )
     extra = []  # info: set extra
-    still = newest_ch1(t)  # info: set still
-    if still:  # info: if still :
-        name = Path(still["path"]).name  # info: set name
-        if still["age_min"] > 0:  # info: if still [ "age_min" ] > 0 :
-            extra.append(f"- Solar panel still age: {still['age_min']} min (`{name}`)")  # info: extra . append ( f" - Solar panel still age:
-            unit = "minute" if still["age_min"] == 1 else "minutes"  # info: set unit
-            sp.append(f"Solar panel still is {still['age_min']} {unit} old.")  # info: sp . append ( f" Solar panel still is { still
-        else:  # info: else :
-            extra.append(f"- Solar panel still: current (`{name}`)")  # info: extra . append ( f" - Solar panel still: current ( ` { name } ` ) " )
-    else:  # info: else :
-        extra.append("- Solar panel still: not on file")  # info: extra . append ( "- Solar panel still: not on file" )
-        sp.append("No solar panel still on file.")  # info: sp . append ( "No solar panel still on file." )
     if str(PACIFIC) not in sys.path:  # info: if str ( PACIFIC ) not in sys . path
         sys.path.insert(0, str(PACIFIC))  # info: sys . path . insert ( 0 , str ( PACIFIC ) )
     from Energy.db.report_json import REPORT_JSON, period_lines  # info: from Energy . db . report_json import REPORT_JSON
@@ -1483,7 +1493,40 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
         periods = []  # info: set periods
     for line in periods:  # info: for line in periods
         extra.append(f"- {line}")  # info: extra . append the closed window
-    camera_observation(t)  # info: refresh this hour's ch1 look (was energy_report)
+    # Hour batch: grab a live ch1 frame, then force Gemma look (do not reuse a pre-sunrise IR cache).
+    if os.environ.get("RR_HOUR_BATCH", "0") == "1":  # info: if hour batch
+        cam = PACIFIC / "Security" / "Cameras"  # info: set cam
+        if str(cam) not in sys.path:  # info: if cam path missing
+            sys.path.insert(0, str(cam))  # info: insert cam path
+        try:  # info: try live grab with short retries (10s grab job may hold the lock)
+            import grab_frame  # info: import grab_frame
+            for _attempt in range(12):  # info: for _attempt in range ( 12 )
+                try:  # info: try
+                    grab_frame.grab_jpeg(channel=1)  # info: grab live ch1
+                    break  # info: break on success
+                except grab_frame.FramesBusy:  # info: except FramesBusy
+                    time.sleep(0.5)  # info: wait for frame-grab job
+        except Exception:  # noqa: BLE001
+            pass  # info: keep newest on-disk still if grab fails
+        try:  # info: try forced look
+            import panel_look  # info: import panel_look
+            panel_look.observe(t, force=True)  # info: force live look this hour
+        except Exception:  # noqa: BLE001
+            camera_observation(t)  # info: fall back to normal hour look
+    else:  # info: else normal desk
+        camera_observation(t)  # info: refresh this hour's ch1 look (was energy_report)
+    still = newest_ch1(t)  # info: set still after any live grab
+    if still:  # info: if still :
+        name = Path(still["path"]).name  # info: set name
+        if still["age_min"] > 0:  # info: if still [ "age_min" ] > 0 :
+            extra.append(f"- Solar panel still age: {still['age_min']} min (`{name}`)")  # info: extra . append still age
+            unit = "minute" if still["age_min"] == 1 else "minutes"  # info: set unit
+            sp.append(f"Solar panel still is {still['age_min']} {unit} old.")  # info: sp . append still age once
+        else:  # info: else :
+            extra.append(f"- Solar panel still: current (`{name}`)")  # info: extra . append current still
+    else:  # info: else :
+        extra.append("- Solar panel still: not on file")  # info: extra . append missing still
+        sp.append("No solar panel still on file.")  # info: sp . append missing still
     look = last_camera_look(t)  # info: set look
     sentence = str(look.get("sentence") or "")  # info: set sentence
     if sentence:  # info: if sentence :
@@ -1499,7 +1542,15 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
     md = [f"# Solar desk — {t.isoformat()}", ""] + [f"- {x}" for x in lines] + [
         f"- Sun: {sun.get('sunrise', 'n/a')} / {sun.get('sunset', 'n/a')} ({sun.get('date', 'n/a')}, Open-Meteo)",  # info: f" - Sun: { sun . get ( 'sunrise'
     ] + extra + ["", "## Spoken", "", " ".join(sp), "",  # info: ] + extra + [ "" , "## Spoken" , "" , " " . join ( sp ) , "" ,
-        "_Source: Database Energy/soc + Energy/watts (EcoFlow BLE), Energy/layers/periods.json (hour, day, week, month), Energy/sun/sun-times_current.json, the newest ch1 still, and Energy/vision/ch1-look-last.json (refreshed this hour when needed)._", ""]  # info: source footer
+        "_Source: Energy/layers/periods.json, Energy/sun/sun-times_current.json, the newest ch1 still, and Energy/vision/ch1-look-last.json"
+        + (
+            " (EcoFlow pack lines on when RR_VOICE_BLE=1)."
+            if ble_voice_on()
+            else " (EcoFlow Bluetooth and connection programmatically unreliable; live statuses held off)."
+        )
+        + "_",
+        "",
+    ]  # info: source footer
     return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 
@@ -1628,7 +1679,7 @@ def _rollup(t: datetime, slot: str):  # info: def _rollup
                 say_change(sp, f"energy.{f['key']}.soc", f["soc"], f"{f['name']} state of charge", t)  # info: say_change soc
         say_change(sp, "energy.solar_total", solar, "Solar input", t)  # info: say_change solar total
         lines.append(s + f"; solar input {solar} W")  # info: lines . append ( s + f" ; solar input
-    elif not off:  # info: elif not off :
+    elif not off and ble_voice_on():  # info: elif packs expected and BLE voice on
         sp.append("EcoFlow is offline.")  # info: sp . append ( "EcoFlow is offline." )
         lines.append("EcoFlow: no reading")  # info: lines . append ( "EcoFlow: no reading" )
     for f in off:  # info: for f in off :
@@ -1698,9 +1749,10 @@ _UGC = re.compile(r"\b(?:[A-Z]{2}[ZC][0-9>\-]{3,}-)+\d{6}-\s*")  # info: set _UG
 # ====================================================
 def _speech_product(text: str) -> str:  # info: def _speech_product
     """Flattened NWS product -> speakable: drop the WMO / AWIPS header and UGC zone strings, ** markers, dashes runs."""  # info: """Flattened NWS product -> speakable: drop the WMO / AWIPS header and UGC zone strings, ** markers, dashes ru
+    from speakable import speakable  # info: from speakable import speakable
     t = _UGC.sub("", _WMO_HEAD.sub("", " ".join((text or "").split())))  # info: set t
     t = re.sub(r"\*\*|-{3,}|\s\*\s", " ", t)  # info: set t
-    return " ".join(t.split())  # info: return " " . join ( t . split
+    return speakable(t)  # info: return speakable (also strips SUBTRACT / coords / long ids)
 
 
 # ====================================================
@@ -1765,7 +1817,7 @@ def b_boot_brief(t: datetime):  # info: def b_boot_brief
     if ok:  # info: if ok :
         sp.append("Battery levels: " + ", ".join(f"{f['name']} at {f['soc']}%" for f in ok) + ".")  # info: sp . append ( "Battery levels: " + ", " .
         lines.append("Batteries: " + ", ".join(f"{f['name']} {f['soc']}%" for f in ok))  # info: lines . append ( "Batteries: " + ", " .
-    elif not off:  # info: elif not off :
+    elif not off and ble_voice_on():  # info: elif packs expected and BLE voice on
         sp.append("EcoFlow is offline."); lines.append("Batteries: offline")  # info: sp . append ( "EcoFlow is offline." ) ; lines
     for f in off:  # info: for f in off :
         sp.append(off_sentence(f))  # info: sp . append ( off_sentence ( f ) )
@@ -1833,10 +1885,12 @@ def b_current_report(t: datetime):  # info: def b_current_report
             age_bit = reading_age_clause(f).lstrip(", ")  # info: set age_bit
             if age_bit:  # info: if age_bit :
                 sp.append(f"{f['name']} {age_bit}.")  # info: sp . append ( f" { f [ 'name' ] } { age_bit } . " )
-    elif not off:  # info: elif not off :
+    elif not off and ble_voice_on():  # info: elif packs expected and BLE voice on
         sp.append("EcoFlow is offline.")  # info: sp . append ( "EcoFlow is offline." )
     for f in off:  # info: for f in off :
         sp.append(off_sentence(f))  # info: sp . append ( off_sentence ( f ) )
+    if not ble_voice_on():  # info: note BLE hold in markdown only
+        md.append("- EcoFlow Bluetooth and connection have become programmatically unreliable; live statuses not available (RR_VOICE_BLE=0).")  # info: md note
     for f in facts:  # info: for f in facts :
         if not f.get("ok"):  # info: if not f . get ( "ok" ) :
             md.append(f"- {f['name']}: no reading")  # info: md . append ( f" - { f [ 'name' ] } : no reading " )
@@ -1862,20 +1916,24 @@ def b_current_report(t: datetime):  # info: def b_current_report
     else:  # info: else :
         sp.append("Moon phase is not on file.")  # info: sp . append ( "Moon phase is not on file." )
     md += ["", "## Weather", ""]  # info: md += weather heading
+    # Hour batch already aired nws_weather immediately before this desk — keep md, skip spoken NWS.
+    speak_weather = os.environ.get("RR_HOUR_BATCH", "0") != "1"  # info: speak_weather false when hour batch stitches nws_weather first
     if rows:  # info: if rows :
         md += [f"- {r['event']} — {r['area']}" for r in rows]  # info: md += alert lines
-        sp.append(f"{len(rows)} active weather alert{'s' if len(rows) != 1 else ''}, including {rows[0]['event']}.")  # info: sp . append alert sentence
-        say_change(sp, "nws.alerts", len(rows), "Active alerts", t)  # info: say_change alerts
+        if speak_weather:  # info: if speak_weather :
+            sp.append(f"{len(rows)} active weather alert{'s' if len(rows) != 1 else ''}, including {rows[0]['event']}.")  # info: sp . append alert sentence
+            say_change(sp, "nws.alerts", len(rows), "Active alerts", t)  # info: say_change alerts
     else:  # info: else :
         md.append("- No active Hawaii alerts")  # info: md . append ( "- No active Hawaii alerts" )
-        sp.append("No active Hawaii alerts.")  # info: sp . append ( "No active Hawaii alerts." )
-        say_change(sp, "nws.alerts", 0, "Active alerts", t)  # info: say_change alerts
+        if speak_weather:  # info: if speak_weather :
+            sp.append("No active Hawaii alerts.")  # info: sp . append ( "No active Hawaii alerts." )
+            say_change(sp, "nws.alerts", 0, "Active alerts", t)  # info: say_change alerts
     today = None  # info: set today
     if groups and groups[0]["periods"]:  # info: if groups and groups [ 0 ] [ "periods" ] :
         label, body = groups[0]["periods"][0]  # info: label , body = groups [ 0 ] [ "periods" ] [ 0 ]
         today = f"{label}: {body}"  # info: set today
     md.append(f"- State forecast ({issued or 'n/a'}): {today or 'not on file'}")  # info: md . append forecast line
-    if today:  # info: if today :
+    if today and speak_weather:  # info: if today and speak_weather :
         sp.append(f"Forecast for {today.split(':', 1)[0].lower()}: {re.split(r'(?<=[.]) ', today.split(':', 1)[1].strip())[0]}")  # info: sp . append forecast sentence
     if places:  # info: if places :
         for p in places:  # info: for p in places :
@@ -1885,12 +1943,13 @@ def b_current_report(t: datetime):  # info: def b_current_report
             if p.get("low"):  # info: if p . get ( "low" ) :
                 bits.append(f"low {p['low']}")  # info: bits . append ( f" low { p [ 'low' ] } " )
             md.append(f"- {p['place']}: " + ", ".join(bits))  # info: md . append place line
-        sp.append("Temperatures. " + ". ".join(f"{p['place']} high {p['high'] or 'n/a'}, low {p['low'] or 'n/a'}" for p in places) + ".")  # info: sp . append temperature sentence
-        for p in places:  # info: for p in places
-            if p.get("high"):  # info: if p . get ( "high" )
-                say_change(sp, f"nws.{p['place']}.high", p["high"], f"{p['place']} high", t)  # info: say_change high
-            if p.get("low"):  # info: if p . get ( "low" )
-                say_change(sp, f"nws.{p['place']}.low", p["low"], f"{p['place']} low", t)  # info: say_change low
+        if speak_weather:  # info: if speak_weather :
+            sp.append("Temperatures. " + ". ".join(f"{p['place']} high {p['high'] or 'n/a'}, low {p['low'] or 'n/a'}" for p in places) + ".")  # info: sp . append temperature sentence
+            for p in places:  # info: for p in places
+                if p.get("high"):  # info: if p . get ( "high" )
+                    say_change(sp, f"nws.{p['place']}.high", p["high"], f"{p['place']} high", t)  # info: say_change high
+                if p.get("low"):  # info: if p . get ( "low" )
+                    say_change(sp, f"nws.{p['place']}.low", p["low"], f"{p['place']} low", t)  # info: say_change low
     md.append(f"- Alerts updated: {upd or 'n/a'}")  # info: md . append ( f" - Alerts updated: { upd or 'n/a' } " )
     md += ["", "## Geology", ""]  # info: md += geology heading
     for label, key in (("Hawaii", "hawaii"), ("Global", "global")):  # info: for label , key in
@@ -1923,7 +1982,9 @@ def b_current_report(t: datetime):  # info: def b_current_report
         sp.append("Kilauea status is not on file.")  # info: sp . append ( "Kilauea status is not on file." )
     photo_line = kilauea_photo_summary()  # info: set geology photo line
     md.append(f"- Kilauea photo: {photo_line}")  # info: md . append kilauea photo line
-    sp.append(photo_line)  # info: sp . append kilauea photo line
+    # Hour batch: image check + kilauea desk own the photo — do not say it a third time here.
+    if os.environ.get("RR_HOUR_BATCH", "0") != "1":  # info: if not hour batch
+        sp.append(photo_line)  # info: sp . append kilauea photo line
     if isinstance(mauna, dict) and mauna.get("alert_level"):  # info: if isinstance ( mauna , dict ) and mauna . get ( "alert_level" ) :
         md.append(f"- Mauna Loa: {mauna.get('alert_level')} / {mauna.get('color_code')}")  # info: md . append mauna line
         sp.append(f"Mauna Loa alert level {str(mauna.get('alert_level')).lower()}.")  # info: sp . append mauna sentence
@@ -1995,15 +2056,20 @@ def b_current_report(t: datetime):  # info: def b_current_report
     md += ["", "## Site traffic (Mainland analytics)", ""] + site_traffic_md_lines(site)  # info: md += site traffic section
     sp += site_traffic_spoken(site, t)  # info: sp += site traffic spoken
     md += ["", "## Camera", ""]  # info: md += camera heading
+    # Hour batch already has solar_desk speaking still age — keep md only here to avoid saying it twice.
+    speak_still = os.environ.get("RR_HOUR_BATCH", "0") != "1"  # info: speak_still false when hour batch includes solar_desk
     if still:  # info: if still :
         md.append(f"- Solar panel still age: {still['age_min']} min")  # info: md . append still age
-        sp.append(f"Solar panel still is {still['age_min']} minutes old." if still["age_min"] else "Solar panel still is current.")  # info: sp . append still sentence
+        if speak_still:  # info: if speak_still :
+            sp.append(f"Solar panel still is {still['age_min']} minutes old." if still["age_min"] else "Solar panel still is current.")  # info: sp . append still sentence
     else:  # info: else :
         md.append("- Solar panel still: not on file")  # info: md . append ( "- Solar panel still: not on file" )
-        sp.append("No solar panel still on file.")  # info: sp . append ( "No solar panel still on file." )
+        if speak_still:  # info: if speak_still :
+            sp.append("No solar panel still on file.")  # info: sp . append ( "No solar panel still on file." )
     if look.get("sentence"):  # info: if look . get ( "sentence" ) :
         md.append(f"- {look['sentence']}")  # info: md . append ( f" - { look [ 'sentence' ] } " )
-        sp.append(look["sentence"])  # info: sp . append ( look [ "sentence" ] )
+        if speak_still:  # info: if speak_still (solar_desk owns the look on hour batch)
+            sp.append(look["sentence"])  # info: sp . append ( look [ "sentence" ] )
     md += ["", "## Official weather", ""]  # info: md += official heading
     if fresh:  # info: if fresh :
         pick = fresh[0]  # info: set pick
@@ -2190,6 +2256,7 @@ def main() -> int:  # info: def main
             res["voice"] = {"ok": False, "detail": "prebuilt chime missing", "wav": str(path)}  # info: res [ "voice" ] = { "ok" : False
         else:  # info: else :
             res["voice"] = {"ok": True, "mode": "prebuilt", "wav": str(path), "agent": who}  # info: res [ "voice" ] = { "ok" : True , "mode" : "prebuilt"
+            # Play the stored chime file only. Never re-encode or re-render here (use radio_push.py --chimes once when the bank changes).
             import voice_deliver  # info: import voice_deliver
             res["deliver"] = voice_deliver.deliver(report, path, " ".join(spoken), KIND[report], report_text=md, who=who, remember_as=t.strftime("%Y-%m-%dT%H:%M"))  # info: res [ "deliver" ] = voice_deliver . deliver
     elif "--no-voice" not in sys.argv:  # info: elif "--no-voice" not in sys . argv :

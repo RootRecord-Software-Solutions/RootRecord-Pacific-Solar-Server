@@ -20,6 +20,7 @@ from __future__ import annotations  # info: from __future__ import annotations
 
 import json  # info: import json
 import os  # info: import os
+import re  # info: import re
 import shlex  # info: import shlex
 import subprocess  # info: import subprocess
 import sys  # info: import sys
@@ -38,7 +39,11 @@ BG = PACIFIC / "Website" / "Home" / "assets" / "broadcast-bg.jpg"  # info: set B
 SOURCE = Path("/home/rootrecord/Downloads/IbxbN.jpg")  # info: set SOURCE
 OUT = PACIFIC / "Media" / "Video" / "live-frame.png"  # info: set OUT
 ENERGY = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy")  # info: set ENERGY
+DB = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database")  # info: set DB
+ZFP = DB / "Weather" / "Hawai'i" / "hfo" / "api.weather.gov" / "products" / "types" / "ZFP" / "locations" / "HFO" / "HFO_current.txt"  # info: set ZFP
 LATENCY = PACIFIC / "Media" / "Video" / "live-picture-latency.json"  # info: set LATENCY
+HOST_HW = PACIFIC / "System" / "scripts"  # info: set HOST_HW
+VOICE = PACIFIC / "Media" / "Voice" / "scripts"  # info: set VOICE
 ENCODER_WAIT = 1.0  # info: encoder checks the thumb once a second
 # YouTube drawtext lags wall clock; advance the shown minute this many seconds early.
 CLOCK_LEAD_SEC = int(os.environ.get("RR_LIVE_CLOCK_LEAD_SEC", "20"))  # info: set CLOCK_LEAD_SEC
@@ -399,6 +404,137 @@ def clock_loop() -> int:  # info: def clock_loop
 
 
 # ====================================================
+# SECTION: function _hhmm_ampm
+# What it does: Turn HH:MM into a short 12-hour clock label.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _hhmm_ampm(raw: str) -> str:  # info: def _hhmm_ampm
+    try:  # info: try
+        hour, minute = [int(x) for x in str(raw).split(":")[:2]]  # info: set hour , minute
+    except (TypeError, ValueError):  # info: except
+        return str(raw or "—")  # info: return raw
+    suffix = "AM" if hour < 12 else "PM"  # info: set suffix
+    shown = hour % 12 or 12  # info: set shown
+    return f"{shown}:{minute:02d} {suffix}"  # info: return labeled
+
+
+# ====================================================
+# SECTION: function _sun_host
+# What it does: Sunrise/sunset plus host temp/disk/CPU/GPU/NPU for the stream card.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _sun_host() -> dict:  # info: def _sun_host
+    out = {"sunrise": "—", "sunset": "—", "temp": "—", "disk": "—", "cpu": "—", "accel": "—"}  # info: set out
+    try:  # info: try sun file
+        sun = json.loads((ENERGY / "sun" / "sun-times_current.json").read_text(encoding="utf-8"))  # info: set sun
+        if isinstance(sun, dict):  # info: if dict
+            if sun.get("sunrise"):  # info: if sunrise
+                out["sunrise"] = _hhmm_ampm(str(sun["sunrise"]))  # info: set sunrise
+            if sun.get("sunset"):  # info: if sunset
+                out["sunset"] = _hhmm_ampm(str(sun["sunset"]))  # info: set sunset
+    except (OSError, ValueError):  # info: except
+        pass  # info: pass
+    if str(HOST_HW) not in sys.path:  # info: if host path missing
+        sys.path.insert(0, str(HOST_HW))  # info: insert host path
+    try:  # info: try host_hw
+        import host_hw  # info: import host_hw
+        snap = host_hw.snapshot()  # info: set snap
+        if snap.get("temp_c") is not None:  # info: if temp
+            out["temp"] = f"{round(float(snap['temp_c']))} C"  # info: set temp
+        drives = snap.get("drives") or []  # info: set drives
+        if drives and drives[0].get("pct") is not None:  # info: if disk pct
+            out["disk"] = f"{round(float(drives[0]['pct']))}%"  # info: set disk
+        gpu = snap.get("gpu_pct")  # info: set gpu
+        npu = snap.get("npu_pct")  # info: set npu
+        bits = []  # info: set bits
+        if gpu is not None:  # info: if gpu
+            bits.append(f"GPU {round(float(gpu))}%")  # info: bits gpu
+        if npu is not None:  # info: if npu
+            bits.append(f"NPU {round(float(npu))}%")  # info: bits npu
+        if bits:  # info: if bits
+            out["accel"] = " · ".join(bits)  # info: set accel
+    except Exception:  # noqa: BLE001
+        pass  # info: keep dashes
+    try:  # info: try /proc CPU/RAM
+        def _snap() -> tuple[int, int]:  # info: def _snap
+            vals = [int(x) for x in open("/proc/stat").readline().split()[1:]]  # info: set vals
+            return sum(vals), vals[3] + (vals[4] if len(vals) > 4 else 0)  # info: return total , idle
+        t1, i1 = _snap()  # info: set t1 , i1
+        time.sleep(0.15)  # info: short sample
+        t2, i2 = _snap()  # info: set t2 , i2
+        cpu = round(100 * (1 - (i2 - i1) / max(1, t2 - t1)))  # info: set cpu
+        mem = {ln.split(":")[0]: int(ln.split()[1]) for ln in open("/proc/meminfo") if ln.startswith(("MemTotal", "MemAvailable"))}  # info: set mem
+        ram = round(100 * (1 - mem["MemAvailable"] / mem["MemTotal"]))  # info: set ram
+        out["cpu"] = f"CPU {cpu}% · RAM {ram}%"  # info: set cpu row
+    except Exception:  # noqa: BLE001
+        pass  # info: keep dash
+    return out  # info: return out
+
+
+# ====================================================
+# SECTION: function _mean_deg
+# What it does: Average the integers in a ZFP high/low phrase.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _mean_deg(raw: str | None) -> float | None:  # info: def _mean_deg
+    if not raw:  # info: if empty
+        return None  # info: return None
+    # Keep Fahrenheit temps only — drop elevation feet (e.g. 4000) from ZFP phrases.
+    nums = [int(x) for x in re.findall(r"\d+", str(raw)) if 20 <= int(x) <= 120]  # info: set nums
+    if not nums:  # info: if no numbers
+        return None  # info: return None
+    return sum(nums) / len(nums)  # info: return mean
+
+
+# ====================================================
+# SECTION: function _island_weather
+# What it does: Mean high/low °F per major island from the HFO zone forecast towns.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _island_weather() -> list[tuple[str, str]]:  # info: def _island_weather
+    place_island = {  # info: set place_island
+        "Lihue": "Kauai",  # info: Kauai
+        "Honolulu": "Oahu",  # info: Oahu
+        "Kahului": "Maui",  # info: Maui
+        "Hilo": "Hawaii",  # info: Big Island shore
+        "Mountain View": "Hawaii",  # info: Big Island upcountry
+        "Volcano": "Hawaii",  # info: Big Island elev
+        "Kailua-Kona": "Hawaii",  # info: Big Island west
+    }  # info: )
+    order = ("Kauai", "Oahu", "Maui", "Hawaii")  # info: set order
+    if str(VOICE) not in sys.path:  # info: if voice path missing
+        sys.path.insert(0, str(VOICE))  # info: insert voice path
+    rows: list[dict] = []  # info: set rows
+    try:  # info: try shared ZFP parser
+        import voice_reports as vr  # info: import voice_reports
+        rows = vr.zfp_temps()  # info: set rows
+    except Exception:  # noqa: BLE001
+        rows = []  # info: empty on failure
+    buckets: dict[str, dict[str, list[float]]] = {name: {"high": [], "low": []} for name in order}  # info: set buckets
+    for row in rows:  # info: for row
+        island = place_island.get(str(row.get("place") or ""))  # info: set island
+        if not island:  # info: if unknown place
+            continue  # info: continue
+        high = _mean_deg(row.get("high"))  # info: set high
+        low = _mean_deg(row.get("low"))  # info: set low
+        if high is not None:  # info: if high
+            buckets[island]["high"].append(high)  # info: append high
+        if low is not None:  # info: if low
+            buckets[island]["low"].append(low)  # info: append low
+    out: list[tuple[str, str]] = []  # info: set out
+    for name in order:  # info: for name
+        highs = buckets[name]["high"]  # info: set highs
+        lows = buckets[name]["low"]  # info: set lows
+        if not highs and not lows:  # info: if empty island
+            out.append((name, "—"))  # info: dash
+            continue  # info: continue
+        hi = f"{round(sum(highs) / len(highs))}F" if highs else "—"  # info: set hi
+        lo = f"{round(sum(lows) / len(lows))}F" if lows else "—"  # info: set lo
+        out.append((name, f"{hi} / {lo}"))  # info: high / low average
+    return out  # info: return out
+
+
+# ====================================================
 # SECTION: function render
 # What it does: Composite the desk overlay on the full-bleed photo.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -410,36 +546,27 @@ def render(state: dict | None, ops: dict | None, hawaii: dict, world: dict, when
     layer = Image.new("RGBA", base.size, (0, 0, 0, 0))  # info: set layer
     draw = ImageDraw.Draw(layer)  # info: set draw
     now = when  # info: set now
-    river, delta = _ble_pack("river2pro"), _ble_pack("delta2")  # info: BLE files, not the cloud snapshot
+    sun_host = _sun_host()  # info: set sun_host
+    islands = _island_weather()  # info: set islands
+    # Top: clock + sun/host + island weather. EcoFlow BLE cards stay off.
     _card(draw, (20, 16, 636, 322))  # info: clock card above the title
     _text(draw, (48, 32), "ON AIR", 26, (255, 90, 90, 255), True)  # info: on air
     _center(draw, 328, 230, now.strftime("%d %b %Y") + "  HST", 32, (190, 225, 238, 255))  # info: date
-    _card(draw, (652, 16, 1268, 322))  # info: battery card above the title
-    _text(draw, (680, 32), "BATTERY BANK", 26, (0, 229, 255, 255), True)  # info: battery title
-    _gauge(draw, 820, 168, _soc(river), "River", str((river or {}).get("tag") or "wait"))  # info: river gauge
-    _gauge(draw, 1100, 168, _soc(delta), "Delta", str((delta or {}).get("tag") or "wait"))  # info: delta gauge
-    _card(draw, (1284, 16, 1900, 322))  # info: watts card above the title
-    _text(draw, (1312, 32), "TOTALS NOW", 26, (0, 229, 255, 255), True)  # info: totals title
-    def _row(pack: dict, key: str) -> str:  # info: def _row
-        tag = str((pack or {}).get("tag") or "wait")  # info: set tag
-        if tag == "off":  # info: if tag == "off"
-            return "off"  # info: return off
-        if tag != "live":  # info: if tag != "live"
-            return "WAIT"  # info: return WAIT
-        return _watts(pack, key)  # info: return _watts
-
-    rows = [  # info: set rows
-        ("River solar", _row(river, "solar_input_power")),  # info: river solar
-        ("Delta solar", _row(delta, "solar_input_power")),  # info: delta solar
-        ("River AC out", _row(river, "ac_output_power")),  # info: river ac
-        ("Delta AC out", _row(delta, "ac_output_power")),  # info: delta ac
-        ("River USB-C", _row(river, "usbc_output_power")),  # info: river usb
-        ("Delta USB-C", _row(delta, "usbc_output_power")),  # info: delta usb
-    ]  # info: ]
-    y = 78  # info: set y
-    for name, value in rows:  # info: for name , value
-        _pair(draw, 1312, 1872, y, name, value, 28)  # info: watt row
-        y += 38  # info: y += 38
+    _card(draw, (652, 16, 1268, 322))  # info: sun + host card
+    _text(draw, (680, 32), "SUN AND HOST", 26, (0, 229, 255, 255), True)  # info: sun/host title
+    _pair(draw, 680, 1240, 78, "Sunrise", sun_host["sunrise"], 26)  # info: sunrise
+    _pair(draw, 680, 1240, 118, "Sunset", sun_host["sunset"], 26)  # info: sunset
+    _pair(draw, 680, 1240, 158, "Host temp", sun_host["temp"], 26)  # info: temp
+    _pair(draw, 680, 1240, 198, "System drive", sun_host["disk"], 26)  # info: disk
+    _pair(draw, 680, 1240, 238, "Load", sun_host["cpu"], 24)  # info: cpu/ram
+    _pair(draw, 680, 1240, 274, "Accel", sun_host["accel"], 24)  # info: gpu/npu
+    _card(draw, (1284, 16, 1900, 322))  # info: island weather card
+    _text(draw, (1312, 32), "ISLAND WEATHER", 26, (0, 229, 255, 255), True)  # info: islands title
+    _text(draw, (1312, 68), "Avg high / low", 20, (140, 170, 190, 255))  # info: subtitle
+    y = 100  # info: set y
+    for name, value in islands:  # info: for name , value
+        _pair(draw, 1312, 1872, y, name, value, 28)  # info: island row
+        y += 44  # info: y += 44
     stats = (state or {}).get("stats") or {}  # info: set stats
     _card(draw, (20, 840, 636, 1064))  # info: network card below the title
     _text(draw, (48, 860), "LIVE NETWORK", 26, (0, 229, 255, 255), True)  # info: network title
@@ -507,6 +634,8 @@ def _desk_context() -> tuple[dict | None, dict, dict, dict]:  # info: def _desk_
     gl_url = USGS + f"?format=geojson&minmagnitude=2.5&starttime={start}"  # info: set gl_url
     state = _get(API + "/api/state")  # info: set state
     ops = _get(API + "/api/operations") or {}  # info: set ops
+    if not isinstance(ops, dict):  # info: if ops is not a dict
+        ops = {}  # info: set ops
     moon_path = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Weather/moon/moon_current.json")  # info: set moon_path
     if not moon_path.is_file():  # info: drain legacy Energy path
         moon_path = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/moon/moon-last.json")  # info: legacy
@@ -516,6 +645,15 @@ def _desk_context() -> tuple[dict | None, dict, dict, dict]:  # info: def _desk_
             ops.setdefault("moon", {})["status"] = saved  # info: use the saved moon
     except (OSError, ValueError):  # info: except
         pass  # info: pass
+    # File fallback when /api/operations is empty so site/moon cards stay filled.
+    if not ((ops.get("kilauea") or {}).get("status") or {}).get("alert_level"):  # info: if no kilauea from API
+        kilauea_path = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Geology/Volcanoes/Hawaii/kilauea_current.json")  # info: set kilauea_path
+        try:  # info: try
+            row = json.loads(kilauea_path.read_text(encoding="utf-8"))  # info: set row
+            if isinstance(row, dict) and row.get("alert_level"):  # info: if usable
+                ops.setdefault("kilauea", {})["status"] = row  # info: set status
+        except (OSError, ValueError):  # info: except
+            pass  # info: pass
     hi = _quake_change((_get(hi_url) or {}).get("features") or [])  # info: set hi
     world = _quake_change((_get(gl_url, 40) or {}).get("features") or [])  # info: set world
     return state, ops, hi, world  # info: return state , ops , hi , world
@@ -523,7 +661,7 @@ def _desk_context() -> tuple[dict | None, dict, dict, dict]:  # info: def _desk_
 
 # ====================================================
 # SECTION: function _energy_still
-# What it does: Full desk still for the 1-min ML1 push — network/site/quakes filled; packs BLE-only.
+# What it does: Full desk still for the ML1 push — clock + network/site/quakes; EcoFlow BLE cards off.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _energy_still() -> int:  # info: def _energy_still
@@ -533,7 +671,7 @@ def _energy_still() -> int:  # info: def _energy_still
         return 1  # info: return 1
     state, ops, hi, world = _desk_context()  # info: same panels as the full still
     shown = air_time(datetime.now(HST))  # info: same lead minute the on-air clock shows
-    frame = render(state, ops, hi, world, shown)  # info: full overlay; packs stay BLE-only
+    frame = render(state, ops, hi, world, shown)  # info: stream overlay; EcoFlow BLE cards off
     detail = publish(frame, datetime.now(HST))  # info: ssh/scp thumb + clock
     print(json.dumps({"ok": True, "detail": detail, "mode": "energy", "path": str(OUT), "size": list(frame.size)}))  # info: print
     return 0  # info: return 0
