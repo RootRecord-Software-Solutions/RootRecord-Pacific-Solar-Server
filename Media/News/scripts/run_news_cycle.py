@@ -19,7 +19,7 @@ ML1 = Path(
         "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/2 - RootRecord-US-Mainland-One",
     )
 )
-VENDOR = ML1 / "vendor" / "RadioRss" / "scripts"
+VENDOR = PACIFIC / "Media" / "News" / "radiorss" / "scripts"
 DB = Path(
     os.environ.get(
         "RR_DATABASE_ROOT",
@@ -40,7 +40,7 @@ def main(argv: list[str] | None = None) -> int:
     os.environ.setdefault("RR_DATABASE_ROOT", str(DB))
     os.environ.setdefault("RR_NEWS_DATA_ROOT", str(NEWS_ROOT))
     os.environ.setdefault("RR_PACIFIC_ROOT", str(PACIFIC))
-    os.environ.setdefault("RR_RADIO_RSS_CONFIG", str(ML1 / "vendor" / "RadioRss" / "config"))
+    os.environ.setdefault("RR_RADIO_RSS_CONFIG", str(PACIFIC / "Media" / "News" / "radiorss" / "config"))
     if str(VENDOR) not in sys.path:
         sys.path.insert(0, str(VENDOR))
     NEWS_ROOT.mkdir(parents=True, exist_ok=True)

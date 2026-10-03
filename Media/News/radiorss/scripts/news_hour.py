@@ -7,7 +7,7 @@
 # banner from 5 - RootRecord-Library/prompts/How-To-Read-And-Edit-Code.md.
 # Kind: python
 # ==============================================================================
-"""Hourly five-minute news update. Ava, Bruce, and Carly rotate by the Hawaii hour."""
+"""Four ~5 min topic lanes (~20 min). Home personas specialize; HST hour rotates voices."""
 from __future__ import annotations  # info: from __future__ import annotations
 
 import json  # info: import json
@@ -21,7 +21,7 @@ from pathlib import Path  # info: from pathlib import Path
 from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 from common import DB, PACIFIC, iso, parse_iso, utc_now  # info: from common import DB , PACIFIC , iso , parse_iso , utc_now
-from pipeline import _publisher, _summary, _when, poll_feed  # info: from pipeline import _publisher , _summary , _when , poll_feed
+from pipeline import _publisher, _summary, poll_feed  # info: from pipeline import _publisher , _summary , poll_feed
 from registry import configured_on  # info: from registry import configured_on
 from stories import sports  # info: from stories import sports
 
@@ -58,6 +58,14 @@ def _cfg(registry: dict) -> dict:  # info: def _cfg
 def persona_for(hour: int, index: int, roster: tuple[str, ...]) -> str:  # info: def persona_for
     names = roster or ("ava", "bruce", "carly")  # info: set names
     return names[(int(hour) + int(index)) % len(names)]  # info: return names [ ( int ( hour ) + int ( index ) ) % len ( names ) ]
+
+
+def lane_persona(desk: dict, hour: int, index: int, roster: tuple[str, ...]) -> str:  # info: def lane_persona
+    names = tuple(roster) or ("ava", "bruce", "carly")  # info: set names
+    home = str(desk.get("persona") or "").strip().lower()  # info: set home
+    if home in names:  # info: if home in names :
+        return names[(names.index(home) + int(hour)) % len(names)]  # info: rotate home by hour
+    return persona_for(hour, index, names)  # info: return persona_for ( hour , index , names )
 
 
 # ====================================================
@@ -103,8 +111,7 @@ def _line(story: dict, registry: dict) -> str:  # info: def _line
     line = f"{spoken} reports that {story.get('title') or 'an update'}."  # info: set line
     if body:  # info: if body :
         line = f"{line} {body}"  # info: set line
-    line = f"{line} Published {_when(story.get('published_at') or '')}."  # info: set line
-    return line  # info: return line
+    return line  # info: return line — no spoken publish date
 
 
 # ====================================================
@@ -170,7 +177,7 @@ def _desk_lines(desk: dict, fresh: list[dict], older: list[dict], budget: int, r
 
 # ====================================================
 # SECTION: function build_update
-# What it does: Write the desks for one hour. Sports stories are left out. Per-desk word budgets apply. Voices share airtime evenly.
+# What it does: Build four topic lanes. Skip empty lanes. Home personas rotate by Hawaii hour.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def build_update(stories: list[dict], registry: dict, when: datetime) -> dict:  # info: def build_update
@@ -180,63 +187,50 @@ def build_update(stories: list[dict], registry: dict, when: datetime) -> dict:  
     now = when.astimezone(timezone.utc)  # info: set now
     fresh_hours = float(cfg.get("fresh_hours") or 18)  # info: set fresh_hours
     backfill_hours = float(cfg.get("backfill_hours") or 36)  # info: set backfill_hours
-    desk_words = int(cfg.get("desk_words") or 150)  # info: set desk_words
-    target = int(cfg.get("target_words") or 3500)  # info: set target
+    desk_words = int(cfg.get("desk_words") or 750)  # info: set desk_words
+    min_lane = int(cfg.get("min_lane_words") or 200)  # info: set min_lane
     stories = [story for story in stories if not sports({}, story, registry)]  # info: set stories
     fresh = [story for story in stories if _recent(story, now, fresh_hours)]  # info: set fresh
     older = [story for story in stories if _recent(story, now, backfill_hours)]  # info: set older
-    desks = [desk for desk in (cfg.get("desks") or []) if isinstance(desk, dict)]  # info: set desks
-    primary = [desk for desk in desks if not desk.get("fill")]  # info: set primary
-    fill = next((desk for desk in desks if desk.get("fill")), None)  # info: set fill
+    desks = [desk for desk in (cfg.get("desks") or []) if isinstance(desk, dict) and not desk.get("fill")]  # info: set desks
+    desks = sorted(desks, key=lambda desk: int(desk.get("order") or 99))  # info: set desks
     opener = f"RootRecord news update for {local.strftime('%B')} {local.day}, {local.year}."  # info: set opener
     seen: set = set()  # info: set seen
     sections = []  # info: set sections
-    for index, desk in enumerate(primary):  # info: for index , desk in enumerate ( primary )
+    for index, desk in enumerate(desks):  # info: for index , desk in enumerate ( desks )
         lead = str(desk.get("lead") or desk.get("name") or "News.")  # info: set lead
         allot = int(desk.get("words") or desk_words)  # info: set allot
-        overhead = _words(lead) + (_words(opener) if index == 0 else 0)  # info: set overhead
+        order = int(desk.get("order") or (index + 1))  # info: set order
+        first = not sections  # info: opener goes on first non-empty lane
+        overhead = _words(lead) + (_words(opener) if first else 0)  # info: set overhead
         budget = max(24, allot - overhead)  # info: set budget
         lines, picked = _desk_lines(desk, fresh, older, budget, registry, seen)  # info: lines , picked = _desk_lines ( desk , fresh , older , budget , registry , seen )
         if not lines:  # info: if not lines :
-            lines = [f"No fresh items on the {desk.get('name') or 'news'} desk."]  # info: set lines
+            continue  # info: skip empty lane
         parts = [lead, *lines]  # info: set parts
-        if index == 0:  # info: if index == 0 :
+        if first:  # info: if first :
             parts = [opener, *parts]  # info: set parts
         if any(story.get("political") for story in picked):  # info: if any ( story . get ( "political" ) for story in picked ) :
             parts.append("The claims in this desk are the publisher's.")  # info: parts . append ( "The claims in this desk are the publisher's." )
+        text_body = " ".join(parts)  # info: set text_body
         sections.append({  # info: sections . append ( {
-            "id": desk.get("id") or "desk",  # info: "id" : desk . get ( "id" ) or "desk" ,
-            "persona": persona_for(local.hour, index, roster),  # info: "persona" : persona_for ( local . hour , index , roster ) ,
-            "text": " ".join(parts),  # info: "text" : " " . join ( parts ) ,
-            "sources": [_source(story) for story in picked],  # info: "sources" : [ _source ( story ) for story in picked ] ,
+            "id": str(desk.get("id") or f"lane{order}"),  # info: "id"
+            "order": order,  # info: "order" : order ,
+            "file_stem": f"{order:02d}_{desk.get('id') or f'lane{order}'}",  # info: numbered stitch name
+            "persona": lane_persona(desk, local.hour, index, roster),  # info: persona
+            "text": text_body,  # info: "text" : text_body ,
+            "sources": [_source(story) for story in picked],  # info: sources
         })  # info: } )
-    spent = sum(_words(section["text"]) for section in sections)  # info: set spent
-    if fill is not None and target - spent > 40:  # info: if fill is not None and target - spent > 40 :
-        lead = str(fill.get("lead") or "Also in the news.")  # info: set lead
-        remaining = target - spent - _words(lead) - 6  # info: set remaining
-        cap = int(fill.get("words") or remaining)  # info: set cap
-        budget = max(24, min(remaining, cap))  # info: set budget
-        lines, picked = _desk_lines(fill, fresh, older, budget, registry, seen)  # info: lines , picked = _desk_lines ( fill , fresh , older , budget , registry , seen )
-        if lines:  # info: if lines :
-            parts = [lead, *lines]  # info: set parts
-            if any(story.get("political") for story in picked):  # info: if any ( story . get ( "political" ) for story in picked ) :
-                parts.append("The claims in this desk are the publisher's.")  # info: parts . append ( "The claims in this desk are the publisher's." )
-            sections.append({  # info: sections . append ( {
-                "id": fill.get("id") or "also",  # info: "id" : fill . get ( "id" ) or "also" ,
-                "persona": persona_for(local.hour, len(sections), roster),  # info: "persona" : persona_for ( local . hour , len ( sections ) , roster ) ,
-                "text": " ".join(parts),  # info: "text" : " " . join ( parts ) ,
-                "sources": [_source(story) for story in picked],  # info: "sources" : [ _source ( story ) for story in picked ] ,
-            })  # info: } )
     if sections:  # info: if sections :
-        sections[-1]["text"] = sections[-1]["text"].rstrip() + " That is the news update."  # info: sections [ - 1 ] [ "text" ] = sections [ - 1 ] [ "text" ] . rstrip ( ) + " That is the news update."
+        sections[-1]["text"] = sections[-1]["text"].rstrip() + " That is the news update."  # info: close
     sections = balance_personas(sections, local.hour, roster)  # info: set sections
     speak = " ".join(section["text"] for section in sections)  # info: set speak
     return {  # info: return {
-        "report": str(cfg.get("report") or "news_update"),  # info: "report" : str ( cfg . get ( "report" ) or "news_update" ) ,
-        "hour": local.hour,  # info: "hour" : local . hour ,
-        "words": _words(speak),  # info: "words" : _words ( speak ) ,
-        "sections": sections,  # info: "sections" : sections ,
-        "speak": speak,  # info: "speak" : speak ,
+        "report": str(cfg.get("report") or "news_update"),  # info: report
+        "hour": local.hour,  # info: hour
+        "words": _words(speak),  # info: words
+        "sections": sections,  # info: sections
+        "speak": speak,  # info: speak
     }  # info: }
 
 
@@ -262,7 +256,7 @@ def _source(story: dict) -> dict:  # info: def _source
 def _roundup_feeds(registry: dict) -> list[dict]:  # info: def _roundup_feeds
     categories = set()  # info: set categories
     for desk in (_cfg(registry).get("desks") or []):  # info: for desk in ( _cfg ( registry ) . get ( "desks" ) or [ ] )
-        if isinstance(desk, dict) and not desk.get("fill"):  # info: if isinstance ( desk , dict ) and not desk . get ( "fill" ) :
+        if isinstance(desk, dict):  # info: if isinstance ( desk , dict ) :
             categories.update(desk.get("categories") or [])  # info: categories . update ( desk . get ( "categories" ) or [ ] )
     return [feed for feed in registry["feeds"] if configured_on(feed) and feed.get("category") in categories]  # info: return [ feed for feed in registry [ "feeds" ] if configured_on ( feed ) and feed . get ( "category" ) in categories ]
 
@@ -369,7 +363,7 @@ def _join(parts: list[Path], built: dict) -> dict:  # info: def _join
 
 # ====================================================
 # SECTION: function render_update
-# What it does: Speak each desk in its own voice, then replace news_update_current and push the reports file.
+# What it does: TTS each numbered lane as soon as ready, Pacific-stitch one news_update, push.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def render_update(built: dict) -> dict:  # info: def render_update
@@ -384,10 +378,14 @@ def render_update(built: dict) -> dict:  # info: def render_update
     has_gap = _gap(gap)  # info: set has_gap
     parts = []  # info: set parts
     voices = []  # info: set voices
-    for index, section in enumerate(built.get("sections") or []):  # info: for index , section in enumerate ( built . get ( "sections" ) or [ ] )
-        wav = folder / f"part-{index}.wav"  # info: set wav
+    lanes = sorted(built.get("sections") or [], key=lambda section: int(section.get("order") or 99))  # info: lexical order
+    for section in lanes:  # info: TTS each lane when reached
+        stem = str(section.get("file_stem") or f"{int(section.get('order') or 0):02d}_{section.get('id') or 'lane'}")  # info: set stem
+        wav = folder / f"{stem}.wav"  # info: numbered lane wav
         spoken = pronounce_places(fold_place_spellings(section.get("text") or ""))  # info: set spoken
-        rendered = _render_section(str(section.get("persona") or "ava"), spoken, wav, folder / f"part-{index}.txt")  # info: set rendered
+        if _words(spoken) < 1:  # info: if _words ( spoken ) < 1 :
+            continue  # info: continue
+        rendered = _render_section(str(section.get("persona") or "ava"), spoken, wav, folder / f"{stem}.txt")  # info: set rendered
         if not rendered.get("ok"):  # info: if not rendered . get ( "ok" ) :
             return rendered  # info: return rendered
         if parts and has_gap:  # info: if parts and has_gap :
@@ -395,21 +393,21 @@ def render_update(built: dict) -> dict:  # info: def render_update
         parts.append(wav)  # info: parts . append ( wav )
         voices.append(section.get("persona"))  # info: voices . append ( section . get ( "persona" ) )
     if not parts:  # info: if not parts :
-        return {"ok": False, "detail": "empty"}  # info: return { "ok" : False , "detail" : "empty" }
-    joined = _join(parts, built)  # info: set joined
+        return {"ok": False, "detail": "empty"}  # info: return empty
+    joined = _join(parts, built)  # info: Pacific final stitch
     if not joined.get("ok"):  # info: if not joined . get ( "ok" ) :
         return joined  # info: return joined
-    if os.environ.get("RR_RADIO_PUSH", "1") == "0":  # info: if os . environ . get ( "RR_RADIO_PUSH" , "1" ) == "0" :
-        return {"ok": True, "detail": "rendered", "wav": joined["wav"], "voices": voices}  # info: return { "ok" : True , "detail" : "rendered" , "wav" : joined [ "wav" ] , "voices" : voices }
+    if os.environ.get("RR_RADIO_PUSH", "1") == "0":  # info: if no push
+        return {"ok": True, "detail": "rendered", "wav": joined["wav"], "voices": voices, "lanes": [str(p.name) for p in parts if p.suffix == ".wav" and p.name != "gap.wav"]}  # info: return
     import radio_push  # info: import radio_push
-    status_cue.play("news_update", "transit")  # info: transit cue as the send starts
-    pushed = radio_push.push_report("news_update")  # info: set pushed
+    status_cue.play("news_update", "transit")  # info: transit
+    pushed = radio_push.push_report("news_update")  # info: single file
     if not isinstance(pushed, dict):  # info: if not isinstance ( pushed , dict ) :
-        status_cue.play("news_update", "failed")  # info: failed cue when the send does not return
-        return {"ok": False, "detail": "push_failed", "wav": joined["wav"]}  # info: return { "ok" : False , "detail" : "push_failed" , "wav" : joined [ "wav" ] }
-    pushed["status_send"] = status_cue.after_push("news_update", pushed)  # info: sent cue after Mainland One has the file
-    pushed["voices"] = voices  # info: pushed [ "voices" ] = voices
-    pushed["wav"] = joined["wav"]  # info: pushed [ "wav" ] = joined [ "wav" ]
+        status_cue.play("news_update", "failed")  # info: failed
+        return {"ok": False, "detail": "push_failed", "wav": joined["wav"]}  # info: return
+    pushed["status_send"] = status_cue.after_push("news_update", pushed)  # info: after push
+    pushed["voices"] = voices  # info: voices
+    pushed["wav"] = joined["wav"]  # info: wav
     return pushed  # info: return pushed
 
 

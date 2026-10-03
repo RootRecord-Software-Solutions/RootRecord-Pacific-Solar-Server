@@ -1492,7 +1492,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "timeout_sec": 1800,  # info: "timeout_sec" : 1800 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
         "cwd": f"{PACIFIC}/Media/News/scripts",  # info: "cwd"
-        "env": {"RR_DATABASE_ROOT": DATABASE, "RR_NEWS_DATA_ROOT": f"{DATABASE}/Media/News Data", "RR_PACIFIC_ROOT": PACIFIC, "RR_RADIO_RSS_CONFIG": f"{ML1}/vendor/RadioRss/config"},  # info: "env"
+        "env": {"RR_DATABASE_ROOT": DATABASE, "RR_NEWS_DATA_ROOT": f"{DATABASE}/Media/News Data", "RR_PACIFIC_ROOT": PACIFIC, "RR_RADIO_RSS_CONFIG": f"{PACIFIC}/Media/News/radiorss/config"},  # info: Pacific canonical
     },  # info: } ,
     # --- 35:05–35:09 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read

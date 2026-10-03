@@ -112,3 +112,8 @@ categories:
     program: OFFBEAT_BRIEF
     lead: "Science notebook."
     rank: 90
+  - id: public_health
+    name: Public health
+    program: PUBLIC_HEALTH_BRIEF
+    lead: "Public health brief."
+    rank: 15

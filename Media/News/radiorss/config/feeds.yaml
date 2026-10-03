@@ -1049,7 +1049,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.npr.org/1001/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1061,7 +1061,7 @@ feeds:
     category: global_news
     type: rss
     url: https://www.theguardian.com/international/rss
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1073,7 +1073,7 @@ feeds:
     category: global_news
     type: rss
     url: https://www.aljazeera.com/xml/rss/all.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1147,7 +1147,7 @@ feeds:
     category: markets
     type: rss
     url: https://feeds.marketwatch.com/marketwatch/topstories/
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1159,7 +1159,7 @@ feeds:
     category: markets
     type: rss
     url: https://feeds.bbci.co.uk/news/business/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1184,13 +1184,14 @@ feeds:
     provider: Department of War
     category: national_security
     type: rss
-    url: ""
-    enabled: false
+    url: "https://www.war.gov/DesktopModules/ArticleCS/RSS.ashx?ContentType=1&Site=945&max=10"
+    enabled: true
     priority: high
     native_overlap: false
-    origin: unavailable
+    origin: external
     directory: https://www.war.gov/News/RSS/
-    note: "war.gov and defense.gov returned HTTP 403 on 2026-10-01. No official feed body was verified. The desk uses the publishers below until that page allows a fetch."
+    note: "Recovered 2026-10-03 — war.gov ArticleCS RSS.ashx ContentType=1 Site=945."
+
 
   - id: usni_news
     name: USNI News
@@ -1350,7 +1351,7 @@ feeds:
     category: hawaii
     type: rss
     url: https://www.civilbeat.org/feed/
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     nonviolent: true
@@ -1363,7 +1364,7 @@ feeds:
     category: hawaii
     type: rss
     url: https://www.staradvertiser.com/feed/
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     nonviolent: true
@@ -1377,7 +1378,7 @@ feeds:
     category: hawaii
     type: rss
     url: https://www.hawaiinewsnow.com/arc/outboundfeeds/rss/
-    enabled: true
+    enabled: false
     priority: medium
     native_overlap: true
     nonviolent: true
@@ -1418,7 +1419,7 @@ feeds:
     category: chips
     type: rss
     url: https://feeds.bbci.co.uk/news/technology/rss.xml
-    enabled: true
+    enabled: false
     priority: medium
     native_overlap: false
     origin: external
@@ -1431,7 +1432,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.bbci.co.uk/news/world/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1443,7 +1444,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.bbci.co.uk/news/world/asia/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1455,7 +1456,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.bbci.co.uk/news/world/australia/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1468,7 +1469,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.bbci.co.uk/news/world/africa/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1480,7 +1481,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.bbci.co.uk/news/world/europe/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1492,7 +1493,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.bbci.co.uk/news/world/latin_america/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1504,7 +1505,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.bbci.co.uk/news/world/middle_east/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1516,7 +1517,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml
-    enabled: true
+    enabled: false
     priority: medium
     native_overlap: false
     origin: external
@@ -1529,7 +1530,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.npr.org/1004/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1541,7 +1542,7 @@ feeds:
     category: global_news
     type: rss
     url: https://www.abc.net.au/news/feed/45910/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1578,7 +1579,7 @@ feeds:
     category: global_news
     type: rss
     url: https://www.france24.com/en/rss
-    enabled: true
+    enabled: false
     priority: medium
     native_overlap: false
     origin: external
@@ -1705,7 +1706,7 @@ feeds:
     category: mainland_politics
     type: rss
     url: https://feeds.npr.org/1003/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     centrist: true
@@ -1719,7 +1720,7 @@ feeds:
     category: mainland_politics
     type: rss
     url: https://feeds.npr.org/1014/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     centrist: true
@@ -1814,3 +1815,62 @@ feeds:
     origin: external
     directory: https://phys.org/
 
+  - id: state_dept_releases
+    name: State Department Press Releases
+    provider: U.S. Department of State
+    category: national_security
+    type: rss
+    url: https://www.state.gov/rss-feed/press-releases/feed/
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.state.gov/rss-feeds/
+
+  - id: usgs_news
+    name: USGS News Releases
+    provider: U.S. Geological Survey
+    category: science
+    type: rss
+    url: https://www.usgs.gov/news/news-releases/feed
+    enabled: true
+    priority: medium
+    native_overlap: false
+    origin: external
+    directory: https://www.usgs.gov/news/news-releases
+
+  - id: usgs_earthquakes_significant
+    name: USGS Significant Earthquakes
+    provider: U.S. Geological Survey
+    category: science
+    type: atom
+    url: https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.atom
+    enabled: true
+    priority: high
+    native_overlap: true
+    origin: overlapping
+    directory: https://earthquake.usgs.gov/
+
+  - id: cdc_newsroom
+    name: CDC Online Newsroom
+    provider: Centers for Disease Control and Prevention
+    category: public_health
+    type: rss
+    url: https://tools.cdc.gov/api/v2/resources/media/132608.rss
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.cdc.gov/media/
+
+  - id: hhs_press
+    name: HHS Press Room
+    provider: U.S. Department of Health and Human Services
+    category: public_health
+    type: rss
+    url: https://www.hhs.gov/press-room/feed
+    enabled: true
+    priority: high
+    native_overlap: false
+    origin: external
+    directory: https://www.hhs.gov/press-room/

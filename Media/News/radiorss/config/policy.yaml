@@ -287,72 +287,43 @@ programs:
 # Weighting: tech/chips (NVIDIA, Microsoft, big tech), truly global world news (Asia, Australia, Africa,
 # Europe, Latin America, Middle East, North America), U.S. mainland weather, centrist mainland politics,
 # universities, and science breakthroughs — plus markets, security, SpaceX, and Hawaii.
-# Voices: Ava, Bruce, and Carly share the hour with roughly equal airtime; Hawaii hour still picks the first preference.
-# Optional per-desk words override desk_words. Primary desks are polled by news-hour.
+# Four ~5 min topic lanes (~3000 words / ~20 min).
 news_update:
   report: news_update
-  target_words: 3500
-  desk_words: 220
+  target_words: 3000
+  desk_words: 750
   fresh_hours: 18
   backfill_hours: 36
+  min_lane_words: 200
   roster: [ava, bruce, carly]
   desks:
-    - id: markets
-      name: Markets
-      lead: "Markets."
-      words: 220
-      categories: [markets, economics_finance, energy_market]
-    - id: defence
+    - id: security
       name: National security
       lead: "National security."
-      words: 220
+      words: 750
+      persona: bruce
+      order: 1
       categories: [national_security]
-    - id: spacex
-      name: SpaceX
-      lead: "SpaceX."
-      words: 180
-      categories: [spacex]
-    - id: hawaii
-      name: Hawaii
-      lead: "Hawaii."
-      words: 220
-      categories: [hawaii]
-    - id: chips
-      name: Tech and chips
-      lead: "Tech and chips."
-      words: 420
-      categories: [chips, artificial_intelligence, developer_ecosystem]
-    - id: world
-      name: World
-      lead: "World."
-      words: 520
-      categories: [global_news]
-    - id: mainland_weather
-      name: Mainland weather
-      lead: "Mainland weather."
-      words: 360
-      categories: [mainland_weather]
-    - id: mainland_politics
-      name: Mainland politics
-      lead: "Mainland politics."
-      words: 360
-      categories: [mainland_politics]
-    - id: science
-      name: Science
-      lead: "Science."
-      words: 400
-      categories: [science, research, science_offbeat]
-    - id: universities
-      name: Universities
-      lead: "Universities."
-      words: 340
-      categories: [universities]
-    - id: also
-      name: Also
-      lead: "Also in the news."
-      fill: true
-      words: 280
-      categories: [space, cybersecurity, technology, aviation]
+    - id: space_science
+      name: Space and science
+      lead: "Space and science."
+      words: 750
+      persona: ava
+      order: 2
+      categories: [spacex, space, science, research, science_offbeat]
+    - id: tech
+      name: Tech and builders
+      lead: "Tech and builders."
+      words: 750
+      persona: carly
+      order: 3
+      categories: [chips, artificial_intelligence, developer_ecosystem, cybersecurity, technology]
+    - id: islands_health
+      name: Islands and public health
+      lead: "Islands and public health."
+      words: 750
+      order: 4
+      categories: [hawaii, public_health, mainland_weather]
 
 publishers:
   NASA: "NASA"
@@ -423,3 +394,8 @@ publishers:
   "Storm Prediction Center": "the Storm Prediction Center"
   "Federal Register": "the Federal Register"
   Congress: "Congress.gov"
+  "Department of War": "the Department of War"
+  "U.S. Department of State": "the State Department"
+  "U.S. Geological Survey": "the U.S. Geological Survey"
+  "Centers for Disease Control and Prevention": "the C D C"
+  "U.S. Department of Health and Human Services": "Health and Human Services"

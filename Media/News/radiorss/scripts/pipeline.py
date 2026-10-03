@@ -294,7 +294,10 @@ def script_for(cluster: dict, stories: list[dict], registry: dict) -> tuple[str,
         if spoken not in names:  # info: if spoken not in names :
             names.append(spoken)  # info: names . append ( spoken )
         body = _summary(story.get("summary") or "", policy)  # info: set body
-        lines.append(f"{spoken} reports that {story['title']}. {body} Published {_when(story.get('published_at') or '')}.")  # info: lines . append ( f"{ spoken } reports that { story [ 'title' ] }. { body } Published { _when ( story . get ( 'published_at' ) or '' ) }." )
+        line = f"{spoken} reports that {story['title']}."  # info: set line
+        if body:  # info: if body :
+            line = f"{line} {body}"  # info: set line
+        lines.append(line)  # info: no spoken publish date
     if len(names) > 1:  # info: if len ( names ) > 1 :
         opener = f"{lead} {' and '.join(names)} are reporting the same event."  # info: set opener
     else:  # info: else
