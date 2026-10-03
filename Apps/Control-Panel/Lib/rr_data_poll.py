@@ -163,7 +163,7 @@ def snapshot(settings: dict | None = None) -> dict:
         "intent_desired": intent_desired,
         "panel_raw": panel_raw,
         "gated_jobs": sorted(GATED_JOBS),
-        "fail_safe": "Prefer Local Pacific (RR_LOCAL_DATA_POLL=1 / unset) if ML2/AWS is down.",
+        "fail_safe": "If ML2/AWS is down: RR_LOCAL_DATA_POLL=1 runs ML2 collectors from the US-Mainland-Two desk tree (run-local-bank.sh) into Database — no Pacific poller copies.",
     }
 
 

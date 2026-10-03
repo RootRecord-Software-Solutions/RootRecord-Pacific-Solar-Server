@@ -49,7 +49,7 @@ SLOT_MIN = int(os.environ.get("RR_KILAUEA_LOOK_SLOT_MIN", "15"))  # info: set SL
 UA = "RootRecord-Pacific-Geology/1.0 (+https://rootrecord.cloud)"  # info: set UA
 TIMEOUT = min(15.0, float(os.environ.get("RR_GEOLOGY_TIMEOUT", "15")))  # info: set TIMEOUT
 
-# USGS HVO stills — same catalog as Geology/scripts/kilauea_cams.py DEFAULT_CAMS.
+# USGS HVO stills — same catalog as ML2 collectors/geology_kilauea_cams.py DEFAULT_CAMS.
 # ====================================================
 # SECTION: CAM_STILLS
 # What it does: Preferred order of USGS HVO stills for one observation look (V3 lava lake first).

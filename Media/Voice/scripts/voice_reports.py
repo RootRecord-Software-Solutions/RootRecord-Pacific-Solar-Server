@@ -21,7 +21,7 @@ Each run writes Database Media/Audio/Voice/Reports/<report>_current.md (old copy
 (rc 75 recorded) and the text still lands. A Telegram voice note posts only when RR_VOICE_DELIVER=1. RR_TELEGRAM_DEST=council selects the original council chat. After a finished WAV, radio_push.py sends that one _current file to the Mainland library over SSH unless RR_RADIO_PUSH=0. Speakers stay off. The Mainland host does not fetch.
 Only G3 data that exists is read: Database Energy/{soc,watts}/*-last.json (EcoFlow BLE), Database
 Weather/Hawai'i (NWS alerts + SFP state forecast, Pacific weather poller), Library Work-Order checkboxes,
-/proc, and Database Geology/Earthquakes/{hawaii,global}-last.json (Pacific Geology/scripts/geology_collect.py,
+/proc, and Database Geology/Earthquakes/{hawaii,global}-last.json (ML2 collectors/geology.py → Database,
 job geology_collect gated RR_GEOLOGY=1). earthquake_report = G1 earthquake-hourly spoken script (Carly), job gated
 RR_VOICE_QUAKE=1 (2026-09-29, migration-geology). G1 council_quake (Telegram per-quake posts) stays NOT ported.
 hurricane_desk = G1 weather/hurricane-desk Hawaiʻi block (Carly), fed from Database Weather/Hawai'i/hurricanes/
@@ -512,11 +512,11 @@ def host() -> dict:  # info: def host
 
 # ====================================================
 # SECTION: function quake_facts
-# What it does: Database Geology/Earthquakes last files (written by Pacific Geology/scripts/geology_collect.py).
+# What it does: Database Geology/Earthquakes last files (written by ML2 geology collector).
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def quake_facts(t: datetime) -> dict:  # info: def quake_facts
-    """Database Geology/Earthquakes last files (written by Pacific Geology/scripts/geology_collect.py)."""  # info: """Database Geology/Earthquakes last files (written by Pacific Geology/scripts/geology_collect.py)."""
+    """Database Geology/Earthquakes last files (written by ML2 geology collector)."""  # info: ML2 geology → Database
     out = {}  # info: set out
     for key in ("hawaii", "global"):  # info: for key in ( "hawaii" , "global" )
         d = jload(QUAKES / f"{key}-last.json")  # info: set d

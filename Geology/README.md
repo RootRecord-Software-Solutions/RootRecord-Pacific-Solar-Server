@@ -10,8 +10,9 @@
 | --- | --- |
 | Domain folder | **`Geology/` only** (no parallel `geology` / `kilauea` / `earthquakes` runtime folders on Pacific) |
 | Ownership | Desk-side observation, polling, ingest, and operator tooling |
-| Scripts | `scripts/geology_collect.py`, `scripts/kilauea_cams.py`, `scripts/earthquakes_backfill.py` — **LANDED**, one manual run each **PASS** (nice 10) |
-| `jobs.py` | `geology_collect` (300 s, `RR_GEOLOGY=1`), `geology_kilauea_cams` (600 s, `RR_KILAUEA_CAMS=1`) — **gated OFF**; take effect only at the next poller start with the flag set. Keeping these jobs.py registrations is a **sign-off item** (standing rule: jobs.py only on Alexander's request or a WO; exact blocks in Database `Logs/Migration/migration-jobs-py-additions-20260929.md`) |
+| Internet pollers | **ML2 only** — `1 - Servers/3 - RootRecord-US-Mainland-Two/collectors/{geology,geology_kilauea_cams}.py`. Pacific jobs are thin `run-local-bank.sh` wrappers for fail-safe when `RR_LOCAL_DATA_POLL=1`. |
+| Pacific-kept scripts | `scripts/kilauea_look.py` (report-side vision), `scripts/earthquakes_backfill.py` (on-demand DB backfill) |
+| `jobs.py` | `geology_collect` / `geology_kilauea_cams` → ML2 `run-local-bank.sh`; gated off when `RR_LOCAL_DATA_POLL=0` |
 | Data | Database `2 - RootRecord-Database/Geology/{Earthquakes,Volcanoes}/` — layout in Database `Geology/README.md` |
 | Voice | `Media/Voice/scripts/voice_reports.py earthquake_report` (job `voice_earthquake_report`, `RR_VOICE_QUAKE=1`) and `kilauea_report` (job `voice_kilauea_report`, `RR_VOICE_KILAUEA=1`) read the Geology last files; `kilauea_image_check` (job `voice_kilauea_image_check`, `RR_VOICE_KILAUEA_IMAGE=1`, every 15 m) runs `scripts/kilauea_look.py` on USGS HVO stills — report-side, not a LOCAL_DATA_POLL collector |
 | Config | `config/global-locations.json` — verbatim copy of G0 `old/config/locations/global-locations.json` (306 public places: country capitals, US state capitals, staged Hawaiʻi locations; sha256 `5defe5c7…b49a`). Used by `geology_collect.py` for the G0 nearest-location tag (≤ 250 km) on every event (`nearest`: location_id, name, country_code, admin1_code, km) — added 2026-09-29 13:49 HST, PASS |
@@ -21,9 +22,9 @@
 
 | Script | Ported from | Sources (public, no key) | Writes |
 | --- | --- | --- | --- |
-| `scripts/geology_collect.py [all\|quakes\|volcanoes] [--dry-run]` | G1 `earthquakes/earthquake-hourly` (fetch + M≥2 detection), G1 `kilauea/rr-kilauea` (alert level, headline, erupting, multiplier, ≤150 km count), G0 `operations/…/every-5-minutes/quakes.py`, G0 `operations/earthquakes/global/poller.py` (nearest-location tag) | USGS FDSN query (Hawaiʻi bbox, M≥1, 24 h), USGS summary `2.5_day.geojson`, HANS `getMonitoredVolcanoes`, HANS `getNewestOrRecent` | `Earthquakes/{hawaii,global}-last.json`, `Earthquakes/Daily/*.jsonl`, `Volcanoes/Hawaii/{hvo,kilauea,mauna-loa}-last.json`, `Volcanoes/Hawaii/Daily/hvo-notices-*.jsonl`, `collector-last.json` |
-| `scripts/kilauea_cams.py [--keep-dated]` | G1 `kilauea/kilauea-cams` (DEFAULT_CAMS + USGS still fallback) | USGS HVO V1/V2/V3 `M.jpg` (conditional GET) | `Volcanoes/Hawaii/Cams/cams-last.json`, `Volcanoes/Hawaii/Cams/v{1,2,3}cam-last.jpg` |
-| `scripts/kilauea_look.py [--force] [--ensure-ref]` | report-side Gemma look (same Ollama stack as `Security/Cameras/panel_look.py`) | USGS HVO V1/V2/V3 stills (prefer Cams/*-last.jpg; live GET when stale) + optional USGS public-domain fountain reference | `Volcanoes/Hawaii/Cams/kilauea-look-last.json`, optional `Volcanoes/Hawaii/Cams/references/lava-fountain-ref.jpg` — job `voice_kilauea_image_check` gated `RR_VOICE_KILAUEA_IMAGE` |
+| ML2 `collectors/geology.py` (fail-safe via `run-local-bank.sh`) | — | USGS FDSN + HANS | `Earthquakes/{hawaii,global}-last.json`, `Volcanoes/Hawaii/{hvo,kilauea,mauna-loa}-last.json`, `collector-last.json` |
+| ML2 `collectors/geology_kilauea_cams.py` | — | USGS HVO V1/V2/V3 stills | `Volcanoes/Hawaii/Cams/*_current.jpg`, `cams_current.json` |
+| `scripts/kilauea_look.py [--force] [--ensure-ref]` | report-side Gemma look (same Ollama stack as `Security/Cameras/panel_look.py`) | banked Cams `*_current` / live GET when stale | `Volcanoes/Hawaii/Cams/kilauea-look-last.json` — job `voice_kilauea_image_check` |
 | `scripts/earthquakes_backfill.py [--days N]` | G0 `old/operations/backfillquakes.py` | USGS FDSN `count` + `query` | `Earthquakes/quakes.db` (git-ignored) — on demand only |
 | `Earthquake-Discord/scripts/earthquake_discord_post.py` | G1 `earthquake-hourly` Discord post only | Database `Earthquakes/{hawaii,global}-last.json` (no USGS fetch) | Dry-run prints. `Earthquake-Discord/posted-last.json` only after a signed-off `--send` |
 | `PublicDraftQueue/scripts/queue_draft.py` | G1 `rr-kilauea` public draft queue only | Database `Volcanoes/Hawaii/kilauea-last.json` (no HTTP) | `PublicDraftQueue/queue/*-kilauea-cron.md` on a changed notice id or alert level |
