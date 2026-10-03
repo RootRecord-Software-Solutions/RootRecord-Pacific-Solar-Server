@@ -8,7 +8,7 @@
 # Kind: python
 # ==============================================================================
 #!/usr/bin/env python3
-"""Read live snapshot. BLE only. A miss keeps the last BLE file or WAITING — never EcoFlow cloud."""  # info: docstring
+"""Read live snapshot. Prefer BLE; after the BLE hold, live EcoFlow quota fills the board (frozen quota → WAITING)."""  # info: docstring
 from __future__ import annotations  # info: from __future__ import annotations
 
 import argparse  # info: import argparse
@@ -562,40 +562,80 @@ def main() -> int:  # info: def main
     fields: dict = {}  # info: set fields
     device = None  # info: set device
     ble_err = None  # info: set ble_err
+    cloud_reused = False  # info: set cloud_reused
 
-    # 1) BLE only. prefer_api and EcoFlow cloud are off — Alexander 2026-10-03.
-    if _prefer_api(alias):  # info: if prefer_api was set
-        ble_err = "prefer_api ignored; cloud disabled"  # info: set ble_err
-    ok, reason = eflib_ready()  # info: ok , reason = eflib_ready ( )
-    if ok and ble_err is None:  # info: if eflib is ready and we are not short-circuiting
-        import io, contextlib  # info: import io , contextlib
-        buf_out, buf_err = io.StringIO(), io.StringIO()  # info: buf_out , buf_err = io . StringIO (
-        try:  # info: try :
-            with contextlib.redirect_stdout(buf_out), contextlib.redirect_stderr(buf_err):  # info: with contextlib . redirect_stdout ( buf_out ) ,
-                device, fields = asyncio.run(_read_ble(alias))  # info: device , fields = asyncio . run (
-            source = "ble"  # info: set source
-        except BleUnavailable as e:  # info: except BleUnavailable as e :
-            ble_err = str(e)  # info: set ble_err
-        except Exception as e:  # info: except Exception as e :
-            ble_err = f"{type(e).__name__}: {e}"  # info: set ble_err
-    elif ble_err is None:  # info: elif eflib is not ready
-        ble_err = reason  # info: set ble_err
+    # 1) Prefer BLE unless prefer_api=1. River NeedBind currently blocks heartbeats — prefer_api skips that dead wait.
+    if not _prefer_api(alias):  # info: if not _prefer_api ( alias ) :
+        ok, reason = eflib_ready()  # info: ok , reason = eflib_ready ( )
+        if ok:  # info: if ok :
+            import io, contextlib  # info: import io , contextlib
+            buf_out, buf_err = io.StringIO(), io.StringIO()  # info: buf_out , buf_err = io . StringIO (
+            try:  # info: try :
+                with contextlib.redirect_stdout(buf_out), contextlib.redirect_stderr(buf_err):  # info: with contextlib . redirect_stdout ( buf_out ) ,
+                    device, fields = asyncio.run(_read_ble(alias))  # info: device , fields = asyncio . run (
+                source = "ble"  # info: set source
+            except BleUnavailable as e:  # info: except BleUnavailable as e :
+                ble_err = str(e)  # info: set ble_err
+            except Exception as e:  # info: except Exception as e :
+                ble_err = f"{type(e).__name__}: {e}"  # info: set ble_err
+        else:  # info: else :
+            ble_err = reason  # info: set ble_err
 
-    # 1b) Inverter heartbeat missing. Outlet off → 0 W. Outlet on with empty watts stays empty (no cloud fill).
+    # 1b) Inverter heartbeat missing. Outlet on → fill those watts from quota. Otherwise the outlet is off: write 0.
     if source == "ble" and _missing_inverter_watts(fields):  # info: if source == "ble" and _missing_inverter_watts ( fields ) :
-        if not _ac_outlet_on(fields):  # info: if the outlet is off
+        if _ac_outlet_on(fields):  # info: if _ac_outlet_on ( fields ) :
+            cloud_fields = None  # info: set cloud_fields
+            cached = _fresh_cloud_cache(alias)  # info: set cached
+            if cached:  # info: if cached :
+                cloud_fields = cached["fields"]  # info: set cloud_fields
+            elif not _cloud_throttled(alias):  # info: elif not _cloud_throttled ( alias ) :
+                try:  # info: try :
+                    cloud_fields = _read_api(alias)  # info: set cloud_fields
+                    _save_cloud_cache(alias, cloud_fields, datetime.now(HST).isoformat(timespec="seconds"))  # info: call _save_cloud_cache
+                except Exception:  # info: except Exception :
+                    _save_cloud_cache(alias, None, None)  # info: call _save_cloud_cache
+            if cloud_fields and _fill_inverter_watts(fields, cloud_fields):  # info: if cloud_fields and _fill_inverter_watts ( fields , cloud_fields ) :
+                source = "ble+cloud"  # info: set source
+                _stamp_device_watts(device, fields)  # info: call _stamp_device_watts
+        else:  # info: else :
             _zero_missing_inverter_watts(fields)  # info: call _zero_missing_inverter_watts
             _stamp_device_watts(device, fields)  # info: call _stamp_device_watts
 
-    # 2) BLE miss: keep a fresh last BLE file, otherwise WAITING. Never call EcoFlow cloud.
-    if source == "none":  # info: if source == "none" :
+    # 2) One scan miss keeps the last BLE file. Quota runs only after that file is older than BLE_HOLD_SEC.
+    if source == "none" and _hold_last_ble(alias):  # info: if source == "none" and _hold_last_ble ( alias ) :
         print("WAITING")  # info: call print
-        if _hold_last_ble(alias):  # info: if the last BLE file is still inside the hold
-            print(f"No data — BLE: {ble_err or 'skipped'}; keeping last BLE reading; cloud not used")  # info: call print
-        else:  # info: else
-            print(f"No data — BLE: {ble_err or 'skipped'}; cloud not used")  # info: call print
+        print(f"No data — BLE: {ble_err or 'skipped'}; keeping last BLE reading")  # info: call print
         print("STATUS=WAITING")  # info: call print
         return 2  # info: return 2
+
+    # Cloud fallback when BLE has been quiet past the hold, or prefer_api. Out-of-range must not leave STALE forever.
+    if source == "none":  # info: if source == "none" :
+        cached = _fresh_cloud_cache(alias)  # info: set cached
+        if cached:  # info: if cached :
+            fields = cached["fields"]  # info: set fields
+            source = "cloud"  # info: set source
+            cloud_reused = True  # info: set cloud_reused
+            device = None  # info: set device
+        elif _cloud_throttled(alias):  # info: elif _cloud_throttled ( alias ) :
+            print("WAITING")  # info: call print
+            print(f"No data — BLE: {ble_err or 'skipped'}; API: throttled")  # info: call print
+            print("STATUS=WAITING")  # info: call print
+            return 2  # info: return 2
+        else:  # info: else :
+            try:  # info: try :
+                fields = _read_api(alias)  # info: set fields
+                source = "cloud"  # info: set source
+                device = None  # info: set device
+            except Exception as e:  # info: except Exception as e :
+                _save_cloud_cache(alias, None, None)  # info: call _save_cloud_cache
+                print("WAITING")  # info: call print
+                print(f"No data — BLE: {ble_err or 'skipped'}; API: {type(e).__name__}: {e}")  # info: call print
+                print("STATUS=WAITING")  # info: call print
+                return 2  # info: return 2
+
+    # 2b) EcoFlow cloud freezes when the phone app is closed. Do not treat a frozen quota as live.
+    if source == "cloud" and _note_cloud_fingerprint(alias, fields):  # info: if the quota board values have not moved
+        source = "cloud_stale"  # info: set source
 
     # 3) Charge source
     other_outs = _collect_other_ac_outs(alias)  # info: set other_outs
@@ -614,12 +654,16 @@ def main() -> int:  # info: def main
         "charge_source": charge_source,  # info: "charge_source" : charge_source ,
     }  # info: )
 
-    # 4) Persist BLE into Energy/layers/1sec.db before any JSON is rewritten.
+    # 4) Persist into Energy/layers/1sec.db. Cloud and BLE both land here before any JSON is rewritten.
+    #    cloud_stale is not written into the averages path — frozen app-closed quota is not a new sample.
     db_ok = False  # info: set db_ok
     try:  # info: try :
         ensure_layers()  # info: call ensure_layers
         if device is not None:  # info: if device is not None
             persist_eflow_device(device, alias, observed_at)  # info: call persist_eflow_device
+            db_ok = True  # info: set db_ok
+        elif source != "cloud_stale" and _has_data(fields):  # info: elif live cloud or BLE-shaped fields
+            persist_eflow_fields(fields, alias, observed_at, source=source)  # info: call persist_eflow_fields
             db_ok = True  # info: set db_ok
     except Exception as e:  # info: except Exception as e :
         print(f"DB_ERROR: {type(e).__name__}: {e}", file=sys.stderr)  # info: call print
@@ -629,18 +673,29 @@ def main() -> int:  # info: def main
         except Exception:  # info: except Exception :
             pass  # info: pass
 
-    # 5) Samples / last files are rebuilt from layers/1sec.db only — never from the live dict.
-    if db_ok and source == "ble":  # info: if db_ok and source == "ble"
+    # 5) Samples / last files / Cloud-Quota are rebuilt from layers/1sec.db only — never from the live dict.
+    db_snap = None  # info: set db_snap
+    if not cloud_reused and db_ok and source != "none":  # info: if not cloud_reused and db_ok and source != "none"
         db_snap = _write_json_from_db(alias, source, charge_source)  # info: call _write_json_from_db
         if db_snap is not None:  # info: if db_snap is not None
             fields = db_snap["fields"]  # info: SUMMARY and STATUS use the db values
             snap = db_snap  # info: set snap
+        if source.startswith("cloud"):  # info: if source . startswith ( "cloud" )
+            _save_cloud_cache(alias, fields, snap["at"])  # info: call _save_cloud_cache
+    elif source == "cloud_stale":  # info: elif source == "cloud_stale"
+        _save_cloud_cache(alias, fields, snap["at"])  # info: keep throttle cache warm without pretending it is live
 
     # 6) Console
     if not _is_internal_only(alias):  # info: if not _is_internal_only ( alias ) :
         print(_summary_line(alias, fields, db_ok, source, charge_source, ble_err))  # info: call print
     else:  # info: else :
         print(f"INTERNAL={alias} soc={fields.get('soc')} src={source} charge={charge_source}")  # info: call print
+
+    if source == "cloud_stale":  # info: if source == "cloud_stale"
+        print("WAITING")  # info: call print
+        print("No data — EcoFlow cloud frozen (open the phone app to refresh quota); BLE: " + (ble_err or "skipped"))  # info: call print
+        print("STATUS=WAITING")  # info: call print
+        return 2  # info: return 2
 
     if not _has_data(fields):  # info: if not _has_data ( fields ) :
         print("WAITING")  # info: call print

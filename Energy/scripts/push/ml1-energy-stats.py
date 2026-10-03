@@ -8,7 +8,7 @@
 # Kind: python
 # ==============================================================================
 #!/usr/bin/env python3
-"""Push live EcoFlow soc/watts to ML1 over SSH every minute. No cloud. No poller."""  # info: docstring
+"""Push live EcoFlow soc/watts to ML1 over SSH every minute. BLE preferred; live cloud accepted. No poller."""  # info: docstring
 from __future__ import annotations  # info: from __future__ import annotations
 
 import json  # info: import json
