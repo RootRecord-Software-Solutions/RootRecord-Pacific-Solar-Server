@@ -91,8 +91,25 @@ def _publish(alias: str, device) -> str:  # info: def _publish
 
 
 # ====================================================
+# SECTION: function _keep_lcd_awake
+# What it does: Set LCD timeout to never-off. LCD sleep drops EcoFlow BLE.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+async def _keep_lcd_awake(device, alias: str) -> None:  # info: async def _keep_lcd_awake
+    fn = getattr(device, "set_screen_timeout", None)  # info: set fn
+    if fn is None:  # info: if this pack has no LCD timeout write
+        _log(f"{alias} no set_screen_timeout on device")  # info: call _log
+        return  # info: return
+    try:  # info: try
+        await fn(0)  # info: 0 = never off (lcdOffSec)
+        _log(f"{alias} lcd timeout set to never-off")  # info: call _log
+    except Exception as exc:  # info: except Exception as exc
+        _log(f"{alias} lcd keep-awake failed {type(exc).__name__}: {exc}")  # info: call _log
+
+
+# ====================================================
 # SECTION: function _session
-# What it does: Connect, authenticate, sample until the link drops or stop is set.
+# What it does: Connect, keep LCD awake, sample until the link drops or stop is set.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 async def _session(alias: str) -> None:  # info: async def _session
@@ -104,20 +121,28 @@ async def _session(alias: str) -> None:  # info: async def _session
         if getattr(state, "authenticated", False):  # info: if authenticated
             await asyncio.sleep(1.5)  # info: let the first heartbeat land
         _log(f"{alias} connected auth={kind} — holding link")  # info: call _log
+        await _keep_lcd_awake(device, alias)  # info: LCD sleep was dropping BLE
         empty_since = time.time()  # info: set empty_since
         got_data = False  # info: set got_data
+        lcd_nudge_at = 0.0  # info: set lcd_nudge_at
         while not _stop:  # info: while not _stop
             line = _publish(alias, device)  # info: set line
             if line == "empty":  # info: if fields have not landed yet
                 waited = time.time() - empty_since  # info: set waited
-                _log(f"{alias} waiting fields ({waited:.0f}s/{EMPTY_GRACE_SEC:.0f}s)")  # info: call _log
+                _log(f"{alias} waiting fields ({waited:.0f}s/{EMPTY_GRACE_SEC:.0f}s) — wake the LCD if it timed out")  # info: call _log
+                if time.time() - lcd_nudge_at > 20:  # info: retry never-off while waiting
+                    await _keep_lcd_awake(device, alias)  # info: call _keep_lcd_awake
+                    lcd_nudge_at = time.time()  # info: set lcd_nudge_at
                 if got_data or waited >= EMPTY_GRACE_SEC:  # info: after a good streak, or past grace, reconnect
-                    raise BleUnavailable("fields empty on held session")  # info: raise so we reconnect
+                    raise BleUnavailable("fields empty on held session (LCD sleep?)")  # info: raise so we reconnect
                 await asyncio.sleep(2)  # info: poll soon; do not drop the GATT session
                 continue  # info: continue
             empty_since = time.time()  # info: reset empty clock after a real sample
             got_data = True  # info: set got_data
             _log(f"{alias} sample {line}")  # info: call _log
+            if time.time() - lcd_nudge_at > 120:  # info: re-assert never-off every 2 minutes
+                await _keep_lcd_awake(device, alias)  # info: call _keep_lcd_awake
+                lcd_nudge_at = time.time()  # info: set lcd_nudge_at
             for _ in range(int(max(1, SAMPLE_SEC))):  # info: sleep in 1 s slices for SIGTERM
                 if _stop:  # info: if _stop
                     break  # info: break
