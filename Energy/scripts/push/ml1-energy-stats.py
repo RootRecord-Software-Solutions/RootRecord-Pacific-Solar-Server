@@ -40,8 +40,11 @@ PACKS = ("river2pro", "delta2")  # info: set PACKS
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 DISCHARGE_SOC = 5.0  # info: set DISCHARGE_SOC
 DISCHARGE_AGE_S = 30 * 60  # info: set DISCHARGE_AGE_S
-# Live board on ML1: BLE only, and not older than this (cloud is never shown).
+# Live board on ML1: fresh BLE or live cloud (not cloud_stale), within this age.
 LIVE_MAX_AGE_S = float(os.environ.get("RR_ENERGY_ML1_LIVE_MAX_S", "180"))  # info: set LIVE_MAX_AGE_S
+ENERGY = PACIFIC / "Energy"  # info: set ENERGY
+READ_RUNNER = ENERGY / "lib" / "read_runner.py"  # info: set READ_RUNNER
+VENV_PY = ENERGY / ".venv" / "bin" / "python"  # info: set VENV_PY
 
 
 # ====================================================
@@ -73,8 +76,30 @@ def _age_s(rel: str) -> float:  # info: def _age_s
 
 
 # ====================================================
+# SECTION: function _refresh_river
+# What it does: Pull a fresh River sample into Database files before the SSH push.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _refresh_river() -> None:  # info: def _refresh_river
+    py = str(VENV_PY if VENV_PY.is_file() else sys.executable)  # info: set py
+    if not READ_RUNNER.is_file():  # info: if not READ_RUNNER . is_file ( )
+        return  # info: return
+    try:  # info: try
+        subprocess.run(  # info: call subprocess . run
+            [py, str(READ_RUNNER), "--device", "river2pro"],  # info: read River into soc/watts
+            cwd=str(ENERGY),  # info: cwd
+            capture_output=True,  # info: capture
+            text=True,  # info: text
+            timeout=90,  # info: timeout
+            env={**os.environ, "ENERGY_EFLIB_PATH": str(ENERGY / "lib" / "vendor")},  # info: vendor eflib
+        )  # info: )
+    except (OSError, subprocess.TimeoutExpired):  # info: except
+        pass  # info: push still uses whatever is on disk
+
+
+# ====================================================
 # SECTION: function _pack
-# What it does: One pack row from BLE current files only. Cloud / stale → WAITING, not a live number.
+# What it does: One pack row from live BLE or live cloud current files. Frozen/stale → WAITING.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _pack(alias: str) -> dict:  # info: def _pack
@@ -84,8 +109,10 @@ def _pack(alias: str) -> dict:  # info: def _pack
     watts = _read(watt_rel)  # info: set watts
     age = min(_age_s(soc_rel), _age_s(watt_rel))  # info: freshest of the pair
     raw_src = str(watts.get("source") or soc.get("source") or "")  # info: set raw_src
-    ble = raw_src.startswith("ble")  # info: cloud / empty is not a live board
-    charge = soc.get("soc") if ble else None  # info: ignore cloud charge
+    ble = raw_src.startswith("ble")  # info: BLE or ble+cloud
+    cloud_live = raw_src == "cloud"  # info: live quota only — not cloud_stale
+    usable = ble or cloud_live  # info: board sources that may show numbers
+    charge = soc.get("soc") if usable else None  # info: ignore unusable sources
     try:  # info: try
         charge_f = float(charge) if charge is not None else None  # info: set charge_f
     except (TypeError, ValueError):  # info: except
@@ -96,11 +123,11 @@ def _pack(alias: str) -> dict:  # info: def _pack
         and charge_f <= DISCHARGE_SOC  # info: at or under 5%
         and age > DISCHARGE_AGE_S  # info: quiet longer than 30 minutes
     )  # info: )
-    live = ble and not discharged and age <= LIVE_MAX_AGE_S and charge_f is not None  # info: fresh BLE only
+    live = usable and not discharged and age <= LIVE_MAX_AGE_S and charge_f is not None  # info: fresh measured
     empty = {  # info: set empty
         "alias": alias,  # info: "alias" : alias ,
         "soc": None,  # info: "soc" : None ,
-        "source": "WAITING" if not ble else ("powered_off" if discharged else "stale"),  # info: status
+        "source": "WAITING" if not usable else ("powered_off" if discharged else "stale"),  # info: status
         "at": max(str(soc.get("at") or ""), str(watts.get("at") or "")),  # info: file stamp only
         "age_s": round(age, 1) if age < 1e11 else None,  # info: None when no file
         "discharged_powered_off": discharged,  # info: "discharged_powered_off" : discharged ,
@@ -109,7 +136,7 @@ def _pack(alias: str) -> dict:  # info: def _pack
         "solar_input_power": None,  # info: "solar_input_power" : None ,
         "usbc_output_power": None,  # info: "usbc_output_power" : None ,
         "charge_source": None,  # info: "charge_source" : None ,
-        "file_source": raw_src or None,  # info: what the disk said (cloud stays labeled)
+        "file_source": raw_src or None,  # info: what the disk said
     }  # info: }
     if not live:  # info: if not live
         if discharged:  # info: powered off pack
@@ -118,7 +145,7 @@ def _pack(alias: str) -> dict:  # info: def _pack
     return {  # info: return {
         "alias": alias,  # info: "alias" : alias ,
         "soc": charge_f,  # info: "soc" : charge_f ,
-        "source": raw_src,  # info: ble or ble+cloud
+        "source": raw_src,  # info: ble / ble+cloud / cloud
         "at": max(str(soc.get("at") or ""), str(watts.get("at") or "")),  # info: freshest stamp
         "age_s": round(age, 1),  # info: age
         "discharged_powered_off": False,  # info: "discharged_powered_off" : False ,
@@ -137,6 +164,7 @@ def _pack(alias: str) -> dict:  # info: def _pack
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def build() -> dict:  # info: def build
+    _refresh_river()  # info: land a fresh River sample into Database before packing
     packs = {alias: _pack(alias) for alias in PACKS}  # info: set packs
     river = packs["river2pro"]  # info: set river
     delta = packs["delta2"]  # info: set delta
@@ -151,13 +179,13 @@ def build() -> dict:  # info: def build
 
     def _w(pack: dict, key: str) -> str:  # info: def _w
         val = pack.get(key)  # info: set val
-        return "—" if val is None else str(val)  # info: em-dash when not live BLE
+        return "—" if val is None else str(val)  # info: em-dash when not live
 
     line = (  # info: set line
         "ENERGY  "  # info: ENERGY prefix
         + f"B1={_cell(river)} "  # info: River
         + f"B2={_cell(delta)} "  # info: Delta
-        + f"ac={_w(river, 'ac_output_power')} "  # info: River AC out only when live BLE
+        + f"ac={_w(river, 'ac_output_power')} "  # info: River AC out when live
         + f"solar_r={_w(river, 'solar_input_power')} solar_d={_w(delta, 'solar_input_power')} "  # info: solar
         + f"src_r={river.get('source')} src_d={delta.get('source')}"  # info: sources
     )  # info: )
@@ -167,7 +195,7 @@ def build() -> dict:  # info: def build
         "hst": hst,  # info: "hst" : hst ,
         "line": line.strip(),  # info: "line" : line . strip ( ) ,
         "packs": packs,  # info: "packs" : packs ,
-        "note": "BLE only over SSH. Cloud and stale files become WAITING — never shown as live.",  # info: note
+        "note": "SSH push of live BLE or live EcoFlow quota. Frozen cloud_stale stays WAITING.",  # info: note
     }  # info: }
 
 
