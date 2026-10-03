@@ -193,6 +193,24 @@ async def connect(alias: str):  # info: async def
     raise BleUnavailable(f"connect failed after sight mac={mac} err={type(last_err).__name__ if last_err else 'none'}")  # info: raise after retries
 
 
+BIND_INSTALL = "NeedBindInstallFirst"  # info: set BIND_INSTALL
+
+
+# ====================================================
+# SECTION: function await_session
+# What it does: Wait for BLE auth. NeedBindInstallFirst still proceeds for a read or a switch. It is not a re-pair.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+async def await_session(device, timeout: float = 20):  # info: async def await_session
+    state, exc = await asyncio.wait_for(device.wait_until_authenticated_or_error(return_exc=True), timeout=timeout)  # info: set state , exc
+    kind = type(exc).__name__ if exc is not None else "none"  # info: set kind
+    authed = bool(getattr(state, "authenticated", False))  # info: set authed
+    bind = kind == BIND_INSTALL  # info: set bind
+    if bind and not authed:  # info: if bind and not authed
+        await asyncio.sleep(5.0)  # info: heartbeats can land after the auth flag flips
+    return state, kind, authed or bind  # info: return state , kind , authed or bind
+
+
 # ====================================================
 # SECTION: function apply_bool
 # What it does: apply bool.
@@ -203,14 +221,11 @@ async def apply_bool(alias: str, method: str, want: bool) -> dict:  # info: asyn
     try:  # info: try :
         # connect() returns before the background auth task finishes (encrypt type 7: _encryption is None
         # until then) so send_packet asserts. Wait for AUTHENTICATED, then let the first heartbeat land.
-        state, exc = await asyncio.wait_for(device.wait_until_authenticated_or_error(return_exc=True), timeout=20)  # info: auth state and exception class
-        if not getattr(state, "authenticated", False):  # info: if not authenticated
-            kind = type(exc).__name__ if exc is not None else "none"  # info: class name only, never secrets
-            hint = ""  # info: set hint
-            if kind == "NeedBindInstallFirst":  # info: encrypted session rejected; reads may still land
-                hint = " (BLE session auth rejected; not a read failure and not a re-pair instruction)"  # info: do not order a re-pair
-            raise BleUnavailable(f"auth not completed: {state} exc={kind}{hint}")  # info: raise named auth failure
-        await asyncio.sleep(1.0)  # info: await asyncio . sleep ( 1.0 )
+        state, kind, proceed = await await_session(device, timeout=20)  # info: set state , kind , proceed
+        if not proceed:  # info: if not proceed
+            raise BleUnavailable(f"auth not completed: {state} exc={kind}")  # info: raise named auth failure
+        if getattr(state, "authenticated", False):  # info: if authenticated
+            await asyncio.sleep(1.0)  # info: await asyncio . sleep ( 1.0 )
         fn = getattr(device, method, None)  # info: set fn
         if fn is None:  # info: if fn is None :
             raise BleUnavailable(f"{alias} has no method {method}")  # info: raise BleUnavailable ( f" { alias } has no method
@@ -225,6 +240,7 @@ async def apply_bool(alias: str, method: str, want: bool) -> dict:  # info: asyn
             "method": method,  # info: "method" : method ,
             "want": want,  # info: "want" : want ,
             "readback": val,  # info: "readback" : val ,
+            "auth": kind,  # info: "auth" : kind ,
             "soc": getattr(device, "battery_level", None) or getattr(device, "soc", None),  # info: "soc" : getattr ( device , "battery_level" ,
         }  # info: }
     finally:  # info: finally :

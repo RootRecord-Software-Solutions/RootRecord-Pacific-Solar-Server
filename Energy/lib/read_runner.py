@@ -25,7 +25,7 @@ sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 ,
 sys.path.insert(0, str(HERE.parent.parent))  # info: sys . path . insert ( 0 ,
 
 from paths import SAMPLES, SOC, WATTS, STATE_DIR, ensure_dirs  # noqa: E402
-from ble_client import connect, BleUnavailable, eflib_ready  # noqa: E402
+from ble_client import connect, await_session, BleUnavailable, eflib_ready  # noqa: E402
 from config import device as device_cfg, load as load_conf  # noqa: E402
 from Energy.db.ingest import persist_eflow_device  # noqa: E402
 from Energy.db.condense import condense_closed_periods  # noqa: E402
@@ -289,21 +289,20 @@ def _collect_other_ac_outs(exclude_alias: str) -> list[float]:  # info: def _col
 async def _read_ble(alias: str):  # info: async def
     device = await connect(alias)  # info: set device
     try:  # info: try auth
-        state, exc = await asyncio.wait_for(  # info: wait until auth finishes; connect returns early
-            device.wait_until_authenticated_or_error(return_exc=True),  # info: auth state plus exception class
-            timeout=18,  # info: bound the wait so the oneshot cannot hang
-        )  # info: end wait
+        state, kind, proceed = await await_session(device, timeout=18)  # info: set state , kind , proceed
     except TimeoutError:  # info: except timeout
         try:  # info: try disconnect
             await device.disconnect()  # info: disconnect after timeout
         except Exception:  # info: except disconnect
             pass  # info: pass
         raise BleUnavailable("BLE auth timeout before fields")  # info: raise timeout
-    if not getattr(state, "authenticated", False):  # info: if not authenticated
-        kind = type(exc).__name__ if exc is not None else "none"  # info: exception class only, never the message
-        # NeedBindInstallFirst often still delivers SOC; give it longer than a not_found miss.
-        grace = 5.0 if kind == "NeedBindInstallFirst" else 2.5  # info: set grace
-        await asyncio.sleep(grace)  # info: heartbeats can land after the auth flag flips
+    if not proceed:  # info: if not proceed
+        try:  # info: try disconnect
+            await device.disconnect()  # info: disconnect after auth failure
+        except Exception:  # info: except disconnect
+            pass  # info: pass
+        raise BleUnavailable(f"BLE auth not completed state={state} exc={kind}")  # info: session auth failed; not a re-pair order
+    if not getattr(state, "authenticated", False):  # info: NeedBindInstallFirst still reads fields
         fields = _fields_from_ble(device)  # info: same field read Delta uses; do not drop a live heartbeat
         if fields.get("soc") is not None:  # info: a charge percent means a real packet, not an empty default
             return device, fields  # info: BLE read, not a cloud substitute
