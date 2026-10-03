@@ -1,11 +1,11 @@
 {
   "ok": true,
   "kind": "last-known",
-  "as_of": "Saturday, October 3, 2026 \u00b7 08:35 Hawaiian Standard Time",
+  "as_of": "Saturday, October 3, 2026 \u00b7 08:42 Hawaiian Standard Time",
   "power": {
     "resource": "power",
     "title": "Power / solar",
-    "as_of": "Saturday, October 3, 2026 \u00b7 08:35 Hawaiian Standard Time",
+    "as_of": "Saturday, October 3, 2026 \u00b7 08:42 Hawaiian Standard Time",
     "source_paths": [
       "Energy/soc/*_current.json",
       "Energy/watts/*_current.json"
@@ -17,13 +17,13 @@
           "ac_output_power": 0.0,
           "ac_input_power": 0.0,
           "usbc_output_power": 0.0,
-          "at": "2026-10-03T18:35:02.994Z",
+          "at": "2026-10-03T18:42:13.873Z",
           "source": "ble",
           "charge_source": "none"
         },
         "soc": {
           "soc": 0.0,
-          "at": "2026-10-03T18:35:02.994Z",
+          "at": "2026-10-03T18:42:13.873Z",
           "source": "ble"
         }
       },
@@ -48,34 +48,34 @@
   "weather": {
     "resource": "weather",
     "title": "Weather",
-    "as_of": "Saturday, October 3, 2026 \u00b7 08:35 Hawaiian Standard Time",
+    "as_of": "Saturday, October 3, 2026 \u00b7 08:42 Hawaiian Standard Time",
     "source_paths": [
       "Weather/Hawai'i/reports/0 Level Processing/Hawaii_State_Weather_Report_current.md",
       "Weather/moon/moon_current.json"
     ],
     "report": {
-      "generated": "2026-10-03T08:28:04-10:00 HST",
+      "generated": "2026-10-03T08:37:31-10:00 HST",
       "sections": 22
     },
     "moon": {
-      "phase": 0.726,
-      "phase_name": "Waning Gibbous",
-      "illumination": 58,
-      "next_phase": "Last Quarter",
-      "next_phase_date": "2026-10-03",
-      "fetched_at": "2026-10-02T23:32:09-10:00",
-      "date": "2026-10-02"
+      "phase": 0.757,
+      "phase_name": "Last Quarter",
+      "illumination": 48,
+      "next_phase": "New Moon",
+      "next_phase_date": "2026-10-10",
+      "fetched_at": "2026-10-03T08:39:30-10:00",
+      "date": "2026-10-03"
     }
   },
   "kilauea": {
     "resource": "kilauea",
     "title": "K\u012blauea",
-    "as_of": "Saturday, October 3, 2026 \u00b7 08:35 Hawaiian Standard Time",
+    "as_of": "Saturday, October 3, 2026 \u00b7 08:42 Hawaiian Standard Time",
     "source_paths": [
       "Geology/Volcanoes/Hawaii/kilauea_current.json"
     ],
     "status": {
-      "at": "2026-10-03T08:28:11-10:00",
+      "at": "2026-10-03T08:37:37-10:00",
       "alert_level": "WATCH",
       "color_code": "ORANGE",
       "headline": "WATCH \u2014 elevated unrest",
