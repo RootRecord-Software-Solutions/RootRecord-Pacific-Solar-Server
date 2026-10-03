@@ -16,13 +16,30 @@ from Energy.db.aggregate import aggregate_period, period_bounds, LAYERS, _iso  #
 
 
 # ====================================================
+# SECTION: function ensure_layers
+# What it does: Create every EcoFlow layer database if it is missing. A read with no closed period still leaves the files.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def ensure_layers(db_path=None, layers_dir=None):  # info: def ensure_layers
+    raw_path = Path(db_path) if db_path else DEFAULT_DB_PATH  # info: set raw_path
+    layers_dir = Path(layers_dir) if layers_dir else LAYERS_DIR  # info: set layers_dir
+    raw_conn = connect(raw_path)  # info: set raw_conn
+    initialize_schema(raw_conn)  # info: call initialize_schema
+    raw_conn.close()  # info: raw_conn . close ( )
+    for layer in LAYERS:  # info: for layer in LAYERS :
+        layer_conn = connect_layer(layer, raw_path, layers_dir)  # info: set layer_conn
+        layer_conn.close()  # info: layer_conn . close ( )
+
+
+# ====================================================
 # SECTION: function condense_closed_periods
-# What it does: condense closed periods.
+# What it does: Create missing layer files, then condense closed periods.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def condense_closed_periods(db_path=None, layers_dir=None):  # info: def condense_closed_periods
     raw_path = Path(db_path) if db_path else DEFAULT_DB_PATH  # info: set raw_path
     layers_dir = Path(layers_dir) if layers_dir else LAYERS_DIR  # info: set layers_dir
+    ensure_layers(raw_path, layers_dir)  # info: call ensure_layers
     raw_conn = connect(raw_path)  # info: set raw_conn
     initialize_schema(raw_conn)  # info: call initialize_schema
     total = 0  # info: set total
