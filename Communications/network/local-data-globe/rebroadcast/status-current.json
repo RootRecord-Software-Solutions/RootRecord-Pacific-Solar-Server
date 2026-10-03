@@ -1,11 +1,11 @@
 {
   "ok": true,
   "kind": "last-known",
-  "as_of": "Friday, October 2, 2026 \u00b7 23:36 Hawaiian Standard Time",
+  "as_of": "Friday, October 2, 2026 \u00b7 23:37 Hawaiian Standard Time",
   "power": {
     "resource": "power",
     "title": "Power / solar",
-    "as_of": "Friday, October 2, 2026 \u00b7 23:36 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 23:37 Hawaiian Standard Time",
     "source_paths": [
       "Energy/soc/*-last.json",
       "Energy/watts/*-last.json"
@@ -46,7 +46,7 @@
   "weather": {
     "resource": "weather",
     "title": "Weather",
-    "as_of": "Friday, October 2, 2026 \u00b7 23:36 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 23:37 Hawaiian Standard Time",
     "source_paths": [
       "Weather/Hawai'i/reports/0 Level Processing/Hawaii_State_Weather_Report_current.md",
       "Weather/moon/moon_current.json"
@@ -68,7 +68,7 @@
   "kilauea": {
     "resource": "kilauea",
     "title": "K\u012blauea",
-    "as_of": "Friday, October 2, 2026 \u00b7 23:36 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 23:37 Hawaiian Standard Time",
     "source_paths": [
       "Geology/Volcanoes/Hawaii/kilauea-last.json"
     ],

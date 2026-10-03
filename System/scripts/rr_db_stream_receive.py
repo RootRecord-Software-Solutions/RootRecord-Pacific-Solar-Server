@@ -30,6 +30,8 @@ ALLOWED_PATH_PREFIXES = (
     "Geology/",
     "Weather/",
     "Media/RadioRss/",
+    "Communications/Discord/",
+    "Communications/Telegram/",
     "Intake/ml2/",
     "Intake/ml1/",
     "Logs/ML2/",

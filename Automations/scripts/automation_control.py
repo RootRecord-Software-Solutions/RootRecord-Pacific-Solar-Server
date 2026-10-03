@@ -191,6 +191,7 @@ def overrides_mtime() -> float:  # info: def overrides_mtime
 LOCAL_DATA_POLL_JOBS = frozenset({
     "geology_collect",
     "geology_kilauea_cams",
+    "weather_poller",
     "weather_us_states",
     "weather_radar_zip",
     "weather_retention",
