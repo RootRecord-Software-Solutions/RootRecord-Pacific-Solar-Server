@@ -363,20 +363,7 @@ def render(state: dict | None, ops: dict | None, hawaii: dict, world: dict, when
 def publish(frame: Image.Image) -> str:  # info: def publish
     OUT.parent.mkdir(parents=True, exist_ok=True)  # info: OUT . parent . mkdir
     frame.save(OUT, "PNG")  # info: frame . save
-    remote_next = REMOTE + ".next"  # info: set remote_next
-    copy = subprocess.run(  # info: subprocess . run
-        ["scp", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", str(OUT), f"{HOST}:{remote_next}"],  # info: scp beside the live thumb
-        capture_output=True, text=True,  # info: capture
-    )  # info: )
-    if copy.returncode != 0:  # info: if copy failed
-        return "local-only"  # info: return local-only
-    placed = subprocess.run(  # info: subprocess . run
-        ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", HOST, "mv -f " + remote_next + " " + REMOTE],  # info: replace the thumb in one move
-        capture_output=True, text=True,  # info: capture
-    )  # info: )
-    if placed.returncode != 0:  # info: if the move failed
-        return "local-only"  # info: return local-only
-    return "published"  # info: return published
+    return "local-only"  # info: do not replace the live thumb; that restarts the encoder and drops the station
 
 
 # ====================================================
