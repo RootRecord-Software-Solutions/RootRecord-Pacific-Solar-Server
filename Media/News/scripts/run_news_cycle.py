@@ -4,7 +4,11 @@
 # What this file is: Pacific :35 entrypoint — poll News Data, four lanes, stitch, push.
 # Kind: python
 # ==============================================================================
-"""One news cycle at :35: poll → lane scripts → numbered TTS → Pacific stitch → radio_push."""
+"""One news cycle at :35: poll → lane scripts → numbered TTS → Pacific stitch WAV.
+
+Push is off by default in the jobs env (`RR_RADIO_PUSH=0`). The :42 hour batch
+folds `news_update_current.wav` after the desk reports into `report_current`.
+"""
 from __future__ import annotations
 
 import json

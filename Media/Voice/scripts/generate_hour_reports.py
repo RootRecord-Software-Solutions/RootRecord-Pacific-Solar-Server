@@ -3,16 +3,19 @@
 
 Measured batch wall time (2026-10-03): ~8.6 minutes for all desks.
 jobs.py starts this at :42 by default. When the batch finishes it:
-  1. radio_push --all to ML1 (waits for transfer to finish)
-  2. deletes local .wav / .txt / .tx under Media/Audio/Voice/
-  3. renames this run's *_current.ogg to local HST time, zips to
+  1. stitches desk WAVs (HOUR_REPORTS order) then news_update → report_current.wav
+  2. radio_push report (one file) to ML1; clears legacy per-desk currents on air
+  3. deletes local .wav / .txt / .tx under Media/Audio/Voice/
+  4. renames this run's *_current.ogg to local HST time, zips to
      Media/Audio/Voice/Archive/audio_reports_TIMESTAMP.zip, then removes the renamed oggs
-  4. only then records TOTAL wall time + averages under Timing/ and recalculates the next start minute
+  5. only then records TOTAL wall time + averages under Timing/ and recalculates the next start minute
 
+:35 news_cycle banks news_update_current.wav (no push). News is folded in here, after desks.
 :55 radio_push_hour remains a catch-up if this send missed (WAV kept when push is skipped/failed).
 
 Writes under the single voice tree:
   Media/Audio/Voice/Reports/<report>_current.md
+  Media/Audio/Voice/report_current.wav|.ogg  (desks + news, one play file)
   Media/Audio/Voice/Archive/audio_reports_YYYYMMDDTHHMMSS.zip
   (WAV + speak/read txt removed after a successful push; oggs archived)
 
@@ -94,6 +97,10 @@ HOUR_REPORTS: list[tuple[str, str, str]] = [
     ("security_desk", "carly", "voice_reports"),
     ("bandwidth_desk", "carly", "voice_reports"),
 ]
+# One on-air file: desks (above order) then news_update from :35.
+COMBINED_REPORT = "report"
+NEWS_PART = "news_update"
+GAP_SEC = float(os.environ.get("RR_VOICE_HOUR_GAP_SEC", "0.45"))
 
 ENV_BASE = {
     "RR_RADIO_PUSH": "0",
@@ -452,8 +459,104 @@ def recalculate_start_time(timing: dict | None = None) -> dict:
     return schedule
 
 
+def _make_gap(path: Path) -> bool:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    cmd = [
+        "ffmpeg",
+        "-y",
+        "-f",
+        "lavfi",
+        "-i",
+        "anullsrc=r=24000:cl=mono",
+        "-t",
+        str(GAP_SEC),
+        "-c:a",
+        "pcm_s16le",
+        str(path),
+    ]
+    p = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+    return p.returncode == 0 and path.is_file() and path.stat().st_size > 64
+
+
+def stitch_combined(report_ids: list[str]) -> dict:
+    """Concat desk WAVs (given order) then news_update → report_current.wav/.ogg."""
+    parts: list[Path] = []
+    included: list[str] = []
+    for rid in report_ids:
+        wav = find_wav(rid)
+        if wav is None:
+            continue
+        parts.append(wav)
+        included.append(rid)
+    news = find_wav(NEWS_PART)
+    news_included = False
+    if news is not None:
+        parts.append(news)
+        included.append(NEWS_PART)
+        news_included = True
+    if not parts:
+        return {"ok": False, "detail": "no_parts", "parts": []}
+
+    work = OUT_DIR / ".hour_batch_stitch"
+    work.mkdir(parents=True, exist_ok=True)
+    gap = work / "gap.wav"
+    has_gap = _make_gap(gap) if len(parts) > 1 and GAP_SEC > 0 else False
+    listing = work / "concat.txt"
+    lines: list[str] = []
+    for i, wav in enumerate(parts):
+        if i and has_gap:
+            lines.append(f"file '{gap.resolve()}'")
+        lines.append(f"file '{wav.resolve()}'")
+    listing.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    dest = OUT_DIR / f"{COMBINED_REPORT}_current.wav"
+    staged = OUT_DIR / f".{COMBINED_REPORT}_current.new.wav"
+    cmd = [
+        "ffmpeg",
+        "-y",
+        "-f",
+        "concat",
+        "-safe",
+        "0",
+        "-i",
+        str(listing),
+        "-ar",
+        "24000",
+        "-ac",
+        "1",
+        "-c:a",
+        "pcm_s16le",
+        str(staged),
+    ]
+    p = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+    if p.returncode != 0 or not staged.is_file() or staged.stat().st_size < 64:
+        staged.unlink(missing_ok=True)
+        return {
+            "ok": False,
+            "detail": "stitch_failed",
+            "stderr": (p.stderr or "")[-400:],
+            "parts": included,
+        }
+    os.replace(staged, dest)
+    dest.chmod(0o644)
+    enc = encode_ogg(dest, OUT_DIR / f"{COMBINED_REPORT}_current.ogg")
+    row = {
+        "ok": bool(enc.get("ok")),
+        "report": COMBINED_REPORT,
+        "wav": str(dest),
+        "bytes": dest.stat().st_size,
+        "parts": included,
+        "news": news_included,
+        "encode": enc,
+        "ogg": enc.get("ogg"),
+    }
+    if not enc.get("ok"):
+        row["detail"] = "encode_failed"
+    return row
+
+
 def push_to_ml1() -> dict:
-    """Send every finished hour-desk WAV to ML1 as soon as the batch finishes."""
+    """Send the combined report_current WAV to ML1 (one file for the hour)."""
     if os.environ.get("RR_HOUR_BATCH_PUSH", "1") != "1":
         return {"ok": True, "skipped": True, "detail": "RR_HOUR_BATCH_PUSH=0"}
     try:
@@ -461,9 +564,11 @@ def push_to_ml1() -> dict:
     except Exception as exc:
         return {"ok": False, "detail": f"import_radio_push: {type(exc).__name__}: {exc}"}
     try:
-        return radio_push.push_all()
+        if hasattr(radio_push, "push_hour_batch"):
+            return radio_push.push_hour_batch()
+        return radio_push.push_report(COMBINED_REPORT)
     except Exception as exc:
-        return {"ok": False, "detail": f"push_all: {type(exc).__name__}: {exc}"}
+        return {"ok": False, "detail": f"push_hour_batch: {type(exc).__name__}: {exc}"}
 
 
 def cleanup_intermediates() -> dict:
@@ -609,10 +714,24 @@ def main() -> int:
         "results": results,
     }
 
+    # Desks then news → one report_current for air + archive.
+    desk_ids = [r["report"] for r in results if r.get("ok") and r.get("report")]
+    print(
+        json.dumps({"ok": True, "phase": "stitch_begin", "desks": len(desk_ids), "news": NEWS_PART}),
+        flush=True,
+    )
+    combined = stitch_combined(desk_ids)
+    summary["combined"] = combined
+    print(json.dumps({"ok": True, "phase": "stitch_done", **combined}, ensure_ascii=False), flush=True)
+    if not combined.get("ok"):
+        summary["ok"] = False
+
     if args.no_push:
         summary["radio"] = {"ok": True, "skipped": True, "detail": "--no-push"}
+    elif not combined.get("ok"):
+        summary["radio"] = {"ok": False, "skipped": True, "detail": "no_combined"}
     else:
-        print(json.dumps({"ok": True, "phase": "push_begin"}), flush=True)
+        print(json.dumps({"ok": True, "phase": "push_begin", "report": COMBINED_REPORT}), flush=True)
         summary["radio"] = push_to_ml1()
         print(json.dumps({"ok": True, "phase": "push_done", **summary["radio"]}, ensure_ascii=False), flush=True)
         if not summary["radio"].get("ok") and not summary["radio"].get("skipped"):
@@ -636,7 +755,9 @@ def main() -> int:
 
     # Waited for transfer above; finalize rename + zip only after a successful push.
     if push_ok:
-        report_ids = [r["report"] for r in results if r.get("ok") and r.get("report")]
+        report_ids = list(desk_ids)
+        if COMBINED_REPORT not in report_ids:
+            report_ids.append(COMBINED_REPORT)
         print(json.dumps({"ok": True, "phase": "archive_begin", "count": len(report_ids)}), flush=True)
         summary["archive"] = finalize_archive(report_ids)
         print(json.dumps({"ok": True, "phase": "archive_done", **summary["archive"]}, ensure_ascii=False), flush=True)

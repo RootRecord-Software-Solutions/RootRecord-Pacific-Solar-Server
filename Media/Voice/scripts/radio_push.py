@@ -500,7 +500,11 @@ def push_music() -> dict:
     return {"ok": True, "music": str(MUSIC), "mode": "remote"}
 
 
-HOUR_DESKS = (
+# Combined :42 hour file (desks + news). Catch-up pushes this one file.
+COMBINED_HOUR = "report"
+# Legacy per-desk currents removed from ML1 after the combined file lands.
+LEGACY_HOUR_DESKS = (
+    "boot_brief",
     "system_perf",
     "nws_weather",
     "remaining_tasks",
@@ -512,15 +516,72 @@ HOUR_DESKS = (
     "security_desk",
     "bandwidth_desk",
     "current_report",
+    "custom_msg",
+    "news_update",
 )
+# Backward-compat alias for older callers.
+HOUR_DESKS = LEGACY_HOUR_DESKS
+
+
+def clear_legacy_hour_reports(*, local: bool | None = None) -> dict:
+    """Drop old per-desk *_current on air so only report_current plays."""
+    if local is None:
+        local = use_local()
+    names: list[str] = []
+    for report in LEGACY_HOUR_DESKS:
+        for ext in (".opus", ".ogg"):
+            names.append(f"{report}_current{ext}")
+    removed: list[str] = []
+    if local:
+        root = local_reports_dir()
+        for name in names:
+            path = root / name
+            if not path.is_file() and not path.is_symlink():
+                continue
+            try:
+                path.unlink()
+                removed.append(name)
+            except OSError:
+                return {"ok": False, "detail": "local_unlink_failed", "removed": removed, "failed": name}
+        return {"ok": True, "removed": removed, "mode": "local"}
+    remote_dir = REPORTS_REMOTE.rstrip("/")
+    remote_paths = " ".join(shlex.quote(remote_dir + "/" + name) for name in names)
+    cleared = subprocess.run(
+        SSH + [HOST, "rm -f -- " + remote_paths],
+        capture_output=True,
+        text=True,
+        timeout=40,
+    )
+    if cleared.returncode != 0:
+        return {"ok": False, "detail": "remote_unlink_failed", "mode": "remote"}
+    return {"ok": True, "removed": names, "mode": "remote"}
+
+
+def push_hour_batch() -> dict:
+    """Push report_current (desks+news stitch) and clear legacy per-desk currents."""
+    if not (VOICE / f"{COMBINED_HOUR}_current.wav").is_file():
+        return {"ok": False, "detail": "no_combined_wav", "report": COMBINED_HOUR}
+    one = push_report(COMBINED_HOUR)
+    if not one.get("ok") or one.get("skipped"):
+        return one
+    cleared = clear_legacy_hour_reports(local=one.get("mode") == "local")
+    one["cleared_legacy"] = cleared
+    if not cleared.get("ok"):
+        one["ok"] = False
+        one["detail"] = cleared.get("detail") or "clear_legacy_failed"
+    return one
 
 
 def push_all() -> dict:
-    """Encode every finished hour desk WAV and replace it on ML1 in this send window."""
+    """Catch-up: push the combined hour file when present; else legacy per-desk WAVs."""
+    if (VOICE / f"{COMBINED_HOUR}_current.wav").is_file():
+        one = push_hour_batch()
+        sent = 1 if one.get("ok") and not one.get("skipped") else 0
+        return {"ok": bool(one.get("ok")), "sent": sent, "pushed": [one], "mode": "combined"}
     results = []
     ok = True
     sent = 0
-    for report in HOUR_DESKS:
+    for report in LEGACY_HOUR_DESKS:
         if not (VOICE / f"{report}_current.wav").is_file():
             results.append({"ok": True, "skipped": True, "detail": "no_wav", "report": report})
             continue
@@ -530,7 +591,7 @@ def push_all() -> dict:
             sent += 1
         elif not one.get("ok") and not one.get("skipped"):
             ok = False
-    return {"ok": ok, "sent": sent, "pushed": results}
+    return {"ok": ok, "sent": sent, "pushed": results, "mode": "legacy"}
 
 
 def main() -> int:

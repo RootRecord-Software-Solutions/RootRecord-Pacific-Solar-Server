@@ -1481,18 +1481,18 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # --- 35:00–35:04 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     {  # info: {
-        # NEWS — poll News Data, four topic lanes, Pacific stitch, push one news_update.
+        # NEWS — poll News Data, four topic lanes, Pacific stitch WAV for :42 fold-in (no push).
         "id": "news_cycle",  # info: "id" : "news_cycle" ,
         "enabled": os.environ.get("RR_NEWS_CYCLE", "1") == "1",
         "at_minute": 35,  # info: "at_minute" : 35 ,
         "at_second": 0,  # info: "at_second" : 0 ,
-        "description": "News Data cycle at :35 — poll RSS, four ~5min topic lanes, numbered TTS, Pacific stitch to news_update, radio_push to ML1.",  # info: "description"
+        "description": "News Data cycle at :35 — poll RSS, four ~5min topic lanes, numbered TTS, Pacific stitch to news_update_current.wav. Push is deferred: :42 voice_hour_batch folds news after desks into report_current.",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"nice -n 10 python3 \"{PACIFIC}/Media/News/scripts/run_news_cycle.py\"",  # info: "command"
         "timeout_sec": 1800,  # info: "timeout_sec" : 1800 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
         "cwd": f"{PACIFIC}/Media/News/scripts",  # info: "cwd"
-        "env": {"RR_DATABASE_ROOT": DATABASE, "RR_NEWS_DATA_ROOT": f"{DATABASE}/Media/News Data", "RR_PACIFIC_ROOT": PACIFIC, "RR_RADIO_RSS_CONFIG": f"{PACIFIC}/Media/News/radiorss/config"},  # info: Pacific canonical
+        "env": {"RR_DATABASE_ROOT": DATABASE, "RR_NEWS_DATA_ROOT": f"{DATABASE}/Media/News Data", "RR_PACIFIC_ROOT": PACIFIC, "RR_RADIO_RSS_CONFIG": f"{PACIFIC}/Media/News/radiorss/config", "RR_RADIO_PUSH": "0"},  # info: bank WAV only; :42 push
     },  # info: } ,
     # --- 35:05–35:09 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
@@ -1793,13 +1793,13 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_VOICE_HOUR_BATCH", os.environ.get("RR_RADIO_PUSH", "1")) == "1",
         "at_minute": voice_hour_batch_at_minute(),  # info: recalculated after each batch; default :42 ,
         "at_second": 0,  # info: "at_second" : 0 ,
-        "description": "Generate all hour-desk voice reports into Media/Audio/Voice/, record Timing averages, then radio_push --all to ML1 as soon as the batch finishes. :55 radio_push_hour is catch-up only.",  # info: "description"
+        "description": "Generate hour-desk voice reports, stitch desks then news_update into report_current, radio_push that one file to ML1. :55 radio_push_hour is catch-up only.",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/generate_hour_reports.py\"",  # info: "command"
         "timeout_sec": 900,  # info: "timeout_sec" : 900 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
         "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
-        "env": {"RR_VOICE_DELIVER": "0", "RR_VOICE_STATUS": "0", "RR_HOUR_BATCH_PUSH": "1"},  # info: push after batch
+        "env": {"RR_VOICE_DELIVER": "0", "RR_VOICE_STATUS": "0", "RR_HOUR_BATCH_PUSH": "1"},  # info: push combined after batch
     },  # info: } ,
     # --- 42:05–42:09 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
@@ -2146,7 +2146,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_RADIO_PUSH", "1") == "1",
         "at_minute": 55,  # info: "at_minute" : 55 ,
         "at_second": 0,  # info: "at_second" : 0 ,
-        "description": "Catch-up at :55: encode/send any hour-desk WAVs still missing on ML1 after voice_hour_batch early push (SSH remote, or desk rootrecord-radio/ when RR_RADIO_MODE=local/auto).",  # info: "description"
+        "description": "Catch-up at :55: encode/send report_current (combined desks+news) if still missing on ML1 after voice_hour_batch early push (SSH remote, or desk rootrecord-radio/ when RR_RADIO_MODE=local/auto).",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"python3 \"{PACIFIC}/Media/Voice/scripts/radio_push.py\" --all",  # info: "command"
         "timeout_sec": 600,  # info: "timeout_sec" : 600 ,
