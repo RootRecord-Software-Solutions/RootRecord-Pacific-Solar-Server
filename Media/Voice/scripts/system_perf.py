@@ -14,7 +14,7 @@ G1: old skills/system-perf/scripts/job.py (APScheduler :06 hourly, CPU/RAM/batte
 Discord post + Kokoro WAV + AWS radio). G3: stdlib host sample -> text + stitched WAV, NO delivery.
 
 Writes
-  Database/System/Reports/system_perf_current.md   (old copy -> Archive/system_perf_YYYYMMDDTHHMM.md)
+  Database/Media/Audio/Voice/Reports/system_perf_current.md
   Database/Media/Audio/Voice/system_perf_current.wav (+ .read.txt/.speak.txt; old -> Archive/)
 WAV via Media/Voice/scripts/voice-render.sh stitch (single-flight lock, nice 10, non-resident);
 fixed sentences come from the phrase-clip cache, numbers are rendered live.

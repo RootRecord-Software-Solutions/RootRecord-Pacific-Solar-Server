@@ -258,7 +258,7 @@ ONCE_AT_START = [  # info: set ONCE_AT_START
 
 # ====================================================
 # SECTION: EXACT_TIME
-# What it does: :00–:29 is stats, github, and EcoFlow leapfrog. All other hourly work is :30 or later. Voices finish by :55, then one SSH send to ML1.
+# What it does: :00–:29 is stats, github, and EcoFlow leapfrog. All other hourly work is :30 or later. Voice batch at :43; :55 SSH-sends all WAVs to ML1.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 EXACT_TIME = [  # info: set EXACT_TIME
@@ -278,7 +278,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # },
     # --- end TEMPLATE (EXACT_TIME) ---
     # :00–:29 is only sys_stats, github_sync, and the EcoFlow leapfrog. Everything else is :30 or later.
-    # Text/AI then voice generation finish by :55. :55 SSH-sends the WAVs to ML1.
+    # Voice hour batch at :43 (generate_hour_reports.py). :55 radio_push --all → ML1.
     {  # info: {
         # stacks on every 5s slot, all hour.
         "id": "sys_stats_cycle",  # info: "id" : "sys_stats_cycle" ,
@@ -1777,6 +1777,19 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # ---------- minute 43 of every hour ----------
     # --- 43:00–43:04 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
+    {  # info: {
+        # VOICE batch — measured ~8.6 min + 3 min cushion → start 12 min before :55.
+        "id": "voice_hour_batch",  # info: "id" : "voice_hour_batch" ,
+        "enabled": os.environ.get("RR_VOICE_HOUR_BATCH", os.environ.get("RR_RADIO_PUSH", "1")) == "1",
+        "at_minute": 43,  # info: "at_minute" : 43 ,
+        "at_second": 0,  # info: "at_second" : 0 ,
+        "description": "Generate all hour-desk voice reports (Ava/Bruce/Carly) into Media/Audio/Voice/ via generate_hour_reports.py. No ML1 send — radio_push_hour at :55 owns that.",  # info: "description"
+        "builtin": "",  # info: "builtin"
+        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/generate_hour_reports.py\"",  # info: "command"
+        "timeout_sec": 900,  # info: "timeout_sec" : 900 ,
+        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
+        "env": {"RR_RADIO_PUSH": "0", "RR_VOICE_DELIVER": "0", "RR_VOICE_STATUS": "0"},  # info: "env"
+    },  # info: } ,
     # --- 43:05–43:09 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
     # --- 43:10–43:14 ---
@@ -1871,7 +1884,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
     {  # info: {
         # VOICE generation — :30 or later, finish by :55; no SSH here.
         "id": "voice_system_perf",  # info: "id" : "voice_system_perf" ,
-        "enabled": os.environ.get("RR_VOICE_SYSTEM_PERF", "0") == "1",
+        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_SYSTEM_PERF", "0") == "1",
         "at_minute": 46,  # info: "at_minute" : 46 ,
         "at_second": 5,  # info: "at_second" : 5 ,
         "description": "Bruce system report at :45, before the radio playlist snapshot. Host temperature is degrees Celsius. Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
@@ -1902,7 +1915,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
     {  # info: {
         # VOICE generation — :30 or later, finish by :55; no SSH here.
         "id": "voice_nws_weather",  # info: "id" : "voice_nws_weather" ,
-        "enabled": os.environ.get("RR_VOICE_NWS", "0") == "1",
+        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_NWS", "0") == "1",
         "at_minute": 46,  # info: "at_minute" : 46 ,
         "at_second": 50,  # info: "at_second" : 50 ,
         "description": "Ava NWS Hawaii report from Database Weather/, at :45 so the file is on the station before the chime. Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
@@ -1936,7 +1949,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
     {  # info: {
         # VOICE generation — :30 or later, finish by :55; no SSH here.
         "id": "voice_remaining_tasks",  # info: "id" : "voice_remaining_tasks" ,
-        "enabled": os.environ.get("RR_VOICE_REMAINING", "0") == "1",
+        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_REMAINING", "0") == "1",
         "at_minute": 47,  # info: "at_minute" : 47 ,
         "at_second": 40,  # info: "at_second" : 40 ,
         "description": "Bruce remaining tasks from the report board, at :45 before the radio snapshot. Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
@@ -1964,7 +1977,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
     {  # info: {
         # VOICE generation — :30 or later, finish by :55; no SSH here.
         "id": "voice_earthquake_report",  # info: "id" : "voice_earthquake_report" ,
-        "enabled": os.environ.get("RR_VOICE_QUAKE", "0") == "1",
+        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_QUAKE", "0") == "1",
         "at_minute": 48,  # info: "at_minute" : 48 ,
         "at_second": 15,  # info: "at_second" : 15 ,
         "description": "Carly USGS earthquake report at :45 from Database Geology/, before the radio snapshot. Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
@@ -1996,7 +2009,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
     {  # info: {
         # VOICE generation — :30 or later, finish by :55; no SSH here.
         "id": "voice_kilauea_report",  # info: "id" : "voice_kilauea_report" ,
-        "enabled": os.environ.get("RR_VOICE_KILAUEA", "0") == "1",
+        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_KILAUEA", "0") == "1",
         "at_minute": 49,  # info: "at_minute" : 49 ,
         "at_second": 0,  # info: "at_second" : 0 ,
         "description": "Carly Kilauea report at :45 from the HVO notice, before the radio snapshot. Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
@@ -2027,7 +2040,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
     {  # info: {
         # VOICE generation — :30 or later, finish by :55; no SSH here.
         "id": "voice_solar_desk",  # info: "id" : "voice_solar_desk" ,
-        "enabled": os.environ.get("RR_VOICE_SOLAR", "0") == "1",
+        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_SOLAR", "0") == "1",
         "at_minute": 49,  # info: "at_minute" : 49 ,
         "at_second": 45,  # info: "at_second" : 45 ,
         "description": "Bruce combined energy+solar desk at :45: packs, sun times, newest channel-1 still, and this hour's camera look (refreshes when needed). Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
@@ -2067,7 +2080,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
     {  # info: {
         # VOICE generation — :30 or later, finish by :55; no SSH here.
         "id": "voice_security_desk",  # info: "id" : "voice_security_desk" ,
-        "enabled": os.environ.get("RR_VOICE_SECURITY", "0") == "1",
+        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_SECURITY", "0") == "1",
         "at_minute": 50,  # info: "at_minute" : 50 ,
         "at_second": 50,  # info: "at_second" : 50 ,
         "description": "Carly security desk at :45 (firewall boot, ssh, listeners, failed sign-ins), before the radio snapshot. Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
@@ -2095,7 +2108,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
     {  # info: {
         # VOICE generation — :30 or later, finish by :55; no SSH here.
         "id": "voice_bandwidth_desk",  # info: "id" : "voice_bandwidth_desk" ,
-        "enabled": os.environ.get("RR_VOICE_BANDWIDTH", "0") == "1",
+        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_BANDWIDTH", "0") == "1",
         "at_minute": 51,  # info: "at_minute" : 51 ,
         "at_second": 25,  # info: "at_second" : 25 ,
         "description": "Carly bandwidth desk at :45 from host byte samples plus Mainland Home/Radio analytics, before the radio snapshot. Voice note when RR_VOICE_DELIVER=1. Needs system_net_sample; analytics_pull optional.",  # info: "description"
@@ -2173,7 +2186,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
     {  # info: {
         # VOICE generation — :30 or later, finish by :55; no SSH here.
         "id": "voice_hurricane_desk",  # info: "id" : "voice_hurricane_desk" ,
-        "enabled": os.environ.get("RR_VOICE_HURRICANE", "0") == "1",  # info: "enabled" : os . environ . get (,
+        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_HURRICANE", "0") == "1",  # info: "enabled" : os . environ . get (,
         "at_minute": 53,  # info: "at_minute" : 53 ,
         "at_second": 30,  # info: "at_second" : 30 ,
         "description": "Carly hurricane desk at :45, with the other desks, the hour snapshot (nearest tracked storm to a Hawaiian island + NWS tropical alerts). No delivery.",  # info: "description"
@@ -2205,7 +2218,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
     {  # info: {
         # VOICE generation — :30 or later, finish by :55; no SSH here.
         "id": "voice_kilauea_image_check",  # info: "id" : "voice_kilauea_image_check" ,
-        "enabled": os.environ.get("RR_VOICE_KILAUEA_IMAGE", "0") == "1",  # info: soft gate,
+        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_KILAUEA_IMAGE", "0") == "1",  # info: soft gate,
         "at_minute": 54,  # info: "at_minute" : 54 ,
         "at_second": 15,  # info: "at_second" : 15 ,
         "description": "Carly Kilauea observation image check every 15 minutes: USGS HVO still through Gemma look; speaks checked line plus measured fountaining/activity. Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
@@ -2241,7 +2254,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_RADIO_PUSH", "1") == "1",
         "at_minute": 55,  # info: "at_minute" : 55 ,
         "at_second": 0,  # info: "at_second" : 0 ,
-        "description": "At :55, encode every finished hour-desk WAV and send to ML1 (SSH remote, or desk rootrecord-radio/ when RR_RADIO_MODE=local/auto and host is down).",  # info: "description"
+        "description": "At :55, encode every finished hour-desk WAV from voice_hour_batch (:43) and send to ML1 (SSH remote, or desk rootrecord-radio/ when RR_RADIO_MODE=local/auto and host is down).",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"python3 \"{PACIFIC}/Media/Voice/scripts/radio_push.py\" --all",  # info: "command"
         "timeout_sec": 600,  # info: "timeout_sec" : 600 ,

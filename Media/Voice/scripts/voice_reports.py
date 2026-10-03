@@ -2066,7 +2066,7 @@ BUILD = {"hourly_chime": b_hourly_chime, "nws_weather": b_nws_weather,  # info: 
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def write_md(report: str, md: str) -> Path:  # info: def write_md
-    path = (DB / "Reports" / "current_report_current.md") if report == "current_report" else (REPORTS / f"{report}_current.md")  # info: set path
+    path = REPORTS / f"{report}_current.md"  # info: one tree — Media/Audio/Voice/Reports/
     path.parent.mkdir(parents=True, exist_ok=True)  # info: path . parent . mkdir ( parents =
     if path.is_file():  # info: if path . is_file ( ) :
         retire_current(path)  # info: call retire_current
