@@ -37,5 +37,5 @@ CLOUD_QUOTA_LOG = CLOUD_QUOTA  # info: quota.log sits next to the Cloud-Quota JS
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def ensure_dirs() -> None:  # info: def ensure_dirs
-    for p in (SAMPLES, PORTS, SOC, WATTS, STATE_DIR, ENERGY_DATA / "buckets"):  # info: measured data only; no Logs/Energy
+    for p in (SAMPLES, PORTS, SOC, WATTS, STATE_DIR):  # info: measured data only; layers hold consolidation, not buckets/
         p.mkdir(parents=True, exist_ok=True)  # info: p . mkdir ( parents = True ,
