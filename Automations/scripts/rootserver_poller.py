@@ -938,6 +938,25 @@ def run_builtin(job: dict) -> None:  # info: def run_builtin
 
 
 # ====================================================
+# SECTION: function _news_update_fresh
+# What it does: True when news_update_current.wav was written at or after this hour's :35.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _news_update_fresh(wall: datetime) -> bool:  # info: def _news_update_fresh
+    path = Path(  # info: set path
+        "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Media/Audio/Voice/news_update_current.wav"  # info: path
+    )  # info: )
+    try:  # info: try
+        if not path.is_file() or path.stat().st_size <= 64:  # info: if missing or tiny
+            return False  # info: return False
+        mtime = datetime.fromtimestamp(path.stat().st_mtime).astimezone()  # info: set mtime
+    except OSError:  # info: except OSError
+        return False  # info: return False
+    gate = wall.replace(minute=35, second=0, microsecond=0)  # info: set gate
+    return mtime >= gate and mtime.date() == wall.date() and mtime.hour == wall.hour  # info: this hour only
+
+
+# ====================================================
 # SECTION: function run_job
 # What it does: run job.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -990,7 +1009,7 @@ def run_job(job: dict) -> bool:  # info: def run_job — True when work started
     if jid == "voice_kilauea_image_check":  # info: if jid == "voice_kilauea_image_check"
         # Same Kokoro lock as news + hour batch. A :45 fire mid-batch skips a desk WAV (rc 75).
         minute = datetime.now().astimezone().minute  # info: set minute
-        if 35 <= minute <= 54 or _generate_hour_reports_running():  # info: hour window or batch already up
+        if 30 <= minute <= 54 or _generate_hour_reports_running():  # info: :30 job overlaps :35 news; :45 overlaps desks
             log(f"{full_timestamp()}job:{jid} SKIP — hour voice lane owns the Kokoro lock")  # info: call log
             return False  # info: return False — next quarter-hour can try
     # Hour workflow owns the air clock. News TTS must finish before desk TTS (same lock).
@@ -1003,6 +1022,14 @@ def run_job(job: dict) -> bool:  # info: def run_job — True when work started
                 run_command_job(job)  # info: call run_command_job
             finally:  # info: finally
                 _news_busy.release()  # info: _news_busy . release ( )
+                wall = datetime.now().astimezone()  # info: set wall
+                key = _workflow_hour_key("news_cycle", wall)  # info: set key
+                if _news_update_fresh(wall):  # info: if wav landed this hour
+                    _mark_hour_workflow_done(key)  # info: keep catch-up closed
+                else:  # info: else
+                    _hour_workflow_done.discard(key)  # info: failed run must not block :36–:39 retry
+                    _save_hour_workflow_done()  # info: persist reopen
+                    log(f"{full_timestamp()}job:news_cycle  no fresh wav — catch-up stays open")  # info: call log
         threading.Thread(target=_news_work, name="hour-news_cycle", daemon=True).start()  # info: start side thread
         return True  # info: return True
     if jid in ("voice_hour_batch", "radio_push_hour"):  # info: if jid in ( "voice_hour_batch" , "radio_push_hour" )

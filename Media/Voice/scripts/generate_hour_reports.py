@@ -568,17 +568,17 @@ def recalculate_start_time(timing: dict | None = None) -> dict:
         except (TypeError, ValueError):
             suggested = None
 
-    # Env base is the floor start (:36). Averages may only pull earlier, never later.
+    # Stay on the env base (:36). A long news wait must not drag the next hour earlier.
     base = max(0, min(59, int(BASE_START_MINUTE)))
+    at_minute = base
     if suggested is None:
-        at_minute = base
         reason = "base_default"
     elif suggested < base:
-        at_minute = max(0, int(suggested))
-        reason = "averages_need_earlier"
+        reason = "pinned_base_ignored_earlier"
+    elif suggested == base:
+        reason = "pinned_base"
     else:
-        at_minute = base
-        reason = "keep_base" if suggested == base else "ignore_later_suggested"
+        reason = "pinned_base_ignored_later"
 
     at_minute = max(0, min(base, int(at_minute)))  # never schedule after env base
     lead = (PUSH_MINUTE - at_minute) % 60

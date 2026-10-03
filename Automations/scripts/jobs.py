@@ -70,24 +70,12 @@ DATABASE = "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"  # in
 
 # ====================================================
 # SECTION: function voice_hour_batch_at_minute
-# What it does: Start minute for voice_hour_batch. Default :36. Timing may only move EARLIER (never later than RR_VOICE_HOUR_BASE_MINUTE).
+# What it does: Start minute for voice_hour_batch. Always RR_VOICE_HOUR_BASE_MINUTE (default :36). Schedule JSON is a record only.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def voice_hour_batch_at_minute() -> int:  # info: def voice_hour_batch_at_minute
     base = int(os.environ.get("RR_VOICE_HOUR_BASE_MINUTE", "36"))  # info: set base
-    base = max(0, min(59, base))  # info: clamp base
-    path = Path(DATABASE) / "Media" / "Audio" / "Voice" / "Timing" / "hour_batch_schedule.json"  # info: set path
-    if not path.is_file():  # info: if not path . is_file ( )
-        return base  # info: return base
-    try:  # info: try
-        doc = json.loads(path.read_text(encoding="utf-8"))  # info: set doc
-        minute = int(doc.get("at_minute"))  # info: set minute
-    except (ValueError, TypeError, OSError, json.JSONDecodeError):  # info: except
-        return base  # info: return base
-    # Stale schedule with :42 must not win over env base :36 — only allow an earlier start.
-    if 0 <= minute <= base:  # info: if 0 <= minute <= base
-        return minute  # info: return minute
-    return base  # info: return base
+    return max(0, min(59, base))  # info: always the env base — never drift earlier or later
 
 # Paths with spaces: always double-quote inside bash command strings.
 # ====================================================
