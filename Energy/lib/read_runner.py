@@ -420,18 +420,45 @@ def _hold_last_ble(alias: str) -> bool:  # info: def _hold_last_ble
 
 
 # ====================================================
+# SECTION: function _write_last_from_db
+# What it does: Rebuild soc/watts last JSON from Energy/rootrecord.db after the row is stored.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _write_last_from_db(alias: str, source: str, charge_source: str) -> None:  # info: def _write_last_from_db
+    row = latest_for_alias(alias)  # info: set row
+    if not row:  # info: if not row
+        return  # info: return
+    at = row.get("observed_at") or datetime.now(HST).isoformat(timespec="seconds")  # info: set at
+    if row.get("soc") is not None:  # info: if row . get ( "soc" ) is not None
+        (SOC / f"{alias}-last.json").write_text(  # info: write soc last file
+            json.dumps({"soc": row["soc"], "at": at, "source": source}, indent=2),  # info: json payload
+            encoding="utf-8",  # info: encoding
+        )  # info: end write
+    watts = {  # info: set watts
+        k: row[k]  # info: copy measured watt
+        for k in ("ac_output_power", "ac_input_power", "usbc_output_power", "solar_input_power")  # info: watt keys
+        if row.get(k) is not None  # info: only measured
+    }  # info: end watts
+    if watts:  # info: if watts
+        (WATTS / f"{alias}-last.json").write_text(  # info: write watts last file
+            json.dumps({**watts, "at": at, "source": source, "charge_source": charge_source}, indent=2),  # info: json payload
+            encoding="utf-8",  # info: encoding
+        )  # info: end write
+
+
+# ====================================================
 # SECTION: function _write_sample
-# What it does: BLE samples stay in Energy/samples. A cloud read goes under Cloud-Quota.
+# What it does: BLE samples stay in Energy/samples. A cloud read rebuilds Cloud-Quota JSON from the db.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _write_sample(snap: dict, alias: str, source: str) -> None:  # info: def _write_sample
-    """BLE samples stay in Energy/samples. A cloud read goes under Cloud-Quota."""  # info: """BLE samples stay in Energy/samples. A cloud read goes under Cloud-Quota."""
+    """BLE samples stay in Energy/samples. A cloud read rebuilds Cloud-Quota JSON from the db."""  # info: docstring
     if source == "cloud":  # info: if source == "cloud" :
         scripts = HERE.parent / "Cloud-Quota" / "scripts"  # info: set scripts
         if str(scripts) not in sys.path:  # info: if str ( scripts ) not in sys
             sys.path.insert(0, str(scripts))  # info: sys . path . insert ( 0 ,
         from store import write_cloud_snapshot  # info: from store import write_cloud_snapshot
-        write_cloud_snapshot(snap)  # info: call write_cloud_snapshot
+        write_cloud_snapshot(alias=alias)  # info: rebuild Cloud-Quota JSON/log from rootrecord.db
         return  # info: return
     path = SAMPLES / f"read-{alias}-{datetime.now(HST).strftime('%Y%m%d-%H%M%S')}.json"  # info: set path
     path.write_text(json.dumps(snap, indent=2), encoding="utf-8")  # info: path . write_text ( json . dumps (
@@ -543,42 +570,30 @@ def main() -> int:  # info: def main
         "charge_source": charge_source,  # info: "charge_source" : charge_source ,
     }  # info: }
 
-    # 4) Persist. Every read creates the layer files even when this sample is cloud or nothing is closed yet.
+    # 4) Persist into Energy/rootrecord.db. Cloud and BLE both land here before any JSON is rewritten.
     db_ok = False  # info: set db_ok
     try:  # info: try :
         ensure_layers()  # info: call ensure_layers
-        db_ok = True  # info: set db_ok
+        if device is not None:  # info: if device is not None
+            persist_eflow_device(device, alias, observed_at)  # info: call persist_eflow_device
+            db_ok = True  # info: set db_ok
+        elif _has_data(fields):  # info: elif the cloud path has measured fields
+            persist_eflow_fields(fields, alias, observed_at, source=source)  # info: call persist_eflow_fields
+            db_ok = True  # info: set db_ok
     except Exception as e:  # info: except Exception as e :
         print(f"DB_ERROR: {type(e).__name__}: {e}", file=sys.stderr)  # info: call print
     if device is not None:  # info: if device is not None :
-        try:  # info: try :
-            persist_eflow_device(device, alias, observed_at)  # info: call persist_eflow_device
-            db_ok = True  # info: set db_ok
-        except Exception as e:  # info: except Exception as e :
-            print(f"DB_ERROR: {type(e).__name__}: {e}", file=sys.stderr)  # info: call print
         try:  # info: try :
             asyncio.run(device.disconnect())  # info: asyncio . run ( device . disconnect (
         except Exception:  # info: except Exception :
             pass  # info: pass
 
-    # 5) Samples / last files. A reused cloud read keeps the earlier timestamp.
-    if not cloud_reused:  # info: if not cloud_reused :
-        _write_sample(snap, alias, source)  # info: call _write_sample
-
-        if fields.get("soc") is not None:  # info: if fields . get ( "soc" ) is
-            (SOC / f"{alias}-last.json").write_text(  # info: call (
-                json.dumps({"soc": fields["soc"], "at": snap["at"], "source": source}, indent=2)  # info: json . dumps ( { "soc" : fields
-            )  # info: )
-        watts = {  # info: set watts
-            k: fields[k]  # info: set k
-            for k in ("ac_output_power", "ac_input_power", "usbc_output_power", "solar_input_power")  # info: for k in ( "ac_output_power" , "ac_input_power" ,
-            if fields.get(k) is not None  # info: if fields . get ( k ) is
-        }  # info: }
-        if watts:  # info: if watts :
-            (WATTS / f"{alias}-last.json").write_text(  # info: call (
-                json.dumps({**watts, "at": snap["at"], "source": source, "charge_source": charge_source}, indent=2)  # info: json . dumps ( { ** watts ,
-            )  # info: )
-        if source == "cloud":  # info: if source == "cloud" :
+    # 5) Samples / last files are rebuilt from the db after the row is stored.
+    if not cloud_reused and db_ok:  # info: if not cloud_reused and db_ok
+        _write_last_from_db(alias, source, charge_source)  # info: call _write_last_from_db
+        if source != "none":  # info: if source != "none"
+            _write_sample(snap, alias, source)  # info: BLE sample file or Cloud-Quota rebuild from db
+        if source == "cloud":  # info: if source == "cloud"
             _save_cloud_cache(alias, fields, snap["at"])  # info: call _save_cloud_cache
 
     # 6) Console

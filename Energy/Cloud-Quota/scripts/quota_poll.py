@@ -17,16 +17,16 @@ from __future__ import annotations  # info: from __future__ import annotations
 
 import os  # info: import os
 import sys  # info: import sys
-from datetime import datetime  # info: from datetime import datetime
+from datetime import datetime, timezone  # info: from datetime import datetime , timezone
 from pathlib import Path  # info: from pathlib import Path
 from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 HERE = Path(__file__).resolve().parent  # info: set HERE
 ENERGY_LIB = HERE.parents[1] / "lib"  # info: set ENERGY_LIB
-if str(ENERGY_LIB) not in sys.path:  # info: if str ( ENERGY_LIB ) not in sys
-    sys.path.insert(0, str(ENERGY_LIB))  # info: sys . path . insert ( 0 ,
-if str(HERE) not in sys.path:  # info: if str ( HERE ) not in sys
-    sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 ,
+PACIFIC = HERE.parents[2]  # info: set PACIFIC
+for path in (str(PACIFIC), str(ENERGY_LIB), str(HERE)):  # info: for path in ( str ( PACIFIC ) , str ( ENERGY_LIB ) , str ( HERE ) )
+    if path not in sys.path:  # info: if path not in sys . path
+        sys.path.insert(0, path)  # info: sys . path . insert ( 0 , path )
 
 from config import device as device_cfg, load as load_conf  # noqa: E402
 from ecoflow_api import map_quota_to_fields  # noqa: E402
@@ -98,6 +98,8 @@ def poll_cloud() -> int:  # info: def poll_cloud
     """Signed-off path. Reached only when RR_ECOFLOW_CLOUD=1."""  # info: """Signed-off path. Reached only when RR_ECOFLOW_CLOUD=1."""
     from ecoflow_api import EcoflowApiError, fetch_device_fields  # info: from ecoflow_api import EcoflowApiError , fetch_device_fields
     from store import write_cloud_snapshot  # info: from store import write_cloud_snapshot
+    from Energy.db.ingest import persist_eflow_fields  # info: from Energy . db . ingest import persist_eflow_fields
+    from Energy.db.condense import ensure_layers  # info: from Energy . db . condense import ensure_layers
 
     print("cloud=on")  # info: call print
     print("aliases: " + ", ".join(aliases()))  # info: call print
@@ -119,14 +121,19 @@ def poll_cloud() -> int:  # info: def poll_cloud
             print(f"alias={alias} error={type(exc).__name__}: {exc}")  # info: call print
             failed = True  # info: set failed
             continue  # info: continue
-        snap = {  # info: set snap
-            "alias": alias,  # info: "alias" : alias ,
-            "fields": fields,  # info: "fields" : fields ,
-            "at": datetime.now(HST).isoformat(timespec="seconds"),  # info: "at" : datetime . now ( HST )
-            "source": "cloud",  # info: "source" : "cloud" ,
-        }  # info: }
-        path = write_cloud_snapshot(snap)  # info: set path
-        print(f"alias={alias} source=cloud wrote={path.name}")  # info: call print
+        observed_at = (  # info: set observed_at
+            datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")  # info: UTC stamp for sqlite
+        )  # info: end observed_at
+        try:  # info: try
+            ensure_layers()  # info: call ensure_layers
+            persist_eflow_fields(fields, alias, observed_at, source="cloud")  # info: land cloud fields in rootrecord.db
+            path = write_cloud_snapshot(alias=alias)  # info: rebuild Cloud-Quota JSON/log from the db
+        except Exception as exc:  # info: except Exception as exc
+            print(f"alias={alias} error={type(exc).__name__}: {exc}")  # info: call print
+            failed = True  # info: set failed
+            continue  # info: continue
+        name = path.name if path is not None else "none"  # info: set name
+        print(f"alias={alias} source=cloud wrote={name}")  # info: call print
     return 1 if failed else 0  # info: return 1 if failed else 0
 
 
