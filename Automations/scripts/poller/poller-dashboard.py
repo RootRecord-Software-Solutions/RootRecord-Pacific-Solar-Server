@@ -8,8 +8,8 @@
 # - Survives stack reloads (stop-poller-stack kills only poller-watch.py), so the
 #   window no longer flashes closed/open on every code pull.
 # - Redraws in place (cursor-home + clear-to-EOL, alternate screen): no flicker.
-# - Tails the log by re-reading its last 64 KB, so the hourly truncation by
-#   archive_automations_log_hourly.sh never freezes the view.
+# - Tails the log by re-reading its last 64 KB, so the hourly cut by
+#   Energy/scripts/consolidate.py hours never freezes the view.
 # - Errors inside a frame are shown in the footer; the viewer keeps running.
 # Opened by poller/open-poller-window.sh (single instance). Bruce's poller-watch.py
 # is unchanged and still available for a plain scrolling log view.

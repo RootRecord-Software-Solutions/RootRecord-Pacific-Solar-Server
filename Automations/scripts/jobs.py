@@ -1170,21 +1170,9 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
         "env": {"RR_RADIO_PUSH": "0"},  # info: "env"
     },  # info: } ,
-    {  # info: {
-        # Cut moved into Energy/scripts/consolidate.py hours (minute == 30). Keep id for schedule JSON.
-        "id": "automations_log_hourly_archive",  # info: "id" : "automations_log_hourly_archive" ,
-        "enabled": False,  # info: owned by Energy consolidate.py hours at :30
-        "at_minute": 30,  # info: "at_minute" : 30 ,
-        "at_second": 0,  # info: "at_second" : 0 ,
-        "description": "Retired — Energy/scripts/consolidate.py hours renames automations_current.log into Logs/Automations/Archive at :30.",  # info: "description"
-        "builtin": "",  # info: "builtin"
-        "command": f"bash \"{PACIFIC}/Automations/scripts/archive_automations_log_hourly.sh\"",  # info: "command"
-        "timeout_sec": 120,  # info: "timeout_sec" : 120 ,
-        "cwd": f"{PACIFIC}/Automations/scripts",  # info: "cwd"
-        "env": {},  # info: "env" : { } ,
-    },  # info: } ,
     # --- 30:05–30:09 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
+    # automations_current.log archive is owned by Energy/scripts/consolidate.py hours at clock :30
     {  # info: {
         # hourly work at :30 or later.
         "id": "heartbeat",  # info: "id" : "heartbeat" ,
