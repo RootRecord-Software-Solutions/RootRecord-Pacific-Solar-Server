@@ -21,7 +21,7 @@ Legacy JSON remains a compatibility/output layer during migration.
 - `../scripts/init_rootrecord_db.py` — explicit schema initializer.
 - `../scripts/migrate_json.py` — additive legacy JSON importer.
 - `../scripts/consolidate_minutes.py` — every minute at :00, rolls 1sec into 1min, 5min, and 15min.
-- `../scripts/condense_hours.py` — every minute at :30, rolls those buckets into the hour, day, week, month, and year.
+- `../scripts/condense_hours.py` — every minute at :30, rolls those buckets into the hour, day, week, month, and year, then rewrites `Energy/layers/periods.json`.
 - `../scripts/verify_rootrecord_db.py` — integrity verifier.
 
 ## Database

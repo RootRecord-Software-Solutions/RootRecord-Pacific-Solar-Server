@@ -131,6 +131,22 @@ def persona(kind: str) -> str:  # info: def persona
 # What it does: prompt for.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
+def energy_windows() -> str:  # info: def energy_windows
+    if str(PACIFIC) not in sys.path:  # info: if str ( PACIFIC ) not in sys . path
+        sys.path.insert(0, str(PACIFIC))  # info: sys . path . insert ( 0 , str ( PACIFIC ) )
+    from Energy.db.report_json import REPORT_JSON, period_lines  # info: from Energy . db . report_json import REPORT_JSON
+    try:  # info: try
+        doc = json.loads(REPORT_JSON.read_text(encoding="utf-8"))  # info: set doc
+    except (OSError, ValueError):  # info: except ( OSError , ValueError )
+        return ""  # info: return ""
+    return "\n".join(period_lines(doc))  # info: return the hour, day, week, and month lines
+
+
+# ====================================================
+# SECTION: function prompt_for
+# What it does: prompt for.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
 def prompt_for(kind: str, facts: str) -> str:  # info: def prompt_for
     if kind == "kilauea":  # info: if kind == "kilauea" :
         ask = "Write a short Kīlauea notice from FACTS only."  # info: set ask
@@ -255,6 +271,10 @@ def run(kind: str, *, spend: bool) -> dict:  # info: def run
 
     raw, path = read_template(kind)  # info: raw , path = read_template ( kind )
     facts = scrub_speech(scrub_nws(measured(raw)))  # info: set facts
+    if kind != "kilauea":  # info: if kind != "kilauea"
+        windows = energy_windows()  # info: set windows
+        if windows:  # info: if windows
+            facts = f"{facts}\n\nENERGY WINDOWS:\n{windows}"  # info: append the closed energy windows
     package = (  # info: set package
         f"# Cloud narrative package — {kind}\n\n"
         f"Built: {t.isoformat()}\n"  # info: f" Built: { t . isoformat ( )

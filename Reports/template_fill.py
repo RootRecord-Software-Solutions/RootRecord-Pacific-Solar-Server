@@ -8,7 +8,7 @@
 #   tables, field order, date formats (YYYY-MM-DD, HH:MM HST, HH_MM in filenames) and status vocabulary.
 # Sources: Library 07-Testing index, 08-Ideas index, Work-Orders, operator worklogs of the day (sign-off list);
 #   Database Logs/AI/Inference JSONL, Logs/Automations poller log (+ hourly Archive), System/last host sample,
-#   Energy/soc, Media/Images, Weather reports, Worklog; read-only systemctl --user is-active / process checks.
+#   Energy/soc, Energy/layers/periods.json, Media/Images, Weather reports, Worklog; read-only systemctl --user is-active / process checks.
 # Free text ONLY (purpose, status line, next step, principle, scope, intent) is drafted by a specialist via
 #   System/scripts/plumbing/run-infer.sh (TARGET rr-exec: NPU on demand, Ollama fallback keep_alive 0) with a
 #   strict "use only the facts given" prompt. Drafts with unsupported numbers / bad shape -> deterministic text.
@@ -389,6 +389,24 @@ def energy(f: Facts) -> list[dict]:  # info: def energy
 
 
 # ====================================================
+# SECTION: function energy_periods
+# What it does: Quote the hour, day, week, and month lines from Energy/layers/periods.json.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def energy_periods(f: Facts) -> list[str]:  # info: def energy_periods
+    if str(PACIFIC) not in sys.path:  # info: if str ( PACIFIC ) not in sys . path
+        sys.path.insert(0, str(PACIFIC))  # info: sys . path . insert ( 0 , str ( PACIFIC ) )
+    from Energy.db.report_json import REPORT_JSON, period_lines  # info: from Energy . db . report_json import REPORT_JSON
+    try:  # info: try
+        doc = json.loads(REPORT_JSON.read_text(encoding="utf-8"))  # info: set doc
+    except (OSError, ValueError):  # info: except ( OSError , ValueError )
+        return []  # info: return [ ]
+    lines = period_lines(doc)  # info: set lines
+    f.add(*lines)  # info: f . add the period lines
+    return lines  # info: return lines
+
+
+# ====================================================
 # SECTION: function state_by_age
 # What it does: state by age.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
@@ -616,10 +634,12 @@ def render_checkpoint(f: Facts, mode: str, log: dict) -> str:  # info: def rende
     dash = procs_matching(lambda c: "poller-dashboard.py" in c)  # info: set dash
     verified = [f"Host sample {hm(h['at'])} HST: load1 {h['load1']}, CPU {h['cpu']}%, MemAvailable {h['mem_avail_mb']} MB" if h["at"] else "Host sample: not found"]  # info: set verified
     verified += [f"{e['pack']} SOC {e['soc']}% at {hm(e['at'])} HST ({e['source']})" for e in en]  # info: set verified
+    periods = energy_periods(f)  # info: set periods
+    verified += periods  # info: verified includes the closed hour, day, week, and month
     verified += [f"{n}: {s} — {note}" for n, s, note in subs]  # info: set verified
     deferred = [f"{cell(r['title'], 80)} — {cell(r['state'], 60)}" for r in idl if "PROPOSED" in r["state"]] or ["None recorded in 08-Ideas"]  # info: set deferred
     facts = [f"poller {poller_state}", f"{sum(1 for s in subs if s[1] == 'ok')} of {len(subs)} subsystems ok"] + \
-            [f"{n} {s}" for n, s, _ in subs] + [f"sign-off needed: {s}" for s in so[:4]]  # info: [ f" { n } { s
+            [f"{n} {s}" for n, s, _ in subs] + periods + [f"sign-off needed: {s}" for s in so[:4]]  # info: [ f" { n } { s
     d = draft({"PRINCIPLE": "one short operating principle grounded in the facts", "STATUS": "one short status line"}, facts, mode, f, log)  # info: set d
     principle = d["PRINCIPLE"] or "Measured or explicitly unknown: record what the sources show and change nothing without operator approval."  # info: set principle
     ok_n = sum(1 for s in subs if s[1] == "ok")  # info: set ok_n

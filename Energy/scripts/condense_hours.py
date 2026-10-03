@@ -28,7 +28,7 @@ from Energy.db.condense import condense_hours  # noqa: E402
 # ====================================================
 def main() -> int:  # info: def main
     count = condense_hours()  # info: set count
-    print(f"SUMMARY=ecoflow_layers hours={count}")  # info: call print
+    print(f"SUMMARY=ecoflow_layers hours={count} json=periods.json")  # info: call print
     return 0  # info: return 0
 
 

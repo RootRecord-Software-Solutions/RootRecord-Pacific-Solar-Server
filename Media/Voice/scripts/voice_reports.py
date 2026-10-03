@@ -1473,6 +1473,15 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
     else:  # info: else :
         extra.append("- Solar panel still: not on file")  # info: extra . append ( "- Solar panel still: not on file" )
         sp.append("No solar panel still on file.")  # info: sp . append ( "No solar panel still on file." )
+    if str(PACIFIC) not in sys.path:  # info: if str ( PACIFIC ) not in sys . path
+        sys.path.insert(0, str(PACIFIC))  # info: sys . path . insert ( 0 , str ( PACIFIC ) )
+    from Energy.db.report_json import REPORT_JSON, period_lines  # info: from Energy . db . report_json import REPORT_JSON
+    try:  # info: try
+        periods = period_lines(json.loads(REPORT_JSON.read_text(encoding="utf-8")))  # info: set periods
+    except (OSError, ValueError):  # info: except ( OSError , ValueError )
+        periods = []  # info: set periods
+    for line in periods:  # info: for line in periods
+        extra.append(f"- {line}")  # info: extra . append the closed window
     camera_observation(t)  # info: refresh this hour's ch1 look (was energy_report)
     look = last_camera_look(t)  # info: set look
     sentence = str(look.get("sentence") or "")  # info: set sentence
@@ -1489,7 +1498,7 @@ def b_solar_desk(t: datetime):  # info: def b_solar_desk
     md = [f"# Solar desk — {t.isoformat()}", ""] + [f"- {x}" for x in lines] + [
         f"- Sun: {sun.get('sunrise', 'n/a')} / {sun.get('sunset', 'n/a')} ({sun.get('date', 'n/a')}, Open-Meteo)",  # info: f" - Sun: { sun . get ( 'sunrise'
     ] + extra + ["", "## Spoken", "", " ".join(sp), "",  # info: ] + extra + [ "" , "## Spoken" , "" , " " . join ( sp ) , "" ,
-        "_Source: Database Energy/soc + Energy/watts (EcoFlow BLE), Energy/sun/sun-times-last.json, the newest ch1 still, and Energy/vision/ch1-look-last.json (refreshed this hour when needed)._", ""]  # info: source footer
+        "_Source: Database Energy/soc + Energy/watts (EcoFlow BLE), Energy/layers/periods.json (hour, day, week, month), Energy/sun/sun-times-last.json, the newest ch1 still, and Energy/vision/ch1-look-last.json (refreshed this hour when needed)._", ""]  # info: source footer
     return "\n".join(md), sp  # info: return "\n" . join ( md ) ,
 
 

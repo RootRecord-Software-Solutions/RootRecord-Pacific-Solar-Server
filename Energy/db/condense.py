@@ -13,6 +13,7 @@ from datetime import datetime  # info: from datetime import datetime
 from pathlib import Path  # info: from pathlib import Path
 from Energy.db.store import connect, connect_layer, initialize_schema, DEFAULT_DB_PATH, LAYERS_DIR  # info: from Energy . db . store import connect
 from Energy.db.aggregate import aggregate_period, consolidate_period, period_bounds, LAYERS, BUCKET_SOURCE, _iso  # info: from Energy . db . aggregate import aggregate_period
+from Energy.db.report_json import write_period_report  # info: from Energy . db . report_json import write_period_report
 
 
 # ====================================================
@@ -50,7 +51,9 @@ def consolidate_minutes(db_path=None, layers_dir=None):  # info: def consolidate
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def condense_hours(db_path=None, layers_dir=None):  # info: def condense_hours
-    return condense_closed_periods(db_path, layers_dir, layers=HOUR_LAYERS)  # info: return condense_closed_periods
+    total = condense_closed_periods(db_path, layers_dir, layers=HOUR_LAYERS)  # info: set total
+    write_period_report(db_path, layers_dir)  # info: refresh periods.json for the AI reports
+    return total  # info: return total
 
 
 # ====================================================
