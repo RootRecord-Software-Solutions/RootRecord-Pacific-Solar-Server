@@ -34,6 +34,8 @@ PACIFIC = HERE.parents[3]  # info: set PACIFIC
 BG = PACIFIC / "Website" / "Home" / "assets" / "broadcast-bg.jpg"  # info: set BG
 SOURCE = Path("/home/rootrecord/Downloads/IbxbN.jpg")  # info: set SOURCE
 OUT = PACIFIC / "Media" / "Video" / "live-frame.png"  # info: set OUT
+LATENCY = PACIFIC / "Media" / "Video" / "live-picture-latency.json"  # info: set LATENCY
+ENCODER_WAIT = 1.0  # info: encoder checks the thumb once a second
 API = "https://api.rootrecord.cloud"  # info: set API
 USGS = "https://earthquake.usgs.gov/fdsnws/event/1/query"  # info: set USGS
 HOST = os.environ.get("RR_RADIO_SSH", "ml1")  # info: set HOST
@@ -233,18 +235,31 @@ def _watts(device: dict | None, key: str) -> str:  # info: def _watts
 # What it does: Composite the desk overlay on the full-bleed photo.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def render(state: dict | None, ops: dict | None, hawaii: dict, world: dict) -> Image.Image:  # info: def render
+def _tail() -> float:  # info: def _tail
+    try:  # info: try
+        saved = json.loads(LATENCY.read_text(encoding="utf-8"))  # info: set saved
+        return max(0.0, min(30.0, float(saved.get("tail_sec", ENCODER_WAIT))))  # info: return saved tail
+    except (OSError, ValueError, TypeError):  # info: except
+        return ENCODER_WAIT  # info: return the encoder wait
+
+
+def _remember_tail(drawn_at: datetime) -> None:  # info: def _remember_tail
+    spent = (datetime.now(HST) - drawn_at).total_seconds() + ENCODER_WAIT  # info: set spent
+    LATENCY.write_text(json.dumps({"tail_sec": round(max(0.0, spent), 2)}), encoding="utf-8")  # info: write tail
+
+
+def render(state: dict | None, ops: dict | None, hawaii: dict, world: dict, when: datetime) -> Image.Image:  # info: def render
     base = Image.open(BG).convert("RGBA")  # info: set base
     if base.size != (1920, 1080):  # info: if base . size !=
         base = base.resize((1920, 1080))  # info: resize
     layer = Image.new("RGBA", base.size, (0, 0, 0, 0))  # info: set layer
     draw = ImageDraw.Draw(layer)  # info: set draw
-    now = datetime.now(HST)  # info: set now
+    now = when  # info: set now
     devices = ((ops or {}).get("power") or {}).get("devices") or {}  # info: set devices
     river, delta = devices.get("river2pro") or {}, devices.get("delta2") or {}  # info: river , delta
     _card(draw, (20, 16, 636, 322))  # info: clock card above the title
     _text(draw, (48, 32), "ON AIR", 26, (255, 90, 90, 255), True)  # info: on air
-    _center(draw, 328, 150, now.strftime("%I:%M %p").lstrip("0"), 72, (236, 246, 255, 255), True)  # info: clock
+    _center(draw, 328, 150, now.strftime("%I:%M:%S %p").lstrip("0"), 64, (236, 246, 255, 255), True)  # info: clock ahead by the delivery delay
     _center(draw, 328, 230, now.strftime("%d %b %Y") + "  HST", 32, (190, 225, 238, 255))  # info: date
     _card(draw, (652, 16, 1268, 322))  # info: battery card above the title
     _text(draw, (680, 32), "BATTERY BANK", 26, (0, 229, 255, 255), True)  # info: battery title
@@ -329,8 +344,12 @@ def main() -> int:  # info: def main
         pass  # info: pass
     hi = _quake_change((_get(hi_url) or {}).get("features") or [])  # info: set hi
     world = _quake_change((_get(gl_url, 40) or {}).get("features") or [])  # info: set world
-    frame = render(state, ops, hi, world)  # info: set frame
+    opened = datetime.now(HST).replace(second=0, microsecond=0)  # info: the minute this frame belongs to
+    late = (datetime.now(HST) - opened).total_seconds()  # info: seconds already used since that minute
+    shown = opened + timedelta(seconds=late + _tail())  # info: clock plus the last delivery delay
+    frame = render(state, ops, hi, world, shown)  # info: set frame
     detail = publish(frame)  # info: set detail
+    _remember_tail(shown)  # info: save how long publish took after the clock
     if datetime.now(HST).minute in (0, 30):  # info: if the half-hour window just opened
         meta = subprocess.run(  # info: subprocess . run
             ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", HOST,  # info: ssh metadata
