@@ -20,12 +20,11 @@ import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from zoneinfo import ZoneInfo
 
 _LIB = Path(__file__).resolve().parents[1] / "lib"
 if str(_LIB) not in sys.path:
     sys.path.insert(0, str(_LIB))
-from current_bank import archive_before_replace, is_current_product  # noqa: E402
+from current_bank import archive_before_replace  # noqa: E402
 
 ALLOWED_PATH_PREFIXES = (
     "Geology/",
@@ -41,8 +40,6 @@ ALLOWED_PATH_PREFIXES = (
 )
 
 DENY_SUBSTRINGS = ("EcoFlow", "ecoflow", "Energy/")
-
-HST = ZoneInfo("Pacific/Honolulu")
 
 DB = Path(
     os.environ.get(

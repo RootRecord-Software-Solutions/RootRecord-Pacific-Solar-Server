@@ -13,9 +13,7 @@ from __future__ import annotations  # info: from __future__ import annotations
 
 import json  # info: import json
 import sys  # info: import sys
-from datetime import datetime  # info: from datetime import datetime
 from pathlib import Path  # info: from pathlib import Path
-from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 PACIFIC = Path(__file__).resolve().parents[3]  # info: set PACIFIC
 ENERGY_LIB = Path(__file__).resolve().parents[2] / "lib"  # info: set ENERGY_LIB
@@ -28,7 +26,6 @@ from paths import CLOUD_QUOTA, CLOUD_QUOTA_LOG  # noqa: E402
 from Energy.db.latest import latest_for_alias  # noqa: E402
 from current_bank import write_current_json  # noqa: E402
 
-HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 BOARD_KEYS = (  # info: same keys BLE samples use on the desk
     "soc",  # info: soc
     "ac_output_power",  # info: ac_output_power

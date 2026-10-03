@@ -12,8 +12,6 @@ from __future__ import annotations  # info: from __future__ import annotations
 import json, os, sys, time  # info: import json , os , sys , time
 from datetime import datetime, timezone  # info: from datetime import datetime , timezone
 from pathlib import Path  # info: from pathlib import Path
-from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
-
 from paths import CPU, LAST, LOAD, MEM, SAMPLES, SYSTEM_DB, ensure_dirs  # info: from paths import SYSTEM_DB , ensure_dirs
 from current_bank import write_current_json  # info: stable *_current sample bank
 
@@ -24,8 +22,6 @@ if str(_SKILL) not in sys.path:  # info: if str ( _SKILL ) not in sys
 from db.store import persist_snapshot  # noqa: E402
 from db.latest import latest_snapshot  # noqa: E402
 
-LOCAL = ZoneInfo("Pacific/Honolulu")  # info: set LOCAL
-
 # ====================================================
 # SECTION: function _now_iso
 # What it does:  now iso.
@@ -33,14 +29,6 @@ LOCAL = ZoneInfo("Pacific/Honolulu")  # info: set LOCAL
 # ====================================================
 def _now_iso():  # info: def _now_iso
     return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")  # info: return datetime . now ( timezone . utc
-
-# ====================================================
-# SECTION: function _local_stamp
-# What it does:  local stamp.
-# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
-# ====================================================
-def _local_stamp():  # info: def _local_stamp
-    return datetime.now(LOCAL).strftime("%Y%m%d-%H%M%S")  # info: return datetime . now ( LOCAL ) .
 
 # ====================================================
 # SECTION: function _read_load

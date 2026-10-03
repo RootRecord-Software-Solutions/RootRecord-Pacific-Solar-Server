@@ -22,7 +22,11 @@ import urllib.request
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
-from zoneinfo import ZoneInfo
+
+_SYSTEM_LIB = Path(__file__).resolve().parents[3] / "System" / "lib"
+if str(_SYSTEM_LIB) not in sys.path:
+    sys.path.insert(0, str(_SYSTEM_LIB))
+from current_bank import archive_before_replace  # noqa: E402
 
 DB = Path(
     os.environ.get(
@@ -49,8 +53,6 @@ STATE = Path(
     )
 )
 OFFSET_FILE = STATE / "telegram-offset.json"
-
-HST = ZoneInfo("Pacific/Honolulu")
 
 # Must stay aligned with ML2 stream/protocol.py ALLOWED_PATH_PREFIXES —
 # Telegram is the offline twin of the SSH bank stream.
@@ -115,36 +117,6 @@ def allowed(path_rel: str) -> bool:
         return False
     return any(path_rel.startswith(p) for p in ALLOWED)
 
-
-
-def is_current_product(path_rel: str, dest: Path | None = None) -> bool:
-    """True when the bank filename contains _current (stable live path)."""
-    name = (dest.name if dest is not None else Path(path_rel).name)
-    return "_current" in name
-
-
-def archive_before_replace(dest: Path, path_rel: str = "") -> str | None:
-    """If dest exists and basename contains _current, rename into sibling archive/.
-
-    Keeps the stable *_current path for LLM/desk readers; archives are historical
-    only under archive/YYYYMMDD/<stem>_<HHMMSS><suffix> (HST). Non-_current files
-    are never archived on replace.
-    """
-    if not dest.is_file():
-        return None
-    if not is_current_product(path_rel or dest.name, dest):
-        return None
-    now = datetime.now(HST).replace(microsecond=0)
-    archive_dir = dest.parent / "archive" / now.strftime("%Y%m%d")
-    archive_dir.mkdir(parents=True, exist_ok=True)
-    archived = archive_dir / f"{dest.stem}_{now.strftime('%H%M%S')}{dest.suffix}"
-    if archived.exists():
-        archived = (
-            archive_dir
-            / f"{dest.stem}_{now.strftime('%H%M%S')}_{os.getpid()}{dest.suffix}"
-        )
-    os.rename(dest, archived)
-    return str(archived)
 
 
 def atomic_write(dest: Path, data: bytes) -> None:
