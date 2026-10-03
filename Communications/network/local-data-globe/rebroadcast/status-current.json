@@ -1,11 +1,11 @@
 {
   "ok": true,
   "kind": "last-known",
-  "as_of": "Saturday, October 3, 2026 \u00b7 08:10 Hawaiian Standard Time",
+  "as_of": "Saturday, October 3, 2026 \u00b7 08:20 Hawaiian Standard Time",
   "power": {
     "resource": "power",
     "title": "Power / solar",
-    "as_of": "Saturday, October 3, 2026 \u00b7 08:10 Hawaiian Standard Time",
+    "as_of": "Saturday, October 3, 2026 \u00b7 08:20 Hawaiian Standard Time",
     "source_paths": [
       "Energy/soc/*_current.json",
       "Energy/watts/*_current.json"
@@ -17,13 +17,13 @@
           "ac_output_power": 0.0,
           "ac_input_power": 0.0,
           "usbc_output_power": 0.0,
-          "at": "2026-10-03T18:10:38.358Z",
+          "at": "2026-10-03T18:20:40.120Z",
           "source": "ble",
           "charge_source": "none"
         },
         "soc": {
           "soc": 0.0,
-          "at": "2026-10-03T18:10:38.358Z",
+          "at": "2026-10-03T18:20:40.120Z",
           "source": "ble"
         }
       },
@@ -48,14 +48,14 @@
   "weather": {
     "resource": "weather",
     "title": "Weather",
-    "as_of": "Saturday, October 3, 2026 \u00b7 08:10 Hawaiian Standard Time",
+    "as_of": "Saturday, October 3, 2026 \u00b7 08:20 Hawaiian Standard Time",
     "source_paths": [
       "Weather/Hawai'i/reports/0 Level Processing/Hawaii_State_Weather_Report_current.md",
       "Weather/moon/moon_current.json"
     ],
     "report": {
-      "generated": "2026-10-03T08:08:20-10:00 HST",
-      "sections": 20
+      "generated": "2026-10-03T08:18:12-10:00 HST",
+      "sections": 21
     },
     "moon": {
       "phase": 0.726,
@@ -70,12 +70,12 @@
   "kilauea": {
     "resource": "kilauea",
     "title": "K\u012blauea",
-    "as_of": "Saturday, October 3, 2026 \u00b7 08:10 Hawaiian Standard Time",
+    "as_of": "Saturday, October 3, 2026 \u00b7 08:20 Hawaiian Standard Time",
     "source_paths": [
       "Geology/Volcanoes/Hawaii/kilauea_current.json"
     ],
     "status": {
-      "at": "2026-10-03T08:08:24-10:00",
+      "at": "2026-10-03T08:18:17-10:00",
       "alert_level": "WATCH",
       "color_code": "ORANGE",
       "headline": "WATCH \u2014 elevated unrest",

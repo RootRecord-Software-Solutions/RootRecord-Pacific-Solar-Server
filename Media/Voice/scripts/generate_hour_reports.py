@@ -37,7 +37,7 @@ import subprocess
 import sys
 import time
 import zipfile
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -178,26 +178,58 @@ def _news_cycle_running() -> bool:
 
 
 def _news_wav_fresh(wav: Path) -> bool:
-    """True when news_update WAV was written at/after this clock hour's :35 (not a prior-hour leftover)."""
+    """True when news_update WAV was written at or after the latest :35 (this cycle).
+
+    A batch that starts at :36 and finishes after the next :00 still belongs to that :35.
+    """
     try:
         mtime = datetime.fromtimestamp(wav.stat().st_mtime, tz=HST)
     except OSError:
         return False
     now = datetime.now(HST)
     gate = now.replace(minute=35, second=0, microsecond=0)
-    if now.minute < 35:
-        # Batch running before :35 (manual/catch-up) — accept wav from this hour onward.
-        gate = now.replace(minute=0, second=0, microsecond=0)
-    return mtime >= gate
+    if now < gate:
+        gate -= timedelta(hours=1)
+    return mtime >= gate and (now - mtime) <= timedelta(hours=2)
+
+
+def hold_for_running_news(limit: int = 1700) -> dict:
+    """If news_cycle is in progress, wait before the next desk. No grace delay when it is idle."""
+    if not _news_cycle_running():
+        return {"ok": True, "waited_sec": 0, "news_cycle_running": False}
+    started = time.time()
+    last_log = 0.0
+    while _news_cycle_running() and (time.time() - started) < limit:
+        now = time.time()
+        if now - last_log >= 30:
+            print(
+                json.dumps(
+                    {
+                        "ok": True,
+                        "phase": "news_hold",
+                        "elapsed": round(now - started, 1),
+                        "left": round(limit - (now - started), 1),
+                    }
+                ),
+                flush=True,
+            )
+            last_log = now
+        time.sleep(5)
+    running = _news_cycle_running()
+    return {
+        "ok": not running,
+        "waited_sec": round(time.time() - started, 1),
+        "news_cycle_running": running,
+    }
 
 
 def wait_for_news_tts() -> dict:
     """Kokoro is single-flight (rc 75 skips the WAV). Let :35 news finish TTS before any desk.
 
     News and desks both call voice-render.sh. Overlap drops whichever side loses the lock.
-    RR_HOUR_NEWS_TTS_WAIT_SEC=0 skips. Default 600s.
+    RR_HOUR_NEWS_TTS_WAIT_SEC=0 skips. Default 1700s so desks do not start while news still holds the lock.
     """
-    max_wait = int(os.environ.get("RR_HOUR_NEWS_TTS_WAIT_SEC", "600"))
+    max_wait = int(os.environ.get("RR_HOUR_NEWS_TTS_WAIT_SEC", "1700"))
     if max_wait <= 0:
         return {"ok": True, "skipped": True, "detail": "RR_HOUR_NEWS_TTS_WAIT_SEC=0"}
     started = time.time()
@@ -337,16 +369,40 @@ def run_system_perf() -> dict:
     return res
 
 
+def _voice_lock_busy(gen: dict) -> bool:
+    voice = gen.get("voice") if isinstance(gen.get("voice"), dict) else {}
+    if gen.get("rc") == 75 or voice.get("rc") == 75:
+        return True
+    detail = f"{gen.get('detail') or ''} {voice.get('detail') or ''}"
+    return "single-flight" in detail or "lock_busy" in detail
+
+
 def one(report: str, agent: str, how: str) -> dict:
     started = time.time()
     row: dict = {"report": report, "agent": agent, "how": how}
     try:
-        if how == "voice_reports":
-            gen = run_voice_reports(report)
-        elif how == "system_perf":
-            gen = run_system_perf()
-        else:
-            return {**row, "ok": False, "detail": f"unknown how={how}"}
+        gen: dict = {}
+        for attempt in range(4):
+            if how == "voice_reports":
+                gen = run_voice_reports(report)
+            elif how == "system_perf":
+                gen = run_system_perf()
+            else:
+                return {**row, "ok": False, "detail": f"unknown how={how}"}
+            if not _voice_lock_busy(gen) or attempt == 3:
+                break
+            print(
+                json.dumps(
+                    {
+                        "ok": True,
+                        "phase": "lock_retry",
+                        "report": report,
+                        "attempt": attempt + 1,
+                    }
+                ),
+                flush=True,
+            )
+            time.sleep(20)
         row["generate"] = {
             k: gen.get(k)
             for k in ("ok", "rc", "skipped", "detail", "wav", "mode", "agent", "sentences")
@@ -870,6 +926,8 @@ def main() -> int:
             flush=True,
         )
     for report, agent, how in jobs:
+        if not only:
+            hold_for_running_news()
         print(json.dumps({"ok": True, "phase": "begin", "report": report, "agent": agent}), flush=True)
         row = one(report, agent, how)
         results.append(row)

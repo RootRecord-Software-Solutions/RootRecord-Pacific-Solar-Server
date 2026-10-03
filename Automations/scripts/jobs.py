@@ -1560,7 +1560,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "description": "Generate hour-desk voice reports, stitch desks then news_update into report_current, radio_push that one file to ML1. :55 radio_push_hour is catch-up only.",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"nice -n 0 python3 \"{PACIFIC}/Media/Voice/scripts/generate_hour_reports.py\"",  # info: highest nice among user jobs
-        "timeout_sec": 1500,  # info: news TTS wait + desks + stitch/push
+        "timeout_sec": 2400,  # info: news TTS wait up to 20m + desks + stitch/push
         "needs_internet": True,  # info: "needs_internet" : True ,
         "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
         "env": {"RR_VOICE_DELIVER": "0", "RR_VOICE_STATUS": "0", "RR_HOUR_BATCH_PUSH": "1"},  # info: push combined after batch

@@ -163,7 +163,14 @@ def _load_hour_workflow_done() -> None:  # info: def _load_hour_workflow_done
             at = str(doc.get("at") or "")  # info: set at
             if at and doc.get("job_id") == "voice_hour_batch":  # info: if this hour's batch stamp
                 stamp = datetime.fromisoformat(at)  # info: set stamp
-                if stamp.date() == wall.date() and stamp.hour == wall.hour:  # info: same clock hour
+                if stamp.tzinfo is None:  # info: if stamp . tzinfo is None
+                    stamp = stamp.astimezone()  # info: set stamp
+                # A late finish just after :00 belongs to the previous hour, not this one.
+                if (  # info: if
+                    stamp.date() == wall.date()  # info: stamp . date ( ) == wall . date ( )
+                    and stamp.hour == wall.hour  # info: and stamp . hour == wall . hour
+                    and stamp.minute >= 36  # info: and stamp . minute >= 36
+                ):  # info: )
                     keys.add(f"voice_hour_batch|{day}|{wall.hour:02d}")  # info: keys . add
                     keys.add(f"radio_push_hour|{day}|{wall.hour:02d}")  # info: early push already covered :55
     except Exception:  # info: except Exception
@@ -176,7 +183,9 @@ def _load_hour_workflow_done() -> None:  # info: def _load_hour_workflow_done
         if news.is_file() and news.stat().st_size > 64:  # info: if news present
             mtime = datetime.fromtimestamp(news.stat().st_mtime).astimezone()  # info: set mtime
             gate = wall.replace(minute=35, second=0, microsecond=0)  # info: set gate
-            if mtime >= gate and mtime.date() == wall.date() and mtime.hour == wall.hour:  # info: this hour's :35+
+            if wall < gate:  # info: before this hour's :35 — the cycle started last hour
+                gate = gate - timedelta(hours=1)  # info: set gate
+            if mtime >= gate and (wall - mtime) <= timedelta(hours=2):  # info: this cycle's wav
                 keys.add(f"news_cycle|{day}|{wall.hour:02d}")  # info: keys . add
     except Exception:  # info: except Exception
         pass  # info: pass
@@ -826,10 +835,35 @@ def run_command_job(job: dict) -> None:  # info: def run_command_job
     if not quiet and not eco:  # info: if not quiet and not eco :
         log(f"{full_timestamp()}job:{jid} RUN  {cmd}")  # info: call log
     try:  # info: try :
-        r = subprocess.run(["bash", "-lc", cmd], cwd=cwd, env=env, timeout=timeout, capture_output=True, text=True)  # info: set r
-        out = (r.stdout or "").strip()  # info: set out
-        err = (r.stderr or "").strip()  # info: set err
-        if r.returncode == 0:  # info: if r . returncode == 0 :
+        proc = subprocess.Popen(  # info: own process group so a timeout can kill Kokoro children
+            ["bash", "-lc", cmd],  # info: [ "bash" , "-lc" , cmd ]
+            cwd=cwd,  # info: cwd = cwd
+            env=env,  # info: env = env
+            stdout=subprocess.PIPE,  # info: stdout = subprocess . PIPE
+            stderr=subprocess.PIPE,  # info: stderr = subprocess . PIPE
+            text=True,  # info: text = True
+            start_new_session=True,  # info: start_new_session = True
+        )  # info: )
+        try:  # info: try
+            out, err = proc.communicate(timeout=timeout)  # info: set out , err
+        except subprocess.TimeoutExpired:  # info: except subprocess . TimeoutExpired
+            try:  # info: try
+                os.killpg(proc.pid, signal.SIGTERM)  # info: kill the whole job, not only bash
+            except ProcessLookupError:  # info: except ProcessLookupError
+                pass  # info: pass
+            try:  # info: try
+                proc.communicate(timeout=5)  # info: proc . communicate ( timeout = 5 )
+            except subprocess.TimeoutExpired:  # info: except subprocess . TimeoutExpired
+                try:  # info: try
+                    os.killpg(proc.pid, signal.SIGKILL)  # info: os . killpg ( proc . pid , signal . SIGKILL )
+                except ProcessLookupError:  # info: except ProcessLookupError
+                    pass  # info: pass
+                proc.communicate()  # info: proc . communicate ( )
+            raise  # info: raise
+        out = (out or "").strip()  # info: set out
+        err = (err or "").strip()  # info: set err
+        rcode = proc.returncode  # info: set rcode
+        if rcode == 0:  # info: if rcode == 0 :
             if eco:  # info: if eco :
                 # One clean line: prefer SUMMARY=; fold INTERNAL= the same way.
                 # Skip STATUS= (redundant when SUMMARY is present).
@@ -865,9 +899,9 @@ def run_command_job(job: dict) -> None:  # info: def run_command_job
                 if reason:  # info: if reason :
                     log(f"{full_timestamp()}  ✗  {jid}  {reason}")  # info: call log
                 else:  # info: else :
-                    log(f"{full_timestamp()}  ✗  {jid} FAIL code={r.returncode}")  # info: call log
+                    log(f"{full_timestamp()}  ✗  {jid} FAIL code={rcode}")  # info: call log
             else:  # info: else :
-                log(f"{full_timestamp()}job:{jid} FAIL code={r.returncode}")  # info: call log
+                log(f"{full_timestamp()}job:{jid} FAIL code={rcode}")  # info: call log
                 for line in (err or out).splitlines()[:20]:  # info: for line in ( err or out )
                     log(f"{full_timestamp()}job:{jid} ! {line}")  # info: call log
     except subprocess.TimeoutExpired:  # info: except subprocess . TimeoutExpired :
@@ -937,9 +971,23 @@ def run_builtin(job: dict) -> None:  # info: def run_builtin
     log(f"{full_timestamp()}job:{jid} UNKNOWN builtin={name!r}")  # info: call log
 
 
+def _schedule_updated_since(since: datetime) -> bool:  # info: def _schedule_updated_since
+    path = Path(  # info: set path
+        "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Media/Audio/Voice/Timing/hour_batch_schedule.json"  # info: path
+    )  # info: )
+    try:  # info: try
+        doc = json.loads(path.read_text(encoding="utf-8"))  # info: set doc
+        stamp = datetime.fromisoformat(str(doc.get("at") or ""))  # info: set stamp
+    except (OSError, ValueError, TypeError):  # info: except
+        return False  # info: return False
+    if stamp.tzinfo is None:  # info: if stamp . tzinfo is None
+        stamp = stamp.astimezone()  # info: set stamp
+    return stamp >= since - timedelta(seconds=30)  # info: written during this run
+
+
 # ====================================================
 # SECTION: function _news_update_fresh
-# What it does: True when news_update_current.wav was written at or after this hour's :35.
+# What it does: True when news_update_current.wav belongs to the latest :35 cycle, including a finish just after the next :00.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _news_update_fresh(wall: datetime) -> bool:  # info: def _news_update_fresh
@@ -953,7 +1001,9 @@ def _news_update_fresh(wall: datetime) -> bool:  # info: def _news_update_fresh
     except OSError:  # info: except OSError
         return False  # info: return False
     gate = wall.replace(minute=35, second=0, microsecond=0)  # info: set gate
-    return mtime >= gate and mtime.date() == wall.date() and mtime.hour == wall.hour  # info: this hour only
+    if wall < gate:  # info: before this hour's :35 — the cycle started last hour
+        gate = gate - timedelta(hours=1)  # info: set gate
+    return mtime >= gate and (wall - mtime) <= timedelta(hours=2)  # info: latest :35 cycle, not an older file
 
 
 # ====================================================
@@ -1018,13 +1068,13 @@ def run_job(job: dict) -> bool:  # info: def run_job — True when work started
             log(f"{full_timestamp()}job:{jid} SKIP — news_cycle already running")  # info: call log
             return False  # info: return False
         def _news_work() -> None:  # info: def _news_work
+            born = datetime.now().astimezone()  # info: hour this cycle belongs to, even if it finishes after :00
             try:  # info: try
                 run_command_job(job)  # info: call run_command_job
             finally:  # info: finally
                 _news_busy.release()  # info: _news_busy . release ( )
-                wall = datetime.now().astimezone()  # info: set wall
-                key = _workflow_hour_key("news_cycle", wall)  # info: set key
-                if _news_update_fresh(wall):  # info: if wav landed this hour
+                key = _workflow_hour_key("news_cycle", born)  # info: set key
+                if _news_update_fresh(born):  # info: if wav landed for the hour we started
                     _mark_hour_workflow_done(key)  # info: keep catch-up closed
                 else:  # info: else
                     _hour_workflow_done.discard(key)  # info: failed run must not block :36–:39 retry
@@ -1047,10 +1097,17 @@ def run_job(job: dict) -> bool:  # info: def run_job — True when work started
             log(f"{full_timestamp()}job:{jid} SKIP — hour batch already running")  # info: call log
             return False  # info: return False — keep catch-up open
         def _hour_work() -> None:  # info: def _hour_work
+            born = datetime.now().astimezone()  # info: hour this batch belongs to
             try:  # info: try
                 run_command_job(job)  # info: call run_command_job
             finally:  # info: finally
                 _hour_batch_busy.release()  # info: _hour_batch_busy . release ( )
+                if jid == "voice_hour_batch" and not _generate_hour_reports_running():  # info: process actually exited
+                    key = _workflow_hour_key("voice_hour_batch", born)  # info: set key
+                    if not _schedule_updated_since(born):  # info: crashed or timed out before Timing was written
+                        _hour_workflow_done.discard(key)  # info: allow watchdog / catch-up to try again
+                        _save_hour_workflow_done()  # info: persist reopen
+                        log(f"{full_timestamp()}job:voice_hour_batch  no schedule stamp — catch-up stays open")  # info: call log
         threading.Thread(target=_hour_work, name=f"hour-{jid}", daemon=True).start()  # info: start side thread
         return True  # info: return True
     run_command_job(job)  # info: call run_command_job
