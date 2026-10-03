@@ -16,12 +16,11 @@ Writes under the single voice tree:
   Media/Audio/Voice/Archive/audio_reports_YYYYMMDDTHHMMSS.zip
   (WAV + speak/read txt removed after a successful push; oggs archived)
 
-Hourly chimes stay on voice_hourly_chime (:00/:30) unless --include-chime.
+Hourly chimes stay on voice_hourly_chime (:00/:30) — never part of this hour batch.
 
 Usage:
   python3 generate_hour_reports.py
   python3 generate_hour_reports.py --only solar_desk,kilauea_report
-  python3 generate_hour_reports.py --include-chime
   python3 generate_hour_reports.py --no-push
 """
 from __future__ import annotations
@@ -96,8 +95,6 @@ HOUR_REPORTS: list[tuple[str, str, str]] = [
     ("security_desk", "carly", "voice_reports"),
     ("bandwidth_desk", "carly", "voice_reports"),
 ]
-
-CHIME_REPORT = ("hourly_chime", "ava", "chime")
 
 ENV_BASE = {
     "RR_RADIO_PUSH": "0",
