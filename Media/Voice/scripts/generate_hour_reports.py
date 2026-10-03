@@ -2,9 +2,9 @@
 """Generate every hour-desk voice report into Database Media/Audio/Voice/.
 
 Measured batch wall time (2026-10-03): ~8.6 minutes for all desks.
-jobs.py starts this at :42. When the batch finishes it:
+jobs.py starts this at :42 by default. When the batch finishes it:
   1. records wall + per-report seconds under Media/Audio/Voice/Timing/
-  2. updates running averages / suggested start minute before :55
+  2. updates running averages, then recalculates next start minute (keeps :42 unless averages need earlier)
   3. radio_push --all to ML1 immediately
 
 :55 radio_push_hour remains a catch-up if this send missed.
@@ -67,6 +67,9 @@ VOICE_PY = Path(
 )
 CUSHION_MINUTES = float(os.environ.get("RR_VOICE_HOUR_CUSHION_MIN", "3"))
 HISTORY_KEEP = int(os.environ.get("RR_VOICE_HOUR_HISTORY_KEEP", "200"))
+# Preferred start minute (answer to life). Recalc may move earlier if averages need more lead before :55.
+BASE_START_MINUTE = int(os.environ.get("RR_VOICE_HOUR_BASE_MINUTE", "42"))
+PUSH_MINUTE = int(os.environ.get("RR_VOICE_HOUR_PUSH_MINUTE", "55"))
 
 # Hour batch for :55 radio_push (no chime — that stays :00/:30).
 HOUR_REPORTS: list[tuple[str, str, str]] = [
@@ -347,31 +350,52 @@ def record_timing(summary: dict) -> dict:
         )
         history = history[-HISTORY_KEEP:]
 
-    walls = [float(h["wall_seconds"]) for h in history if h.get("wall_seconds") is not None]
+    totals = [float(h["wall_seconds"]) for h in history if h.get("wall_seconds") is not None]
     by_report: dict[str, list[float]] = {}
     for h in history:
         for name, sec in (h.get("per_report_seconds") or {}).items():
             if isinstance(sec, (int, float)):
                 by_report.setdefault(name, []).append(float(sec))
 
-    avg_wall = _mean(walls)
-    p95_wall = _percentile(walls, 0.95)
-    lead_from = p95_wall if p95_wall is not None else avg_wall
-    suggested_lead_min = math.ceil((lead_from or 0) / 60.0 + CUSHION_MINUTES) if lead_from else None
-    suggested_start_minute = (55 - suggested_lead_min) % 60 if suggested_lead_min is not None else None
+    def _stats(vals: list[float], last: float | None = None) -> dict:
+        return {
+            "avg": _mean(vals),
+            "median": round(statistics.median(vals), 1) if vals else None,
+            "p95": _percentile(vals, 0.95),
+            "min": round(min(vals), 1) if vals else None,
+            "max": round(max(vals), 1) if vals else None,
+            "last": last,
+        }
+
+    total_stats = _stats(totals, last=entry.get("wall_seconds") if isinstance(entry.get("wall_seconds"), (int, float)) else None)
+    # Human-readable minutes beside seconds (schedule math still uses seconds).
+    total_minutes = {
+        k: (round(v / 60.0, 2) if isinstance(v, (int, float)) else None)
+        for k, v in total_stats.items()
+    }
+    avg_total = total_stats["avg"]
+    p95_total = total_stats["p95"]
+    lead_from = p95_total if p95_total is not None else avg_total
+    suggested_lead_min = (
+        math.ceil((lead_from or 0) / 60.0 + CUSHION_MINUTES) if lead_from is not None else None
+    )
+    suggested_start_minute = (
+        (PUSH_MINUTE - suggested_lead_min) % 60 if suggested_lead_min is not None else None
+    )
 
     averages = {
         "at": now.isoformat(),
         "runs": len(history),
         "cushion_minutes": CUSHION_MINUTES,
-        "wall_seconds": {
-            "avg": avg_wall,
-            "median": round(statistics.median(walls), 1) if walls else None,
-            "p95": p95_wall,
-            "min": round(min(walls), 1) if walls else None,
-            "max": round(max(walls), 1) if walls else None,
-            "last": entry.get("wall_seconds"),
+        "base_start_minute": BASE_START_MINUTE,
+        "push_minute": PUSH_MINUTE,
+        # TOTAL batch duration across full hour runs — this drives schedule recalculation.
+        "total": {
+            "seconds": total_stats,
+            "minutes": total_minutes,
         },
+        # Alias kept for older readers.
+        "wall_seconds": total_stats,
         "per_report_avg_seconds": {k: _mean(v) for k, v in sorted(by_report.items())},
         "suggested_lead_minutes_before_55": suggested_lead_min,
         "suggested_start_minute": suggested_start_minute,
@@ -392,6 +416,83 @@ def record_timing(summary: dict) -> dict:
         json.dumps(averages, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
     return current
+
+
+def recalculate_start_time(timing: dict | None = None) -> dict:
+    """After a batch finishes, recompute the next voice_hour_batch minute from averages.
+
+    Keeps BASE_START_MINUTE (:42) unless measured lead needs an earlier start before :55.
+    Writes Media/Audio/Voice/Timing/hour_batch_schedule.json for jobs.py to read.
+    """
+    TIMING_DIR.mkdir(parents=True, exist_ok=True)
+    averages = None
+    if isinstance(timing, dict):
+        averages = timing.get("averages") if isinstance(timing.get("averages"), dict) else None
+    if averages is None:
+        avg_path = TIMING_DIR / "hour_batch_averages.json"
+        if avg_path.is_file():
+            try:
+                averages = json.loads(avg_path.read_text(encoding="utf-8"))
+            except (ValueError, OSError):
+                averages = None
+    averages = averages if isinstance(averages, dict) else {}
+
+    suggested = averages.get("suggested_start_minute")
+    if not isinstance(suggested, int):
+        try:
+            suggested = int(suggested) if suggested is not None else None
+        except (TypeError, ValueError):
+            suggested = None
+
+    # Both minutes are in the pre-:55 window: earlier start = smaller minute.
+    if suggested is None:
+        at_minute = BASE_START_MINUTE
+        reason = "base_default"
+    elif suggested <= BASE_START_MINUTE:
+        at_minute = suggested
+        reason = "averages_need_earlier" if suggested < BASE_START_MINUTE else "averages_match_base"
+    else:
+        # Batch got faster than :42 lead — keep the answer to life (extra cushion).
+        at_minute = BASE_START_MINUTE
+        reason = "keep_base_extra_cushion"
+
+    at_minute = max(0, min(59, int(at_minute)))
+    lead = (PUSH_MINUTE - at_minute) % 60
+    now = datetime.now(HST).replace(microsecond=0)
+    schedule = {
+        "at": now.isoformat(),
+        "job_id": "voice_hour_batch",
+        "at_minute": at_minute,
+        "at_second": 0,
+        "push_minute": PUSH_MINUTE,
+        "base_start_minute": BASE_START_MINUTE,
+        "suggested_start_minute": suggested,
+        "lead_minutes_before_push": lead,
+        "reason": reason,
+        "averages_runs": averages.get("runs"),
+        "total_avg_seconds": (
+            ((averages.get("total") or {}).get("seconds") or averages.get("wall_seconds") or {}).get("avg")
+        ),
+        "total_p95_seconds": (
+            ((averages.get("total") or {}).get("seconds") or averages.get("wall_seconds") or {}).get("p95")
+        ),
+        "total_avg_minutes": ((averages.get("total") or {}).get("minutes") or {}).get("avg"),
+        "total_p95_minutes": ((averages.get("total") or {}).get("minutes") or {}).get("p95"),
+    }
+    schedule_path = TIMING_DIR / "hour_batch_schedule.json"
+    schedule_path.write_text(json.dumps(schedule, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    # Mirror scheduled minute onto averages for a single read surface.
+    if averages:
+        averages["scheduled_at_minute"] = at_minute
+        averages["schedule_reason"] = reason
+        averages["at"] = now.isoformat()
+        (TIMING_DIR / "hour_batch_averages.json").write_text(
+            json.dumps(averages, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+        )
+
+    schedule["path"] = str(schedule_path)
+    return schedule
 
 
 def push_to_ml1() -> dict:
@@ -443,6 +544,11 @@ def main() -> int:
     }
     summary["timing"] = record_timing(summary)
     print(json.dumps({"ok": True, "phase": "timing", **summary["timing"]}, ensure_ascii=False), flush=True)
+    summary["schedule"] = recalculate_start_time(summary["timing"])
+    print(
+        json.dumps({"ok": True, "phase": "schedule", **summary["schedule"]}, ensure_ascii=False),
+        flush=True,
+    )
 
     if args.no_push:
         summary["radio"] = {"ok": True, "skipped": True, "detail": "--no-push"}

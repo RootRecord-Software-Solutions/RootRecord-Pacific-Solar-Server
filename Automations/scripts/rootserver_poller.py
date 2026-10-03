@@ -853,7 +853,17 @@ def _exact_due(job: dict, step) -> bool:  # info: def _exact_due
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _scheduled_jobs() -> list:  # info: def _scheduled_jobs
-    return enabled_jobs(getattr(jobmod, "EXACT_TIME", []))  # info: return enabled_jobs ( getattr ( jobmod , "EXACT_TIME" , [ ] ) )
+    jobs = enabled_jobs(getattr(jobmod, "EXACT_TIME", []))  # info: set jobs
+    # voice_hour_batch minute is recalculated after each generate_hour_reports run.
+    resolve = getattr(jobmod, "voice_hour_batch_at_minute", None)  # info: set resolve
+    if not callable(resolve):  # info: if not callable ( resolve )
+        return jobs  # info: return jobs
+    out = []  # info: set out
+    for job in jobs:  # info: for job in jobs
+        if isinstance(job, dict) and job.get("id") == "voice_hour_batch":  # info: if voice hour batch
+            job = {**job, "at_minute": int(resolve())}  # info: refresh at_minute from Timing schedule
+        out.append(job)  # info: out . append ( job )
+    return out  # info: return out
 
 
 # ====================================================

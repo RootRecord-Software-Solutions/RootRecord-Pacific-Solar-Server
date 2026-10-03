@@ -44,7 +44,9 @@
 #   at_minute 0-59, at_second 0/5/10/15/20/25/30/35/40/45/50/55 (start of that 5-second slot).
 # ====================================================
 
+import json  # info: import json
 import os  # env gates below are read once, at poller start (jobs.py is imported once)
+from pathlib import Path  # info: from pathlib import Path
 
 # ====================================================
 # SECTION: DEFAULTS
@@ -64,6 +66,25 @@ ML2 = "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/3 - RootRecord-US-Mainl
 # Radio station + RadioRss live here (not under Pacific or ML2).
 ML1 = "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/2 - RootRecord-US-Mainland-One"  # info: set ML1
 DATABASE = "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"  # info: set DATABASE
+
+# ====================================================
+# SECTION: function voice_hour_batch_at_minute
+# What it does: Start minute for voice_hour_batch. Default :42; generate_hour_reports recalculates after each full batch into Timing/hour_batch_schedule.json.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def voice_hour_batch_at_minute() -> int:  # info: def voice_hour_batch_at_minute
+    base = int(os.environ.get("RR_VOICE_HOUR_BASE_MINUTE", "42"))  # info: set base
+    path = Path(DATABASE) / "Media" / "Audio" / "Voice" / "Timing" / "hour_batch_schedule.json"  # info: set path
+    if not path.is_file():  # info: if not path . is_file ( )
+        return base  # info: return base
+    try:  # info: try
+        doc = json.loads(path.read_text(encoding="utf-8"))  # info: set doc
+        minute = int(doc.get("at_minute"))  # info: set minute
+    except (ValueError, TypeError, OSError, json.JSONDecodeError):  # info: except
+        return base  # info: return base
+    if 0 <= minute <= 59:  # info: if 0 <= minute <= 59
+        return minute  # info: return minute
+    return base  # info: return base
 
 # Paths with spaces: always double-quote inside bash command strings.
 # ====================================================
@@ -1752,6 +1773,20 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # ---------- minute 42 of every hour ----------
     # --- 42:00–42:04 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
+    {  # info: {
+        # VOICE batch — answer to life; ~8.6 min + cushion before :55.
+        "id": "voice_hour_batch",  # info: "id" : "voice_hour_batch" ,
+        "enabled": os.environ.get("RR_VOICE_HOUR_BATCH", os.environ.get("RR_RADIO_PUSH", "1")) == "1",
+        "at_minute": voice_hour_batch_at_minute(),  # info: recalculated after each batch; default :42 ,
+        "at_second": 0,  # info: "at_second" : 0 ,
+        "description": "Generate all hour-desk voice reports into Media/Audio/Voice/, record Timing averages, then radio_push --all to ML1 as soon as the batch finishes. :55 radio_push_hour is catch-up only.",  # info: "description"
+        "builtin": "",  # info: "builtin"
+        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/generate_hour_reports.py\"",  # info: "command"
+        "timeout_sec": 900,  # info: "timeout_sec" : 900 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
+        "env": {"RR_VOICE_DELIVER": "0", "RR_VOICE_STATUS": "0", "RR_HOUR_BATCH_PUSH": "1"},  # info: push after batch; child desks still skip mid-push
+    },  # info: } ,
     # --- 42:05–42:09 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
     # --- 42:10–42:14 ---
@@ -1777,20 +1812,6 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # ---------- minute 43 of every hour ----------
     # --- 43:00–43:04 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
-    {  # info: {
-        # VOICE batch — measured ~8.6 min + 3 min cushion → start 12 min before :55.
-        "id": "voice_hour_batch",  # info: "id" : "voice_hour_batch" ,
-        "enabled": os.environ.get("RR_VOICE_HOUR_BATCH", os.environ.get("RR_RADIO_PUSH", "1")) == "1",
-        "at_minute": 43,  # info: "at_minute" : 43 ,
-        "at_second": 0,  # info: "at_second" : 0 ,
-        "description": "Generate all hour-desk voice reports into Media/Audio/Voice/, record Timing averages, then radio_push --all to ML1 as soon as the batch finishes. :55 radio_push_hour is catch-up only.",  # info: "description"
-        "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/generate_hour_reports.py\"",  # info: "command"
-        "timeout_sec": 900,  # info: "timeout_sec" : 900 ,
-        "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
-        "env": {"RR_VOICE_DELIVER": "0", "RR_VOICE_STATUS": "0", "RR_HOUR_BATCH_PUSH": "1"},  # info: push after batch; child desks still skip mid-push
-    },  # info: } ,
     # --- 43:05–43:09 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
     # --- 43:10–43:14 ---
