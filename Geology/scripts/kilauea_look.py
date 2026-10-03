@@ -17,7 +17,7 @@
 Prefers Cams `*_current` (ML2 bank) → `*-last.jpg` → live USGS GET.
 Current images are used when they are no older than RR_KILAUEA_LOOK_STALE_MIN (default 12);
 otherwise one live USGS HVO still is fetched (V3 lava lake first). Writes
-Geology/Volcanoes/Cams/kilauea-look-last.json.
+Geology/Volcanoes/Hawaii/Cams/kilauea-look-last.json.
 Optional public-domain USGS fountain reference under Cams/references/ for compare.
 Report-side only — not a LOCAL_DATA_POLL collector. Soft-gated via voice_kilauea_image_check.
 """
@@ -37,7 +37,7 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB
-CAMS = DB / "Geology" / "Volcanoes" / "Cams"  # info: set CAMS
+CAMS = DB / "Geology" / "Volcanoes" / "Hawaii" / "Cams"  # info: Hawaiʻi HVO cams bank
 OUT = CAMS / "kilauea-look-last.json"  # info: set OUT
 REF_DIR = CAMS / "references"  # info: set REF_DIR
 REF_PATH = REF_DIR / "lava-fountain-ref.jpg"  # info: set REF_PATH

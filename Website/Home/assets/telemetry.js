@@ -128,7 +128,10 @@
         headline: volcano.headline ? String(volcano.headline) : null,
         erupting: typeof volcano.erupting === "boolean" ? volcano.erupting : null
       } : null,
-      moon: moonReading(ops && ops.moon && ops.moon.status),
+      moon: moonReading(
+        (ops && ops.weather && ops.weather.moon) ||
+          (ops && ops.moon && ops.moon.status)
+      ),
       asOf: ops && ops.as_of ? String(ops.as_of) : null
     };
   }

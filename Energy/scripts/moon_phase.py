@@ -65,23 +65,25 @@ def _today() -> str:  # info: def _today
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def read() -> dict:  # info: def read
-    try:  # info: try :
-        raw = json.loads(PATH.read_text(encoding="utf-8"))  # info: set raw
-        return raw if isinstance(raw, dict) else {}  # info: return raw if isinstance ( raw , dict
-    except (OSError, ValueError):  # info: except ( OSError , ValueError ) :
-        return {}  # info: return { }
+    for path in (PATH, LEGACY_PATH):  # info: prefer Weather *_current, then legacy Energy path
+        try:  # info: try
+            raw = json.loads(path.read_text(encoding="utf-8"))  # info: set raw
+            if isinstance(raw, dict):  # info: if isinstance ( raw , dict )
+                return raw  # info: return raw
+        except (OSError, ValueError):  # info: except ( OSError , ValueError )
+            continue  # info: continue
+    return {}  # info: return { }
 
 
 # ====================================================
 # SECTION: function write
-# What it does: Atomically replace the saved moon file.
+# What it does: Archive-on-replace into Weather/moon/moon_current.json.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def write(payload: dict) -> dict:  # info: def write
-    PATH.parent.mkdir(parents=True, exist_ok=True)  # info: PATH . parent . mkdir ( parents =
-    tmp = PATH.with_name(PATH.name + ".tmp")  # info: set tmp
-    tmp.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")  # info: tmp . write_text ( json . dumps (
-    os.replace(tmp, PATH)  # info: os . replace ( tmp , PATH )
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "System" / "lib"))  # info: shared *_current helper
+    from current_bank import write_current_json  # info: from current_bank import write_current_json
+    write_current_json(PATH, payload)  # info: archive prior _current then write
     return payload  # info: return payload
 
 

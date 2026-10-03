@@ -1824,7 +1824,7 @@ def b_current_report(t: datetime):  # info: def b_current_report
     """Full current summary of every measured desk. The heading is the clock when the text is built."""  # info: docstring
     facts = energy_facts(t)  # info: set facts
     sun = jload(ENERGY / "sun" / "sun-times-last.json") or {}  # info: set sun
-    moon = jload(ENERGY / "moon" / "moon-last.json") or {}  # info: set moon
+    moon = jload(DB / "Weather" / "moon" / "moon_current.json") or jload(ENERGY / "moon" / "moon-last.json") or {}  # info: Weather first
     rows, upd = alerts()  # info: rows , upd = alerts ( )
     issued, groups = sfp_read()  # info: issued , groups = sfp_read ( )
     places = zfp_temps()  # info: set places

@@ -14,8 +14,8 @@
 
 Ported: the G1 DEFAULT_CAMS catalog (USGS V1/V2/V3 Halemaʻumaʻu cams, YouTube live ids, still URLs) and the
 USGS still fallback. Each run downloads the three official still images (conditional GET: ETag/Last-Modified,
-unchanged -> 304, nothing rewritten) to Database Geology/Volcanoes/Cams/<cam>-last.jpg and writes
-Geology/Volcanoes/Cams/cams-last.json (catalog + per-cam http status, bytes, sha256, fetched_at).
+unchanged -> 304, nothing rewritten) to Database Geology/Volcanoes/Hawaii/Cams/<cam>-last.jpg and writes
+Geology/Volcanoes/Hawaii/Cams/cams-last.json (catalog + per-cam http status, bytes, sha256, fetched_at).
 --keep-dated also copies a changed still to Cams/Daily/<YYYYMMDD>/<cam>-<HHMMSS>.jpg (off by default: ~0.2–0.3 MB each).
 NOT ported: OBS browser-source push (no OBS in G3) and YouTube watch-page scraping for new live ids (G1
 _resolve_youtube) — catalog ids are the G1 offline defaults. Images are git-ignored in the Database (*.jpg).
@@ -36,7 +36,7 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB
-CAMS = DB / "Geology" / "Volcanoes" / "Cams"  # info: set CAMS
+CAMS = DB / "Geology" / "Volcanoes" / "Hawaii" / "Cams"  # info: Hawaiʻi HVO cams bank
 UA = "RootRecord-Pacific-Geology/1.0 (+https://rootrecord.cloud)"  # info: set UA
 TIMEOUT = min(10.0, float(os.environ.get("RR_GEOLOGY_TIMEOUT", "10")))  # info: set TIMEOUT
 

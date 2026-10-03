@@ -27,7 +27,7 @@ Sources (public, no key):
 
 Writes (Database, atomic tmp+replace; a failed source never overwrites its last good file):
   Geology/Earthquakes/{hawaii,global}-last.json      Geology/Earthquakes/Daily/{hawaii,global}-YYYYMMDD.jsonl
-  Geology/Volcanoes/{hvo,kilauea,mauna-loa}-last.json Geology/Volcanoes/Daily/hvo-notices-YYYYMMDD.jsonl
+  Geology/Volcanoes/Hawaii/{hvo,kilauea,mauna-loa}-last.json Geology/Volcanoes/Hawaii/Daily/hvo-notices-YYYYMMDD.jsonl
   Geology/collector-last.json  (per-source ok / error / ms for the last run)
 Daily files are append-only first-seen logs (dedupe by id against today's and yesterday's file); HST dates.
 Light: every HTTP call has a timeout <= 10 s (RR_GEOLOGY_TIMEOUT), no retries. Schedule >= 5 min (jobs.py, gated RR_GEOLOGY=1).
@@ -49,7 +49,7 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB
 GEO = DB / "Geology"  # info: set GEO
-EQ, VO = GEO / "Earthquakes", GEO / "Volcanoes"  # info: EQ , VO = GEO / "Earthquakes" ,
+EQ, VO = GEO / "Earthquakes", GEO / "Volcanoes" / "Hawaii"  # info: Hawaiʻi volcano bank under Volcanoes/Hawaii
 UA = "RootRecord-Pacific-Geology/1.0 (+https://rootrecord.cloud)"  # info: set UA
 TIMEOUT = min(10.0, float(os.environ.get("RR_GEOLOGY_TIMEOUT", "10")))  # info: set TIMEOUT
 

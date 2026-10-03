@@ -426,7 +426,9 @@ def main() -> int:  # info: def main
     gl_url = USGS + f"?format=geojson&minmagnitude=2.5&starttime={start}"  # info: set gl_url
     state = _get(API + "/api/state")  # info: set state
     ops = _get(API + "/api/operations") or {}  # info: set ops
-    moon_path = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/moon/moon-last.json")  # info: set moon_path
+    moon_path = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Weather/moon/moon_current.json")  # info: set moon_path
+    if not moon_path.is_file():  # info: drain legacy Energy path
+        moon_path = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/moon/moon-last.json")  # info: legacy
     try:  # info: try
         saved = json.loads(moon_path.read_text(encoding="utf-8"))  # info: set saved
         if isinstance(saved, dict) and saved.get("phase_name"):  # info: if a saved moon name is on file

@@ -1313,7 +1313,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_MOON", "1") == "1",  # info: "enabled" : os . environ . get (,
         "at_minute": 32,  # info: "at_minute" : 32 ,
         "at_second": 50,  # info: "at_second" : 50 ,
-        "description": "Moon phase HST (Volcano/Puna) -> Database Energy/moon/moon-last.json. No send.",  # info: "description"
+        "description": "Moon phase HST (Volcano/Puna) -> Database Weather/moon/moon_current.json. No send.",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"python3 \"{PACIFIC}/Energy/scripts/moon_phase.py\"",  # info: "command"
         "timeout_sec": 30,  # info: "timeout_sec" : 30 ,
