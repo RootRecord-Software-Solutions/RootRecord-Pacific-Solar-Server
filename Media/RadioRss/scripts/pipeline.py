@@ -31,7 +31,7 @@ from store import (  # info: from store import (
     write_raw,  # info: write_raw ,
     write_story,  # info: write_story ,
 )  # info: )
-from stories import fresh, normalize, same_event, sports, violent  # info: from stories import fresh , normalize , same_event , sports , violent
+from stories import barred, fresh, normalize, same_event, sports, violent  # info: from stories import barred , fresh , normalize , same_event , sports , violent
 
 WEIGHT = {"urgent": 4, "high": 3, "normal": 2, "low": 1}  # info: set WEIGHT
 SENTENCE = re.compile(r"(?<=[.!?])\s+")  # info: set SENTENCE
@@ -343,8 +343,8 @@ def compose(registry: dict, conn, root: Path | None = None) -> list[str]:  # inf
     clusters = conn.execute("SELECT * FROM clusters WHERE status='new'").fetchall()  # info: set clusters
     for cluster in clusters:  # info: for cluster in clusters
         stories = [dict(row) for row in conn.execute("SELECT * FROM stories WHERE cluster_id=? AND status='new' ORDER BY published_at", (cluster["id"],))]  # info: set stories
-        kept = [row for row in stories if not sports({}, row, registry) and not violent({}, row, registry)]  # info: set kept
-        dropped = [row for row in stories if sports({}, row, registry) or violent({}, row, registry)]  # info: set dropped
+        kept = [row for row in stories if not sports({}, row, registry) and not violent({}, row, registry) and not barred({}, row, registry)]  # info: set kept
+        dropped = [row for row in stories if sports({}, row, registry) or violent({}, row, registry) or barred({}, row, registry)]  # info: set dropped
         if dropped:  # info: if dropped :
             stamp = iso(utc_now())  # info: set stamp
             for row in dropped:  # info: for row in dropped

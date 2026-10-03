@@ -23,7 +23,7 @@ from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 from common import DB, PACIFIC, iso, parse_iso, utc_now  # info: from common import DB , PACIFIC , iso , parse_iso , utc_now
 from pipeline import _publisher, poll_feed, speak_body  # info: from pipeline import _publisher , poll_feed , speak_body
 from registry import configured_on  # info: from registry import configured_on
-from stories import sports, violent  # info: from stories import sports , violent
+from stories import barred, sports, violent  # info: from stories import barred , sports , violent
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 RANK = {"urgent": 4, "high": 3, "normal": 2, "low": 1}  # info: set RANK
@@ -181,7 +181,7 @@ def build_update(stories: list[dict], registry: dict, when: datetime) -> dict:  
     backfill_hours = float(cfg.get("backfill_hours") or 36)  # info: set backfill_hours
     desk_words = int(cfg.get("desk_words") or 150)  # info: set desk_words
     target = int(cfg.get("target_words") or 3500)  # info: set target
-    stories = [story for story in stories if not sports({}, story, registry) and not violent({}, story, registry)]  # info: set stories
+    stories = [story for story in stories if not sports({}, story, registry) and not violent({}, story, registry) and not barred({}, story, registry)]  # info: set stories
     fresh = [story for story in stories if _recent(story, now, fresh_hours)]  # info: set fresh
     older = [story for story in stories if _recent(story, now, backfill_hours)]  # info: set older
     desks = [desk for desk in (cfg.get("desks") or []) if isinstance(desk, dict)]  # info: set desks
@@ -468,7 +468,7 @@ def news_hour(registry: dict, conn, speak: bool = False, root: Path | None = Non
     stories = []  # info: set stories
     blocked_ids = []  # info: set blocked_ids
     for story in loaded:  # info: for story in loaded
-        if violent({}, story, registry) or sports({}, story, registry):  # info: if violent or sports
+        if violent({}, story, registry) or sports({}, story, registry) or barred({}, story, registry):  # info: if violent or sports or barred
             blocked_ids.append(story.get("id") or "")  # info: blocked_ids . append
             continue  # info: continue
         stories.append(story)  # info: stories . append

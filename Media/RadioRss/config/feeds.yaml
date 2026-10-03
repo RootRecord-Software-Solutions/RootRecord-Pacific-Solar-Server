@@ -1061,11 +1061,12 @@ feeds:
     category: global_news
     type: rss
     url: https://www.theguardian.com/international/rss
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
     directory: https://www.theguardian.com/international
+    note: "Off. The Guardian is not a RootRecord news source. Stored Guardian rows are dropped by blocked_sources."
 
   - id: aljazeera_all
     name: Al Jazeera
@@ -1159,7 +1160,7 @@ feeds:
     category: markets
     type: rss
     url: https://feeds.bbci.co.uk/news/business/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1418,7 +1419,7 @@ feeds:
     category: chips
     type: rss
     url: https://feeds.bbci.co.uk/news/technology/rss.xml
-    enabled: true
+    enabled: false
     priority: medium
     native_overlap: false
     origin: external
@@ -1431,7 +1432,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.bbci.co.uk/news/world/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1443,7 +1444,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.bbci.co.uk/news/world/asia/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1455,7 +1456,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.bbci.co.uk/news/world/australia/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1468,7 +1469,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.bbci.co.uk/news/world/africa/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1480,7 +1481,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.bbci.co.uk/news/world/europe/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1492,7 +1493,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.bbci.co.uk/news/world/latin_america/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1504,7 +1505,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.bbci.co.uk/news/world/middle_east/rss.xml
-    enabled: true
+    enabled: false
     priority: high
     native_overlap: false
     origin: external
@@ -1516,7 +1517,7 @@ feeds:
     category: global_news
     type: rss
     url: https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml
-    enabled: true
+    enabled: false
     priority: medium
     native_overlap: false
     origin: external

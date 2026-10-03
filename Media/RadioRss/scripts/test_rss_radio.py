@@ -23,7 +23,7 @@ sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 , str ( HERE ) )
 
 from datetime import datetime, timezone  # info: from datetime import datetime , timezone
 from parse_feed import parse_document  # info: from parse_feed import parse_document
-from stories import normalize, partisan, sports, violent  # info: from stories import normalize , sports , violent
+from stories import barred, normalize, partisan, sports, violent  # info: from stories import barred , normalize , partisan , sports , violent
 from news_hour import balance_personas, build_update, persona_for  # info: from news_hour import build_update , persona_for
 from pipeline import handoff, health_report, poll, trace  # info: from pipeline import handoff , health_report , poll , trace
 from registry import load_registry  # info: from registry import load_registry
@@ -255,6 +255,20 @@ def test_news_update() -> None:  # info: def test_news_update
     assert violent(world, gang, registry) is True  # info: assert violent ( world , gang , registry ) is True
     deadline = {"title": "Launch deadline moved", "summary": "The deadlock on the budget ended.", "url": "https://news.test/deadline", "guid": "deadline"}  # info: set deadline
     assert violent(world, deadline, registry) is False  # info: assert violent ( world , deadline , registry ) is False
+    bodies = {"title": "Men trying to end violence against women", "summary": "The discovery of 12 women's bodies near Johannesburg.", "url": "https://www.bbc.com/news/bodies", "guid": "bodies"}  # info: set bodies
+    assert violent(world, bodies, registry) is True  # info: assert violent ( world , bodies , registry ) is True
+    skirt = {"title": "Women given shorts to prevent upskirting", "summary": "Voyeuristic videos on social media.", "url": "https://www.bbc.com/news/skirt", "guid": "skirt"}  # info: set skirt
+    assert violent(world, skirt, registry) is True  # info: assert violent ( world , skirt , registry ) is True
+    guardian = {"id": "g", "category": "global_news", "provider": "The Guardian", "name": "The Guardian International", "priority": "high"}  # info: set guardian
+    beer = {"title": "Sustainable beers", "summary": "Brewers cut packaging.", "url": "https://www.theguardian.com/food/beer", "guid": "beer", "provider": "The Guardian"}  # info: set beer
+    assert barred(guardian, beer, registry) is True  # info: assert barred ( guardian , beer , registry ) is True
+    assert normalize(guardian, beer, registry) is None  # info: assert normalize ( guardian , beer , registry ) is None
+    assert any(feed["id"] == "guardian_international" and not feed.get("enabled") for feed in registry["feeds"])  # info: assert guardian feed is off
+    bbc = {"id": "bbc", "category": "markets", "provider": "BBC", "name": "BBC Business", "priority": "high"}  # info: set bbc
+    diesel = {"title": "G7 oil release", "summary": "Prices fell.", "url": "https://www.bbc.com/news/business/oil", "guid": "oil", "provider": "BBC"}  # info: set diesel
+    assert barred(bbc, diesel, registry) is True  # info: assert barred ( bbc , diesel , registry ) is True
+    assert normalize(bbc, diesel, registry) is None  # info: assert normalize ( bbc , diesel , registry ) is None
+    assert all(not feed.get("enabled") for feed in registry["feeds"] if str(feed.get("id") or "").startswith("bbc_"))  # info: assert every bbc feed is off
     from pipeline import speak_body  # info: from pipeline import speak_body
     body = speak_body("Harbor ferry schedule", "Harbor ferry schedule. The state published a new timetable.", registry["policy"])  # info: set body
     assert body.lower().count("harbor ferry schedule") == 0  # info: assert headline not repeated

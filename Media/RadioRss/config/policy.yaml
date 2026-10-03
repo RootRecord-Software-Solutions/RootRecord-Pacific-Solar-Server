@@ -105,6 +105,15 @@ drop_sentence_patterns:
   - "you should vote"
   - "cast your ballot"
 
+# Publishers and hosts that never air. Checked on the feed and on stored rows.
+blocked_sources:
+  - theguardian.com
+  - "the guardian"
+  - bbci.co.uk
+  - bbc.com
+  - bbc.co.uk
+  - "bbc"
+
 # Whole news items dropped on every feed. Not a Hawaii opt-in. Measured weather desks are separate.
 violence_patterns:
   - homicide
@@ -117,6 +126,18 @@ violence_patterns:
   - stabbing
   - "sexual assault"
   - rape
+  - raped
+  - rapist
+  - "sexual violence"
+  - "violence against"
+  - "women's bodies"
+  - "womens bodies"
+  - "bodies near"
+  - "bodies found"
+  - upskirting
+  - voyeur
+  - voyeuristic
+  - voyeurism
   - robbery
   - gunman
   - gunfire
@@ -177,6 +198,8 @@ sports_patterns:
   - "espn."
   - "sports"
   - "nfl"
+  - "nrl"
+  - "grand final"
   - "nba"
   - "mlb"
   - "nhl"
