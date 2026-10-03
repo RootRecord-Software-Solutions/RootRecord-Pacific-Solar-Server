@@ -186,3 +186,56 @@ def persist_eflow_device(device: Any, alias: str, observed_at: str) -> int:  # i
         raise  # info: raise
     finally:  # info: finally :
         conn.close()  # info: conn . close ( )
+
+
+# ====================================================
+# SECTION: function persist_eflow_fields
+# What it does: Persist a cloud (or other non-BLE) fields dict into Energy/rootrecord.db.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def persist_eflow_fields(fields: dict, alias: str, observed_at: str, source: str = "cloud") -> int:  # info: def persist_eflow_fields
+    conn = connect()  # info: set conn
+    try:  # info: try
+        initialize_schema(conn)  # info: call initialize_schema
+        source_type = "CLOUD" if str(source).startswith("cloud") else "API"  # info: set source_type
+        row = conn.execute(  # info: set row
+            "SELECT source_id FROM observation_source WHERE source_type=? AND source_name='ecoflow_quota' LIMIT 1",  # info: find the cloud source
+            (source_type,),  # info: source_type
+        ).fetchone()  # info: fetchone
+        if row:  # info: if row
+            source_id = row[0]  # info: set source_id
+        else:  # info: else
+            source_id = conn.execute(  # info: set source_id
+                """INSERT INTO observation_source
+                   (source_type,source_name,parser_name,parser_version,created_at)
+                   VALUES (?,?,?,?,strftime('%Y-%m-%dT%H:%M:%fZ','now'))""",  # info: insert cloud source
+                (source_type, "ecoflow_quota", "RootRecord EcoFlow cloud ingest", "1"),  # info: values
+            ).lastrowid  # info: lastrowid
+        existing = conn.execute("SELECT serial_number, model FROM device WHERE alias=? LIMIT 1", (alias,)).fetchone()  # info: set existing
+        serial = existing["serial_number"] if existing else f"CLOUD:{alias}"  # info: set serial
+        model = existing["model"] if existing else alias  # info: set model
+        device_id = upsert_device(conn, serial_number=serial, model=model, alias=alias, role="primary_power_storage", observed_at=observed_at)  # info: set device_id
+        observation_id = create_observation(conn, device_id=device_id, observed_at=observed_at, source_id=source_id, online=True, connection_state=str(source))  # info: set observation_id
+        primary = upsert_battery(conn, device_id=device_id, battery_role="primary", battery_slot=0, serial_number=None, enabled=True, observed_at=observed_at)  # info: set primary
+        soc = fields.get("soc")  # info: set soc
+        add_battery_measurement(conn, observation_id=observation_id, battery_id=primary, metric_key="soc_percent", value=soc, unit="%", state="measured" if soc is not None else "missing")  # info: call add_battery_measurement
+        for key, channel in (  # info: for key , channel
+            ("ac_output_power", "ac_output"),  # info: AC out
+            ("ac_input_power", "ac_input"),  # info: AC in
+            ("solar_input_power", "solar_input"),  # info: solar
+            ("usbc_output_power", "usb_c_1"),  # info: USB-C
+        ):  # info: end map
+            value = fields.get(key)  # info: set value
+            add_electrical_measurement(conn, observation_id=observation_id, channel=channel, metric_key="power_w", value=value, unit="W", state="measured" if value is not None else "missing")  # info: call add_electrical_measurement
+        out = fields.get("ac_output_power")  # info: set out
+        solar = fields.get("solar_input_power")  # info: set solar
+        add_device_measurement(conn, observation_id=observation_id, metric_key="output_power", value=out, unit="W", state="measured" if out is not None else "missing")  # info: call add_device_measurement
+        add_device_measurement(conn, observation_id=observation_id, metric_key="input_power", value=solar, unit="W", state="measured" if solar is not None else "missing")  # info: call add_device_measurement
+        insert_raw_payload(conn, observation_id=observation_id, payload_format="cloud_fields", payload=json.dumps({"alias": alias, "source": source, "fields": {k: fields.get(k) for k in ("soc", "ac_output_power", "ac_input_power", "solar_input_power", "usbc_output_power")}}, separators=(",", ":")), parser_name="RootRecord EcoFlow cloud ingest", parser_version="1")  # info: call insert_raw_payload
+        conn.commit()  # info: conn . commit
+        return observation_id  # info: return observation_id
+    except Exception:  # info: except Exception
+        conn.rollback()  # info: conn . rollback
+        raise  # info: raise
+    finally:  # info: finally
+        conn.close()  # info: conn . close

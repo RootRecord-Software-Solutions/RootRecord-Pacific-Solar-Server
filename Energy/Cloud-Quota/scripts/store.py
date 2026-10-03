@@ -8,7 +8,7 @@
 # Kind: python
 # ==============================================================================
 #!/usr/bin/env python3
-"""Write a labeled cloud quota snapshot. Does not call EcoFlow."""  # info: """Write a labeled cloud quota snapshot. Does not call EcoFlow."""
+"""Write a labeled cloud quota snapshot from Energy/rootrecord.db. Does not call EcoFlow."""  # info: docstring
 from __future__ import annotations  # info: from __future__ import annotations
 
 import json  # info: import json
@@ -17,30 +17,47 @@ from datetime import datetime  # info: from datetime import datetime
 from pathlib import Path  # info: from pathlib import Path
 from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
+PACIFIC = Path(__file__).resolve().parents[3]  # info: set PACIFIC
 ENERGY_LIB = Path(__file__).resolve().parents[2] / "lib"  # info: set ENERGY_LIB
-if str(ENERGY_LIB) not in sys.path:  # info: if str ( ENERGY_LIB ) not in sys
-    sys.path.insert(0, str(ENERGY_LIB))  # info: sys . path . insert ( 0 ,
+for path in (str(PACIFIC), str(ENERGY_LIB)):  # info: for path in ( str ( PACIFIC ) , str ( ENERGY_LIB ) )
+    if path not in sys.path:  # info: if path not in sys . path
+        sys.path.insert(0, path)  # info: sys . path . insert ( 0 , path )
 
 from paths import CLOUD_QUOTA, CLOUD_QUOTA_LOG  # noqa: E402
+from Energy.db.latest import latest_for_alias  # noqa: E402
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 
 
 # ====================================================
 # SECTION: function write_cloud_snapshot
-# What it does: Persist one cloud snapshot and append one log line. No secrets.
+# What it does: Rebuild one Cloud-Quota JSON file and quota.log line from Energy/rootrecord.db.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def write_cloud_snapshot(snap: dict) -> Path:  # info: def write_cloud_snapshot
-    """Persist one cloud snapshot and append one log line. No secrets."""  # info: """Persist one cloud snapshot and append one log line. No secrets."""
-    CLOUD_QUOTA.mkdir(parents=True, exist_ok=True)  # info: CLOUD_QUOTA . mkdir ( parents = True ,
-    CLOUD_QUOTA_LOG.mkdir(parents=True, exist_ok=True)  # info: CLOUD_QUOTA_LOG . mkdir ( parents = True ,
-    alias = str(snap.get("alias") or "unknown")  # info: set alias
+def write_cloud_snapshot(snap: dict | None = None, alias: str | None = None) -> Path | None:  # info: def write_cloud_snapshot
+    """Rebuild one Cloud-Quota JSON file and quota.log line from Energy/rootrecord.db."""  # info: docstring
+    name = alias or (snap or {}).get("alias") or "unknown"  # info: set name
+    row = latest_for_alias(str(name))  # info: set row
+    if not row:  # info: if not row
+        return None  # info: return None
+    CLOUD_QUOTA.mkdir(parents=True, exist_ok=True)  # info: CLOUD_QUOTA . mkdir
+    CLOUD_QUOTA_LOG.mkdir(parents=True, exist_ok=True)  # info: CLOUD_QUOTA_LOG . mkdir
     stamp = datetime.now(HST).strftime("%Y%m%d-%H%M%S")  # info: set stamp
-    path = CLOUD_QUOTA / f"read-{alias}-{stamp}.json"  # info: set path
-    path.write_text(json.dumps(snap, indent=2) + "\n", encoding="utf-8")  # info: path . write_text ( json . dumps (
-    soc = (snap.get("fields") or {}).get("soc")  # info: set soc
-    line = f"{snap.get('at')} alias={alias} source=cloud soc={soc}\n"  # info: set line
-    with (CLOUD_QUOTA_LOG / "quota.log").open("a", encoding="utf-8") as fh:  # info: with ( CLOUD_QUOTA_LOG / "quota.log" ) . open
-        fh.write(line)  # info: fh . write ( line )
+    path = CLOUD_QUOTA / f"read-{name}-{stamp}.json"  # info: set path
+    payload = {  # info: set payload
+        "alias": row.get("alias") or name,  # info: "alias"
+        "at": row.get("observed_at"),  # info: "at"
+        "source": "cloud",  # info: "source"
+        "fields": {  # info: "fields"
+            "soc": row.get("soc"),  # info: "soc"
+            "ac_output_power": row.get("ac_output_power"),  # info: "ac_output_power"
+            "ac_input_power": row.get("ac_input_power"),  # info: "ac_input_power"
+            "solar_input_power": row.get("solar_input_power"),  # info: "solar_input_power"
+            "usbc_output_power": row.get("usbc_output_power"),  # info: "usbc_output_power"
+        },  # info: end fields
+    }  # info: end payload
+    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")  # info: path . write_text
+    line = f"{payload['at']} alias={name} source=cloud soc={payload['fields'].get('soc')}\n"  # info: set line
+    with (CLOUD_QUOTA_LOG / "quota.log").open("a", encoding="utf-8") as fh:  # info: with quota.log
+        fh.write(line)  # info: fh . write
     return path  # info: return path

@@ -27,8 +27,9 @@ sys.path.insert(0, str(HERE.parent.parent))  # info: sys . path . insert ( 0 ,
 from paths import SAMPLES, SOC, WATTS, STATE_DIR, ensure_dirs  # noqa: E402
 from ble_client import connect, await_session, BleUnavailable, eflib_ready  # noqa: E402
 from config import device as device_cfg, load as load_conf  # noqa: E402
-from Energy.db.ingest import persist_eflow_device  # noqa: E402
+from Energy.db.ingest import persist_eflow_device, persist_eflow_fields  # noqa: E402
 from Energy.db.condense import ensure_layers  # noqa: E402
+from Energy.db.latest import latest_for_alias  # noqa: E402
 
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 CLOUD_FALLBACK_SEC = 120  # info: set CLOUD_FALLBACK_SEC
