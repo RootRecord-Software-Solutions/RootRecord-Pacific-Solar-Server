@@ -1,25 +1,25 @@
 {
   "ok": true,
   "kind": "last-known",
-  "as_of": "Friday, October 2, 2026 \u00b7 23:25 Hawaiian Standard Time",
+  "as_of": "Friday, October 2, 2026 \u00b7 23:27 Hawaiian Standard Time",
   "power": {
     "resource": "power",
     "title": "Power / solar",
-    "as_of": "Friday, October 2, 2026 \u00b7 23:25 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 23:27 Hawaiian Standard Time",
     "devices": {
       "delta2": {
         "watts": {
           "solar_input_power": 0.0,
           "ac_output_power": 38.0,
           "ac_input_power": 0.0,
-          "usbc_output_power": 12.0,
-          "at": "2026-10-03T09:25:31.823Z",
+          "usbc_output_power": 18.0,
+          "at": "2026-10-03T09:27:26.941Z",
           "source": "ble",
           "charge_source": "none"
         },
         "soc": {
-          "soc": 36.75,
-          "at": "2026-10-03T09:25:31.823Z",
+          "soc": 36.45,
+          "at": "2026-10-03T09:27:26.941Z",
           "source": "ble"
         }
       },
@@ -42,7 +42,7 @@
   "weather": {
     "resource": "weather",
     "title": "Weather",
-    "as_of": "Friday, October 2, 2026 \u00b7 23:25 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 23:27 Hawaiian Standard Time",
     "report": {
       "generated": "2026-10-02T23:23:35-10:00 HST",
       "sections": 19
@@ -51,7 +51,7 @@
   "kilauea": {
     "resource": "kilauea",
     "title": "K\u012blauea",
-    "as_of": "Friday, October 2, 2026 \u00b7 23:25 Hawaiian Standard Time",
+    "as_of": "Friday, October 2, 2026 \u00b7 23:27 Hawaiian Standard Time",
     "status": {
       "at": "2026-10-02T23:24:00-10:00",
       "alert_level": "WATCH",
@@ -64,6 +64,6 @@
   "moon": {
     "resource": "moon",
     "title": "Current moon",
-    "as_of": "Friday, October 2, 2026 \u00b7 23:25 Hawaiian Standard Time"
+    "as_of": "Friday, October 2, 2026 \u00b7 23:27 Hawaiian Standard Time"
   }
 }

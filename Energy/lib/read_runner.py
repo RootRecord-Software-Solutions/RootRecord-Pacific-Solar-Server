@@ -538,7 +538,7 @@ def _write_json_from_db(alias: str, source: str, charge_source: str) -> dict | N
         from store import write_cloud_snapshot  # info: from store import write_cloud_snapshot
         write_cloud_snapshot(snap=snap, alias=alias)  # info: rebuild Cloud-Quota JSON/log from layers/1sec.db
         return snap  # info: return snap
-    path = SAMPLES / f"read-{alias}-{datetime.now(HST).strftime('%Y%m%d-%H%M%S')}.json"  # info: set path
+    path = SAMPLES / f"read-{alias}-last.json"  # info: one file per pack — overwrite, do not stamp a new flood file
     path.write_text(json.dumps(snap, indent=2) + "\n", encoding="utf-8")  # info: BLE sample rebuilt from db
     return snap  # info: return snap
 
