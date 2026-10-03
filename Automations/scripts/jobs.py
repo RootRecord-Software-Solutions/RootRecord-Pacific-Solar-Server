@@ -61,6 +61,8 @@ DEFAULTS = {  # info: set DEFAULTS
 PACIFIC = "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server"  # info: set PACIFIC
 # Canonical internet collectors live here (not under Pacific/). Fail-safe = run-local-bank.sh.
 ML2 = "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/3 - RootRecord-US-Mainland-Two"  # info: set ML2
+# Radio station + RadioRss live here (not under Pacific or ML2).
+ML1 = "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/2 - RootRecord-US-Mainland-One"  # info: set ML1
 DATABASE = "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"  # info: set DATABASE
 
 # Paths with spaces: always double-quote inside bash command strings.
@@ -2335,12 +2337,12 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_RADIO_RSS", "0") == "1",
         "at_minute": 55,  # info: "at_minute" : 55 ,
         "at_second": 35,  # info: "at_second" : 35 ,
-        "description": "Fail-safe: ML2 radio_rss poll → Database Media/RadioRss/ (ML2 tree only). Does not speak.",  # info: "description"
+        "description": "ML1 RadioRss poll → Database Media/RadioRss/ (ML1 tree only). Does not speak.",  # info: "description"
         "builtin": "",  # info: "builtin"
-        "command": f'bash "{ML2}/scripts/run-local-bank.sh" --only radio_rss',  # info: ML2 canonical
+        "command": f'bash "{ML1}/scripts/run-radio-rss.sh" poll',  # info: ML1 canonical
         "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{ML2}",  # info: "cwd"
+        "cwd": f"{ML1}",  # info: "cwd"
         "env": {"RR_DATABASE_ROOT": DATABASE},  # info: bank into Pacific Database
     },  # info: } ,
     # --- 55:40–55:44 ---
@@ -2353,10 +2355,10 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "at_second": 40,  # info: "at_second" : 40 ,
         "description": "Hourly ~20-25 minute news update at :08 (universities, science, NVIDIA/big tech, world, mainland weather, centrist government/politics). Ava, Bruce, and Carly share airtime. Writes news_update_part1 and news_update_part2, Uploads part 1 and part 2 only.",  # info: "description"
         "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{ML2}/vendor/RadioRss/scripts/rss_radio.py\" news-hour --speak",  # info: ML2 vendor canonical
+        "command": f"nice -n 10 python3 \"{ML1}/vendor/RadioRss/scripts/rss_radio.py\" news-hour --speak",  # info: ML1 vendor canonical
         "timeout_sec": 5,  # info: "timeout_sec" : 5 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{ML2}/vendor/RadioRss",  # info: "cwd"
+        "cwd": f"{ML1}/vendor/RadioRss",  # info: "cwd"
         "env": {"RR_DATABASE_ROOT": DATABASE},  # info: Database bank
     },  # info: } ,
     # --- 55:45–55:49 ---

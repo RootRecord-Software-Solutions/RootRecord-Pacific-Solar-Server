@@ -196,8 +196,8 @@ LOCAL_DATA_POLL_JOBS = frozenset({
     "weather_radar_zip",
     "weather_retention",
     "country_location_pollers",
-    "radio_rss_poll",
     "discord_poller",
+    # radio_rss_poll is ML1 (not ML2 LOCAL_DATA_POLL) — always uses ML1/scripts/run-radio-rss.sh
 })
 
 

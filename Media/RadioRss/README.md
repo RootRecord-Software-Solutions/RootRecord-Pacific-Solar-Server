@@ -1,14 +1,7 @@
-# RadioRss (Pacific pointer)
+# RadioRss (Pacific — pointer only)
 
-**Canonical code:** `1 - Servers/3 - RootRecord-US-Mainland-Two/vendor/RadioRss/`  
-**Collector:** `collectors/radio_rss.py`  
+**Canonical:** `1 - Servers/2 - RootRecord-US-Mainland-One/vendor/RadioRss/`  
+**Runner:** `ML1/scripts/run-radio-rss.sh`  
 **Data bank:** `2 - RootRecord-Database/Media/RadioRss/`
 
-Pacific jobs call the ML2 tree only:
-
-| Job | Path |
-| --- | --- |
-| `radio_rss_poll` (fail-safe) | `ML2/scripts/run-local-bank.sh --only radio_rss` |
-| `radio_news_update` (speak) | `ML2/vendor/RadioRss/scripts/rss_radio.py news-hour --speak` |
-
-When `RR_LOCAL_DATA_POLL=0`, remote ML2 owns the poll; Pacific poll job is gated off.
+Not on ML2. Pacific jobs call the ML1 tree only.

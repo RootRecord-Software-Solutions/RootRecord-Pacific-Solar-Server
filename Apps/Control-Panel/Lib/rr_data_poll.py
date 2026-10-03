@@ -34,7 +34,6 @@ GATED_JOBS = frozenset({
     "weather_radar_zip",
     "weather_retention",
     "country_location_pollers",
-    "radio_rss_poll",
     "discord_poller",
 })
 
