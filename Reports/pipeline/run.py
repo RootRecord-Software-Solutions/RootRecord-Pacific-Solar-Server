@@ -59,7 +59,7 @@ def main() -> int:  # info: def main
         return 0  # info: return 0
     if command == "index":  # info: if command == "index"
         from store import index_legacy  # info: from store import index_legacy
-        voice = Path(sys.argv[2]) if len(sys.argv) > 2 else Path("/home/rootrecord/RootRecord-Ecosystem/test-reports/Voice")  # info: set voice
+        voice = Path(sys.argv[2]) if len(sys.argv) > 2 else Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Media/Audio/Voice/Reports")  # info: set voice
         audio = Path(sys.argv[3]) if len(sys.argv) > 3 else None  # info: set audio
         print(json.dumps(index_legacy(voice, audio)))  # info: call print
         return 0  # info: return 0

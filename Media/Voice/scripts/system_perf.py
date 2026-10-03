@@ -43,7 +43,7 @@ from speakers import retire_current  # noqa: E402
 
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB
 REPORT = "system_perf"  # info: set REPORT
-MD = Path(os.environ.get("RR_VOICE_REPORT_OUT", str(DB.parent / "test-reports" / "Voice"))) / f"{REPORT}_current.md"  # info: set MD
+MD = Path(os.environ.get("RR_VOICE_REPORT_OUT", str(DB / "Media" / "Audio" / "Voice" / "Reports"))) / f"{REPORT}_current.md"  # info: set MD
 
 
 # ====================================================

@@ -31,7 +31,7 @@ Primary navigation (2026-10-02): Home, Products, Services, Solutions, About, Sec
 
 ## Reports
 
-`Website/scripts/publish_report_pages.py` writes `reports/` from `test-reports/Voice/<key>_current.md` and `Communications/Discord/config/report-channels.json`. Groups are Field, Energy, and Operations. A page is left as it is when the new bytes match. The Discord report relay runs that script before it posts. The post is the title, the measured lines, and `https://www.rootrecord.cloud/reports/<slug>`.
+`Website/scripts/publish_report_pages.py` writes `reports/` from Database `Media/Audio/Voice/Reports/<key>_current.md` and `Communications/Discord/config/report-channels.json`. Groups are Field, Energy, and Operations. A page is left as it is when the new bytes match. The Discord report relay runs that script before it posts. The post is the title, the measured lines, and `https://www.rootrecord.cloud/reports/<slug>`.
 
 ## Service windows
 

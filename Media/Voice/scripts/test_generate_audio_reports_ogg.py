@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """One-shot: generate each AI voice report, bank <report>_current.ogg under Database.
 
-Destination (exact):
-  2 - RootRecord-Database/Media/Audio Reports/<reporttype>_current.ogg
+Destination (single voice tree):
+  2 - RootRecord-Database/Media/Audio/Voice/<reporttype>_current.ogg
 
 Runs reports one at a time (single-flight Kokoro). Disables radio push + Telegram
 delivery for this test. Does not schedule anything.
@@ -30,14 +30,14 @@ DB = Path(
         "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database",
     )
 )
-# User-requested bank (space in directory name).
+# Same tree as WAV + markdown (Media/Audio/Voice/).
 OUT_DIR = Path(
     os.environ.get(
         "RR_AUDIO_REPORTS_OUT",
-        str(DB / "Media" / "Audio Reports"),
+        str(DB / "Media" / "Audio" / "Voice"),
     )
 )
-VOICE_WAV = DB / "Media" / "Audio" / "Voice"
+VOICE_WAV = OUT_DIR
 VOICE_PY = Path(
     os.environ.get(
         "RR_VOICE_PY",
