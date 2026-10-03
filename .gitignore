@@ -47,3 +47,9 @@ Energy/Smart-Devices/.venv/
 # The old Communications/website/ path is still ignored so a leftover clone cannot return.
 Website/RootRecord-Cloud/
 Communications/website/RootRecord-Cloud/
+
+# Kokoro / Whisper model weights (local only; *.pth also ignored under Database)
+AI/Kokoro/Kokoro-82M/
+AI/Whisper/
+*.pth
+*.pt

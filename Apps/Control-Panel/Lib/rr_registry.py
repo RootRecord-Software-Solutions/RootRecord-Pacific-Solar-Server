@@ -155,7 +155,7 @@ FILES: list[FileSpec] = [  # info: set FILES
     FileSpec("specialist-routes", PAC / "System/config/specialist-routes.json", "json", "ai", "route-specialist.py / run-infer.sh",  # info: call FileSpec
              R_EACH, kinds=((r"^(threshold|saturation)$", "float"), (r"\.keywords\.", "int"), (r"^version$", "int")),  # info: R_EACH , kinds = ( ( r"^(threshold|saturation)$" ,
              not_secret=(r"\.keywords\.",)),   # routing keyword weights such as "token*" / "password*" — not credentials
-    FileSpec("kokoro-config", DBR / "AI/Kokoro/Kokoro-82M/config.json", "json", "voice", "voice_generate.py (Kokoro-82M)",  # info: call FileSpec
+    FileSpec("kokoro-config", PAC / "AI/Kokoro/Kokoro-82M/config.json", "json", "voice", "voice_generate.py (Kokoro-82M)",  # info: call FileSpec
              "model config", read_only="model file config — not a setting (never edited; no model is loaded)"),  # info: "model config" , read_only = "model file config — not a setting (never edited; no model is loaded)" ) ,
     # ---- Cameras
     FileSpec("CONNECTION.json", PAC / "Security/Cameras/store/CONNECTION.json", "json", "cameras", "grab_frame.py / cam_server.py",  # info: call FileSpec

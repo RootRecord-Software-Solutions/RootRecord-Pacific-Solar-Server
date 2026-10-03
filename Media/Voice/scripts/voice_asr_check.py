@@ -96,7 +96,8 @@ def run(manifest: dict, clips_dir: Path, db_root: Path, limit: int = 0) -> dict:
     import torch  # info: import torch
     import whisper  # info: import whisper
     torch.set_num_threads(int(os.environ.get("RR_VOICE_THREADS", "4")))  # info: torch . set_num_threads ( int ( os .
-    root = Path(os.environ.get("RR_WHISPER_DIR", str(db_root / "AI" / "Whisper")))  # info: set root
+    pacific = Path(__file__).resolve().parents[3]  # info: Pacific server root
+    root = Path(os.environ.get("RR_WHISPER_DIR", str(pacific / "AI" / "Whisper")))  # info: Whisper bank on Pacific AI/
     root.mkdir(parents=True, exist_ok=True)  # info: root . mkdir ( parents = True ,
     t0 = time.monotonic()  # info: set t0
     model = whisper.load_model("tiny", device="cpu", download_root=str(root))  # info: set model

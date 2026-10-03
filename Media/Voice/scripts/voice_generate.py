@@ -51,7 +51,8 @@ from speakable import speakable  # noqa: E402
 import speakers  # noqa: E402
 
 DB = Path(os.environ.get("RR_DATABASE_ROOT", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database"))  # info: set DB
-STORE = Path(os.environ.get("RR_KOKORO_MODEL_DIR", str(DB / "AI" / "Kokoro" / "Kokoro-82M")))  # info: set STORE
+PACIFIC = Path(__file__).resolve().parents[3]  # info: Pacific server root (…/RootRecord-Pacific-Solar-Server)
+STORE = Path(os.environ.get("RR_KOKORO_MODEL_DIR", str(PACIFIC / "AI" / "Kokoro" / "Kokoro-82M")))  # info: Kokoro bank on Pacific AI/
 OUT_DIR = Path(os.environ.get("RR_VOICE_OUT_DIR", str(DB / "Media" / "Audio" / "Voice")))  # info: set OUT_DIR
 REPORT_OUT_DIR = Path(os.environ.get("RR_VOICE_REPORT_OUT", str(DB / "Media" / "Audio" / "Voice" / "Reports")))  # info: set REPORT_OUT_DIR
 CLIPS_DIR = OUT_DIR / "Clips"  # info: set CLIPS_DIR
