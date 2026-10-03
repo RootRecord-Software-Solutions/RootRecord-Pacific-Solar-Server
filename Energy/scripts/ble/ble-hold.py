@@ -121,18 +121,17 @@ async def _session(alias: str) -> None:  # info: async def _session
         if getattr(state, "authenticated", False):  # info: if authenticated
             await asyncio.sleep(1.5)  # info: let the first heartbeat land
         _log(f"{alias} connected auth={kind} — holding link")  # info: call _log
-        await _keep_lcd_awake(device, alias)  # info: LCD sleep was dropping BLE
+        # Do not write LCD config until heartbeats land — a write while the screen is
+        # asleep tears the link (NeedBind + NotConnectedError).
         empty_since = time.time()  # info: set empty_since
         got_data = False  # info: set got_data
+        lcd_locked = False  # info: set lcd_locked
         lcd_nudge_at = 0.0  # info: set lcd_nudge_at
         while not _stop:  # info: while not _stop
             line = _publish(alias, device)  # info: set line
             if line == "empty":  # info: if fields have not landed yet
                 waited = time.time() - empty_since  # info: set waited
-                _log(f"{alias} waiting fields ({waited:.0f}s/{EMPTY_GRACE_SEC:.0f}s) — wake the LCD if it timed out")  # info: call _log
-                if time.time() - lcd_nudge_at > 20:  # info: retry never-off while waiting
-                    await _keep_lcd_awake(device, alias)  # info: call _keep_lcd_awake
-                    lcd_nudge_at = time.time()  # info: set lcd_nudge_at
+                _log(f"{alias} waiting fields ({waited:.0f}s/{EMPTY_GRACE_SEC:.0f}s) — tap River LCD to wake BLE")  # info: call _log
                 if got_data or waited >= EMPTY_GRACE_SEC:  # info: after a good streak, or past grace, reconnect
                     raise BleUnavailable("fields empty on held session (LCD sleep?)")  # info: raise so we reconnect
                 await asyncio.sleep(2)  # info: poll soon; do not drop the GATT session
@@ -140,8 +139,9 @@ async def _session(alias: str) -> None:  # info: async def _session
             empty_since = time.time()  # info: reset empty clock after a real sample
             got_data = True  # info: set got_data
             _log(f"{alias} sample {line}")  # info: call _log
-            if time.time() - lcd_nudge_at > 120:  # info: re-assert never-off every 2 minutes
+            if not lcd_locked or time.time() - lcd_nudge_at > 300:  # info: latch never-off after first live sample
                 await _keep_lcd_awake(device, alias)  # info: call _keep_lcd_awake
+                lcd_locked = True  # info: set lcd_locked
                 lcd_nudge_at = time.time()  # info: set lcd_nudge_at
             for _ in range(int(max(1, SAMPLE_SEC))):  # info: sleep in 1 s slices for SIGTERM
                 if _stop:  # info: if _stop
