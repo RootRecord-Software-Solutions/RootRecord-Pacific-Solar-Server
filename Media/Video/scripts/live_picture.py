@@ -151,7 +151,7 @@ def _say_pct(value) -> str:  # info: def _say_pct
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _card(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int]) -> None:  # info: def _card
-    draw.rounded_rectangle(box, radius=16, fill=(4, 14, 22, 200), outline=(0, 229, 255, 160), width=2)  # info: draw card
+    draw.rounded_rectangle(box, radius=18, fill=(2, 10, 18, 230), outline=(0, 229, 255, 190), width=3)  # info: draw card
 
 
 # ====================================================
@@ -164,20 +164,44 @@ def _text(draw: ImageDraw.ImageDraw, xy: tuple[int, int], text: str, size: int, 
 
 
 # ====================================================
+# SECTION: function _center
+# What it does: Draw one line centered on a point.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _center(draw: ImageDraw.ImageDraw, cx: int, cy: int, text: str, size: int, fill: tuple, bold: bool = False) -> None:  # info: def _center
+    font = _font(size, bold)  # info: set font
+    box = draw.textbbox((0, 0), text, font=font)  # info: set box
+    draw.text((cx - (box[2] - box[0]) / 2, cy - (box[3] - box[1]) / 2), text, font=font, fill=fill)  # info: draw centered
+
+
+# ====================================================
+# SECTION: function _pair
+# What it does: Draw a label on the left and a value on the right of one row.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _pair(draw: ImageDraw.ImageDraw, left: int, right: int, y: int, name: str, value: str, size: int = 30) -> None:  # info: def _pair
+    _text(draw, (left, y), name, size, (190, 225, 238, 255))  # info: name
+    font = _font(size, True)  # info: set font
+    box = draw.textbbox((0, 0), value, font=font)  # info: set box
+    draw.text((right - (box[2] - box[0]), y), value, font=font, fill=(236, 246, 255, 255))  # info: value
+
+
+# ====================================================
 # SECTION: function _gauge
 # What it does: Draw a charge ring and its percent.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _gauge(draw: ImageDraw.ImageDraw, cx: int, cy: int, pct: float | None, label: str) -> None:  # info: def _gauge
-    box = (cx - 54, cy - 54, cx + 54, cy + 54)  # info: set box
-    draw.arc(box, 0, 360, fill=(255, 255, 255, 40), width=10)  # info: draw track
+    radius = 78  # info: set radius
+    box = (cx - radius, cy - radius, cx + radius, cy + radius)  # info: set box
+    draw.arc(box, 0, 360, fill=(255, 255, 255, 55), width=16)  # info: draw track
     if pct is not None:  # info: if pct is not None
         sweep = max(0.0, min(100.0, pct)) * 3.6  # info: set sweep
-        draw.arc(box, -90, -90 + sweep, fill=(0, 229, 255, 255), width=10)  # info: draw sweep
-        _text(draw, (cx - 28, cy - 16), f"{round(pct)}%", 22, (232, 244, 255, 255), True)  # info: percent
+        draw.arc(box, -90, -90 + sweep, fill=(0, 229, 255, 255), width=16)  # info: draw sweep
+        _center(draw, cx, cy - 4, f"{round(pct)}%", 40, (236, 246, 255, 255), True)  # info: percent
     else:  # info: else
-        _text(draw, (cx - 12, cy - 14), "—", 22, (232, 244, 255, 255), True)  # info: missing
-    _text(draw, (cx - 28, cy + 62), label, 16, (180, 220, 235, 255))  # info: label
+        _center(draw, cx, cy - 4, "—", 40, (236, 246, 255, 255), True)  # info: missing
+    _center(draw, cx, cy + radius + 32, label, 28, (190, 225, 238, 255), True)  # info: label
 
 
 # ====================================================
@@ -215,22 +239,19 @@ def render(state: dict | None, ops: dict | None, hawaii: dict, world: dict) -> I
         base = base.resize((1920, 1080))  # info: resize
     layer = Image.new("RGBA", base.size, (0, 0, 0, 0))  # info: set layer
     draw = ImageDraw.Draw(layer)  # info: set draw
-    _card(draw, (28, 24, 1892, 118))  # info: top card
     now = datetime.now(HST)  # info: set now
-    _text(draw, (52, 40), "ROOT RECORD", 28, (0, 229, 255, 255), True)  # info: brand
-    _text(draw, (280, 48), "live desk", 18, (232, 244, 255, 255))  # info: desk label
-    _text(draw, (860, 42), "ON AIR", 14, (255, 80, 80, 255), True)  # info: on air
-    _text(draw, (960, 38), "Radio", 22, (232, 244, 255, 255), True)  # info: program
-    _text(draw, (1500, 34), now.strftime("%d %b %Y"), 16, (180, 220, 235, 255))  # info: date
-    _text(draw, (1500, 58), now.strftime("%I:%M %p HST").lstrip("0"), 26, (232, 244, 255, 255), True)  # info: clock
     devices = ((ops or {}).get("power") or {}).get("devices") or {}  # info: set devices
     river, delta = devices.get("river2pro") or {}, devices.get("delta2") or {}  # info: river , delta
-    _card(draw, (28, 140, 560, 430))  # info: battery card
-    _text(draw, (48, 156), "BATTERY BANK", 14, (0, 229, 255, 255), True)  # info: battery title
-    _gauge(draw, 170, 270, _soc(river), "River")  # info: river gauge
-    _gauge(draw, 400, 270, _soc(delta), "Delta")  # info: delta gauge
-    _card(draw, (28, 448, 560, 760))  # info: watts card
-    _text(draw, (48, 464), "TOTALS NOW", 14, (0, 229, 255, 255), True)  # info: totals title
+    _card(draw, (20, 16, 636, 322))  # info: clock card above the title
+    _text(draw, (48, 32), "ON AIR", 26, (255, 90, 90, 255), True)  # info: on air
+    _center(draw, 328, 150, now.strftime("%I:%M %p").lstrip("0"), 72, (236, 246, 255, 255), True)  # info: clock
+    _center(draw, 328, 230, now.strftime("%d %b %Y") + "  HST", 32, (190, 225, 238, 255))  # info: date
+    _card(draw, (652, 16, 1268, 322))  # info: battery card above the title
+    _text(draw, (680, 32), "BATTERY BANK", 26, (0, 229, 255, 255), True)  # info: battery title
+    _gauge(draw, 820, 168, _soc(river), "River")  # info: river gauge
+    _gauge(draw, 1100, 168, _soc(delta), "Delta")  # info: delta gauge
+    _card(draw, (1284, 16, 1900, 322))  # info: watts card above the title
+    _text(draw, (1312, 32), "TOTALS NOW", 26, (0, 229, 255, 255), True)  # info: totals title
     rows = [  # info: set rows
         ("River solar", _watts(river, "solar_input_power")),  # info: river solar
         ("Delta solar", _watts(delta, "solar_input_power")),  # info: delta solar
@@ -239,31 +260,30 @@ def render(state: dict | None, ops: dict | None, hawaii: dict, world: dict) -> I
         ("River USB-C", _watts(river, "usbc_output_power")),  # info: river usb
         ("Delta USB-C", _watts(delta, "usbc_output_power")),  # info: delta usb
     ]  # info: ]
-    y = 500  # info: set y
+    y = 78  # info: set y
     for name, value in rows:  # info: for name , value
-        _text(draw, (48, y), name, 18, (180, 220, 235, 255))  # info: name
-        _text(draw, (340, y), value, 18, (232, 244, 255, 255), True)  # info: value
-        y += 40  # info: y += 40
+        _pair(draw, 1312, 1872, y, name, value, 28)  # info: watt row
+        y += 38  # info: y += 38
     stats = (state or {}).get("stats") or {}  # info: set stats
-    _card(draw, (1360, 140, 1892, 340))  # info: network card
-    _text(draw, (1380, 156), "LIVE NETWORK", 14, (0, 229, 255, 255), True)  # info: network title
-    _text(draw, (1380, 200), f"Active flows  {stats.get('activeFlows', '—')}", 22, (232, 244, 255, 255))  # info: flows
-    _text(draw, (1380, 244), f"Endpoints  {stats.get('endpoints', '—')}", 22, (232, 244, 255, 255))  # info: endpoints
+    _card(draw, (20, 840, 636, 1064))  # info: network card below the title
+    _text(draw, (48, 860), "LIVE NETWORK", 26, (0, 229, 255, 255), True)  # info: network title
+    _pair(draw, 48, 608, 924, "Active flows", str(stats.get("activeFlows", "—")), 36)  # info: flows
+    _pair(draw, 48, 608, 988, "Endpoints", str(stats.get("endpoints", "—")), 36)  # info: endpoints
     volcano = ((ops or {}).get("kilauea") or {}).get("status") or {}  # info: set volcano
     moon = ((ops or {}).get("moon") or {}).get("status") or {}  # info: set moon
-    _card(draw, (1360, 358, 1892, 620))  # info: geology card
-    _text(draw, (1380, 374), "SITE AND MOON", 14, (0, 229, 255, 255), True)  # info: geology title
-    _text(draw, (1380, 416), f"Kilauea  {volcano.get('alert_level') or '—'}", 20, (232, 244, 255, 255))  # info: alert
-    _text(draw, (1380, 452), f"Color  {volcano.get('color_code') or '—'}", 20, (232, 244, 255, 255))  # info: color
     erupt = volcano.get("erupting")  # info: set erupt
-    _text(draw, (1380, 488), f"Eruption  {'yes' if erupt else 'no' if erupt is False else '—'}", 20, (232, 244, 255, 255))  # info: eruption
-    _text(draw, (1380, 536), f"{moon.get('phase_name') or 'Moon'}  {moon.get('illumination', '—')}% lit", 20, (232, 244, 255, 255))  # info: moon
-    _card(draw, (1360, 638, 1892, 900))  # info: quake card
-    _text(draw, (1380, 654), "EARTHQUAKES  M2.5", 14, (0, 229, 255, 255), True)  # info: quake title
-    _text(draw, (1380, 700), f"Hawaii 24h  {hawaii.get('day', '—')}  {_say_pct(hawaii.get('day_pct'))}", 20, (232, 244, 255, 255))  # info: hi day
-    _text(draw, (1380, 740), f"Hawaii 7d  {hawaii.get('week', '—')}  {_say_pct(hawaii.get('week_pct'))}", 20, (232, 244, 255, 255))  # info: hi week
-    _text(draw, (1380, 792), f"World 24h  {world.get('day', '—')}  {_say_pct(world.get('day_pct'))}", 20, (232, 244, 255, 255))  # info: world day
-    _text(draw, (1380, 832), f"World 7d  {world.get('week', '—')}  {_say_pct(world.get('week_pct'))}", 20, (232, 244, 255, 255))  # info: world week
+    _card(draw, (652, 840, 1268, 1064))  # info: geology card below the title
+    _text(draw, (680, 856), "SITE AND MOON", 26, (0, 229, 255, 255), True)  # info: geology title
+    _pair(draw, 680, 1240, 902, "Kilauea", str(volcano.get("alert_level") or "—"), 28)  # info: alert
+    _pair(draw, 680, 1240, 942, "Color", str(volcano.get("color_code") or "—"), 28)  # info: color
+    _pair(draw, 680, 1240, 982, "Eruption", "yes" if erupt else "no" if erupt is False else "—", 28)  # info: eruption
+    _pair(draw, 680, 1240, 1022, str(moon.get("phase_name") or "Moon"), f"{moon.get('illumination', '—')}% lit", 26)  # info: moon
+    _card(draw, (1284, 840, 1900, 1064))  # info: quake card below the title
+    _text(draw, (1312, 856), "EARTHQUAKES  M2.5", 26, (0, 229, 255, 255), True)  # info: quake title
+    _pair(draw, 1312, 1872, 902, "Hawaii 24h", f"{hawaii.get('day', '—')}   {_say_pct(hawaii.get('day_pct'))}", 28)  # info: hi day
+    _pair(draw, 1312, 1872, 942, "Hawaii 7d", f"{hawaii.get('week', '—')}   {_say_pct(hawaii.get('week_pct'))}", 28)  # info: hi week
+    _pair(draw, 1312, 1872, 982, "World 24h", f"{world.get('day', '—')}   {_say_pct(world.get('day_pct'))}", 28)  # info: world day
+    _pair(draw, 1312, 1872, 1022, "World 7d", f"{world.get('week', '—')}   {_say_pct(world.get('week_pct'))}", 28)  # info: world week
     frame = Image.alpha_composite(base, layer).convert("RGB")  # info: set frame
     return frame  # info: return frame
 
