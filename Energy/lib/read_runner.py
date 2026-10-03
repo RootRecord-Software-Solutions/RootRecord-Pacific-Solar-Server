@@ -21,9 +21,10 @@ from pathlib import Path  # info: from pathlib import Path
 from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 HERE = Path(__file__).resolve().parent  # info: set HERE
-sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 ,
-sys.path.insert(0, str(HERE.parent.parent))  # info: sys . path . insert ( 0 ,
+# System/lib is for current_bank only. Energy/lib must win so `paths` is Energy (SOC/WATTS), not System.
+sys.path.insert(0, str(HERE.parent.parent))  # info: Pacific root for Energy.db
 sys.path.insert(0, str(HERE.parent.parent / "System" / "lib"))  # info: shared *_current bank helper
+sys.path.insert(0, str(HERE))  # info: Energy/lib paths last so it shadows System/lib/paths.py
 
 from paths import SAMPLES, SOC, WATTS, STATE_DIR, ensure_dirs  # noqa: E402
 from ble_client import connect, await_session, BleUnavailable, eflib_ready  # noqa: E402

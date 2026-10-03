@@ -20,6 +20,7 @@ from __future__ import annotations  # info: from __future__ import annotations
 
 import json  # info: import json
 import os  # info: import os
+import shlex  # info: import shlex
 import subprocess  # info: import subprocess
 import sys  # info: import sys
 import time  # info: import time
@@ -39,10 +40,13 @@ OUT = PACIFIC / "Media" / "Video" / "live-frame.png"  # info: set OUT
 ENERGY = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy")  # info: set ENERGY
 LATENCY = PACIFIC / "Media" / "Video" / "live-picture-latency.json"  # info: set LATENCY
 ENCODER_WAIT = 1.0  # info: encoder checks the thumb once a second
+# YouTube drawtext lags wall clock; advance the shown minute this many seconds early.
+CLOCK_LEAD_SEC = int(os.environ.get("RR_LIVE_CLOCK_LEAD_SEC", "20"))  # info: set CLOCK_LEAD_SEC
 API = "https://api.rootrecord.cloud"  # info: set API
 USGS = "https://earthquake.usgs.gov/fdsnws/event/1/query"  # info: set USGS
 HOST = os.environ.get("RR_RADIO_SSH", "ml1")  # info: set HOST
 REMOTE = os.environ.get("RR_YT_THUMB", "/home/ubuntu/youtube-stills/thumb.png")  # info: set REMOTE
+REMOTE_CLOCK = os.environ.get("RR_YT_CLOCK", "/home/ubuntu/youtube-stills/clock.txt")  # info: set REMOTE_CLOCK
 FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"  # info: set FONT
 FONT_B = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"  # info: set FONT_B
 
@@ -210,8 +214,19 @@ def _gauge(draw: ImageDraw.ImageDraw, cx: int, cy: int, pct: float | None, label
 
 
 # ====================================================
+# SECTION: function _ble_complete
+# What it does: True when a BLE field row has charge plus at least one watt key.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def _ble_complete(fields: dict) -> bool:  # info: def _ble_complete
+    if fields.get("soc") is None:  # info: need charge
+        return False  # info: return False
+    return any(fields.get(key) is not None for key in ("solar_input_power", "ac_output_power", "usbc_output_power"))  # info: need a watt
+
+
+# ====================================================
 # SECTION: function _ble_pack
-# What it does: Charge and watts from the newest BLE sample. A cloud last file is ignored.
+# What it does: Charge and watts from the newest complete BLE sample. Sparse/poison rows lose to soc+watts.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _ble_pack(alias: str) -> dict:  # info: def _ble_pack
@@ -226,13 +241,14 @@ def _ble_pack(alias: str) -> dict:  # info: def _ble_pack
             continue  # info: continue
         if not str(row.get("source") or "").startswith("ble"):  # info: if the sample is not BLE
             continue  # info: continue
-        got = row.get("fields") or {}  # info: set got
-        nums = [got.get(key) for key in ("soc", "solar_input_power", "ac_output_power", "usbc_output_power")]  # info: set nums
-        if all(value in (None, 0, 0.0) for value in nums):  # info: if the sample is an empty miss
+        got = dict(row.get("fields") or {})  # info: set got
+        if not _ble_complete(got):  # info: skip soc-only poison / empty miss
             continue  # info: continue
         fields = got  # info: set fields
         best_at = str(row.get("at") or "")  # info: set best_at
         break  # info: break
+    soc_row: dict = {}  # info: set soc_row
+    watts_row: dict = {}  # info: set watts_row
     for kind, path in (("soc", ENERGY / "soc" / f"{alias}_current.json"), ("watts", ENERGY / "watts" / f"{alias}_current.json")):  # info: for kind , path
         try:  # info: try
             row = json.loads(path.read_text(encoding="utf-8"))  # info: set row
@@ -240,15 +256,21 @@ def _ble_pack(alias: str) -> dict:  # info: def _ble_pack
             continue  # info: continue
         if not str(row.get("source") or "").startswith("ble"):  # info: if the last file is not BLE
             continue  # info: continue
-        stamp = str(row.get("at") or "")  # info: set stamp
-        if stamp < best_at:  # info: if an older file
-            continue  # info: continue
-        if kind == "soc" and row.get("soc") is not None:  # info: if a newer charge
-            fields["soc"] = row.get("soc")  # info: set soc
-        if kind == "watts":  # info: if newer watts
-            for key in ("solar_input_power", "ac_output_power", "usbc_output_power"):  # info: for key
-                if row.get(key) is not None:  # info: if the watt is present
-                    fields[key] = row.get(key)  # info: set watt
+        if kind == "soc":  # info: if soc
+            soc_row = row  # info: set soc_row
+        else:  # info: else
+            watts_row = row  # info: set watts_row
+    merged: dict = {}  # info: set merged
+    if soc_row.get("soc") is not None:  # info: if charge
+        merged["soc"] = soc_row.get("soc")  # info: set soc
+    for key in ("solar_input_power", "ac_output_power", "usbc_output_power", "ac_input_power", "usba_output_power"):  # info: for key
+        if watts_row.get(key) is not None:  # info: if watt present
+            merged[key] = watts_row.get(key)  # info: set watt
+    merge_at = max(str(soc_row.get("at") or ""), str(watts_row.get("at") or ""))  # info: freshest of the pair
+    if _ble_complete(merged) and merge_at >= best_at:  # info: prefer complete soc+watts when not older
+        fields = merged  # info: set fields
+    elif not _ble_complete(fields) and _ble_complete(merged):  # info: fall back when sample was sparse
+        fields = merged  # info: set fields
     return {"soc": {"soc": fields.get("soc")}, "watts": fields}  # info: return pack
 
 
@@ -300,13 +322,25 @@ def _remember_tail(drawn_at: datetime) -> None:  # info: def _remember_tail
 
 
 # ====================================================
+# SECTION: function air_time
+# What it does: Advance to the next minute CLOCK_LEAD_SEC before the boundary (YouTube latency).
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def air_time(when: datetime) -> datetime:  # info: def air_time
+    lead = max(0, min(59, CLOCK_LEAD_SEC))  # info: clamp lead
+    stamped = when.replace(second=0, microsecond=0)  # info: minute floor
+    if lead and when.second >= 60 - lead:  # info: inside the lead window
+        return stamped + timedelta(minutes=1)  # info: show the next minute
+    return stamped  # info: show this minute
+
+
+# ====================================================
 # SECTION: function clock_line
-# What it does: Hawaii minute plus the last measured delay, with no seconds.
+# What it does: Hawaii minute for air, advanced CLOCK_LEAD_SEC early, with no seconds.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def clock_line(when: datetime) -> str:  # info: def clock_line
-    shown = when + timedelta(seconds=_tail())  # info: add the last publish delay
-    return shown.strftime("%I:%M %p").lstrip("0")  # info: minute only
+    return air_time(when).strftime("%I:%M %p").lstrip("0")  # info: minute only
 
 
 # ====================================================
@@ -316,7 +350,7 @@ def clock_line(when: datetime) -> str:  # info: def clock_line
 # ====================================================
 def push_clock(when: datetime) -> int:  # info: def push_clock
     sent = subprocess.run(  # info: subprocess . run
-        ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", HOST, "cat > /home/ubuntu/youtube-stills/clock.txt"],  # info: ssh the clock only
+        ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", HOST, "cat > " + REMOTE_CLOCK],  # info: ssh the clock only
         input=clock_line(when) + "\n", capture_output=True, text=True,  # info: write the minute
     )  # info: )
     return sent.returncode  # info: return sent . returncode
@@ -324,18 +358,28 @@ def push_clock(when: datetime) -> int:  # info: def push_clock
 
 # ====================================================
 # SECTION: function clock_loop
-# What it does: Write the clock at each new Hawaii minute, even while another job holds the poller.
+# What it does: Rewrite clock.txt at each lead boundary (:40 by default), even while the poller is busy.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def clock_loop() -> int:  # info: def clock_loop
+    last = ""  # info: last pushed line
     while True:  # info: while True
         now = datetime.now(HST)  # info: set now
-        if push_clock(now) != 0:  # info: if the clock was not written
-            print(json.dumps({"ok": False, "detail": "clock-ssh"}), flush=True)  # info: print the miss
+        line = clock_line(now)  # info: set line
+        if line != last:  # info: only when the shown minute changes
+            if push_clock(now) != 0:  # info: if the clock was not written
+                print(json.dumps({"ok": False, "detail": "clock-ssh"}), flush=True)  # info: print the miss
+            else:  # info: else
+                last = line  # info: remember
+                print(json.dumps({"ok": True, "clock": line, "lead_sec": CLOCK_LEAD_SEC}), flush=True)  # info: print the minute
+        lead = max(0, min(59, CLOCK_LEAD_SEC))  # info: clamp
+        if lead:  # info: fire at :40 (or 60-lead) each minute
+            fire = now.replace(second=60 - lead, microsecond=0)  # info: this minute's lead mark
+            if now >= fire:  # info: already past it
+                fire = fire + timedelta(minutes=1)  # info: next minute's lead mark
         else:  # info: else
-            print(json.dumps({"ok": True, "clock": clock_line(now)}), flush=True)  # info: print the minute
-        nxt = now.replace(second=0, microsecond=0) + timedelta(minutes=1)  # info: the next minute
-        time.sleep(max(0.2, (nxt - datetime.now(HST)).total_seconds()))  # info: sleep until that minute opens
+            fire = now.replace(second=0, microsecond=0) + timedelta(minutes=1)  # info: top of next minute
+        time.sleep(max(0.2, (fire - datetime.now(HST)).total_seconds()))  # info: sleep until the next lead mark
 
 
 # ====================================================
@@ -398,15 +442,34 @@ def render(state: dict | None, ops: dict | None, hawaii: dict, world: dict, when
 
 # ====================================================
 # SECTION: function publish
-# What it does: Write the local still and the encoder clock. Does not replace the live picture.
+# What it does: Write the local still, push clock.txt, atomically replace ML1 thumb.png.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def publish(frame: Image.Image, when: datetime) -> str:  # info: def publish
     OUT.parent.mkdir(parents=True, exist_ok=True)  # info: OUT . parent . mkdir
     frame.save(OUT, "PNG")  # info: frame . save
-    if push_clock(when) != 0:  # info: if the clock was not written
-        return "local-only"  # info: return local-only
-    return "clock"  # info: return clock
+    parts: list[str] = ["local"]  # info: set parts
+    if push_clock(when) == 0:  # info: if the clock was written
+        parts.append("clock")  # info: clock ok
+    else:  # info: else
+        parts.append("clock-failed")  # info: clock failed
+    remote = REMOTE  # info: set remote
+    partial = remote + ".partial"  # info: set partial
+    sent = subprocess.run(  # info: scp
+        ["scp", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", str(OUT), f"{HOST}:{partial}"],  # info: scp
+        capture_output=True, text=True, timeout=120,  # info: capture
+    )  # info: )
+    if sent.returncode != 0:  # info: if scp failed
+        parts.append("thumb-failed")  # info: thumb failed
+        return "+".join(parts)  # info: return
+    moved = subprocess.run(  # info: mv
+        ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", HOST,  # info: ssh
+         "mv -f -- " + shlex.quote(partial) + " " + shlex.quote(remote)],  # info: atomic
+        capture_output=True, text=True, timeout=40,  # info: capture
+    )  # info: )
+    parts.append("thumb" if moved.returncode == 0 else "thumb-mv-failed")  # info: result
+    _remember_tail(when)  # info: keep latency note for ops
+    return "+".join(parts)  # info: return
 
 
 # ====================================================
@@ -437,9 +500,10 @@ def main() -> int:  # info: def main
         pass  # info: pass
     hi = _quake_change((_get(hi_url) or {}).get("features") or [])  # info: set hi
     world = _quake_change((_get(gl_url, 40) or {}).get("features") or [])  # info: set world
-    shown = datetime.now(HST)  # info: the clock is the current Hawaii minute
+    shown = air_time(datetime.now(HST))  # info: same lead minute the on-air clock shows
     frame = render(state, ops, hi, world, shown)  # info: set frame
-    detail = publish(frame, shown)  # info: set detail
+    detail = publish(frame, datetime.now(HST))  # info: publish uses wall clock for lead math
+
     if datetime.now(HST).minute in (0, 30):  # info: if the half-hour window just opened
         meta = subprocess.run(  # info: subprocess . run
             ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20", HOST,  # info: ssh metadata

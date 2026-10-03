@@ -2233,15 +2233,15 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # --- 55:30–55:34 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     {  # info: {
-        # hourly work at :30 or later.
+        # YouTube still — desks + BLE gauges; atomic thumb to ML1. Clock is rr-live-clock.
         "id": "live_picture",  # info: "id" : "live_picture" ,
         "enabled": os.environ.get("RR_LIVE_PICTURE", "0") == "1",
-        "at_minute": 55,  # info: "at_minute" : 55 ,
+        "every_seconds": 300,  # info: every 5 minutes
         "at_second": 30,  # info: "at_second" : 30 ,
-        "description": "Cover the stream still with the live desk numbers and copy it to the mainland thumb. Does not start a second encoder.",  # info: "description"
+        "description": "Render live desk still (BLE River/Delta + network/site) and atomically replace ML1 youtube-stills/thumb.png. Clock stays on rr-live-clock (20s lead).",  # info: "description"
         "builtin": "",  # info: "builtin"
         "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Video/scripts/live_picture.py\"",  # info: "command"
-        "timeout_sec": 5,  # info: "timeout_sec" : 5 ,
+        "timeout_sec": 180,  # info: "timeout_sec" : 180 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
         "cwd": f"{PACIFIC}/Media/Video/scripts",  # info: "cwd"
         "env": {},  # info: "env" : { } ,

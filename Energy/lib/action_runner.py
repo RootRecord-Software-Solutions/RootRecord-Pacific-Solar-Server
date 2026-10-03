@@ -19,9 +19,9 @@ from pathlib import Path  # info: from pathlib import Path
 from zoneinfo import ZoneInfo  # info: from zoneinfo import ZoneInfo
 
 HERE = Path(__file__).resolve().parent  # info: set HERE
-if str(HERE) not in sys.path:  # info: if str ( HERE ) not in sys
-    sys.path.insert(0, str(HERE))  # info: sys . path . insert ( 0 ,
+# Energy/lib must win over System/lib so `paths` exposes BLE_LOG/PORTS, not System samples.
 sys.path.insert(0, str(HERE.parent.parent / "System" / "lib"))  # info: shared *_current bank helper
+sys.path.insert(0, str(HERE))  # info: Energy/lib paths last
 
 from paths import SAMPLES, PORTS, ensure_dirs, BLE_LOG  # noqa: E402
 from ble_client import apply_bool, BleUnavailable, eflib_ready  # noqa: E402
