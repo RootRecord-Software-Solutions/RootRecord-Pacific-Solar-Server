@@ -1785,7 +1785,7 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "timeout_sec": 900,  # info: "timeout_sec" : 900 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
         "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
-        "env": {"RR_VOICE_DELIVER": "0", "RR_VOICE_STATUS": "0", "RR_HOUR_BATCH_PUSH": "1"},  # info: push after batch; child desks still skip mid-push
+        "env": {"RR_VOICE_DELIVER": "0", "RR_VOICE_STATUS": "0", "RR_HOUR_BATCH_PUSH": "1"},  # info: push after batch
     },  # info: } ,
     # --- 42:05–42:09 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
@@ -1903,19 +1903,6 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     # --- 46:05–46:09 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
-    {  # info: {
-        # VOICE generation — :30 or later, finish by :55; no SSH here.
-        "id": "voice_system_perf",  # info: "id" : "voice_system_perf" ,
-        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_SYSTEM_PERF", "0") == "1",
-        "at_minute": 46,  # info: "at_minute" : 46 ,
-        "at_second": 5,  # info: "at_second" : 5 ,
-        "description": "Bruce system report at :45, before the radio playlist snapshot. Host temperature is degrees Celsius. Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
-        "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/system_perf.py\"",  # info: "command"
-        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
-        "env": {"RR_RADIO_PUSH": "0"},  # info: "env"
-    },  # info: } ,
     # --- 46:10–46:14 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     # --- 46:15–46:19 ---
@@ -1934,19 +1921,6 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
     # --- 46:50–46:54 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
-    {  # info: {
-        # VOICE generation — :30 or later, finish by :55; no SSH here.
-        "id": "voice_nws_weather",  # info: "id" : "voice_nws_weather" ,
-        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_NWS", "0") == "1",
-        "at_minute": 46,  # info: "at_minute" : 46 ,
-        "at_second": 50,  # info: "at_second" : 50 ,
-        "description": "Ava NWS Hawaii report from Database Weather/, at :45 so the file is on the station before the chime. Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
-        "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/voice_reports.py\" nws_weather",  # info: "command"
-        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
-        "env": {"RR_RADIO_PUSH": "0"},  # info: "env"
-    },  # info: } ,
     # --- 46:55–46:59 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
     # ---------- minute 47 of every hour ----------
@@ -1968,19 +1942,6 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
     # --- 47:40–47:44 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
-    {  # info: {
-        # VOICE generation — :30 or later, finish by :55; no SSH here.
-        "id": "voice_remaining_tasks",  # info: "id" : "voice_remaining_tasks" ,
-        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_REMAINING", "0") == "1",
-        "at_minute": 47,  # info: "at_minute" : 47 ,
-        "at_second": 40,  # info: "at_second" : 40 ,
-        "description": "Bruce remaining tasks from the report board, at :45 before the radio snapshot. Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
-        "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/voice_reports.py\" remaining_tasks",  # info: "command"
-        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
-        "env": {"RR_RADIO_PUSH": "0"},  # info: "env"
-    },  # info: } ,
     # --- 47:45–47:49 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
     # --- 47:50–47:54 ---
@@ -1996,19 +1957,6 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     # --- 48:15–48:19 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
-    {  # info: {
-        # VOICE generation — :30 or later, finish by :55; no SSH here.
-        "id": "voice_earthquake_report",  # info: "id" : "voice_earthquake_report" ,
-        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_QUAKE", "0") == "1",
-        "at_minute": 48,  # info: "at_minute" : 48 ,
-        "at_second": 15,  # info: "at_second" : 15 ,
-        "description": "Carly USGS earthquake report at :45 from Database Geology/, before the radio snapshot. Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
-        "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/voice_reports.py\" earthquake_report",  # info: "command"
-        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
-        "env": {"RR_RADIO_PUSH": "0"},  # info: "env"
-    },  # info: } ,
     # --- 48:20–48:24 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     # --- 48:25–48:29 ---
@@ -2028,19 +1976,6 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # ---------- minute 49 of every hour ----------
     # --- 49:00–49:04 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
-    {  # info: {
-        # VOICE generation — :30 or later, finish by :55; no SSH here.
-        "id": "voice_kilauea_report",  # info: "id" : "voice_kilauea_report" ,
-        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_KILAUEA", "0") == "1",
-        "at_minute": 49,  # info: "at_minute" : 49 ,
-        "at_second": 0,  # info: "at_second" : 0 ,
-        "description": "Carly Kilauea report at :45 from the HVO notice, before the radio snapshot. Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
-        "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/voice_reports.py\" kilauea_report",  # info: "command"
-        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
-        "env": {"RR_RADIO_PUSH": "0"},  # info: "env"
-    },  # info: } ,
     # --- 49:05–49:09 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
     # --- 49:10–49:14 ---
@@ -2059,19 +1994,6 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     # --- 49:45–49:49 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
-    {  # info: {
-        # VOICE generation — :30 or later, finish by :55; no SSH here.
-        "id": "voice_solar_desk",  # info: "id" : "voice_solar_desk" ,
-        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_SOLAR", "0") == "1",
-        "at_minute": 49,  # info: "at_minute" : 49 ,
-        "at_second": 45,  # info: "at_second" : 45 ,
-        "description": "Bruce combined energy+solar desk at :45: packs, sun times, newest channel-1 still, and this hour's camera look (refreshes when needed). Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
-        "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/voice_reports.py\" solar_desk",  # info: "command"
-        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
-        "env": {"RR_RADIO_PUSH": "0"},  # info: "env"
-    },  # info: } ,
     # --- 49:50–49:54 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     # --- 49:55–49:59 ---
@@ -2099,19 +2021,6 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
     # --- 50:50–50:54 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
-    {  # info: {
-        # VOICE generation — :30 or later, finish by :55; no SSH here.
-        "id": "voice_security_desk",  # info: "id" : "voice_security_desk" ,
-        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_SECURITY", "0") == "1",
-        "at_minute": 50,  # info: "at_minute" : 50 ,
-        "at_second": 50,  # info: "at_second" : 50 ,
-        "description": "Carly security desk at :45 (firewall boot, ssh, listeners, failed sign-ins), before the radio snapshot. Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
-        "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/voice_reports.py\" security_desk",  # info: "command"
-        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
-        "env": {"RR_RADIO_PUSH": "0"},  # info: "env"
-    },  # info: } ,
     # --- 50:55–50:59 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
     # ---------- minute 51 of every hour ----------
@@ -2127,19 +2036,6 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     # --- 51:25–51:29 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
-    {  # info: {
-        # VOICE generation — :30 or later, finish by :55; no SSH here.
-        "id": "voice_bandwidth_desk",  # info: "id" : "voice_bandwidth_desk" ,
-        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_BANDWIDTH", "0") == "1",
-        "at_minute": 51,  # info: "at_minute" : 51 ,
-        "at_second": 25,  # info: "at_second" : 25 ,
-        "description": "Carly bandwidth desk at :45 from host byte samples plus Mainland Home/Radio analytics, before the radio snapshot. Voice note when RR_VOICE_DELIVER=1. Needs system_net_sample; analytics_pull optional.",  # info: "description"
-        "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/voice_reports.py\" bandwidth_desk",  # info: "command"
-        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
-        "env": {"RR_RADIO_PUSH": "0"},  # info: "env"
-    },  # info: } ,
     # --- 51:30–51:34 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     # --- 51:35–51:39 ---
@@ -2157,19 +2053,6 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     # --- 52:05–52:09 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
-    {  # info: {
-        # VOICE generation — :30 or later, finish by :55; no SSH here.
-        "id": "voice_current_report",  # info: "id" : "voice_current_report" ,
-        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1",  # info: legacy single; hour batch owns this
-        "at_minute": 52,  # info: "at_minute" : 52 ,
-        "at_second": 5,  # info: "at_second" : 5 ,
-        "description": "Full current report at :45, after the other desks and before the radio snapshot. Heading is the slot time. Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
-        "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/voice_reports.py\" current_report",  # info: "command"
-        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
-        "env": {"RR_RADIO_PUSH": "0"},  # info: "env"
-    },  # info: } ,
     # --- 52:10–52:14 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     # --- 52:15–52:19 ---
@@ -2205,19 +2088,6 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
     # --- 53:30–53:34 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
-    {  # info: {
-        # VOICE generation — :30 or later, finish by :55; no SSH here.
-        "id": "voice_hurricane_desk",  # info: "id" : "voice_hurricane_desk" ,
-        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_HURRICANE", "0") == "1",  # info: "enabled" : os . environ . get (,
-        "at_minute": 53,  # info: "at_minute" : 53 ,
-        "at_second": 30,  # info: "at_second" : 30 ,
-        "description": "Carly hurricane desk at :45, with the other desks, the hour snapshot (nearest tracked storm to a Hawaiian island + NWS tropical alerts). No delivery.",  # info: "description"
-        "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/voice_reports.py\" hurricane_desk",  # info: "command"
-        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
-        "env": {"RR_RADIO_PUSH": "0"},  # info: "env"
-    },  # info: } ,
     # --- 53:35–53:39 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
     # --- 53:40–53:44 ---
@@ -2237,20 +2107,6 @@ EXACT_TIME = [  # info: set EXACT_TIME
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     # --- 54:15–54:19 ---
     # stack: sys_stats_cycle, github_sync_all, river2pro_read
-    {  # info: {
-        # VOICE generation — :30 or later, finish by :55; no SSH here.
-        "id": "voice_kilauea_image_check",  # info: "id" : "voice_kilauea_image_check" ,
-        "enabled": os.environ.get("RR_VOICE_SINGLE", "0") == "1" and os.environ.get("RR_VOICE_KILAUEA_IMAGE", "0") == "1",  # info: soft gate,
-        "at_minute": 54,  # info: "at_minute" : 54 ,
-        "at_second": 15,  # info: "at_second" : 15 ,
-        "description": "Carly Kilauea observation image check every 15 minutes: USGS HVO still through Gemma look; speaks checked line plus measured fountaining/activity. Voice note when RR_VOICE_DELIVER=1.",  # info: "description"
-        "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Media/Voice/scripts/voice_reports.py\" kilauea_image_check",  # info: "command"
-        "timeout_sec": 300,  # info: "timeout_sec" : 300 ,
-        "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd"
-        "env": {"RR_RADIO_PUSH": "0"},  # info: "env"
-    },  # info: } ,
     # --- 54:20–54:24 ---
     # stack: sys_stats_cycle, github_sync_all, delta2_read, security_camera_frame_grab
     # --- 54:25–54:29 ---
