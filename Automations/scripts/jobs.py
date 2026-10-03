@@ -2499,11 +2499,11 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "at_second": 55,  # info: "at_second" : 55 ,
         "description": "Post each changed automated report to its Reports channel. Chat poller stays off.",  # info: "description"
         "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Communications/Discord/scripts/report_relay.py\"",  # info: "command"
+        "command": f"nice -n 10 python3 \"{ML2}/vendor/Discord/scripts/report_relay.py\"",  # info: ML2 vendor canonical
         "timeout_sec": 5,  # info: "timeout_sec" : 5 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{PACIFIC}/Communications/Discord",  # info: "cwd"
-        "env": {},  # info: "env" : { } ,
+        "cwd": f"{ML2}/vendor/Discord",  # info: "cwd"
+        "env": {"RR_DATABASE_ROOT": DATABASE},  # info: Database bank
     },  # info: } ,
     {  # info: {
         # hourly work at :30 or later.
@@ -2619,11 +2619,11 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "at_second": 55,  # info: "at_second" : 55 ,
         "description": "Off. The hourly desks are the update. This was a second post of the same numbers.",  # info: "description"
         "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Communications/Discord/scripts/report_rollups.py\" 24h",  # info: "command"
+        "command": f"nice -n 10 python3 \"{ML2}/vendor/Discord/scripts/report_rollups.py\" 24h",  # info: ML2 vendor canonical
         "timeout_sec": 180,  # info: "timeout_sec" : 180 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{PACIFIC}/Communications/Discord",  # info: "cwd"
-        "env": {},  # info: "env" : { } ,
+        "cwd": f"{ML2}/vendor/Discord",  # info: "cwd"
+        "env": {"RR_DATABASE_ROOT": DATABASE},  # info: Database bank
     },  # info: } ,
     {  # info: {
         # hourly work at :30 or later.
@@ -2631,12 +2631,12 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": False,  # GATED: off until Alexander reviews the dry run (Logs/Weather/Retention/). Apply = swap --dry-run for --apply.,
         "at_minute": 59,  # info: "at_minute" : 59 ,
         "at_second": 55,  # info: "at_second" : 55 ,
-        "description": "Weather retention (README \u00a7Retention, signed off 2026-09-29): move data past its window to Archive/Previous-Datasets/Weather-<YYYYMM>/ (never delete). Dry run by default.",  # info: "description"
+        "description": "ML2 vendor weather-retention.py (Database archive moves). Dry run by default. Code lives under US-Mainland-Two only.",  # info: "description"
         "builtin": "",  # info: "builtin"
-        "command": f"python3 \"{PACIFIC}/Weather/scripts/weather-retention.py\" --dry-run",  # info: "command"
+        "command": f"python3 \"{ML2}/vendor/Weather/scripts/weather-retention.py\" --dry-run",  # info: ML2 canonical
         "timeout_sec": 600,  # info: "timeout_sec" : 600 ,
-        "cwd": f"{PACIFIC}/Weather",  # info: "cwd"
-        "env": {},  # info: "env" : { } ,
+        "cwd": f"{ML2}/vendor/Weather",  # info: "cwd"
+        "env": {"RR_DATABASE_ROOT": DATABASE},  # info: Database bank
     },  # info: } ,
     {  # info: {
         # hourly work at :30 or later.
@@ -2697,12 +2697,12 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": os.environ.get("RR_RADAR_ZIP", "0") == "1",
         "at_minute": 59,  # info: "at_minute" : 59 ,
         "at_second": 55,  # info: "at_second" : 55 ,
-        "description": "Append HAWAII_loop archive GIFs into Database Weather/RadarZip/radar_archive.zip (all-time; loose folders stay on the 14-day rule).",  # info: "description"
+        "description": "ML2 vendor radar_zip.py → Database Weather/RadarZip/radar_archive.zip. Code under US-Mainland-Two only.",  # info: "description"
         "builtin": "",  # info: "builtin"
-        "command": f"python3 \"{PACIFIC}/Weather/RadarZip/scripts/radar_zip.py\"",  # info: "command"
-        "timeout_sec": 5,  # info: "timeout_sec" : 5 ,
-        "cwd": f"{PACIFIC}/Weather/RadarZip",  # info: "cwd"
-        "env": {},  # info: "env" : { } ,
+        "command": f"python3 \"{ML2}/vendor/Weather/RadarZip/scripts/radar_zip.py\"",  # info: ML2 canonical
+        "timeout_sec": 120,  # info: "timeout_sec" : 120 ,
+        "cwd": f"{ML2}/vendor/Weather/RadarZip",  # info: "cwd"
+        "env": {"RR_DATABASE_ROOT": DATABASE},  # info: Database bank
     },  # info: } ,
     {  # info: {
         # hourly work at :30 or later.
@@ -2765,13 +2765,13 @@ EXACT_TIME = [  # info: set EXACT_TIME
         "enabled": False,
         "at_minute": 59,  # info: "at_minute" : 59 ,
         "at_second": 55,  # info: "at_second" : 55 ,
-        "description": "Discord poller (WO-MIG-21). OFF. No token and no post. Gates RR_DISCORD_POLLER, RR_DISCORD_REVIEW_PIPELINE, and RR_GLOBAL_UPDATER stay unset.",  # info: "description"
+        "description": "Fail-safe: ML2 discord_poller (vendor Discord). OFF until token. Code under US-Mainland-Two only.",  # info: "description"
         "builtin": "",  # info: "builtin"
-        "command": f"nice -n 10 python3 \"{PACIFIC}/Communications/Discord/scripts/poll.py\"",  # info: "command"
-        "timeout_sec": 5,  # info: "timeout_sec" : 5 ,
+        "command": f'bash "{ML2}/scripts/run-local-bank.sh" --only discord_poller',  # info: ML2 canonical
+        "timeout_sec": 120,  # info: "timeout_sec" : 120 ,
         "needs_internet": True,  # info: "needs_internet" : True ,
-        "cwd": f"{PACIFIC}/Communications/Discord",  # info: "cwd"
-        "env": {},  # info: "env" : { } ,
+        "cwd": f"{ML2}",  # info: "cwd"
+        "env": {"RR_DATABASE_ROOT": DATABASE},  # info: Database bank
     },  # info: } ,
     {  # info: {
         # hourly work at :30 or later.

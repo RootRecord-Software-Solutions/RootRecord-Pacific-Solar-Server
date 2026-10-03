@@ -35,6 +35,7 @@ GATED_JOBS = frozenset({
     "weather_retention",
     "country_location_pollers",
     "radio_rss_poll",
+    "discord_poller",
 })
 
 DATABASE_ROOT = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database")
