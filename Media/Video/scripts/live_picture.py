@@ -271,6 +271,25 @@ def _ble_pack(alias: str) -> dict:  # info: def _ble_pack
         fields = merged  # info: set fields
     elif not _ble_complete(fields) and _ble_complete(merged):  # info: fall back when sample was sparse
         fields = merged  # info: set fields
+    if _ble_complete(fields):  # info: live BLE won
+        return {"soc": {"soc": fields.get("soc")}, "watts": fields}  # info: return pack
+    # River often stays NeedBindInstallFirst — show cloud board so the still is not blank.
+    cloud: dict = {}  # info: set cloud
+    for kind, path in (("soc", ENERGY / "soc" / f"{alias}_current.json"), ("watts", ENERGY / "watts" / f"{alias}_current.json")):  # info: for kind , path
+        try:  # info: try
+            row = json.loads(path.read_text(encoding="utf-8"))  # info: set row
+        except (OSError, ValueError):  # info: except
+            continue  # info: continue
+        if str(row.get("source") or "") != "cloud":  # info: cloud only here
+            continue  # info: continue
+        if kind == "soc" and row.get("soc") is not None:  # info: charge
+            cloud["soc"] = row.get("soc")  # info: set soc
+        if kind == "watts":  # info: watts
+            for key in ("solar_input_power", "ac_output_power", "usbc_output_power"):  # info: for key
+                if row.get(key) is not None:  # info: if present
+                    cloud[key] = row.get(key)  # info: set
+    if cloud.get("soc") is not None:  # info: if cloud charge
+        return {"soc": {"soc": cloud.get("soc")}, "watts": cloud}  # info: return cloud pack
     return {"soc": {"soc": fields.get("soc")}, "watts": fields}  # info: return pack
 
 
