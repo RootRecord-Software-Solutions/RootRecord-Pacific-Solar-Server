@@ -536,6 +536,23 @@ def quake_facts(t: datetime) -> dict:  # info: def quake_facts
 # What it does:  m25.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
+def quake_change_sentence(label: str, change: dict) -> str | None:  # info: def quake_change_sentence
+    parts = []  # info: set parts
+    for key, words in (("24h", "previous day"), ("7d", "previous week")):  # info: for key , words
+        pct = change.get(f"m25_{key}_pct")  # info: set pct
+        if pct == "new":  # info: if pct == new
+            parts.append(f"new compared with the {words}")  # info: parts . append new
+        elif isinstance(pct, int) and pct > 0:  # info: elif rise
+            parts.append(f"up {pct} percent from the {words}")  # info: parts . append rise
+        elif isinstance(pct, int) and pct < 0:  # info: elif drop
+            parts.append(f"down {abs(pct)} percent from the {words}")  # info: parts . append drop
+        elif pct == 0:  # info: elif unchanged
+            parts.append(f"unchanged from the {words}")  # info: parts . append unchanged
+    if not parts:  # info: if not parts
+        return None  # info: return None
+    return f"{label} magnitude 2.5 count is " + ", and ".join(parts) + "."  # info: return sentence
+
+
 def _m25(events: list[dict]) -> list[dict]:  # info: def _m25
     out = []  # info: set out
     for e in events:  # info: for e in events :
@@ -741,37 +758,14 @@ def board_status() -> dict | None:  # info: def board_status
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def speak_board(t: datetime, payload: dict | None):  # info: def speak_board
-    labels = {"morning": "Morning report", "midday": "Midday report", "late": "Late report"}  # info: set labels
-    closed = {"done", "missed", "skipped_optional"}  # info: set closed
-    rows = []  # info: set rows
-    for key, row in ((payload or {}).get("slots") or {}).items():  # info: for key , row in ( ( payload or { } ) . get ( "slots" ) or { } ) . items ( ) :
-        if not isinstance(row, dict):  # info: if not isinstance ( row , dict ) :
-            continue  # info: continue
-        try:  # info: try :
-            when = datetime.fromisoformat(str(row.get("scheduled_at")))  # info: set when
-        except (TypeError, ValueError):  # info: except ( TypeError , ValueError ) :
-            continue  # info: continue
-        if when.tzinfo is None and t.tzinfo is not None:  # info: if when . tzinfo is None and t . tzinfo is not None :
-            when = when.replace(tzinfo=t.tzinfo)  # info: set when
-        rows.append((when, str(key), str(row.get("status") or "unknown")))  # info: rows . append ( ( when , str ( key ) , str ( row . get ( "status" ) or "unknown" ) ) )
-    rows.sort()  # info: rows . sort ( )
-    hour = [row for row in rows if t < row[0] <= t + timedelta(hours=1) and row[2] not in closed]  # info: set hour
+    count, per = open_tasks()  # info: set count , per
     sp = ["Remaining tasks.", generated_at(t), DEV_NOTE + "."]  # info: set sp
-    if payload is None:  # info: if payload is None :
-        sp.append("The report board is not on file.")  # info: sp . append ( "The report board is not on file." )
-    else:  # info: else :
-        sp.append(f"{len(hour)} item{'s' if len(hour) != 1 else ''} in the next hour.")  # info: sp . append ( f" { len ( hour ) } item { 's' if len ( hour ) != 1 else '' } in the next hour. " )
-        say_change(sp, "tasks.next_hour", len(hour), "Tasks in the next hour", t)  # info: say_change tasks
-        for when, key, _status in hour:  # info: for when , key , _status in hour :
-            sp.append(f"{clock(when)} {labels.get(key, key)}.")  # info: sp . append ( f" { clock ( when ) } { labels . get ( key , key ) } . " )
-        if not hour:  # info: if not hour :
-            later = [row for row in rows if row[0] > t and row[2] not in closed]  # info: set later
-            if later:  # info: if later :
-                sp.append(f"Next is {clock(later[0][0])} {labels.get(later[0][1], later[0][1])}.")  # info: sp . append ( f" Next is { clock ( later [ 0 ] [ 0 ] ) } { labels . get ( later [ 0 ] [ 1 ] , later [ 0 ] [ 1 ] ) } . " )
-            else:  # info: else :
-                sp.append("No later report slots are open.")  # info: sp . append ( "No later report slots are open." )
-    md = [f"# Remaining tasks — {t.isoformat()}", "", DEV_NOTE, "", "Source: report_board.py status (morning 09:00, midday 12:00, late 21:00).", ""]  # info: set md
-    md += [f"- {labels.get(key, key)} {when.isoformat()} {status}" for when, key, status in rows]  # info: set md
+    sp.append(f"{count} open work order item{'s' if count != 1 else ''}.")  # info: sp . append open work
+    say_change(sp, "tasks.open", count, "Open work orders", t)  # info: say_change open work
+    for n, code in per[:4]:  # info: for n , code in per
+        sp.append(f"{code}, {n} open.")  # info: sp . append one order
+    md = [f"# Remaining tasks — {t.isoformat()}", "", DEV_NOTE, "", "Source: open work orders.", ""]  # info: set md
+    md += [f"- {code}: {n} open" for n, code in per] or ["- No open work order items."]  # info: set md
     md += ["", "## Spoken", "", " ".join(sp), ""]  # info: set md
     return "\n".join(md), sp  # info: return "\n" . join ( md ) , sp
 
@@ -827,6 +821,9 @@ def b_earthquake_report(t: datetime):  # info: def b_earthquake_report
         sp.append("No new local earthquakes since the last report.")  # info: sp . append ( "No new local earthquakes since the last report." )
     if hi is not None:  # info: if hi is not None :
         sp.append(f"Local last twenty four hours: {len(_m25(hi_ev))} magnitude 2.5 or greater.")  # info: sp . append ( f" Local last twenty four hours: { len
+        local_change = quake_change_sentence("Local", hi.get("change") if isinstance(hi.get("change"), dict) else {})  # info: set local_change
+        if local_change:  # info: if local_change
+            sp.append(local_change)  # info: sp . append local change
         say_change(sp, "quake.hawaii.m25", len(_m25(hi_ev)), "Local magnitude 2.5 count", t)  # info: say_change local quakes
     if gl is None:  # info: if gl is None :
         sp.append("Global earthquake data is not on file.")  # info: sp . append ( "Global earthquake data is not on file." )
@@ -837,6 +834,9 @@ def b_earthquake_report(t: datetime):  # info: def b_earthquake_report
         sp.append("No new global earthquakes since the last report.")  # info: sp . append ( "No new global earthquakes since the last report." )
     if gl is not None:  # info: if gl is not None :
         sp.append(f"Global last twenty four hours: {len(_m25(gl_ev))} magnitude 2.5 or greater.")  # info: sp . append ( f" Global last twenty four hours: { len
+        world_change = quake_change_sentence("Global", gl.get("change") if isinstance(gl.get("change"), dict) else {})  # info: set world_change
+        if world_change:  # info: if world_change
+            sp.append(world_change)  # info: sp . append world change
         say_change(sp, "quake.global.m25", len(_m25(gl_ev)), "Global magnitude 2.5 count", t)  # info: say_change global quakes
     for label, d in (("Hawaii", hi), ("global", gl)):  # info: for label , d in ( ( "Hawaii"
         if d and d.get("age_min") is not None and d["age_min"] > QUAKE_STALE_MIN:  # info: if d and d . get ( "age_min"
@@ -848,8 +848,10 @@ def b_earthquake_report(t: datetime):  # info: def b_earthquake_report
             md.append(f"- ...and {len(fresh) - 12} more new earthquakes.")  # info: md . append ( f" - ...and { len
         ev = list((d or {}).get("events") or [])  # info: set ev
         big = max((float(e["mag"]) for e in _m25(ev)), default=None)  # info: set big
+        change = (d or {}).get("change") if isinstance((d or {}).get("change"), dict) else {}  # info: set change
         md += ["", f"## {label} 24-Hour M2.5+ Summary",
                f"- {len(_m25(ev))} earthquakes" + (f"; largest M{big:g}." if big is not None else "."),  # info: f" - { len ( _m25 ( ev
+               f"- 24h change: {change.get('m25_24h_pct', 'n/a')} percent. 7d change: {change.get('m25_7d_pct', 'n/a')} percent.",  # info: change line
                f"- Source: `{(d or {}).get('source', 'n/a')}` (collected {(d or {}).get('at', 'n/a')})", ""]  # info: f" - Source: ` { ( d or { }
     if not os.environ.get("RR_VOICE_QUAKE_DRY"):  # info: if not os . environ . get (
         ids = [e["id"] for e in hi_ev + gl_ev if e.get("id")]  # info: set ids
@@ -1236,7 +1238,7 @@ def site_traffic_md_lines(doc: dict) -> list[str]:  # info: def site_traffic_md_
     lines = [  # info: set lines
         f"- Analytics day: {doc.get('day')} ({doc.get('timezone') or 'Pacific/Honolulu'}), schema {doc.get('schema')}",  # info: analytics day line
         f"- API requests / unique visitors: {api.get('requests')} / {api.get('unique_visitors')} (bots {api.get('bots')})",  # info: api line
-        f"- Home proxy (telemetry Referer www only): {proxy.get('requests')} requests, {proxy.get('unique_visitors')} visitors — not full www pageviews",  # info: home proxy line
+        f"- Home proxy: {proxy.get('requests')} requests, {proxy.get('unique_visitors')} visitors",  # info: home proxy line
         f"- Home pageviews: {home.get('pageviews')}",  # info: home pageviews line
         f"- Radio listeners: max {radio.get('listeners_max')}, avg {radio.get('listeners_avg')}, ~{radio.get('listen_minutes_est')} listen-minutes est ({radio.get('samples')} samples)",  # info: radio line
     ]  # info: ]
@@ -1265,10 +1267,7 @@ def site_traffic_spoken(doc: dict, t: datetime) -> list[str]:  # info: def site_
         say_change(out, "analytics.api.requests", api.get("requests"), "API requests", t)  # info: say_change api requests
         say_change(out, "analytics.api.unique_visitors", api.get("unique_visitors"), "API unique visitors", t)  # info: say_change api visitors
     if proxy.get("requests") is not None:  # info: if proxy . get ( "requests" ) is not None :
-        out.append(  # info: out . append
-            f"Home proxy signal: {proxy.get('requests')} requests from {proxy.get('unique_visitors')} visitors. "  # info: home proxy counts
-            "That is partial Home coverage from telemetry pages only, not full www pageviews."  # info: honesty clause
-        )  # info: )
+        out.append(f"Home proxy signal: {proxy.get('requests')} requests from {proxy.get('unique_visitors')} visitors.")  # info: home proxy counts
         say_change(out, "analytics.home_proxy.requests", proxy.get("requests"), "Home proxy requests", t)  # info: say_change home proxy
     elif home.get("pageviews") is None:  # info: elif home . get ( "pageviews" ) is None :
         out.append("Full Home pageviews are not on this Mainland feed yet.")  # info: out . append missing home
@@ -1376,8 +1375,24 @@ def bank_spoken(bank: dict) -> str:  # info: def bank_spoken
 # What it does: Combined energy+solar desk: packs, sun times, newest ch1 still, and this hour's camera look (refreshes when needed).
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
+def wake_stale_packs(t: datetime) -> None:  # info: def wake_stale_packs
+    """Run the existing EcoFlow read once when a live pack sample is past the speak threshold."""  # info: docstring
+    facts = energy_facts(t)  # info: set facts
+    stale = [f for f in facts if f.get("ok") and not f.get("off") and isinstance(f.get("age_min"), int) and f["age_min"] > STALE_MIN]  # info: set stale
+    if not stale:  # info: if not stale
+        return  # info: return
+    script = PACIFIC / "Energy" / "scripts" / "read" / "leapfrog-read.sh"  # info: set script
+    if not script.is_file():  # info: if not script . is_file
+        return  # info: return
+    try:  # info: try
+        subprocess.run(["bash", str(script)], timeout=120, check=False)  # info: subprocess . run the existing read
+    except (OSError, subprocess.TimeoutExpired):  # info: except
+        return  # info: return
+
+
 def b_solar_desk(t: datetime):  # info: def b_solar_desk
     """Combined energy+solar desk: packs, sun times, newest ch1 still, and this hour's camera look (refreshes when needed)."""  # info: docstring
+    wake_stale_packs(t)  # info: wake a stagnant pack before the desk speaks
     facts = energy_facts(t)  # info: set facts
     sun = jload(ENERGY / "sun" / "sun-times-last.json") or {}  # info: set sun
     sp = ["Solar desk.", generated_at(t)]  # info: set sp
@@ -1816,7 +1831,6 @@ def b_current_report(t: datetime):  # info: def b_current_report
     bw_hour, bw_day = desks.net_usage_window(3600, now=net), desks.net_usage_window(86400, now=net)  # info: bw_hour , bw_day = desks . net_usage_window
     still, look = newest_ch1(t), last_camera_look(t)  # info: still , look = newest_ch1 ( t ) , last_camera_look ( t )
     tasks, _per = open_tasks()  # info: tasks , _per = open_tasks ( )
-    board = board_status()  # info: set board
     fresh = [p for p in official_products(t) if p.get("age_h") is not None and p["age_h"] <= OFFICIAL_MAX_H]  # info: set fresh
     md = [f"# Current report — {t.isoformat()}", "", DEV_NOTE, ""]  # info: set md
     sp = ["Current report.", generated_at(t), DEV_NOTE + "."]  # info: set sp
@@ -2008,19 +2022,6 @@ def b_current_report(t: datetime):  # info: def b_current_report
     if look.get("sentence"):  # info: if look . get ( "sentence" ) :
         md.append(f"- {look['sentence']}")  # info: md . append ( f" - { look [ 'sentence' ] } " )
         sp.append(look["sentence"])  # info: sp . append ( look [ "sentence" ] )
-    md += ["", "## Report board", ""]  # info: md += board heading
-    labels = {"morning": "Morning report", "midday": "Midday report", "late": "Late report"}  # info: set labels
-    slot_rows = []  # info: set slot_rows
-    for key, row in ((board or {}).get("slots") or {}).items():  # info: for key , row in board slots
-        if isinstance(row, dict):  # info: if isinstance ( row , dict ) :
-            slot_rows.append((str(row.get("scheduled_at") or ""), labels.get(key, key), str(row.get("status") or "unknown")))  # info: slot_rows . append
-    slot_rows.sort()  # info: slot_rows . sort ( )
-    if slot_rows:  # info: if slot_rows :
-        md += [f"- {name} {at} {status}" for at, name, status in slot_rows]  # info: md += slot lines
-        sp.append("Report board: " + ", ".join(f"{name} {status}" for _at, name, status in slot_rows) + ".")  # info: sp . append board sentence
-    else:  # info: else :
-        md.append("- Report board is not on file")  # info: md . append ( "- Report board is not on file" )
-        sp.append("The report board is not on file.")  # info: sp . append ( "The report board is not on file." )
     md += ["", "## Official weather", ""]  # info: md += official heading
     if fresh:  # info: if fresh :
         pick = fresh[0]  # info: set pick
@@ -2043,8 +2044,7 @@ def b_current_report(t: datetime):  # info: def b_current_report
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 BUILD = {"hourly_chime": b_hourly_chime, "nws_weather": b_nws_weather,  # info: set BUILD
-         "remaining_tasks": b_remaining_tasks, "morning_report": lambda t: _rollup(t, "morning"),  # info: remaining / morning
-         "midday_report": lambda t: _rollup(t, "midday"), "late_report": lambda t: _rollup(t, "late"),  # info: "midday_report" : lambda t : _rollup ( t
+         "remaining_tasks": b_remaining_tasks,  # info: remaining tasks
          "earthquake_report": b_earthquake_report, "hurricane_desk": b_hurricane_desk,  # info: "earthquake_report" : b_earthquake_report , "hurricane_desk" : b_hurricane_desk ,
          "kilauea_report": b_kilauea_report, "kilauea_image_check": b_kilauea_image_check, "solar_desk": b_solar_desk, "security_desk": b_security_desk,  # info: kilauea + solar
          "bandwidth_desk": b_bandwidth_desk, "official_weather": b_official_weather, "boot_brief": b_boot_brief,  # info: "bandwidth_desk" : b_bandwidth_desk , "official_weather" : b_official_weather ,

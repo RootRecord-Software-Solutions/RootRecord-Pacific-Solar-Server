@@ -102,14 +102,15 @@ def _hhmm_from_iso(iso) -> str | None:  # info: def _hhmm_from_iso
 # What it does: Name a 0–1 moon phase. 0 is new, 0.5 is full.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def phase_name(phase: float) -> str:  # info: def phase_name
+def phase_name(phase: float, lit: float | None = None) -> str:  # info: def phase_name
     p = phase % 1  # info: set p
+    near_half = lit is None or 45 <= lit <= 55  # info: set near_half
     if p < 0.03 or p >= 0.97:  # info: if p < 0.03 or p >= 0.97 :
         return "New Moon"  # info: return "New Moon"
     if p < 0.22:  # info: if p < 0.22 :
         return "Waxing Crescent"  # info: return "Waxing Crescent"
     if p < 0.28:  # info: if p < 0.28 :
-        return "First Quarter"  # info: return "First Quarter"
+        return "First Quarter" if near_half else "Waxing Crescent"  # info: return quarter only near half
     if p < 0.47:  # info: if p < 0.47 :
         return "Waxing Gibbous"  # info: return "Waxing Gibbous"
     if p < 0.53:  # info: if p < 0.53 :
@@ -117,6 +118,8 @@ def phase_name(phase: float) -> str:  # info: def phase_name
     if p < 0.72:  # info: if p < 0.72 :
         return "Waning Gibbous"  # info: return "Waning Gibbous"
     if p < 0.78:  # info: if p < 0.78 :
+        if not near_half:  # info: if the disc is not near half
+            return "Waning Gibbous" if (lit or 0) > 55 else "Waning Crescent"  # info: stay gibbous or crescent
         return "Last Quarter"  # info: return "Last Quarter"
     return "Waning Crescent"  # info: return "Waning Crescent"
 
@@ -227,12 +230,22 @@ def refresh_if_stale(*, force: bool = False) -> dict:  # info: def refresh_if_st
         index = dates.index(today) if today in dates else -1  # info: set index
         now = _now()  # info: set now
         phase, lit = _sky(now)  # info: phase , lit = _sky ( now )
+        lit_pct = int(round(lit * 100))  # info: set lit_pct
+        phases = daily.get("moon_phase") or []  # info: set phases
+        if 0 <= index < len(phases):  # info: if the calendar phase is present
+            try:  # info: try
+                meteo = float(phases[index])  # info: set meteo
+                meteo_pct = illumination_pct(meteo)  # info: set meteo_pct
+                if abs(meteo_pct - lit_pct) > 5:  # info: if the two percents disagree
+                    phase, lit_pct = meteo, meteo_pct  # info: keep the calendar-day phase
+            except (TypeError, ValueError):  # info: except
+                pass  # info: pass
         next_name, next_date = _next_named(now, phase)  # info: next_name , next_date = _next_named ( now , phase )
         payload = {  # info: set payload
             "date": today,  # info: "date" : today ,
             "phase": round(phase, 4),  # info: "phase" : round ( phase , 4 ) ,
-            "phase_name": phase_name(phase),  # info: "phase_name" : phase_name ( phase ) ,
-            "illumination": int(round(lit * 100)),  # info: "illumination" : int ( round ( lit * 100 ) ) ,
+            "phase_name": phase_name(phase, lit_pct),  # info: "phase_name" : phase_name ( phase , lit_pct ) ,
+            "illumination": lit_pct,  # info: "illumination" : lit_pct ,
             "moonrise": _hhmm_from_iso(rises[index] if 0 <= index < len(rises) else None),  # info: "moonrise" : _hhmm_from_iso ( rises [ index ] if 0 <= index
             "moonset": _hhmm_from_iso(sets[index] if 0 <= index < len(sets) else None),  # info: "moonset" : _hhmm_from_iso ( sets [ index ] if 0 <= index
             "next_phase": next_name,  # info: "next_phase" : next_name ,

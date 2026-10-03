@@ -887,6 +887,18 @@ EVERY_MINUTE = [  # info: set EVERY_MINUTE
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
     {  # info: {
+        "id": "live_picture",  # info: "id" : "live_picture" ,
+        "enabled": os.environ.get("RR_LIVE_PICTURE", "0") == "1",  # info: "enabled" : os . environ . get ( "RR_LIVE_PICTURE" , "0" ) == "1" ,
+        "description": "Cover the stream still with the live desk numbers and copy it to the mainland thumb. Does not start a second encoder.",  # info: description
+        "only_at_minutes": [],  # info: "only_at_minutes" : [ ] ,
+        "builtin": "",  # info: "builtin" : "" ,
+        "command": f'nice -n 10 python3 "{PACIFIC}/Media/Video/scripts/live_picture.py"',  # info: command
+        "timeout_sec": 90,  # info: "timeout_sec" : 90 ,
+        "needs_internet": True,  # info: "needs_internet" : True ,
+        "cwd": f"{PACIFIC}/Media/Video/scripts",  # info: cwd
+        "env": {},  # info: "env" : { } ,
+    },  # info: } ,
+    {  # info: {
         "id": "reports_pipeline_tick",  # info: "id" : "reports_pipeline_tick" ,
         "enabled": os.environ.get("RR_REPORT_PIPELINE", "0") == "1",  # info: "enabled" : os . environ . get ( "RR_REPORT_PIPELINE" , "0" ) == "1" ,
         "description": "Record due news-select windows and refresh the stream queue. Does not render audio or open YouTube.",  # info: description
@@ -1113,54 +1125,6 @@ ON_AT = [  # info: set ON_AT
         "command": f'nice -n 10 python3 "{PACIFIC}/Reports/template_fill.py" --all --draft auto',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Reports/template_fill.py" --all --draft auto
         "timeout_sec": 900,  # info: "timeout_sec" : 900 ,
         "cwd": f"{PACIFIC}/Reports",  # info: "cwd" : f" { PACIFIC } /Reports "
-        "env": {},  # info: "env" : { } ,
-    },  # info: } ,
-    {  # info: {
-        # G3 voice roll-ups (2026-09-29, g3-voice-reports2). OFF unless RR_VOICE_ROLLUPS=1 at poller start; LLM summary line only if RR_VOICE_ROLLUP_LLM=1 too (run-infer.sh). No delivery.
-        "id": "voice_morning_report",  # info: "id" : "voice_morning_report" ,
-        "enabled": False,  # off the hourly cycle
-        "description": "Ava morning roll-up at 09:02, inside the morning window and before the 09:30 radio snapshot. No delivery.",  # info: "description" : "Ava morning roll-up at 09:02, inside the morning window and before the 09:30 radio snapshot. No delivery." ,
-        "at_times": ["09:02"],  # info: "at_times" : [ "09:02" ] ,
-        "builtin": "",  # info: "builtin" : "" ,
-        "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" morning_report',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" morning_report
-        "timeout_sec": 600,  # info: "timeout_sec" : 600 ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd" : f" { PACIFIC } /Media/Voice/scripts "
-        "env": {},  # info: "env" : { } ,
-    },  # info: } ,
-    {  # info: {
-        "id": "voice_midday_report",  # info: "id" : "voice_midday_report" ,
-        "enabled": False,  # off the hourly cycle
-        "description": "Ava midday roll-up at 12:02, inside the midday window and before the 12:30 radio snapshot. No delivery.",  # info: "description" : "Ava midday roll-up at 12:02, inside the midday window and before the 12:30 radio snapshot. No delivery." ,
-        "at_times": ["12:02"],  # info: "at_times" : [ "12:02" ] ,
-        "builtin": "",  # info: "builtin" : "" ,
-        "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" midday_report',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" midday_report
-        "timeout_sec": 600,  # info: "timeout_sec" : 600 ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd" : f" { PACIFIC } /Media/Voice/scripts "
-        "env": {},  # info: "env" : { } ,
-    },  # info: } ,
-    {  # info: {
-        "id": "voice_late_report",  # info: "id" : "voice_late_report" ,
-        "enabled": False,  # off the hourly cycle
-        "description": "Ava late roll-up at 21:02, inside the late window and before the 21:30 radio snapshot. No delivery.",  # info: "description" : "Ava late roll-up at 21:02, inside the late window and before the 21:30 radio snapshot. No delivery." ,
-        "at_times": ["21:02"],  # info: "at_times" : [ "21:02" ] ,
-        "builtin": "",  # info: "builtin" : "" ,
-        "command": f'nice -n 10 python3 "{PACIFIC}/Media/Voice/scripts/voice_reports.py" late_report',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Media/Voice/scripts/voice_reports.py" late_report
-        "timeout_sec": 600,  # info: "timeout_sec" : 600 ,
-        "cwd": f"{PACIFIC}/Media/Voice/scripts",  # info: "cwd" : f" { PACIFIC } /Media/Voice/scripts "
-        "env": {},  # info: "env" : { } ,
-    },  # info: } ,
-    {  # info: {
-        # 23:00 late-final (WO-MIG-02). Second fire of the optional late slot. OFF unless
-        # RR_VOICE_LATE_FINAL=1 at poller start. Text only. Skips when that slot is already done.
-        # No delivery. Night-sleep skip is System/NightSleep when that Folder exists.
-        "id": "voice_late_final_report",  # info: "id" : "voice_late_final_report" ,
-        "enabled": False,  # off the hourly cycle
-        "description": "23:02 second chance for the optional late roll-up if that board slot is not done. Off the radio boundary. Text only. No delivery.",  # info: "description" : "23:02 second chance for the optional late roll-up if that board slot is not done. Off the radio boundary. Text only. No delivery." ,
-        "at_times": ["23:02"],  # info: "at_times" : [ "23:02" ] ,
-        "builtin": "",  # info: "builtin" : "" ,
-        "command": f'nice -n 10 python3 "{PACIFIC}/Reports/Late-Final/scripts/late_final.py"',  # info: "command" : f' nice -n 10 python3 " { PACIFIC } /Reports/Late-Final/scripts/late_final.py"
-        "timeout_sec": 600,  # info: "timeout_sec" : 600 ,
-        "cwd": f"{PACIFIC}/Reports/Late-Final/scripts",  # info: "cwd" : f" { PACIFIC } /Reports/Late-Final/scripts "
         "env": {},  # info: "env" : { } ,
     },  # info: } ,
     {  # info: {

@@ -83,9 +83,9 @@ def now_hst() -> datetime:  # info: def now_hst
 # What it does: get json.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def get_json(url: str):  # info: def get_json
+def get_json(url: str, timeout: float | None = None):  # info: def get_json
     req = Request(url, headers={"User-Agent": UA, "Accept": "application/json", "Accept-Encoding": "gzip"})  # info: set req
-    with urlopen(req, timeout=TIMEOUT) as r:  # info: with urlopen ( req , timeout = TIMEOUT
+    with urlopen(req, timeout=TIMEOUT if timeout is None else timeout) as r:  # info: with urlopen ( req , timeout = timeout or TIMEOUT
         raw = r.read()  # info: set raw
         if r.headers.get("Content-Encoding") == "gzip" or raw[:2] == b"\x1f\x8b":  # info: if r . headers . get ( "Content-Encoding"
             raw = gzip.decompress(raw)  # info: set raw
@@ -246,24 +246,58 @@ def summarize(events: list[dict]) -> dict:  # info: def summarize
 # What it does: collect quakes.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
+def _hours_ago(event: dict, now: datetime) -> float | None:  # info: def _hours_ago
+    raw = str(event.get("time_utc") or "")  # info: set raw
+    try:  # info: try
+        when = datetime.fromisoformat(raw)  # info: set when
+    except ValueError:  # info: except ValueError
+        return None  # info: return None
+    if when.tzinfo is None:  # info: if when . tzinfo is None
+        when = when.replace(tzinfo=timezone.utc)  # info: set when
+    return (now.astimezone(timezone.utc) - when.astimezone(timezone.utc)).total_seconds() / 3600.0  # info: return hours
+
+
+def _change_pct(cur: int, prev: int):  # info: def _change_pct
+    if prev <= 0:  # info: if prev <= 0
+        return "new" if cur else 0  # info: return new or zero
+    return int(round((cur - prev) * 100 / prev))  # info: return percent
+
+
+def activity_change(events: list[dict], now: datetime) -> dict:  # info: def activity_change
+    def count(lo: float, hi: float) -> int:  # info: def count
+        total = 0  # info: set total
+        for event in events:  # info: for event in events
+            mag = _mag(event)  # info: set mag
+            age = _hours_ago(event, now)  # info: set age
+            if mag is None or mag < 2.5 or age is None or not (lo <= age < hi):  # info: if outside the window
+                continue  # info: continue
+            total += 1  # info: total += 1
+        return total  # info: return total
+    day, day_prev = count(0, 24), count(24, 48)  # info: day , day_prev
+    week, week_prev = count(0, 168), count(168, 336)  # info: week , week_prev
+    return {"m25_24h": day, "m25_24h_prior": day_prev, "m25_24h_pct": _change_pct(day, day_prev),  # info: return day fields
+            "m25_7d": week, "m25_7d_prior": week_prev, "m25_7d_pct": _change_pct(week, week_prev)}  # info: week fields
+
+
 def collect_quakes(t: datetime, dry: bool, status: dict) -> None:  # info: def collect_quakes
     hi_ids: set[str] = set()  # info: set hi_ids
-    # Hawaiʻi — FDSN query, bbox, last 24 h
-    start = (datetime.now(timezone.utc) - timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%S")  # info: set start
+    # Hawaiʻi — FDSN query, bbox, last 14 days so both weeks are in one pull
+    start = (datetime.now(timezone.utc) - timedelta(days=14)).strftime("%Y-%m-%dT%H:%M:%S")  # info: set start
     url = f"{FDSN}?" + urlencode({"format": "geojson", "orderby": "time", "starttime": start,  # info: set url
                                    "minmagnitude": HAWAII_M_MIN, **HAWAII_BBOX})  # info: "minmagnitude" : HAWAII_M_MIN , ** HAWAII_BBOX } )
     t0 = time.monotonic()  # info: set t0
     try:  # info: try :
-        data = get_json(url)  # info: set data
-        ev = [norm_event(f) for f in data.get("features") or []]  # info: set ev
+        data = get_json(url, 25)  # info: set data
+        span = [norm_event(f) for f in data.get("features") or []]  # info: set span
+        ev = [e for e in span if (_hours_ago(e, t) or 99) < 24]  # info: set ev to the last day
         hi_ids = {e["id"] for e in ev if e.get("id")}  # info: set hi_ids
         prev = seen_ids(EQ, "hawaii", t)  # info: set prev
         new = [dict(e, first_seen_hst=t.isoformat()) for e in ev if e.get("id") and e["id"] not in prev]  # info: set new
         new_m2 = [e["id"] for e in new if (_mag(e) or 0) >= LOCAL_M2]  # info: set new_m2
         near = [e for e in ev if e.get("lat") is not None and e.get("lon") is not None  # info: set near
                 and haversine_km(KILAUEA_LATLON, (e["lat"], e["lon"])) <= KILAUEA_RADIUS_KM]  # info: call and
-        last = {"at": t.isoformat(), "source": url, "window_h": 24, "min_mag": HAWAII_M_MIN, "bbox": HAWAII_BBOX,  # info: set last
-                **summarize(ev), "kilauea_150km_count": len(near), "new_this_run": len(new), "new_local_m2_ids": new_m2,  # info: call **
+        last = {"at": t.isoformat(), "source": url, "window_h": 24, "span_d": 14, "min_mag": HAWAII_M_MIN, "bbox": HAWAII_BBOX,  # info: set last
+                **summarize(ev), "change": activity_change(span, t), "kilauea_150km_count": len(near), "new_this_run": len(new), "new_local_m2_ids": new_m2,  # info: call **
                 "usgs_generated_utc": _ms_iso((data.get("metadata") or {}).get("generated")),  # info: "usgs_generated_utc" : _ms_iso ( ( data . get
                 "events": ev[:MAX_EVENTS_LAST]}  # info: "events" : ev [ : MAX_EVENTS_LAST ] }
         write_json(EQ / "hawaii-last.json", last, dry)  # info: call write_json
@@ -282,8 +316,15 @@ def collect_quakes(t: datetime, dry: bool, status: dict) -> None:  # info: def c
         ev.sort(key=lambda e: e.get("time_utc") or "", reverse=True)  # info: ev . sort ( key = lambda e
         prev = seen_ids(EQ, "global", t)  # info: set prev
         new = [dict(e, first_seen_hst=t.isoformat()) for e in ev if e.get("id") and e["id"] not in prev]  # info: set new
-        last = {"at": t.isoformat(), "source": GLOBAL_FEED, "window_h": 24, "min_mag": 2.5, "excludes": "hawaii-last ids",  # info: set last
-                **summarize(ev), "new_this_run": len(new),  # info: call **
+        gurl = f"{FDSN}?" + urlencode({"format": "geojson", "orderby": "time", "starttime": start, "minmagnitude": 2.5})  # info: set gurl
+        try:  # info: try
+            gdata = get_json(gurl, 40)  # info: set gdata
+            gspan = [norm_event(f) for f in gdata.get("features") or [] if (f.get("id") not in hi_ids)]  # info: set gspan
+            gchange = activity_change(gspan, t)  # info: set gchange
+        except Exception:  # noqa: BLE001
+            gchange = {}  # info: set gchange
+        last = {"at": t.isoformat(), "source": GLOBAL_FEED, "window_h": 24, "span_d": 14, "min_mag": 2.5, "excludes": "hawaii-last ids",  # info: set last
+                **summarize(ev), "change": gchange, "new_this_run": len(new),  # info: call **
                 "usgs_generated_utc": _ms_iso((data.get("metadata") or {}).get("generated")),  # info: "usgs_generated_utc" : _ms_iso ( ( data . get
                 "events": ev[:MAX_EVENTS_LAST]}  # info: "events" : ev [ : MAX_EVENTS_LAST ] }
         write_json(EQ / "global-last.json", last, dry)  # info: call write_json

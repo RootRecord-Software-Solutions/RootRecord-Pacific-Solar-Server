@@ -20,6 +20,7 @@ Do NOT add device scan loops here until poll buckets are explicitly enabled.
 from __future__ import annotations  # info: from __future__ import annotations
 import os  # info: import os
 import signal  # info: import signal
+import subprocess  # info: import subprocess
 import sys  # info: import sys
 import time  # info: import time
 from datetime import datetime  # info: from datetime import datetime
@@ -97,6 +98,24 @@ def _range_line() -> str:  # info: def _range_line
             bits.append("scan=" + asyncio.run(_once()))  # info: append
         except Exception as exc:  # info: except
             bits.append(f"scan_fail={type(exc).__name__}")  # info: append
+    watts = Path("/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/watts")  # info: set watts
+    stagnant = False  # info: set stagnant
+    for name in ("river2pro-last.json", "delta2-last.json"):  # info: for name
+        path = watts / name  # info: set path
+        age = 999999 if not path.is_file() else max(0, int(now - path.stat().st_mtime))  # info: set age
+        if age > 30 * 60:  # info: if the sample is past the speak threshold
+            stagnant = True  # info: set stagnant
+            bits.append(f"{name} age={age}s")  # info: append
+    stamp = Path("/tmp/ecoflow-owner-wake")  # info: set stamp
+    stamp_age = 999999 if not stamp.is_file() else max(0, int(now - stamp.stat().st_mtime))  # info: set stamp_age
+    if stagnant and stamp_age > 30 * 60:  # info: if a sample stagnated and the wake is not in cooldown
+        script = "/home/rootrecord/RootRecord-Ecosystem/1 - Servers/1 - RootRecord-Pacific-Solar-Server/Energy/scripts/read/leapfrog-read.sh"  # info: set script
+        try:  # info: try
+            subprocess.run(["bash", script], timeout=90, check=False)  # info: wake the existing read
+            stamp.write_text(str(int(now)))  # info: stamp . write_text
+            bits.append("wake=read")  # info: append
+        except (OSError, subprocess.TimeoutExpired) as exc:  # info: except
+            bits.append(f"wake_fail={type(exc).__name__}")  # info: append
     return " | ".join(bits)  # info: return
 
 

@@ -569,6 +569,43 @@
     return "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&orderby=time&minmagnitude=1&minlatitude=18.5&maxlatitude=22.5&minlongitude=-160.5&maxlongitude=-154.5&starttime=" + encodeURIComponent(start);
   }
 
+  function spanQuakeUrl(globalFeed) {
+    var start = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString().slice(0, 19);
+    var url = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minmagnitude=2.5&starttime=" + encodeURIComponent(start);
+    if (!globalFeed) {
+      url += "&minlatitude=18.5&maxlatitude=22.5&minlongitude=-160.5&maxlongitude=-154.5";
+    }
+    return url;
+  }
+
+  function changePct(cur, prev) {
+    if (!prev) return cur ? "new" : "0%";
+    var pct = Math.round((cur - prev) * 100 / prev);
+    return (pct > 0 ? "+" : "") + pct + "%";
+  }
+
+  function countWindow(features, loHours, hiHours) {
+    var now = Date.now();
+    var total = 0;
+    (features || []).forEach(function (feature) {
+      var props = (feature && feature.properties) || {};
+      var mag = Number(props.mag);
+      var when = Number(props.time);
+      if (!Number.isFinite(mag) || mag < 2.5 || !Number.isFinite(when)) return;
+      var age = (now - when) / 3600000;
+      if (age >= loHours && age < hiHours) total += 1;
+    });
+    return total;
+  }
+
+  function changeLine(label, features) {
+    var day = countWindow(features, 0, 24);
+    var dayPrev = countWindow(features, 24, 48);
+    var week = countWindow(features, 0, 168);
+    var weekPrev = countWindow(features, 168, 336);
+    return label + " 24h " + day + " " + changePct(day, dayPrev) + ", 7d " + week + " " + changePct(week, weekPrev);
+  }
+
   function paintQuakeNote(message) {
     var list = document.getElementById("quake-feed");
     if (!list) return;
@@ -622,6 +659,20 @@
 
   function tickQuakes() {
     if (!document.getElementById("quake-feed")) return;
+    var change = document.getElementById("quake-change");
+    Promise.all([spanQuakeUrl(false), spanQuakeUrl(true)].map(function (url) {
+      return fetch(url, { cache: "no-store", credentials: "omit" }).then(function (r) {
+        if (!r.ok) throw new Error("http");
+        return r.json();
+      });
+    })).then(function (docs) {
+      if (!change) return;
+      var hi = (docs[0] && docs[0].features) || [];
+      var world = (docs[1] && docs[1].features) || [];
+      change.textContent = changeLine("Hawaii", hi) + ". " + changeLine("World", world) + ".";
+    }).catch(function () {
+      if (change) change.textContent = "Day and week change unavailable";
+    });
     fetch(hawaiiQuakeUrl(), { cache: "no-store", credentials: "omit" }).then(function (r) {
       if (r.status === 204) return { features: [] };
       if (!r.ok) throw new Error("http");
