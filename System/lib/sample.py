@@ -148,8 +148,8 @@ def persist(snap):  # info: def persist
     db_ok = False  # info: set db_ok
     try:  # info: try :
         persist_snapshot(snap)  # info: call persist_snapshot
-        from db.condense import condense_closed_periods  # info: from db . condense import condense_closed_periods
-        condense_closed_periods()  # info: call condense_closed_periods
+        from db.condense import ensure_layers  # info: from db . condense import ensure_layers
+        ensure_layers()  # info: leave the layer files; consolidate.py owns the roll-up
         from status_json import write_status_json  # info: from status_json import write_status_json
         write_status_json()  # info: call write_status_json
         db_ok = True  # info: set db_ok

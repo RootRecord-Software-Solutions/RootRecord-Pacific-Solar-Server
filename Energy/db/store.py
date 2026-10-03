@@ -21,7 +21,7 @@ import os  # info: import os
 from typing import Any, Iterable, Mapping, Optional  # info: from typing import Any , Iterable , Mapping
 
 SCHEMA_PATH = Path(__file__).with_name("schema.sql")  # info: set SCHEMA_PATH
-DEFAULT_DB_PATH = Path(os.environ.get("ROOTRECORD_DB", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/RootRecord/rootrecord.db"))  # info: set DEFAULT_DB_PATH
+DEFAULT_DB_PATH = Path(os.environ.get("ROOTRECORD_DB", "/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/rootrecord.db"))  # info: set DEFAULT_DB_PATH
 
 
 # ====================================================

@@ -20,15 +20,14 @@ Legacy JSON remains a compatibility/output layer during migration.
 - `OPERATIONAL-DATA-LAYER.md` — runtime data flow.
 - `../scripts/init_rootrecord_db.py` — explicit schema initializer.
 - `../scripts/migrate_json.py` — additive legacy JSON importer.
-- `../scripts/consolidate_minutes.py` — every minute at :00, rolls 1sec into 1min, 5min, and 15min.
-- `../scripts/condense_hours.py` — every minute at :30, rolls those buckets into the hour, day, week, month, and year, then rewrites `Energy/layers/periods.json`.
+- `../scripts/consolidate.py` — `minutes` at :00 and `hours` at :30. Same shape as `System/scripts/consolidate.py`.
 - `../scripts/verify_rootrecord_db.py` — integrity verifier.
 
 ## Database
 
 Target production path:
 
-`/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/RootRecord/rootrecord.db` (env `ROOTRECORD_DB`). EcoFlow reporting layers live in `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/layers` (env `ROOTRECORD_LAYERS_DIR`; git-ignored).
+Energy owns one tree: `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/rootrecord.db` (env `ROOTRECORD_DB`) and `/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/layers` (env `ROOTRECORD_LAYERS_DIR`). System mirrors that shape under `Database/System/` (`system.db` + `layers/`).
 
 Importing modules does not create telemetry. Live ingestion explicitly initializes the schema on first persistence.
 

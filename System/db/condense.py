@@ -15,14 +15,53 @@ from db.store import connect, connect_layer, initialize_schema  # info: from db 
 from db.aggregate import period_bounds, write_aggregate, _iso, LAYERS  # info: from db . aggregate import period_bounds , write_aggregate
 import paths  # info: import paths
 
+MINUTE_LAYERS = ("1sec", "1min", "5min", "15min")  # info: set MINUTE_LAYERS
+HOUR_LAYERS = ("1hour", "day", "7days", "month", "year")  # info: set HOUR_LAYERS
+
+
 # ====================================================
-# SECTION: function condense_closed_periods
-# What it does: condense closed periods.
+# SECTION: function ensure_layers
+# What it does: Create every System layer database if it is missing.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
-def condense_closed_periods(db_path: Path | None = None, layers_dir: Path | None = None) -> int:  # info: def condense_closed_periods
+def ensure_layers(db_path: Path | None = None, layers_dir: Path | None = None) -> None:  # info: def ensure_layers
     raw_path = Path(db_path) if db_path else paths.SYSTEM_DB  # info: set raw_path
     layers_dir = Path(layers_dir) if layers_dir else paths.LAYERS_DIR  # info: set layers_dir
+    raw = connect(raw_path)  # info: set raw
+    initialize_schema(raw)  # info: call initialize_schema
+    raw.close()  # info: raw . close ( )
+    for layer in LAYERS:  # info: for layer in LAYERS
+        layer_conn = connect_layer(layer, layers_dir)  # info: set layer_conn
+        layer_conn.close()  # info: layer_conn . close ( )
+
+
+# ====================================================
+# SECTION: function consolidate_minutes
+# What it does: Roll closed second samples into the minute, 5-minute, and 15-minute buckets.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def consolidate_minutes(db_path: Path | None = None, layers_dir: Path | None = None) -> int:  # info: def consolidate_minutes
+    return condense_closed_periods(db_path, layers_dir, layers=MINUTE_LAYERS)  # info: return condense_closed_periods
+
+
+# ====================================================
+# SECTION: function condense_hours
+# What it does: Roll closed minute buckets into the hour, day, week, month, and year buckets.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def condense_hours(db_path: Path | None = None, layers_dir: Path | None = None) -> int:  # info: def condense_hours
+    return condense_closed_periods(db_path, layers_dir, layers=HOUR_LAYERS)  # info: return condense_closed_periods
+
+
+# ====================================================
+# SECTION: function condense_closed_periods
+# What it does: Create missing layer files, then condense the requested closed buckets.
+# Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
+# ====================================================
+def condense_closed_periods(db_path: Path | None = None, layers_dir: Path | None = None, layers=None) -> int:  # info: def condense_closed_periods
+    raw_path = Path(db_path) if db_path else paths.SYSTEM_DB  # info: set raw_path
+    layers_dir = Path(layers_dir) if layers_dir else paths.LAYERS_DIR  # info: set layers_dir
+    ensure_layers(raw_path, layers_dir)  # info: call ensure_layers
     raw = connect(raw_path)  # info: set raw
     initialize_schema(raw)  # info: call initialize_schema
     total = 0  # info: set total
@@ -33,7 +72,8 @@ def condense_closed_periods(db_path: Path | None = None, layers_dir: Path | None
         earliest = datetime.fromisoformat(row[0].replace("Z", "+00:00"))  # info: set earliest
         latest = datetime.fromisoformat(row[1].replace("Z", "+00:00"))  # info: set latest
 
-        for layer in LAYERS:  # info: for layer in LAYERS :
+        chosen = tuple(layers) if layers else LAYERS  # info: set chosen
+        for layer in chosen:  # info: for layer in chosen :
             layer_conn = connect_layer(layer, layers_dir)  # info: set layer_conn
             try:  # info: try :
                 start, _ = period_bounds(layer, earliest)  # info: start , _ = period_bounds ( layer ,
@@ -55,9 +95,10 @@ def condense_closed_periods(db_path: Path | None = None, layers_dir: Path | None
     finally:  # info: finally :
         raw.close()  # info: raw . close ( )
 
+
 # ====================================================
 # SECTION: function _aggregate_one
-# What it does:  aggregate one.
+# What it does: Aggregate one closed period from raw measurements into one layer file.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _aggregate_one(raw, layer_conn, layer, start, end) -> int:  # info: def _aggregate_one
@@ -76,7 +117,6 @@ def _aggregate_one(raw, layer_conn, layer, start, end) -> int:  # info: def _agg
     ).fetchone()[0]  # info: ) . fetchone ( ) [ 0 ]
     layer_conn.execute("DELETE FROM aggregate_measurement WHERE aggregation_run_id=?", (run,))  # info: layer_conn . execute ( "DELETE FROM aggregate_measurement WHERE aggregation_run_id=?" , ( run
 
-    # group measured values by metric
     rows = raw.execute(  # info: set rows
         """SELECT m.metric_key, m.value_num, m.unit, o.observed_at
            FROM measurement m JOIN observation o ON o.observation_id = m.observation_id
