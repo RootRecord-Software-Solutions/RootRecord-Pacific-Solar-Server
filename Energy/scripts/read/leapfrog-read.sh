@@ -24,12 +24,46 @@ fi  # info: fi
 
 delta="$WATTS/delta2_current.json"  # info: set delta
 river="$WATTS/river2pro_current.json"  # info: set river
+SOC_DIR="/home/rootrecord/RootRecord-Ecosystem/2 - RootRecord-Database/Energy/soc"  # info: set SOC_DIR
+# Pack at ≤5% SOC quiet >30 min is discharged — do not burn the radio chasing it.
+discharged() {  # info: def discharged
+  python3 -c '
+import json, sys, time
+from pathlib import Path
+alias = sys.argv[1]
+soc = Path(sys.argv[2]) / f"{alias}_current.json"
+if not soc.is_file():
+    raise SystemExit(1)
+try:
+    data = json.loads(soc.read_text(encoding="utf-8"))
+    level = float(data.get("soc"))
+except Exception:
+    raise SystemExit(1)
+age = time.time() - soc.stat().st_mtime
+raise SystemExit(0 if level <= 5.0 and age > 30 * 60 else 1)
+' "$1" "$SOC_DIR" 2>/dev/null  # info: return 0 when discharged
+}  # info: end discharged
+delta_off=0  # info: set delta_off
+river_off=0  # info: set river_off
+discharged delta2 && delta_off=1  # info: mark Delta when powered off
+discharged river2pro && river_off=1  # info: mark River when powered off
 river_src=""  # info: set river_src
 if [[ -f "$river" ]]; then  # info: if
   river_src="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("source") or "")' "$river" 2>/dev/null || true)"  # info: set river_src
 fi  # info: fi
 set +e  # info: set
-if [[ "$river_src" != ble && "$river_src" != ble+cloud ]]; then  # info: River has no live BLE sample, so read Delta before the auth miss
+if [[ "$delta_off" -eq 1 && "$river_off" -eq 1 ]]; then  # info: both packs are powered off
+  echo "both packs discharged — skipping BLE"  # info: echo
+  code=0  # info: set code
+elif [[ "$delta_off" -eq 1 ]]; then  # info: Delta is dead; radio goes to River only
+  echo "delta2 discharged — reading river2pro only"  # info: echo
+  bash "$ROOT/river2pro-read.sh"  # info: bash River only
+  code=$?  # info: set code
+elif [[ "$river_off" -eq 1 ]]; then  # info: River is dead; radio goes to Delta only
+  echo "river2pro discharged — reading delta2 only"  # info: echo
+  bash "$ROOT/delta2-read.sh"  # info: bash Delta only
+  code=$?  # info: set code
+elif [[ "$river_src" != ble && "$river_src" != ble+cloud ]]; then  # info: River has no live BLE sample, so read Delta before the auth miss
   bash "$ROOT/delta2-read.sh"  # info: bash delta first
   code=$?  # info: set code
   bash "$ROOT/river2pro-read.sh"  # info: then try River
