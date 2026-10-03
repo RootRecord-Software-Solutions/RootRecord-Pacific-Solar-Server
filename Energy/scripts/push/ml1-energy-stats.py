@@ -8,7 +8,7 @@
 # Kind: python
 # ==============================================================================
 #!/usr/bin/env python3
-"""Push live EcoFlow soc/watts to ML1 over SSH every minute. BLE preferred; live cloud accepted. No poller."""  # info: docstring
+"""Push live EcoFlow soc/watts to ML1 over SSH every minute. BLE only. No poller."""  # info: docstring
 from __future__ import annotations  # info: from __future__ import annotations
 
 import json  # info: import json
@@ -40,7 +40,7 @@ PACKS = ("river2pro", "delta2")  # info: set PACKS
 HST = ZoneInfo("Pacific/Honolulu")  # info: set HST
 DISCHARGE_SOC = 5.0  # info: set DISCHARGE_SOC
 DISCHARGE_AGE_S = 30 * 60  # info: set DISCHARGE_AGE_S
-# Live board on ML1: fresh BLE or live cloud (not cloud_stale), within this age.
+# Live board on ML1: BLE only, and not older than this (cloud is never shown).
 LIVE_MAX_AGE_S = float(os.environ.get("RR_ENERGY_ML1_LIVE_MAX_S", "180"))  # info: set LIVE_MAX_AGE_S
 ENERGY = PACIFIC / "Energy"  # info: set ENERGY
 READ_RUNNER = ENERGY / "lib" / "read_runner.py"  # info: set READ_RUNNER
@@ -99,7 +99,7 @@ def _refresh_river() -> None:  # info: def _refresh_river
 
 # ====================================================
 # SECTION: function _pack
-# What it does: One pack row from live BLE or live cloud current files. Frozen/stale → WAITING.
+# What it does: One pack row from BLE current files only. Cloud / stale → WAITING, not a live number.
 # Edit this block only. Leave this banner in place and update the What-it-does line if the behavior changes.
 # ====================================================
 def _pack(alias: str) -> dict:  # info: def _pack
@@ -109,10 +109,8 @@ def _pack(alias: str) -> dict:  # info: def _pack
     watts = _read(watt_rel)  # info: set watts
     age = min(_age_s(soc_rel), _age_s(watt_rel))  # info: freshest of the pair
     raw_src = str(watts.get("source") or soc.get("source") or "")  # info: set raw_src
-    ble = raw_src.startswith("ble")  # info: BLE or ble+cloud
-    cloud_live = raw_src == "cloud"  # info: live quota only — not cloud_stale
-    usable = ble or cloud_live  # info: board sources that may show numbers
-    charge = soc.get("soc") if usable else None  # info: ignore unusable sources
+    ble = raw_src.startswith("ble")  # info: cloud / empty is not a live board
+    charge = soc.get("soc") if ble else None  # info: ignore cloud charge
     try:  # info: try
         charge_f = float(charge) if charge is not None else None  # info: set charge_f
     except (TypeError, ValueError):  # info: except
@@ -123,11 +121,11 @@ def _pack(alias: str) -> dict:  # info: def _pack
         and charge_f <= DISCHARGE_SOC  # info: at or under 5%
         and age > DISCHARGE_AGE_S  # info: quiet longer than 30 minutes
     )  # info: )
-    live = usable and not discharged and age <= LIVE_MAX_AGE_S and charge_f is not None  # info: fresh measured
+    live = ble and not discharged and age <= LIVE_MAX_AGE_S and charge_f is not None  # info: fresh BLE only
     empty = {  # info: set empty
         "alias": alias,  # info: "alias" : alias ,
         "soc": None,  # info: "soc" : None ,
-        "source": "WAITING" if not usable else ("powered_off" if discharged else "stale"),  # info: status
+        "source": "WAITING" if not ble else ("powered_off" if discharged else "stale"),  # info: status
         "at": max(str(soc.get("at") or ""), str(watts.get("at") or "")),  # info: file stamp only
         "age_s": round(age, 1) if age < 1e11 else None,  # info: None when no file
         "discharged_powered_off": discharged,  # info: "discharged_powered_off" : discharged ,
@@ -145,7 +143,7 @@ def _pack(alias: str) -> dict:  # info: def _pack
     return {  # info: return {
         "alias": alias,  # info: "alias" : alias ,
         "soc": charge_f,  # info: "soc" : charge_f ,
-        "source": raw_src,  # info: ble / ble+cloud / cloud
+        "source": raw_src,  # info: ble or ble+cloud
         "at": max(str(soc.get("at") or ""), str(watts.get("at") or "")),  # info: freshest stamp
         "age_s": round(age, 1),  # info: age
         "discharged_powered_off": False,  # info: "discharged_powered_off" : False ,
@@ -195,7 +193,7 @@ def build() -> dict:  # info: def build
         "hst": hst,  # info: "hst" : hst ,
         "line": line.strip(),  # info: "line" : line . strip ( ) ,
         "packs": packs,  # info: "packs" : packs ,
-        "note": "SSH push of live BLE or live EcoFlow quota. Frozen cloud_stale stays WAITING.",  # info: note
+        "note": "BLE only over SSH. Cloud and stale files become WAITING — never shown as live.",  # info: note
     }  # info: }
 
 

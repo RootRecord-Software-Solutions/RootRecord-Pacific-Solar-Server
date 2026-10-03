@@ -852,18 +852,21 @@ class Connection:
     async def _check_auth(self, packet: Packet):
         exc = AuthErrors.from_payload(packet.payload)
         if not exc:
-            return
+            return True
         exc = exc(f"Authentication failed with response: {packet.payload.hex()}")
 
-        # River often answers NeedBindInstallFirst on the user-id auth packet even
-        # when the encrypted session is already up. Disconnecting here kills GATT
-        # before PD heartbeats land (and LCD sleep makes that race worse). Keep the
-        # link so the caller can latch AUTHENTICATED and wait for fields.
+        # NeedBindInstallFirst (0x04): encrypted session is up, but the pack will not
+        # send PD heartbeats until Bluetooth bind is stored for this user id. Do NOT
+        # latch AUTHENTICATED — that lied and produced empty "live" sessions.
         if isinstance(exc, AuthErrors.NeedBindInstallFirst):
-            self._logger.warning(
-                "NeedBindInstallFirst — keeping GATT for heartbeats: %s", packet
+            self._logger.error(
+                "NeedBindInstallFirst — BLE bind missing for this user id; "
+                "not authenticating: %s",
+                packet,
             )
-            return
+            self._set_state(ConnectionState.ERROR_AUTH_FAILED, exc)
+            await self._disconnect_client()
+            raise exc
 
         self._logger.error("Authentication failed, packet: %s", packet, exc_info=exc)
         self._set_state(ConnectionState.ERROR_AUTH_FAILED, exc)
@@ -1163,18 +1166,23 @@ class Connection:
                 and packet.cmd_set == 0x35
                 and packet.cmd_id == 0x86
             )
+            # 0x35/* is the IoT/auth command set (status 0x89, bind, etc.). Those must
+            # never be treated as "first data packet" auth success — on reconnect a
+            # late 0x89 was latching AUTHENTICATED before NeedBind 0x86 arrived.
+            is_iot_common = packet.cmd_set == 0x35
             authenticating = self._state == ConnectionState.AUTHENTICATING
 
             if is_auth_reply and authenticating:
-                await self._check_auth(packet)
-                self._connection_attempt = 0
-                self._reconnect_attempt = 0
+                ok = await self._check_auth(packet)
                 processed = True
-                self._logger.info("Auth completed, everything is fine")
-                self._set_state(ConnectionState.AUTHENTICATED)
-                self._connected.set()
+                if ok:
+                    self._connection_attempt = 0
+                    self._reconnect_attempt = 0
+                    self._logger.info("Auth completed, everything is fine")
+                    self._set_state(ConnectionState.AUTHENTICATED)
+                    self._connected.set()
             else:
-                if authenticating and not is_auth_reply:
+                if authenticating and not is_auth_reply and not is_iot_common:
                     self._connection_attempt = 0
                     self._reconnect_attempt = 0
                     self._logger.info("Auth completed - first data packet received")
