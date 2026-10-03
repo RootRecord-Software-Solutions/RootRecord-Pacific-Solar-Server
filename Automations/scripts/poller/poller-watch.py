@@ -397,8 +397,11 @@ def format_line(raw: str) -> str | None:  # info: def format_line
         return f"  {DIM}{t}{RST}  {CYAN}🖥{RST}  {CYAN}{body}{RST}"  # info: return f" { DIM } { t
     if body.startswith("ENERGY "):  # info: if body . startswith ( "ENERGY " ) :
         return f"  {DIM}{t}{RST}  {YELLOW}⚡{RST}  {YELLOW}{body}{RST}"  # info: return f" { DIM } { t
-    if body.startswith("SUMMARY="):  # info: if body . startswith ( "SUMMARY=" ) :
-        payload = body[len("SUMMARY="):].strip()  # info: set payload
+    summary_body = body.strip()  # info: set summary_body
+    if summary_body.startswith("▸"):  # info: quiet EcoFlow lines are prefixed
+        summary_body = summary_body[1:].strip()  # info: set summary_body
+    if summary_body.startswith("SUMMARY="):  # info: if summary_body . startswith ( "SUMMARY=" ) :
+        payload = summary_body[len("SUMMARY="):].strip()  # info: set payload
         fields = dict(part.split("=", 1) for part in payload.split() if "=" in part)  # info: set fields
         device = payload.split()[0] if payload else "unknown"  # info: set device
         soc = fields.get("soc", "—")  # info: set soc
